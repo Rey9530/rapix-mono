@@ -1,5 +1,6 @@
-// Prisma 7 — generator prisma-client (ESM) + driver adapter @prisma/adapter-pg
-// Ver BASE_DE_DATOS.md para el schema completo del sistema de delivery.
+// Prisma 7 — generator `prisma-client` (ESM) + driver adapter `@prisma/adapter-pg`
+// En Prisma 7 el URL se pasa via `prisma.config.ts` (CLI/migrate) y via
+// driver adapter `@prisma/adapter-pg` (runtime, ver `src/prisma/prisma.servicio.ts`).
 
 generator client {
   provider     = "prisma-client"
@@ -11,53 +12,174 @@ datasource db {
   provider = "postgresql"
 }
 
-// --- Modelos placeholder ---
-// El schema completo (Usuario, Pedido, Zona, Repartidor, etc.) se define siguiendo
-// BASE_DE_DATOS.md una vez que la base esté levantada.
+// ============================================================
+// ENUMS — Usuarios y Autenticación
+// ============================================================
 
 enum RolUsuario {
   ADMIN
-  OPERADOR
-  CLIENTE
+  VENDEDOR
   REPARTIDOR
+  CLIENTE
 }
 
-enum EstadoPedido {
-  PENDIENTE_ASIGNACION
-  ASIGNADO
-  RECOGIDO
-  EN_TRANSITO
-  EN_PUNTO_INTERCAMBIO
-  EN_REPARTO
-  ENTREGADO
-  FALLIDO
-  CANCELADO
-  DEVUELTO
+enum EstadoUsuario {
+  ACTIVO
+  INACTIVO
+  SUSPENDIDO
+  PENDIENTE_VERIFICACION
 }
+
+// ============================================================
+// MODELOS — Usuarios y Autenticación
+// ============================================================
 
 model Usuario {
-  id             String          @id @default(uuid()) @db.Uuid
-  email          String          @unique
-  hashContrasena String
-  nombre         String
-  rol            RolUsuario      @default(CLIENTE)
-  activo         Boolean         @default(true)
-  creadoEn       DateTime        @default(now())
-  actualizadoEn  DateTime        @updatedAt
-  tokensRefresco TokenRefresco[]
+  id              String        @id @default(uuid())
+  email           String        @unique
+  telefono        String        @unique
+  hashContrasena  String
+  nombreCompleto  String
+  rol             RolUsuario
+  estado          EstadoUsuario @default(PENDIENTE_VERIFICACION)
+  urlAvatar       String?
+  ultimoIngresoEn DateTime?
+  creadoEn        DateTime      @default(now())
+  actualizadoEn   DateTime      @updatedAt
 
+  perfilAdmin      PerfilAdmin?
+  perfilVendedor   PerfilVendedor?
+  perfilRepartidor PerfilRepartidor?
+  tokensRefresco   TokenRefresco[]
+
+  @@index([rol, estado])
   @@map("usuarios")
 }
 
 model TokenRefresco {
-  id         String   @id @default(uuid()) @db.Uuid
-  usuarioId  String   @db.Uuid
-  token      String   @unique
-  expiraEn   DateTime
-  revocadoEn DateTime?
-  creadoEn   DateTime @default(now())
-  usuario    Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  id          String    @id @default(uuid())
+  usuarioId   String
+  token       String    @unique
+  expiraEn    DateTime
+  revocadoEn  DateTime?
+  userAgent   String?
+  direccionIp String?
+  creadoEn    DateTime  @default(now())
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
   @@index([usuarioId])
   @@map("tokens_refresco")
+}
+
+model PerfilAdmin {
+  id        String   @id @default(uuid())
+  usuarioId String   @unique
+  permisos  String[]
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@map("perfiles_admin")
+}
+
+// ============================================================
+// PERFILES ESPECIALIZADOS — Fase 2
+// ============================================================
+
+model PerfilVendedor {
+  id             String   @id @default(uuid())
+  usuarioId      String   @unique
+  nombreNegocio  String
+  rfc            String?
+  direccion      String
+  latitud        Float
+  longitud       Float
+  urlLogo        String?
+  saldoRecargado Int      @default(0)
+  limiteCredito  Decimal  @default(0) @db.Decimal(10, 2)
+  creadoEn       DateTime @default(now())
+  actualizadoEn  DateTime @updatedAt
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@map("perfiles_vendedor")
+}
+
+model PerfilRepartidor {
+  id                 String    @id @default(uuid())
+  usuarioId          String    @unique
+  tipoVehiculo       String
+  placa              String?
+  documentoIdentidad String
+  telefonoEmergencia String?
+  disponible         Boolean   @default(true)
+  latitudActual      Float?
+  longitudActual     Float?
+  ultimaUbicacionEn  DateTime?
+  calificacion       Float     @default(5.0)
+  totalEntregas      Int       @default(0)
+  creadoEn           DateTime  @default(now())
+  actualizadoEn      DateTime  @updatedAt
+
+  usuario Usuario          @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  zonas   ZonaRepartidor[]
+
+  @@map("perfiles_repartidor")
+}
+
+// ============================================================
+// ZONAS GEOGRÁFICAS — Fase 2
+//
+// La columna `poligono` usa PostGIS (`geometry(Polygon, 4326)`) como
+// tipo `Unsupported`. Todas las escrituras van por `$executeRawUnsafe`
+// con `ST_GeomFromGeoJSON`; las lecturas serializan con `ST_AsGeoJSON`.
+// Prisma client excluye por defecto las columnas `Unsupported`.
+// ============================================================
+
+model PuntoIntercambio {
+  id            String   @id @default(uuid())
+  nombre        String
+  direccion     String
+  latitud       Float
+  longitud      Float
+  activo        Boolean  @default(true)
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  zonas Zona[]
+
+  @@map("puntos_intercambio")
+}
+
+model Zona {
+  id                 String                                    @id @default(uuid())
+  codigo             String                                    @unique
+  nombre             String
+  descripcion        String?
+  poligono           Unsupported("geometry(Polygon, 4326)")?
+  latitudCentro      Float
+  longitudCentro     Float
+  puntoIntercambioId String?
+  activa             Boolean                                   @default(true)
+  creadoEn           DateTime                                  @default(now())
+  actualizadoEn      DateTime                                  @updatedAt
+
+  puntoIntercambio PuntoIntercambio? @relation(fields: [puntoIntercambioId], references: [id])
+  repartidores     ZonaRepartidor[]
+
+  @@index([activa])
+  @@map("zonas")
+}
+
+model ZonaRepartidor {
+  repartidorId String
+  zonaId       String
+  esPrimaria   Boolean  @default(false)
+  creadoEn     DateTime @default(now())
+
+  repartidor PerfilRepartidor @relation(fields: [repartidorId], references: [id], onDelete: Cascade)
+  zona       Zona             @relation(fields: [zonaId], references: [id], onDelete: Cascade)
+
+  @@id([repartidorId, zonaId])
+  @@map("zonas_repartidor")
 }

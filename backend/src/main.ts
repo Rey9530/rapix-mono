@@ -1,21 +1,23 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import helmet from 'helmet';
 import compression from 'compression';
-import { Logger } from 'nestjs-pino';
+import helmet from 'helmet';
 import { AppModule } from './app.module.js';
-import { HttpExcepcionFiltro } from './comun/filtros/http-excepcion.filtro.js';
 import { configurarSwagger } from './config/swagger.js';
 
 async function arrancar() {
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
-  app.useLogger(app.get(Logger));
+  const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix(process.env.API_PREFIX ?? 'api/v1');
   app.use(helmet());
   app.use(compression());
+
+  const origenes = (process.env.FRONTEND_URL ?? '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
   app.enableCors({
-    origin: process.env.FRONTEND_URL?.split(','),
+    origin: origenes.length > 0 ? origenes : false,
     credentials: true,
   });
 
@@ -26,7 +28,6 @@ async function arrancar() {
       transform: true,
     }),
   );
-  app.useGlobalFilters(new HttpExcepcionFiltro());
 
   configurarSwagger(app);
 

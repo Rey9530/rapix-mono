@@ -1,0 +1,30 @@
+{
+  "rootDir": "..",
+  "testRegex": "\\.e2e-spec\\.ts$",
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "extensionsToTreatAsEsm": [".ts"],
+  "transform": {
+    "^.+\\.ts$": [
+      "ts-jest",
+      {
+        "useESM": true,
+        "isolatedModules": true,
+        "tsconfig": {
+          "module": "NodeNext",
+          "moduleResolution": "NodeNext",
+          "target": "ES2023",
+          "esModuleInterop": true,
+          "experimentalDecorators": true,
+          "emitDecoratorMetadata": true,
+          "strictNullChecks": true,
+          "skipLibCheck": true
+        }
+      }
+    ]
+  },
+  "moduleNameMapper": {
+    "^(\\.{1,2}/.*)\\.js$": "$1"
+  },
+  "testEnvironment": "node",
+  "testTimeout": 30000
+}

@@ -13,7 +13,7 @@ export class RolesGuardia implements CanActivate {
     ]);
     if (!requeridos || requeridos.length === 0) return true;
 
-    const { usuario } = contexto.switchToHttp().getRequest();
+    const usuario = contexto.switchToHttp().getRequest().user;
     return !!usuario && requeridos.includes(usuario.rol);
   }
 }

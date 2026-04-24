@@ -1,76 +1,76 @@
 import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Publico } from '../../comun/decoradores/publico.decorador.js';
+import { Roles } from '../../comun/decoradores/roles.decorador.js';
 import { PrismaServicio } from '../../prisma/prisma.servicio.js';
+import { RedisServicio } from '../../redis/redis.servicio.js';
 
-class EstadoSaludDto {
-  @ApiProperty({ example: 'ok', enum: ['ok', 'degraded'] })
-  estado!: 'ok' | 'degraded';
+type EstadoDependencia = 'arriba' | 'abajo';
 
-  @ApiProperty({ example: '2026-04-23T05:41:00.000Z' })
-  marcaTiempo!: string;
-
-  @ApiProperty({ example: 12345, description: 'Uptime del proceso en segundos' })
-  uptimeSegundos!: number;
-
-  @ApiProperty({ example: '1.0.0' })
-  version!: string;
+export interface RespuestaSalud {
+  estado: 'ok' | 'degradado';
+  tiempoActividad: number;
+  bd: EstadoDependencia;
+  redis: EstadoDependencia;
 }
 
-class EstadoDependenciaDto {
-  @ApiProperty({ example: 'arriba', enum: ['arriba', 'abajo'] })
-  base_de_datos!: 'arriba' | 'abajo';
-}
-
-class SaludCompletaDto extends EstadoSaludDto {
-  @ApiProperty({ type: EstadoDependenciaDto })
-  dependencias!: EstadoDependenciaDto;
+export interface RespuestaSaludOperativa extends RespuestaSalud {
+  entorno: string;
+  version: string;
+  marcaTiempo: string;
 }
 
 @ApiTags('Salud')
 @Controller('salud')
 export class SaludControlador {
-  constructor(private readonly prisma: PrismaServicio) {}
+  constructor(
+    private readonly prisma: PrismaServicio,
+    private readonly redis: RedisServicio,
+  ) {}
 
   @Publico()
   @Get()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({
-    summary: 'Estado general del servicio',
-    description: 'Liveness probe — devuelve 200 si el proceso está corriendo.',
-  })
-  @ApiOkResponse({ type: EstadoSaludDto })
-  obtenerEstado(): EstadoSaludDto {
+  @ApiOperation({ summary: 'Health check público (BD + Redis)' })
+  async obtenerEstado(): Promise<RespuestaSalud> {
+    return this.estadoBase();
+  }
+
+  @Roles('ADMIN')
+  @ApiBearerAuth('autenticacion-jwt')
+  @Get('operativa')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Health check extendido (ADMIN): entorno, versión, dependencias' })
+  async obtenerEstadoOperativo(): Promise<RespuestaSaludOperativa> {
+    const base = await this.estadoBase();
     return {
-      estado: 'ok',
-      marcaTiempo: new Date().toISOString(),
-      uptimeSegundos: Math.floor(process.uptime()),
+      ...base,
+      entorno: process.env.NODE_ENV ?? 'development',
       version: process.env.npm_package_version ?? '1.0.0',
+      marcaTiempo: new Date().toISOString(),
     };
   }
 
-  @Publico()
-  @Get('completa')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({
-    summary: 'Estado del servicio y dependencias',
-    description: 'Readiness probe — verifica conectividad con la base de datos.',
-  })
-  @ApiOkResponse({ type: SaludCompletaDto })
-  async obtenerEstadoCompleto(): Promise<SaludCompletaDto> {
-    let baseDatos: 'arriba' | 'abajo' = 'arriba';
+  private async estadoBase(): Promise<RespuestaSalud> {
+    const [bd, redis] = await Promise.all([
+      this.pingBd(),
+      this.redis.ping(),
+    ]);
+    const degradado = !bd || !redis;
+    return {
+      estado: degradado ? 'degradado' : 'ok',
+      tiempoActividad: Math.floor(process.uptime()),
+      bd: bd ? 'arriba' : 'abajo',
+      redis: redis ? 'arriba' : 'abajo',
+    };
+  }
+
+  private async pingBd(): Promise<boolean> {
     try {
       await this.prisma.$queryRaw`SELECT 1`;
+      return true;
     } catch {
-      baseDatos = 'abajo';
+      return false;
     }
-
-    return {
-      estado: baseDatos === 'arriba' ? 'ok' : 'degraded',
-      marcaTiempo: new Date().toISOString(),
-      uptimeSegundos: Math.floor(process.uptime()),
-      version: process.env.npm_package_version ?? '1.0.0',
-      dependencias: { base_de_datos: baseDatos },
-    };
   }
 }

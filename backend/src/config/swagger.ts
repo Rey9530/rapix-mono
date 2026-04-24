@@ -1,7 +1,7 @@
 import type { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
-export function configurarSwagger(app: INestApplication) {
+export function configurarSwagger(app: INestApplication): void {
   const config = new DocumentBuilder()
     .setTitle('Delivery System API')
     .setDescription(
@@ -16,31 +16,23 @@ export function configurarSwagger(app: INestApplication) {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
-        description: 'Token de acceso JWT (obtenido en POST /autenticacion/iniciar-sesion)',
+        description:
+          'Token de acceso JWT (obtenido en POST /autenticacion/iniciar-sesion)',
       },
       'autenticacion-jwt',
     )
     .addTag('Salud', 'Health checks y diagnóstico del servicio')
     .addTag('Autenticacion', 'Inicio de sesión, registro y refresco de tokens')
     .addTag('Usuarios', 'Gestión de usuarios del sistema')
-    .addTag('Pedidos', 'Creación, asignación y seguimiento de pedidos')
-    .addTag('Zonas', 'Administración de zonas de cobertura (PostGIS)')
-    .addTag('Repartidores', 'Gestión de repartidores y asignaciones')
-    .addTag('Paquetes Recargados', 'Paquetes prepagados por clientes')
-    .addTag('Cierres Financieros', 'Cierres diarios y liquidación')
-    .addTag('Notificaciones', 'Envío multicanal: push, WhatsApp, email')
-    .addTag('Mapas', 'Geocodificación y rutas (Mapbox)')
-    .addTag('Archivos', 'Subida de archivos a MinIO (S3-compatible)')
-    .addTag('Reportes', 'Reportes operativos y financieros')
     .build();
 
   const documento = SwaggerModule.createDocument(app, config, {
     operationIdFactory: (_controllerKey, methodKey) => methodKey,
   });
 
-  SwaggerModule.setup('api/docs', app, documento, {
-    jsonDocumentUrl: 'api/docs/json',
-    yamlDocumentUrl: 'api/docs/yaml',
+  SwaggerModule.setup('docs', app, documento, {
+    jsonDocumentUrl: 'docs-json',
+    yamlDocumentUrl: 'docs-yaml',
     swaggerOptions: {
       persistAuthorization: true,
       displayRequestDuration: true,

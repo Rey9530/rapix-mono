@@ -1,13 +1,10 @@
 import { ExecutionContext, createParamDecorator } from '@nestjs/common';
-
-export interface UsuarioAutenticado {
-  id: string;
-  rol: string;
-}
+import type { Usuario } from '../../generated/prisma/client.js';
 
 export const UsuarioActual = createParamDecorator(
-  (_datos: unknown, ctx: ExecutionContext): UsuarioAutenticado => {
+  (_datos: unknown, ctx: ExecutionContext): Usuario => {
     const peticion = ctx.switchToHttp().getRequest();
-    return peticion.usuario;
+    // Passport pone el resultado de JwtEstrategia.validate() en `request.user`.
+    return peticion.user;
   },
 );

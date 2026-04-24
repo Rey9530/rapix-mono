@@ -1,10 +1,9 @@
-import type { UsuarioAutenticado } from '../comun/decoradores/usuario-actual.decorador.js';
+import type { Usuario } from '../generated/prisma/client.js';
 
 declare global {
   namespace Express {
-    interface Request {
-      usuario?: UsuarioAutenticado;
-    }
+    // Passport hidrata `request.user` con el resultado de JwtEstrategia.validate().
+    interface User extends Usuario {}
   }
 }
 
