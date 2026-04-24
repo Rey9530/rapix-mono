@@ -1,0 +1,19 @@
+<app-card
+  [headerTitle]="'Select input using search option'"
+  [border]="true"
+  [padding]="false"
+  [cardClass]="'height-equal'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use <code>ng-select2-component</code> for search in select.
+  </p>
+  <div class="select-box">
+    <select2
+      [data]="selectInputSearch"
+      [templates]="template"
+      [placeholder]="'Select Your Profession'"
+    >
+      <ng-template #template let-item="label">{{ item }}</ng-template>
+    </select2>
+  </div>
+</app-card>

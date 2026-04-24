@@ -1,0 +1,25 @@
+<app-card
+  [headerTitle]="'Prevent manual entry'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="mt-1 mb-0" header5>
+    Prevents manual text entry and updates the model only when an item from
+    suggestions is selected
+  </p>
+  <div class="mb-3 row">
+    <div class="col">
+      <input
+        id="typeahead-prevent-manual-entry"
+        type="text"
+        class="form-control"
+        [(ngModel)]="model"
+        placeholder="Search for a state"
+        [ngbTypeahead]="search"
+        [inputFormatter]="formatter"
+        [resultFormatter]="formatter"
+        [editable]="false"
+      />
+    </div>
+  </div>
+</app-card>

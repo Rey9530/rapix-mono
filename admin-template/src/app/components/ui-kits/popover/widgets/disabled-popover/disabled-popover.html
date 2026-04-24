@@ -1,0 +1,22 @@
+<app-card
+  [headerTitle]="'Disabled Popover'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'common-flex popover-wrapper'"
+>
+  <p class="mb-0 mt-1" header5>
+    To create disabled popovers using <code>ngbPopover</code> use
+    <code>[disablePopover]="true" </code>attribute.
+  </p>
+  <button
+    class="btn btn-primary example-popover mb-0 me-0"
+    type="button"
+    [disablePopover]="true"
+    placement="start"
+    ngbPopover="And here's some amazing content. It's very engaging. Right?"
+    popoverTitle="Disable Popover Title"
+    disabled
+  >
+    Disabled Button
+  </button>
+</app-card>

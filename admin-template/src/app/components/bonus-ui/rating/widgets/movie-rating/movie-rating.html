@@ -1,0 +1,15 @@
+<app-card [headerTitle]="'Movie Rating Bar'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use<code> bar-rating </code> to set movie rating.
+  </p>
+  <div class="rating-container">
+    <bar-rating
+      class="bar"
+      [(rate)]="movieRate"
+      [max]="4"
+      [theme]="'movie'"
+      [showText]="true"
+      [titles]="['No rating', 'Bad', 'Mediocre', 'Good', 'Awesome']"
+    />
+  </div>
+</app-card>

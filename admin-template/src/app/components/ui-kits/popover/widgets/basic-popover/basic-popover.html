@@ -1,0 +1,34 @@
+<app-card
+  [headerTitle]="'Basic Popover'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'common-flex popover-wrapper'"
+>
+  <p class="mb-0 mt-1" header5>
+    To create popovers using <code>ngbPopover</code>, use
+    <code>ngbPopover</code> for content, <code>popoverTitle</code> for the
+    title, and configure placement for positioning, with optional trigger events
+    like <code>mouseenter:mouseleave</code> for
+    <code>hover-based</code> popovers.
+  </p>
+  <button
+    class="btn btn-primary example-popover mb-0 me-0"
+    type="button"
+    placement="start"
+    ngbPopover="And here's some amazing content. It's very engaging. Right?"
+    popoverTitle="Popover Title"
+  >
+    Hurry Up!
+  </button>
+
+  <button
+    class="example-popover btn btn-success mb-0 me-0"
+    type="button"
+    triggers="mouseenter:mouseleave"
+    placement="bottom"
+    ngbPopover="Several utility instruction sets have been featured in the Bootstrap 4 to promote very easy learning for beginners in the business of web building."
+    popoverTitle="Hover Popover"
+  >
+    Hover Tooltip
+  </button>
+</app-card>

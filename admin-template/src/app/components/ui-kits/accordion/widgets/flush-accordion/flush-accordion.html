@@ -1,0 +1,42 @@
+<app-card
+  [cardClass]="'height-equal'"
+  [headerTitle]="'Flush Accordion'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="f-m-light mt-1" header5>
+    Add <code>accordion-flush</code> to remove the default<code>
+      background-color</code
+    >
+    , some borders, and some rounded corners to render accordions edge-to-edge
+    with their parent container.
+  </p>
+
+  <div class="accordion accordion-flush dark-accordion" ngbAccordion>
+    @for (accordion of flushAccordion; track accordion) {
+      <div
+        class="accordion-item"
+        ngbAccordionItem
+        [collapsed]="accordion.id !== 1"
+      >
+        <h2 class="accordion-header" ngbAccordionHeader>
+          <button
+            class="accordion-button collapsed txt-secondary accordion-light-secondary active"
+            type="button"
+            ngbAccordionButton
+          >
+            {{ accordion.title }}
+            <app-feather-icon [icon]="'chevron-down'" [class]="'svg-color'" />
+          </button>
+        </h2>
+        <div class="accordion-collapse collapse show" ngbAccordionCollapse>
+          <div
+            class="accordion-body"
+            ngbAccordionBody
+            [innerHTML]="accordion.description"
+          ></div>
+        </div>
+      </div>
+    }
+  </div>
+</app-card>

@@ -1,0 +1,7 @@
+<div class="row">
+  @for (details of jobCardsDetails | slice: 0 : 4; track details) {
+    <div class="col-xl-6 xl-100">
+      <app-common-card [jobCard]="details" />
+    </div>
+  }
+</div>

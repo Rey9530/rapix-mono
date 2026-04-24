@@ -1,0 +1,56 @@
+<app-card
+  [cardClass]="'papernote-wrap statistics-card widget-hover'"
+  [headerTitle]="activity()?.title"
+  [padding]="false"
+  [cardBodyClass]="'pt-0 artist-table activity-table'"
+  [cardType]="'dataTable'"
+>
+  <a
+    class="f-light d-flex align-items-center gap-1"
+    href="javascript:void(0)"
+    header7
+    >View
+    <i class="f-w-700 icon-arrow-right"></i>
+  </a>
+
+  <div class="appointment-table customer-table table-responsive">
+    <table class="table table-bordernone">
+      <tbody>
+        <tr>
+          <td>
+            <img
+              class="img-fluid img-40 rounded-circle me-2"
+              [src]="activity()?.profile"
+              alt="author"
+            />
+          </td>
+          <td class="img-content-box">
+            <a class="d-block f-w-500" href="javascript:void(0)">{{
+              activity()?.name
+            }}</a>
+            <span class="f-light" [innerHTML]="activity()?.value"></span>
+          </td>
+          <td class="text-end">
+            @if (activity()?.follow_button) {
+              <button class="btn button-primary">
+                <app-feather-icon [icon]="'user-plus'" [class]="'me-1'" />
+                <span>Follow</span>
+              </button>
+            } @else if (activity()?.image) {
+              <img
+                class="img-fluid medal-img"
+                [src]="activity()?.image"
+                alt="Batch icon"
+              />
+            } @else if (activity()?.time) {
+              <div class="d-flex align-items-center justify-content-end">
+                <span class="status-success me-2"></span>
+                <span class="f-light">{{ activity()?.time }}</span>
+              </div>
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</app-card>

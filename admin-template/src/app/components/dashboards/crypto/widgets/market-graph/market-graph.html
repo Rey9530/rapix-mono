@@ -1,0 +1,59 @@
+<app-card
+  [cardClass]="'market-card'"
+  [headerTitle]="marketGraph.title"
+  [padding]="false"
+  [dropdownType]="'simple'"
+  [options]="cardToggleOption"
+  [cardBodyClass]="'pt-0'"
+>
+  <div class="row m-0 overall-card">
+    <div class="col-xxl-8 col-xl-7 col-md-8 col-sm-7 p-0 box-col-7 col-ed-7">
+      <div class="market-chart-container">
+        <div id="market-chart">
+          <apx-chart
+            [series]="marketGraph.series"
+            [chart]="marketGraph.chart"
+            [stroke]="marketGraph.stroke"
+            [dataLabels]="marketGraph.dataLabels"
+            [colors]="marketGraph.colors"
+            [grid]="marketGraph.grid"
+            [plotOptions]="marketGraph.plotOptions"
+            [fill]="marketGraph.fill"
+            [labels]="marketGraph.labels"
+            [markers]="marketGraph.markers"
+            [yaxis]="marketGraph.yaxis"
+            [xaxis]="marketGraph.xaxis"
+            [tooltip]="marketGraph.tooltip"
+            [legend]="marketGraph.legend"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xxl-4 col-xl-5 col-md-4 col-sm-5 p-0 box-col-5 col-ed-5">
+      <div class="row g-sm-3 g-2">
+        @for (details of marketGraph.chart_details; track details) {
+          <div class="col-md-12">
+            <div class="light-card balance-card align-items-center">
+              <h6 class="f-w-400 f-14 mb-0">{{ details.title }}</h6>
+              <div class="ms-auto text-end">
+                <span
+                  class="badge badge-light-{{
+                    details.profit_type === 'profit' ? 'success' : 'secondary'
+                  }} rounded-pill"
+                  >{{ details.profit_type === "profit" ? "+" : "-"
+                  }}{{ details.value }}%</span
+                >
+              </div>
+            </div>
+          </div>
+        }
+        <div class="col-md-12">
+          <button class="btn btn-outline-dark w-100" type="button">
+            See All Balance
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-card>

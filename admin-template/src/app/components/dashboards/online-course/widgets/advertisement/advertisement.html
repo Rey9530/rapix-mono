@@ -1,0 +1,27 @@
+<app-card
+  [cardClass]="'get-card overflow-hidden'"
+  [headerTitle]="'Do You Want to Get'"
+  [padding]="false"
+  [cardBodyClass]="'pt-0'"
+>
+  <ng-container header5>
+    <span class="f-14 f-w-500 f-light">Better Results?</span>
+    <a
+      class="btn btn-primary btn-hover-effect"
+      href="javascript:void(0)"
+      [routerLink]="['/courses/courses-details']"
+      >More Details
+      <span>
+        <app-svg-icon [icon]="'arrowright'" [class]="'fill-icon'" />
+      </span>
+    </a>
+  </ng-container>
+
+  <div class="get-image text-center">
+    <img
+      class="img-fluid"
+      src="assets/images/dashboard-3/better.png"
+      alt="laptop with men vector"
+    />
+  </div>
+</app-card>

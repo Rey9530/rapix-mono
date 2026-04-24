@@ -1,0 +1,52 @@
+<app-card
+  [headerTitle]="'Popover Directions'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'common-flex popover-wrapper'"
+>
+  <p class="mb-0 mt-1" header5>
+    To create popovers with different placements using <code>ngbPopover</code>,
+    use the <code>placement</code> attribute to set positions such as top,
+    bottom, left, right, etc., and configure <code>ngbPopover</code> for content
+    and <code>popoverTitle</code> for the title.
+  </p>
+  <button
+    class="example-popover btn btn-warning mb-0 me-0"
+    type="button"
+    placement="top"
+    ngbPopover="Popovers need the tooltip plugin considering that a dependency."
+    popoverTitle="Top Popover"
+  >
+    Popover on Top
+  </button>
+
+  <button
+    class="example-popover btn btn-danger mb-0 me-0"
+    type="button"
+    placement="end"
+    ngbPopover="Popovers are opt-in for effectiveness causes, in this way you have to initialize them yourself."
+    popoverTitle="Right Popover"
+  >
+    Popover on Right
+  </button>
+
+  <button
+    class="example-popover btn btn-info mb-0 me-0"
+    type="button"
+    placement="bottom"
+    ngbPopover="Identify container:to evade rendering problems in more complex components (like Bootstrap input groups, button groups, etc)."
+    popoverTitle="Bottom Popover"
+  >
+    Popover on Bottom
+  </button>
+
+  <button
+    class="example-popover btn btn-dark mb-0 me-0"
+    type="button"
+    placement="start"
+    ngbPopover="Popovers are opt-in for effectiveness causes, in this way you have to initialize them yourself."
+    popoverTitle="Left Popover"
+  >
+    Popover on Left
+  </button>
+</app-card>

@@ -1,0 +1,31 @@
+<app-card [cardClass]="'explore-card height-equal'" [padding]="false">
+  <div class="row">
+    <div class="col-xxl-6 custom-rs-12">
+      <h5 class="mb-3">
+        Discover, Collect and sell in the largest NFTs marketplace
+      </h5>
+      <p class="mb-3 f-light">
+        If you are an artist then showcase your artwork and convert your art
+        into NFT art.
+      </p>
+      <div class="group-btn">
+        <a
+          class="btn f-w-500 btn-primary"
+          href="javascript:void(0)"
+          [routerLink]="['/seller/list']"
+          >Explore</a
+        >
+        <a
+          class="btn f-w-500 btn-white"
+          href="javascript:void(0)"
+          [routerLink]="['/seller/1']"
+          >Sell Now</a
+        >
+      </div>
+      <ul class="decore">
+        <li class="dot-gradient dot-1"></li>
+        <li class="dot-gradient dot-2"></li>
+      </ul>
+    </div>
+  </div>
+</app-card>

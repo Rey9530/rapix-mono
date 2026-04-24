@@ -1,0 +1,139 @@
+<div class="container-fluid datepicker-page">
+  <div class="row">
+    <div class="col-md-12">
+      <app-card [headerTitle]="'Date Picker'">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="date-picker">
+              <form class="theme-form">
+                <div class="mb-3 row">
+                  <label class="col-md-3 col-form-label">Default</label>
+                  <div class="col-md-9">
+                    <input
+                      class="form-control digits"
+                      placeholder="yyyy-mm-dd"
+                      name="dp"
+                      [(ngModel)]="model"
+                      ngbDatepicker
+                      #d="ngbDatepicker"
+                      (click)="d.toggle()"
+                    />
+                  </div>
+                </div>
+                <div class="mb-3 row">
+                  <label class="col-md-3 col-form-label">Range Selection</label>
+                  <div class="col-sm-5">
+                    <div class="dp-hidden position-absolute">
+                      <div class="input-group range-datepicker">
+                        <input
+                          name="datepicker"
+                          class="form-control"
+                          ngbDatepicker
+                          #datepicker="ngbDatepicker"
+                          [autoClose]="'outside'"
+                          (dateSelect)="onDateSelection($event)"
+                          [displayMonths]="2"
+                          [dayTemplate]="t"
+                          outsideDays="hidden"
+                          [startDate]="fromDate!"
+                          tabindex="-1"
+                        />
+                        <ng-template #t let-date let-focused="focused">
+                          <span
+                            class="custom-day"
+                            [class.focused]="focused"
+                            [class.range]="isRange(date)"
+                            [class.faded]="isHovered(date) || isInside(date)"
+                            (mouseenter)="hoveredDate = date"
+                            (mouseleave)="hoveredDate = null"
+                          >
+                            {{ date.day }}
+                          </span>
+                        </ng-template>
+                      </div>
+                    </div>
+                    <div class="input-group">
+                      <input
+                        #dpFromDate
+                        class="form-control"
+                        placeholder="yyyy-mm-dd"
+                        name="dpFromDate"
+                        [value]="formatter.format(fromDate)"
+                        (input)="
+                          fromDate = validateInput(fromDate, dpFromDate.value)
+                        "
+                        (click)="datepicker.toggle()"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="input-group">
+                      <input
+                        #dpToDate
+                        class="form-control"
+                        placeholder="yyyy-mm-dd"
+                        name="dpToDate"
+                        [value]="formatter.format(toDate)"
+                        (input)="toDate = validateInput(toDate, dpToDate.value)"
+                        (click)="datepicker.toggle()"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="mb-3 row">
+                  <label class="col-md-3 col-form-label">Position target</label>
+                  <div class="col-md-9">
+                    <div class="digits">
+                      <form class="row row-cols-sm-auto">
+                        <div class="col-12">
+                          <div class="input-group">
+                            <input
+                              class="form-control"
+                              placeholder="yyyy-mm-dd"
+                              name="dp"
+                              [(ngModel)]="model2"
+                              ngbDatepicker
+                              #d3="ngbDatepicker"
+                              [placement]="placement"
+                              [positionTarget]="buttonEl"
+                            />
+                            <button
+                              #buttonEl
+                              class="btn btn-primary calendar"
+                              (click)="d3.toggle()"
+                              type="button"
+                              style="z-index: 0"
+                            >
+                              <app-feather-icon [icon]="'calendar'" />
+                            </button>
+                          </div>
+                        </div>
+                      </form>
+                      <hr />
+                      <div class="row">
+                        <div class="col-sm-4">
+                          <label for="placement">Placement</label>
+                          <select
+                            id="placement"
+                            class="form-select form-control"
+                            [(ngModel)]="placement"
+                            [ngModelOptions]="{ standalone: true }"
+                          >
+                            <option value="top">Top</option>
+                            <option value="bottom">Bottom</option>
+                            <option value="left">Left</option>
+                            <option value="right">Right</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </app-card>
+    </div>
+  </div>
+</div>

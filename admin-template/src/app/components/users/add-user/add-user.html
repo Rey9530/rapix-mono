@@ -1,0 +1,200 @@
+<div class="container-fluid">
+  <div class="edit-profile">
+    <div class="row">
+      <div class="col-xl-4">
+        <app-card
+          [headerTitle]="'My Profile'"
+          [border]="true"
+          [padding]="false"
+        >
+          <form class="custom-input">
+            <div class="row mb-2">
+              <div class="profile-title">
+                <div class="d-flex">
+                  <img
+                    class="img-70 rounded-circle"
+                    alt="user"
+                    src="assets/images/user/7.jpg"
+                  />
+                  <div class="flex-grow-1">
+                    <h5 class="mb-1">WILLIAM C. JENNINGS</h5>
+                    <p>DESIGNER</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <h6 class="form-label">Bio</h6>
+              <textarea
+                class="form-control"
+                rows="5"
+                placeholder="On the other hand, we denounce with righteous indignation"
+              ></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Email Address</label>
+              <input
+                class="form-control"
+                type="email"
+                placeholder="your-email@domain.com"
+              />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Password</label>
+              <input class="form-control" type="password" value="password" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Website</label>
+              <input
+                class="form-control"
+                type="url"
+                placeholder="https://themeforest.net/user/pixelstrap/portfolio"
+              />
+            </div>
+            <div class="form-footer">
+              <button class="btn btn-primary btn-block">Save</button>
+            </div>
+          </form>
+        </app-card>
+      </div>
+      <div class="col-xl-8">
+        <app-card
+          [headerTitle]="'Edit Profile'"
+          [border]="true"
+          [padding]="false"
+        >
+          <form>
+            <div class="row custom-input">
+              <div class="col-xxl-5 box-col-12">
+                <div class="mb-3">
+                  <label class="form-label" for="company_name">Company</label>
+                  <input
+                    class="form-control"
+                    id="company_name"
+                    type="text"
+                    placeholder="Company"
+                  />
+                </div>
+              </div>
+              <div class="col-sm-6 col-xxl-3 box-col-6">
+                <div class="mb-3">
+                  <label class="form-label" for="customUsername"
+                    >Username</label
+                  >
+                  <input
+                    class="form-control"
+                    id="customUsername"
+                    type="text"
+                    placeholder="Username"
+                  />
+                </div>
+              </div>
+              <div class="col-sm-6 col-xxl-4 box-col-6">
+                <div class="mb-3">
+                  <label class="form-label" for="customAddress"
+                    >Email Address</label
+                  >
+                  <input
+                    class="form-control"
+                    id="customAddress"
+                    type="email"
+                    placeholder="Email"
+                  />
+                </div>
+              </div>
+              <div class="col-sm-6 col-md-6">
+                <div class="mb-3">
+                  <label class="form-label" for="customFirstName"
+                    >First Name</label
+                  >
+                  <input
+                    class="form-control"
+                    id="customFirstName"
+                    type="text"
+                    placeholder="Company"
+                  />
+                </div>
+              </div>
+              <div class="col-sm-6 col-md-6">
+                <div class="mb-3">
+                  <label class="form-label" for="customLastName"
+                    >Last Name</label
+                  >
+                  <input
+                    class="form-control"
+                    id="customLastName"
+                    type="text"
+                    placeholder="Last name"
+                  />
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="mb-3">
+                  <label class="form-label" for="customAddress">Address</label>
+                  <textarea
+                    class="form-control"
+                    id="customAddress"
+                    type="text"
+                    rows="2.5"
+                    placeholder="Home address"
+                  ></textarea>
+                </div>
+              </div>
+              <div class="col-sm-6 col-xxl-4 box-col-6">
+                <div class="mb-3">
+                  <label class="form-label" for="customCity">City</label>
+                  <input
+                    class="form-control"
+                    id="customCity"
+                    type="text"
+                    placeholder="City"
+                  />
+                </div>
+              </div>
+              <div class="col-sm-6 col-xxl-3 box-col-6">
+                <div class="mb-3">
+                  <label class="form-label" for="customPostalCode"
+                    >Postal Code</label
+                  >
+                  <input
+                    class="form-control"
+                    id="customPostalCode"
+                    type="number"
+                    placeholder="Postal code"
+                  />
+                </div>
+              </div>
+              <div class="col-xxl-5 box-col-12">
+                <div class="mb-3">
+                  <label class="form-label" for="customCountry">Country</label>
+                  <select2
+                    [data]="country"
+                    placeholder="Select Country"
+                    noResultMessage="No Data Found"
+                    resettable
+                  />
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div>
+                  <label class="form-label" for="aboutMeDesc">About Me</label>
+                  <textarea
+                    class="form-control"
+                    id="aboutMeDesc"
+                    rows="4"
+                    placeholder="Enter about your description"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+          </form>
+          <div class="card-footer text-end" details>
+            <button class="btn btn-primary" type="submit">
+              Update Profile
+            </button>
+          </div>
+        </app-card>
+      </div>
+    </div>
+  </div>
+</div>

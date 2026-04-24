@@ -1,0 +1,46 @@
+<div class="container-fluid dashboard-10">
+  <div class="row">
+    <div class="col-xxl-5 col-xl-4 col-md-6 ord-md-i box-col-4">
+      <app-all-visits />
+    </div>
+    <div class="col-xxl-3 col-xl-4 col-md-6 ord-md-ii box-col-4">
+      <app-referrals-visit />
+    </div>
+    <div class="col-xl-4 col-sm-6 ord-md-vii box-col-4">
+      <app-session-by-countries />
+    </div>
+    <div class="col-xl-6 ord-md-iii">
+      <app-website-analytics />
+    </div>
+    <div class="col-xl-6 ord-md-iv">
+      <div class="row">
+        @for (chart of analyticsDetailsChart | slice: 0 : 2; track chart) {
+          <div class="col-sm-6">
+            <app-analytics-details [chart]="chart" />
+          </div>
+        }
+      </div>
+    </div>
+    <div class="col-xl-6 ord-md-viii">
+      <app-page-analytics />
+    </div>
+    <div class="col-xl-6 ord-md-v">
+      <div class="row">
+        @for (chart of analyticsDetailsChart | slice: 2 : 6; track chart) {
+          <div class="col-sm-6">
+            <app-analytics-details [chart]="chart" />
+          </div>
+        }
+      </div>
+    </div>
+    <div class="col-xl-4 col-md-6 ord-md-ix">
+      <app-live-user />
+    </div>
+    <div class="col-xl-5 col-md-6 ord-md-x box-col-4">
+      <app-session-by-device [type]="'classic'" />
+    </div>
+    <div class="col-xl-3 col-sm-6 ord-md-vi box-col-4">
+      <app-session-by-browser />
+    </div>
+  </div>
+</div>

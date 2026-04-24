@@ -1,0 +1,31 @@
+<div class="container-fluid dashboard-13">
+  <div class="row">
+    @for (overview of overviews; track overview) {
+      <div class="col-xl-3 col-sm-6">
+        <app-overview [overview]="overview" />
+      </div>
+    }
+
+    <div class="col-xl-7">
+      <app-shipment-tracking />
+    </div>
+    <div class="col-xl-5 col-md-6">
+      <app-avg-delivery-duration />
+    </div>
+    <div class="col-xl-4 col-md-6">
+      <app-shipment-details />
+    </div>
+    <div class="col-xl-4 col-md-6">
+      <app-fleet-status />
+    </div>
+    <div class="col-xl-4 col-md-6">
+      <app-open-sales-order />
+    </div>
+    <div class="col-xl-5 col-lg-6">
+      <app-profit-by-country />
+    </div>
+    <div class="col-xl-7 col-lg-6">
+      <app-vehicles-overview />
+    </div>
+  </div>
+</div>

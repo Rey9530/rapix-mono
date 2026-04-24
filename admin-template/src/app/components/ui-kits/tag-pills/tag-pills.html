@@ -1,0 +1,159 @@
+<div class="container-fluid">
+  <div class="row ng-tag-pills">
+    <div class="col-sm-12 col-xl-6">
+      <app-card
+        [headerTitle]="'Badges Contextual Variations'"
+        [border]="true"
+        [padding]="false"
+      >
+        <p class="f-m-light mt-1" header5>
+          Use<code> badge </code>class to make more badges.
+        </p>
+
+        <app-variation-badge [badgeDetails]="badgeColors" />
+      </app-card>
+    </div>
+
+    <div class="col-sm-12 col-xl-6">
+      <app-card
+        [headerTitle]="'Badges Outline Contextual Variations'"
+        [border]="true"
+        [padding]="false"
+      >
+        <p class="f-m-light mt-1" header5>
+          Use<code> badge </code>class to make more badges.
+        </p>
+
+        <app-variation-badge [badgeDetails]="badgeColors" [type]="'outline'" />
+      </app-card>
+    </div>
+
+    <div class="col-sm-12 col-xl-6">
+      <app-card
+        [headerTitle]="'Pill Contextual Variations'"
+        [border]="true"
+        [padding]="false"
+      >
+        <p class="f-m-light mt-1" header5>
+          Use<code> rounded-pill</code>class to make badges with background
+          (badge-*) more rounded with a larger <code>border-radius</code>.
+        </p>
+
+        <app-variation-badge [badgeDetails]="badgeColors" [rounded]="true" />
+      </app-card>
+    </div>
+
+    <div class="col-sm-12 col-xl-6">
+      <app-card
+        [headerTitle]="'Pill Outline Variations'"
+        [border]="true"
+        [padding]="false"
+      >
+        <p class="f-m-light mt-1" header5>
+          Use<code> rounded-pill</code> class to make badges with background
+          (badge-b-*) more rounded with a larger <code>border-radius</code>.
+        </p>
+
+        <app-variation-badge
+          [badgeDetails]="badgeColors"
+          [type]="'outline'"
+          [rounded]="true"
+        />
+      </app-card>
+    </div>
+
+    <div class="col-sm-12 col-xl-6">
+      <app-card
+        [headerTitle]="'Number of Badges'"
+        [border]="true"
+        [padding]="false"
+      >
+        <p class="f-m-light mt-1" header5>
+          Use<code> badge</code> class to make square badges with numbers.
+        </p>
+
+        <app-variation-badge [badgeDetails]="badgeColors" [type]="'number'" />
+      </app-card>
+    </div>
+
+    <div class="col-sm-12 col-xl-6">
+      <app-card
+        [headerTitle]="'Number of Pill Badges'"
+        [border]="true"
+        [padding]="false"
+      >
+        <p class="f-m-light mt-1" header5>
+          Use<code> rounded-circle</code> class to make rounded badges with
+          numbers.
+        </p>
+
+        <app-variation-badge
+          [badgeDetails]="badgeColors"
+          [type]="'number'"
+          [rounded]="true"
+        />
+      </app-card>
+    </div>
+
+    <div class="col-sm-12 col-xl-6">
+      <app-card
+        [headerTitle]="'Badge Tag with Icons'"
+        [border]="true"
+        [padding]="false"
+      >
+        <p class="f-m-light mt-1" header5>
+          Use<code> badge </code> class to make square badges with icons.
+        </p>
+
+        <app-variation-badge
+          [badgeDetails]="badgeColors"
+          [type]="'icon'"
+          [badgeIcons]="badgeIcons"
+        />
+      </app-card>
+    </div>
+
+    <div class="col-sm-12 col-xl-6">
+      <app-card
+        [headerTitle]="'Rounded Pills with Icons'"
+        [border]="true"
+        [padding]="false"
+      >
+        <p class="f-m-light mt-1" header5>
+          Use<code> rounded-circle </code> class to make rounded badges with
+          icons.
+        </p>
+
+        <app-variation-badge
+          [badgeDetails]="badgeColors"
+          [type]="'icon'"
+          [rounded]="true"
+          [badgeIcons]="badgeIcons"
+        />
+      </app-card>
+    </div>
+
+    <div class="col-sm-12 col-xl-6">
+      <app-badge-heading />
+    </div>
+    <div class="col-sm-12 col-xl-6">
+      <div class="row">
+        <div class="col-12">
+          <app-positioned-badge />
+        </div>
+        <div class="col-12">
+          <app-button-badge />
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-6">
+      <app-image-badge />
+    </div>
+    <div class="col-xl-6">
+      <app-close-badge />
+    </div>
+    <div class="col-12">
+      <app-image-close-badge />
+    </div>
+  </div>
+</div>

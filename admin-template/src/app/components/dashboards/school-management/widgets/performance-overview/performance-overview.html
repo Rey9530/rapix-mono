@@ -1,0 +1,69 @@
+<app-card
+  [headerTitle]="'Performance Overview'"
+  [headerClass]="'m-0'"
+  [border]="true"
+  [padding]="false"
+  [cardClass]="'height-equal'"
+  [rightSideDetails]="true"
+>
+  <div class="performance-right" header3>
+    <p class="mb-0">28-02-2024</p>
+    <i class="fa-solid fa-calendar txt-primary"></i>
+  </div>
+
+  <div class="row g-md-0 g-4">
+    <div class="col-xl-5 col-md-4 box-col-12">
+      <div class="attendance-chart">
+        <div id="chart_current_academic">
+          <apx-chart
+            [series]="performanceOverview.series"
+            [chart]="performanceOverview.chart"
+            [labels]="performanceOverview.labels"
+            [fill]="performanceOverview.fill"
+            [stroke]="performanceOverview.stroke"
+            [yaxis]="performanceOverview.yaxis"
+            [legend]="performanceOverview.legend"
+            [plotOptions]="performanceOverview.plotOptions"
+            [theme]="performanceOverview.theme"
+            [responsive]="performanceOverview.responsive"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-7 col-md-8 box-col-none">
+      <div class="row g-3">
+        @for (details of performanceOverview.marks; track details) {
+          <div class="col-xl-12">
+            <div class="light-card attendance-card widget-hover">
+              <div class="left-overview-content">
+                <div class="svg-box">
+                  <img [src]="details.image" [alt]="details.alt" />
+                </div>
+              </div>
+              <div class="right-overview-content">
+                <div>
+                  <h6>{{ details.title }}</h6>
+                  <span class="text-muted text-ellipsis">{{
+                    details.text
+                  }}</span>
+                </div>
+                <div class="d-flex marks-count">
+                  <h5>
+                    {{ details.mark }}/
+                    <sub class="text-muted">100</sub>
+                  </h5>
+                  <div class="d-flex justify-content-center align-items-center">
+                    <i class="icon-arrow-up txt-success pe-2 f-w-600"></i>
+                    <span class="txt-success f-w-500">{{
+                      details.percentage
+                    }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</app-card>

@@ -1,0 +1,78 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5>Product Form</h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-xl-5 g-3">
+            <div class="col-xxl-3 col-xl-4 box-col-4e sidebar-left-wrapper">
+              <div
+                ngbNav
+                #nav="ngbNav"
+                [(activeId)]="active"
+                class="sidebar-left-icons nav nav-pills"
+                orientation="vertical"
+              >
+                @for (product of addProduct; track product; let i = $index) {
+                  <div class="nav-item" [ngbNavItem]="i + 1">
+                    <a ngbNavLink>
+                      <div class="nav-rounded">
+                        <div class="product-icons">
+                          <app-svg-icon
+                            [icon]="product.icon"
+                            [class]="'stroke-icon'"
+                          />
+                        </div>
+                      </div>
+                      <div class="product-tab-content">
+                        <h6>{{ product.title }}</h6>
+                        <p>{{ product.description }}</p>
+                      </div>
+                    </a>
+                    <ng-template ngbNavContent>
+                      @if (product.value === "product") {
+                        <app-add-product-details
+                          [active]="active"
+                          (changeTab)="changeTab($event)"
+                        />
+                      }
+                      @if (product.value === "gallery") {
+                        <app-product-gallery
+                          [active]="active"
+                          (changeTab)="changeTab($event)"
+                        />
+                      }
+                      @if (product.value === "category") {
+                        <app-product-categories
+                          [active]="active"
+                          (changeTab)="changeTab($event)"
+                        />
+                      }
+                      @if (product.value === "pricing") {
+                        <app-product-price-discount
+                          [active]="active"
+                          (changeTab)="changeTab($event)"
+                        />
+                      }
+                      @if (product.value === "advance") {
+                        <app-additional-options
+                          [active]="active"
+                          (changeTab)="changeTab($event)"
+                        />
+                      }
+                    </ng-template>
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="col-xxl-9 col-xl-8 box-col-8 position-relative">
+              <div [ngbNavOutlet]="nav"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

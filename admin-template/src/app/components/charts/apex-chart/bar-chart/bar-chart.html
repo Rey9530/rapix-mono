@@ -1,0 +1,12 @@
+<app-card [headerTitle]="'Bar chart'" [border]="true" [padding]="false">
+  <div id="basic-bar">
+    <apx-chart
+      [chart]="barChart.chart"
+      [plotOptions]="barChart.plotOptions"
+      [dataLabels]="barChart.dataLabels"
+      [series]="barChart.series"
+      [xaxis]="barChart.xaxis"
+      [colors]="barChart.colors"
+    />
+  </div>
+</app-card>

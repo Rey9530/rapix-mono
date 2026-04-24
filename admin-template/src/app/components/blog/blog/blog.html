@@ -1,0 +1,21 @@
+<div class="container-fluid">
+  <div class="row">
+    @for (blog of blogDetails | slice: 0 : 1; track blog) {
+      <div class="col-xl-6 set-col-12 box-col-12">
+        <app-single-blog [blog]="blog" />
+      </div>
+    }
+
+    <div class="col-xl-6 set-col-12 box-col-12">
+      @for (blog of blogDetails | slice: 1 : 3; track blog) {
+        <app-vertical-blog [blog]="blog" />
+      }
+    </div>
+
+    @for (blog of blogDetails | slice: 3 : 7; track blog) {
+      <div class="col-md-6 col-xxl-3 box-col-6">
+        <app-horizontal-blog [blog]="blog" />
+      </div>
+    }
+  </div>
+</div>

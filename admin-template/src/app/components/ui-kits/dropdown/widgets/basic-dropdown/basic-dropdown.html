@@ -1,0 +1,38 @@
+<app-card
+  [headerTitle]="'Basic Dropdowns'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'rtl-dropdown'"
+>
+  <p class="f-m-light mt-1" header5>
+    To create a dropdown using <code>ngbDropdown</code>, wrap the button inside
+    a <code>btn-group</code> with the <code>ngbDropdown</code> directive. Use
+    <code>ngbDropdownToggle</code> for the toggle button and
+    <code>ngbDropdownMenu</code> to define the dropdown menu items.
+  </p>
+  <div class="common-flex">
+    @for (dropdown of basicDropdown; track dropdown) {
+      <div class="btn-group" ngbDropdown>
+        <button
+          class="btn btn-{{ dropdown.color }} dropdown-toggle"
+          type="button"
+          ngbDropdownToggle
+        >
+          {{ dropdown.title }}
+        </button>
+        <ul class="dropdown-menu dropdown-block" ngbDropdownMenu>
+          @for (item of dropdown.dropdown_item; track item) {
+            <li>
+              <a
+                ngbDropdownItem
+                class="dropdown-item"
+                href="javascript:void(0)"
+                >{{ item.item }}</a
+              >
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+</app-card>

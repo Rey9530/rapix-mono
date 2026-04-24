@@ -1,0 +1,32 @@
+<app-card [headerTitle]="'Table Borders'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Add <code>table-bordered </code>for borders on all sides of the table and
+    cells.
+  </p>
+  <div class="card-block row">
+    <div class="col-sm-12 col-lg-12 col-xl-12">
+      <div class="table-responsive custom-scrollbar">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th scope="col">ISBN</th>
+              <th scope="col">Title</th>
+              <th scope="col">Author</th>
+              <th scope="col">Year Published</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (details of tableBorder; track details) {
+              <tr>
+                <th scope="row">{{ details.isbn }}</th>
+                <td>{{ details.title }}</td>
+                <td>{{ details.author }}</td>
+                <td>{{ details.year_published }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</app-card>

@@ -1,0 +1,32 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12">
+      <app-card
+        [headerTitle]="'IMAGE GALLERY WITH DESCRIPTION'"
+        [cardBodyClass]="' my-gallery gallery-with-description'"
+        [border]="true"
+        [padding]="false"
+        itemscope=""
+        gallerize
+      >
+        <div class="row">
+          @for (img of galleryGridDesc; track img) {
+            <figure class="col-xl-3 col-sm-6">
+              <div class="my-gallery pswp-gallery">
+                <div class="pswp-gallery__item" itemprop="associatedMedia">
+                  <a href="javascript:void(0)" itemprop="contentUrl">
+                    <img [src]="img.src_url" style="width: 100%" alt="img"/>
+                    <div class="caption">
+                      <h4>{{ img.title }}</h4>
+                      <p>{{ img.text }}</p>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </figure>
+          }
+        </div>
+      </app-card>
+    </div>
+  </div>
+</div>

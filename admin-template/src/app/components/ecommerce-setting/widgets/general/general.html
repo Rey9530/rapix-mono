@@ -1,0 +1,86 @@
+<div class="row">
+  <label class="col-md-3 form-label">Meta Title</label>
+  <div class="col-md-9">
+    <input
+      class="form-control"
+      type="text"
+      placeholder="Enter meta title"
+      required=""
+    />
+  </div>
+</div>
+
+<div class="row">
+  <label class="col-md-3 form-label">Meta Description</label>
+  <div class="col-md-9">
+    <angular-editor />
+  </div>
+</div>
+
+<div class="row">
+  <label class="col-md-3 form-label">Currency </label>
+  <div class="col-md-9">
+    <select2
+      [data]="currency"
+      placeholder="Select currency"
+      noResultMessage="No Data Found"
+      resettable
+    />
+  </div>
+</div>
+
+<div class="row">
+  <label class="col-md-3 form-label">Timezone </label>
+  <div class="col-md-9">
+    <select2
+      [data]="timezones"
+      placeholder="Select timezone"
+      noResultMessage="No Data Found"
+      resettable
+    />
+  </div>
+</div>
+
+<div class="row">
+  <label class="col-md-3 form-label">Min Order Amount</label>
+  <div class="col-md-9">
+    <div class="input-group">
+      <span class="input-group-text" id="minOrder">
+        <i class="fa-solid fa-dollar-sign"></i>
+      </span>
+      <input
+        class="form-control"
+        type="number"
+        value="0"
+        placeholder="Enter min order amount"
+      />
+    </div>
+    <div class="helper-text">
+      <p class="fst-italic c-o-light">
+        *Please enter the minimum amount required for an order to be processed.
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <label class="col-md-3 form-label">Min Order Free Shipping</label>
+  <div class="col-md-9">
+    <div class="input-group">
+      <span class="input-group-text" id="minOrderShipping">
+        <i class="fa-solid fa-dollar-sign"></i>
+      </span>
+      <input
+        class="form-control"
+        type="number"
+        value="55"
+        placeholder="Enter min order free shipping"
+      />
+    </div>
+    <div class="helper-text">
+      <p class="fst-italic c-o-light">
+        *Please enter the minimum order amount for free shipping.
+      </p>
+    </div>
+  </div>
+</div>

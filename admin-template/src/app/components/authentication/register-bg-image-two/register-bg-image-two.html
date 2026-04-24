@@ -1,0 +1,41 @@
+<div class="container-fluid p-0">
+  <div class="row m-0">
+    <div
+      class="col-xl-7 p-0 b-center bg-size"
+      [style.background-image]="'url(assets/images/login/1.jpg)'"
+    >
+      <img
+        class="bg-img-cover bg-center"
+        src="assets/images/login/1.jpg"
+        alt="image"
+      />
+    </div>
+    <div class="col-xl-5 p-0">
+      <div class="login-card login-dark">
+        <div>
+          <div>
+            <a
+              class="logo text-start"
+              href="javascript:void(0)"
+              [routerLink]="['/']"
+            >
+              <img
+                class="img-fluid for-light"
+                src="assets/images/logo/logo.png"
+                alt="logo"
+              />
+              <img
+                class="img-fluid for-dark"
+                src="assets/images/logo/logo_dark.png"
+                alt="logo"
+              />
+            </a>
+          </div>
+          <div class="login-main create-account">
+            <app-register-form [path]="'/auth/login-bg-image'" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,24 @@
+<app-card
+  [headerTitle]="'Disabled Tooltip'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'fill-tooltip'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use <code>[disableTooltip]="true"</code> to disable the tooltip set with
+    <code>[ngbTooltip]</code>.
+  </p>
+
+  <div class="common-flex">
+    <span
+      class="d-inline-block"
+      placement="top"
+      [ngbTooltip]="'Disabled tooltip'"
+      [disableTooltip]="true"
+    >
+      <button class="btn btn-primary" type="button" disabled="">
+        Disabled button
+      </button>
+    </span>
+  </div>
+</app-card>

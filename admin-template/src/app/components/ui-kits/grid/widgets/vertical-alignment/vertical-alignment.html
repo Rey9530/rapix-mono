@@ -1,0 +1,49 @@
+<app-card
+  [headerTitle]="'Vertical Alignment'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="mt-1 f-m-light" header5>
+    Use<code> align-items-*</code> class to set the vertical alignment.
+  </p>
+
+  <div class="grid-showcase mb-0">
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="row grid-vertical align-items-start m-1 g-2">
+          <div class="col-6"><span class="bg-white">one column</span></div>
+          <div class="col-6"><span class="bg-white">two column</span></div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="row grid-vertical align-items-center m-1 g-2">
+          <div class="col-6"><span class="bg-white">one column</span></div>
+          <div class="col-6"><span class="bg-white">two column</span></div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="row grid-vertical align-items-end m-1 g-2">
+          <div class="col-6"><span class="bg-white">one column</span></div>
+          <div class="col-6"><span class="bg-white">two column</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-footer" details>
+    <div class="table-responsive grid-footer">
+      <table class="w-100">
+        <tbody>
+          <tr>
+            <th>Class</th>
+            <th>Value of the class</th>
+          </tr>
+          <tr>
+            <td><code>.align-items-*</code></td>
+            <td>start / center / end / baseline / stretch</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</app-card>

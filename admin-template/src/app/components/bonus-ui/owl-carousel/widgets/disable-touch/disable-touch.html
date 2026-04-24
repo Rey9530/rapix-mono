@@ -1,0 +1,33 @@
+<app-card
+  [headerTitle]="'Disable Touch Swiping'"
+  [border]="true"
+  [padding]="false"
+  [cardClass]="'height-equal'"
+>
+  <p class="f-m-light mt-1" header5>
+    This can be disabled by setting the <code> disable true </code> attribute.
+    In this configuration, the <code>ngx-owl-carousel-o</code> module is used,
+    with navigation buttons enabled and swipe gestures disabled.
+  </p>
+  <div
+    class="carousel slide common-carousel"
+    id="carouselExampleControlsNoTouching"
+    data-bs-touch="false"
+  >
+    <div class="carousel-inner">
+      <owl-carousel-o [options]="options">
+        @for (details of disable; track details) {
+          <ng-template carouselSlide>
+            <div class="carousel-item active">
+              <img
+                class="d-block w-100"
+                [src]="details.image"
+                alt="drawing-room"
+              />
+            </div>
+          </ng-template>
+        }
+      </owl-carousel-o>
+    </div>
+  </div>
+</app-card>

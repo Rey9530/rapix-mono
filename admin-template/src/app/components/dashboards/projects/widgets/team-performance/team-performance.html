@@ -1,0 +1,16 @@
+<app-card
+  [headerTitle]="'Team Performance'"
+  [padding]="false"
+  [cardBodyClass]="'px-0 pt-0 team-performance-table'"
+  [dropdownType]="'simple'"
+  [options]="cardToggleOption"
+>
+  <div class="recent-table table-responsive custom-scrollbar">
+    <app-table
+      [tableConfig]="tableConfig"
+      [pageSize]="5"
+      [search]="false"
+      [tableClass]="'table'"
+    />
+  </div>
+</app-card>

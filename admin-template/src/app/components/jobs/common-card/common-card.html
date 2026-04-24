@@ -1,0 +1,37 @@
+<div class="card" [class.ribbon-vertical-left-wrapper]="jobCard()!.ribbon">
+  @if (jobCard()!.ribbon) {
+    <div class="ribbon ribbon-bookmark ribbon-vertical-left ribbon-warning">
+      <i class="icofont icofont-{{ jobCard()!.ribbon_icon }}"></i>
+    </div>
+  }
+  <div class="job-search">
+    <div class="card-body">
+      <div class="d-flex">
+        <img
+          class="img-40 img-fluid m-r-20"
+          [src]="jobCard()!.image"
+          [alt]="jobCard()!.title"
+        />
+        <div class="flex-grow-1">
+          <h6>
+            <a href="javascript:void(0)">{{ jobCard()!.title }}</a>
+            @if (jobCard()!.tag_title) {
+              <span class="badge badge-primary pull-right">{{
+                jobCard()!.tag_title
+              }}</span>
+            } @else {
+              <span class="pull-right">{{ jobCard()!.time }}</span>
+            }
+          </h6>
+          <p class="mt-0">
+            {{ jobCard()!.sub_title }}
+            <span class="ps-sm-1">
+              <ngb-rating class="font-warning" [rate]="jobCard()!.rating" />
+            </span>
+          </p>
+        </div>
+      </div>
+      <p>{{ jobCard()!.description }}</p>
+    </div>
+  </div>
+</div>

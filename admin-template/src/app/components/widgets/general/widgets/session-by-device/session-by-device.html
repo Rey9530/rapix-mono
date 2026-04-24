@@ -1,0 +1,48 @@
+<app-card
+  [cardClass]="'height-equal'"
+  [headerTitle]="sessionByDeviceChart.title"
+  [dropdownType]="type()"
+  [padding]="false"
+  [options]="cardToggleOption"
+  [dropdownClass]="'custom-dropdown'"
+  [cardBodyClass]="'main-session-devices pt-0'"
+>
+  <div class="row justify-content-center align-items-center gap-sm-0 gap-4">
+    <div class="col-sm-6 box-col-none">
+      <div class="common-align">
+        @for (details of sessionByDeviceChart.chart_details; track details) {
+          <div>
+            <div class="common-space">
+              <p>{{ details.title }}</p>
+              <span>{{ details.value }} / {{ details.progress }}%</span>
+            </div>
+            <div class="progress">
+              <div
+                class="progress-bar bg-{{ details.color }}"
+                role="progressbar"
+                [style.width]="details.progress + '%'"
+              ></div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="col-sm-6 box-col-12">
+      <div id="session-chart">
+        <apx-chart
+          [series]="sessionByDeviceChart.series"
+          [labels]="sessionByDeviceChart.labels"
+          [chart]="sessionByDeviceChart.chart"
+          [plotOptions]="sessionByDeviceChart.plotOptions"
+          [dataLabels]="sessionByDeviceChart.dataLabels"
+          [colors]="sessionByDeviceChart.colors"
+          [fill]="sessionByDeviceChart.fill"
+          [legend]="sessionByDeviceChart.legend"
+          [stroke]="sessionByDeviceChart.stroke"
+          [responsive]="sessionByDeviceChart.responsive"
+        />
+      </div>
+    </div>
+  </div>
+</app-card>

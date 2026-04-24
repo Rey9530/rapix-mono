@@ -1,0 +1,56 @@
+<div class="tab-content custom-input">
+  <div class="sidebar-body advance-options">
+    <ul
+      ngbNav
+      #nav="ngbNav"
+      [(activeId)]="additionalActiveId"
+      class="nav nav-tabs border-tab mb-0"
+      orientation="horizontal"
+    >
+      @for (item of additionalOptions; track item; let i = $index) {
+        <li class="nav-item" [ngbNavItem]="i + 1">
+          <a ngbNavLink>
+            {{ item.title }}
+          </a>
+          <ng-template ngbNavContent>
+            <div class="meta-body">
+              @if (item.value === "inventory") {
+                <app-inventory
+                  (changeTabDetails)="changeTabDetails($event)"
+                  (changeTab)="handleChangeTab($event)"
+                  [active]="active()"
+                  [additionalActiveId]="additionalActiveId"
+                />
+              }
+              @if (item.value === "seo tag") {
+                <app-seo-tags
+                  (changeTabDetails)="changeTabDetails($event)"
+                  [additionalActiveId]="additionalActiveId"
+                />
+              }
+              @if (item.value === "shipping") {
+                <app-shipping
+                  (changeTabDetails)="changeTabDetails($event)"
+                  [additionalActiveId]="additionalActiveId"
+                />
+              }
+              @if (item.value === "variations") {
+                <app-variations
+                  (changeTabDetails)="changeTabDetails($event)"
+                  [additionalActiveId]="additionalActiveId"
+                />
+              }
+              @if (item.value === "publish") {
+                <app-publish
+                  (changeTabDetails)="changeTabDetails($event)"
+                  [additionalActiveId]="additionalActiveId"
+                />
+              }
+            </div>
+          </ng-template>
+        </li>
+      }
+    </ul>
+    <div [ngbNavOutlet]="nav"></div>
+  </div>
+</div>

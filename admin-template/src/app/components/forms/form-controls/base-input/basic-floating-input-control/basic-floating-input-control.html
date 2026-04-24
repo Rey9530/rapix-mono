@@ -1,0 +1,186 @@
+<app-card
+  [cardClass]="'height-equal'"
+  [headerTitle]="'Basic Floating Input Control'"
+  [cardBodyClass]="'custom-input theme-form'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="f-m-light mt-1" header5>
+    Give textual form controls like <code>&lt;input&gt;</code>s and
+    <code>&lt;textarea&gt;</code>s an upgrade with custom styles, sizing, focus
+    states, and more.
+  </p>
+  <div class="row">
+    <div class="col">
+      <div class="mb-3 row">
+        <label class="col-sm-3">Valid Input </label>
+        <div class="col-sm-9">
+          <div class="form-floating">
+            <input
+              class="form-control"
+              id="floatingInputValue"
+              type="email"
+              placeholder=""
+              value="test&#64;example.com"
+            />
+            <label for="floatingInputValue">Input with value</label>
+          </div>
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label class="col-sm-3">Invalid Input </label>
+        <div class="col-sm-9">
+          <div class="form-floating">
+            <input
+              class="form-control is-invalid"
+              id="floatingInputInvalid"
+              type="email"
+              placeholder=""
+              value="test&#64;example.com"
+            />
+            <label for="floatingInputInvalid">Invalid input</label>
+          </div>
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label class="col-sm-3">Comments</label>
+        <div class="col-sm-9">
+          <div class="form-floating">
+            <textarea
+              class="form-control"
+              id="floatingTextarea"
+              placeholder=""
+            ></textarea>
+            <label for="floatingTextarea">Comments</label>
+          </div>
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label class="col-sm-3">Email</label>
+        <div class="col-sm-9">
+          <div class="form-floating mb-3">
+            <input class="form-control" id="floatingInput" type="email" />
+            <label for="floatingInput">Email address</label>
+          </div>
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label class="col-sm-3">Password</label>
+        <div class="col-sm-9">
+          <div class="form-floating">
+            <input
+              class="form-control"
+              id="floatingPassword1"
+              type="password"
+            />
+            <label for="floatingPassword1">Password</label>
+          </div>
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label class="col-sm-3">Comments</label>
+        <div class="col-sm-9">
+          <div class="form-floating">
+            <textarea
+              class="form-control"
+              id="floatingTextarea2"
+              placeholder=""
+              style="height: 100px"
+            ></textarea>
+            <label for="floatingTextarea2">Comments</label>
+          </div>
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label class="col-sm-3">Open This Select Menu </label>
+        <div class="col-sm-9">
+          <div class="form-floating">
+            <select2
+              [data]="selectNumber"
+              [templates]="template"
+              placeholder="Open this select menu"
+            >
+              <ng-template #template let-item="label">
+                {{ item }}
+              </ng-template>
+            </select2>
+          </div>
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label class="col-sm-3">Input Group</label>
+        <div class="col-sm-9">
+          <div class="input-group mb-3">
+            <span class="input-group-text">&#64;</span>
+            <div class="form-floating">
+              <input
+                class="form-control"
+                id="floatingInputGroup1"
+                type="text"
+              />
+              <label for="floatingInputGroup1">Username</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label class="col-sm-3">Input Group</label>
+        <div class="col-sm-9">
+          <div class="input-group has-validation">
+            <span class="input-group-text">&#64;</span>
+            <div class="form-floating is-invalid">
+              <input
+                class="form-control is-invalid"
+                id="floatingInputGroup2"
+                type="text"
+                required=""
+              />
+              <label for="floatingInputGroup2">Username</label>
+            </div>
+            <div class="invalid-feedback">Please choose a username.</div>
+          </div>
+        </div>
+      </div>
+      <div class="mb-0 row">
+        <label class="col-sm-3">Layout</label>
+        <div class="col-sm-9">
+          <div class="row g-2">
+            <div class="col-xxl-6">
+              <div class="form-floating">
+                <input
+                  class="form-control"
+                  id="floatingInputGrid"
+                  type="email"
+                  placeholder=""
+                  value="mdo&#64;example.com"
+                />
+                <label for="floatingInputGrid">Email address</label>
+              </div>
+            </div>
+            <div class="col-xxl-6">
+              <div class="form-floating">
+                <select2
+                  class="form-select"
+                  [data]="selectMenu"
+                  [templates]="template"
+                  placeholder="Open this select menu"
+                >
+                  <ng-template #template let-item="label">
+                    {{ item }}
+                  </ng-template>
+                </select2>
+                <label for="floatingSelectGrid">Works with selects</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer text-end" details>
+    <div class="col-sm-9 offset-sm-3">
+      <button class="btn btn-primary me-3" type="submit">Submit</button>
+      <input class="btn btn-light" type="reset" value="Cancel" />
+    </div>
+  </div>
+</app-card>

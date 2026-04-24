@@ -1,0 +1,63 @@
+<app-card
+  [cardClass]="'live-auction-wrapper'"
+  [padding]="false"
+  [headerTitle]="'Live Auctions'"
+  [cardBodyClass]="'pt-0'"
+>
+  <div class="slider-wrapper arrow-round">
+    <owl-carousel-o [options]="options" class="live-auction-slider">
+      @for (auction of liveAuction; track auction) {
+        <ng-template carouselSlide>
+          <div class="product-card">
+            <div class="product-image">
+              <img class="img-fluid" [src]="auction.banner" alt="nft" />
+              <a class="author-img" href="javascript:void(0)">
+                <img
+                  class="img-fluid"
+                  [src]="auction.owner_profile"
+                  alt="author"
+                />
+              </a>
+            </div>
+            <div class="product-nft-content">
+              <h6 class="f-14">{{ auction.name }}</h6>
+              <div class="d-flex justify-content-between mb-2">
+                <p class="f-14 c-o-light">
+                  High Bid
+                  <span class="f-w-500 f-14 ps-1 text-black">{{
+                    auction.high_bid
+                  }}</span>
+                </p>
+                <div class="d-flex align-items-center">
+                  <img
+                    class="me-1"
+                    src="assets/images/dashboard-6/nft.png"
+                    alt="nft icon"
+                  />
+                  <span class="f-w-600">{{ auction.total_currency }} ETH</span>
+                </div>
+              </div>
+              <div class="common-flex">
+                <button class="btn bg-light-primary font-primary" type="button">
+                  <span class="common-align">
+                    <app-svg-icon [icon]="'stop-watch'" />
+                    <span class="f-light f-w-500 timer">
+                      <span>
+                        {{ auction.remaining_time }}
+                      </span>
+                    </span>
+                  </span>
+                </button>
+                <a
+                  class="btn bg-light-primary font-primary f-w-500"
+                  [routerLink]="['/job-search/companies']"
+                  >Place a Bid</a
+                >
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      }
+    </owl-carousel-o>
+  </div>
+</app-card>

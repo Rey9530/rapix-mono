@@ -1,0 +1,41 @@
+<app-card
+  [cardClass]="'height-equal'"
+  [headerTitle]="'Dark Dropdown'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'dropdown-basic m-0 rtl-dropdown'"
+>
+  <p class="f-m-light mt-1" header5>
+    To access the dark mode, use the <code>dropdown-menu-dark </code>class.
+  </p>
+
+  <div class="common-flex dark-dropdown" ngbDropdown>
+    <button
+      class="btn btn-dark dropdown-toggle"
+      type="button"
+      ngbDropdownToggle
+    >
+      Dark Night
+    </button>
+    <ul class="dropdown-menu dropdown-menu-dark dropdown-block" ngbDropdownMenu>
+      <li>
+        <a
+          class="dropdown-item active"
+          href="javascript:void(0)"
+          ngbDropdownItem
+          >Dark moon</a
+        >
+      </li>
+      <li>
+        <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+          >Dark owl
+        </a>
+      </li>
+      <li>
+        <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+          >Nightfall</a
+        >
+      </li>
+    </ul>
+  </div>
+</app-card>

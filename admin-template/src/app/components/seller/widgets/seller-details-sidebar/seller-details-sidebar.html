@@ -1,0 +1,93 @@
+<div class="row review-box">
+  <div class="col-12">
+    <div class="md-sidebar">
+      <a
+        class="btn btn-primary md-sidebar-toggle"
+        href="javascript:void(0)"
+        (click)="toggleSidebar()"
+        >seller profile</a
+      >
+      <div
+        class="md-sidebar-aside job-left-aside custom-scrollbar"
+        [class.open]="sidebarOpen"
+      >
+        <div class="email-left-aside">
+          <div class="card">
+            <div class="card-body">
+              <div ngbAccordion class="seller-profile">
+                <div ngbAccordionItem [collapsed]="false">
+                  <h2 ngbAccordionHeader>
+                    <button ngbAccordionButton>Seller Details</button>
+                  </h2>
+                  <div ngbAccordionCollapse>
+                    <div ngbAccordionBody>
+                      <ng-template>
+                        <app-seller-details />
+                      </ng-template>
+                    </div>
+                  </div>
+                </div>
+                <div ngbAccordionItem [collapsed]="false">
+                  <h2 ngbAccordionHeader>
+                    <button ngbAccordionButton>
+                      <span>Seller Ratings</span>
+                    </button>
+                  </h2>
+                  <div ngbAccordionCollapse>
+                    <div ngbAccordionBody>
+                      <ng-template>
+                        <app-seller-rating />
+                      </ng-template>
+                    </div>
+                  </div>
+                </div>
+                <div ngbAccordionItem [collapsed]="false">
+                  <h2 ngbAccordionHeader>
+                    <button ngbAccordionButton>
+                      <span>Notifications</span>
+                    </button>
+                  </h2>
+                  <div ngbAccordionCollapse>
+                    <div ngbAccordionBody>
+                      <ng-template>
+                        <app-seller-notifications />
+                      </ng-template>
+                    </div>
+                  </div>
+                </div>
+                <div ngbAccordionItem [collapsed]="false">
+                  <h2 ngbAccordionHeader>
+                    <button ngbAccordionButton>
+                      <span>Policies</span>
+                    </button>
+                  </h2>
+                  <div ngbAccordionCollapse>
+                    <div ngbAccordionBody>
+                      <ng-template>
+                        <app-seller-policies />
+                      </ng-template>
+                    </div>
+                  </div>
+                </div>
+                <div ngbAccordionItem [collapsed]="false">
+                  <h2 ngbAccordionHeader>
+                    <button ngbAccordionButton>
+                      <span>Product Rating &amp; Reviews</span>
+                    </button>
+                  </h2>
+                  <div ngbAccordionCollapse>
+                    <div ngbAccordionBody class="product-reviews">
+                      <ng-template>
+                        <app-seller-product-review />
+                      </ng-template>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

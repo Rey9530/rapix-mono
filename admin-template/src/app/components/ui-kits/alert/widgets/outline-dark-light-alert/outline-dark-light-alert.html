@@ -1,0 +1,68 @@
+<app-card
+  [headerTitle]="'Outline Dark and Light Alerts'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'outline-alerts'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use<code> border-* </code>utility class to provide matching border and
+    border-width within any ngb-alert with <code>type=''</code
+    ><code> [solid/double/inset/outset]</code>.
+  </p>
+
+  <div class="row gy-3">
+    <div class="col-xl-6">
+      <ngb-alert
+        [type]="''"
+        class="txt-primary border-primary"
+        [dismissible]="true"
+      >
+        <app-feather-icon [icon]="'clock'" />
+        <p>
+          The <b class="txt-primary">"border-primary" </b>class has the ability
+          to generate on its own alerts.
+        </p>
+      </ngb-alert>
+
+      <ngb-alert
+        [type]="''"
+        class="txt-success border-success outline-2x alert-icons"
+        [dismissible]="true"
+      >
+        <app-feather-icon [icon]="'thumbs-up'" />
+        <p>
+          The <b class="txt-success">"border-success" </b>with
+          <b class="txt-success">"outline-2x" </b>class has the ability to
+          generate on its own alerts.
+        </p>
+      </ngb-alert>
+    </div>
+    <div class="col-xl-6">
+      <ngb-alert
+        [type]="''"
+        class="txt-warning double-border border-warning alert-icons"
+        [dismissible]="true"
+      >
+        <app-feather-icon [icon]="'alert-triangle'" />
+        <p>
+          The <b class="txt-warning">"double-border"</b>&<b class="txt-warning"
+            >"border-warning" </b
+          >class has the ability to generate on its own alerts.
+        </p>
+      </ngb-alert>
+
+      <ngb-alert
+        [type]="''"
+        class="txt-danger inset-border border-danger outline-2x alert-icons"
+        [dismissible]="true"
+      >
+        <app-feather-icon [icon]="'alert-octagon'" />
+        <p>
+          The <b class="txt-danger">"inset-border" </b>with
+          <b class="txt-danger">"border-danger" </b>class has the ability to
+          generate on its own alerts.
+        </p>
+      </ngb-alert>
+    </div>
+  </div>
+</app-card>

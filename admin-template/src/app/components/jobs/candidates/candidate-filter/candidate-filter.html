@@ -1,0 +1,19 @@
+<div class="row g-3">
+  @for (item of filterCandidate; track item) {
+    <div class="col-xl col-md-4 col-sm-6">
+      <label class="form-label">{{ item.title }}</label>
+      <select2
+        [data]="item.item"
+        [templates]="template"
+        placeholder="select value"
+      >
+        <ng-template #template let-item="label">
+          {{ item }}
+        </ng-template>
+      </select2>
+    </div>
+  }
+  <div class="col common-f-start">
+    <a class="btn btn-primary f-w-500" href="javascript:void(0)">Filter</a>
+  </div>
+</div>

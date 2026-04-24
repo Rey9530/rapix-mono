@@ -1,0 +1,14 @@
+<app-card
+  [headerTitle]="'Bar Chart'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'chart-block'"
+>
+  <canvas
+    baseChart
+    class="chart"
+    [data]="barChart"
+    [datasets]="barChart.datasets"
+    [options]="barChart.barOptions"
+  ></canvas>
+</app-card>

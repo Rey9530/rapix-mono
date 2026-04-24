@@ -1,0 +1,110 @@
+<app-card [headerTitle]="'Alerts'" [padding]="false" [cardBodyClass]="'p-0'">
+  <div class="card-block row">
+    <div class="col-sm-12 col-lg-12 col-xl-12">
+      <div class="table-responsive custom-scrollbar">
+        <table class="table table-bordered">
+          <tbody>
+            <tr>
+              <td>Basic Alert</td>
+              <td class="w-50">
+                <ngb-alert type="primary" [dismissible]="false">
+                  <p class="txt-light">
+                    <strong>Success!</strong> Indicates a successful or positive
+                    action.
+                  </p>
+                </ngb-alert>
+              </td>
+              <td>
+                <p>
+                  <span
+                    >To create a light-colored alert using
+                    <code>ngb-alert</code>, set the <code>type</code> property
+                    to one of the Bootstrap color classes (e.g.,
+                    <code>"primary"</code>, <code>"secondary"</code>, etc.) and
+                    the <code>[dismissible]</code> property to
+                    <code>false</code> to make it non-dismissible. For example,
+                    use <code>[type]="'secondary'"</code> to create a alert with
+                    all theme colors.</span
+                  >
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td>Alerts with Links</td>
+              <td>
+                <ngb-alert type="primary" [dismissible]="false">
+                  <p class="txt-light">
+                    <strong>Success!</strong> You should
+                    <a class="alert-link txt-light" href="#"
+                      >read this message</a
+                    >
+                  </p>
+                </ngb-alert>
+              </td>
+              <td>
+                <p>
+                  <span
+                    >To create a light-colored alert using
+                    <code>ngb-alert</code>, set the <code>type</code> property
+                    to one of the Bootstrap color classes (e.g.,
+                    <code>"primary"</code>, <code>"secondary"</code>, etc.) and
+                    the <code>[dismissible]</code> property to
+                    <code>false</code> to make it non-dismissible. For example,
+                    use <code>[type]="'secondary'"</code> to create a alert with
+                    all theme colors.</span
+                  >
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td>Dismissible Alerts</td>
+              <td>
+                <ngb-alert type="secondary" [dismissible]="true" role="alert">
+                  <p class="txt-light">
+                    <strong>Holy !</strong> You can check in on some of those
+                    fields below.
+                  </p>
+                </ngb-alert>
+              </td>
+              <td>
+                <span
+                  >To create a light-colored alert using <code>ngb-alert</code>,
+                  set the <code>type</code> property to one of the Bootstrap
+                  color classes (e.g., <code>"primary"</code>,
+                  <code>"secondary"</code>, etc.) and the
+                  <code>[dismissible]</code> property to <code>false</code> to
+                  make it non-dismissible. For example, use
+                  <code>[type]="'secondary'"</code> to create a secondary
+                  light-colored alert</span
+                >
+              </td>
+            </tr>
+            <tr>
+              <td>Alerts with Icons</td>
+              <td>
+                <ngb-alert type="primary" [dismissible]="true" role="alert">
+                  <i class="icofont icofont-heart-alt"></i>
+                  <p class="txt-light">
+                    Good Morning! Start your day with some alerts.
+                  </p>
+                </ngb-alert>
+              </td>
+              <td>
+                <span
+                  >To create a light-colored alert using <code>ngb-alert</code>,
+                  set the <code>type</code> property to one of the Bootstrap
+                  color classes (e.g., <code>"primary"</code>,
+                  <code>"secondary"</code>, etc.) and the
+                  <code>[dismissible]</code> property to <code>false</code> to
+                  make it non-dismissible. For example, use
+                  <code>[type]="'primary'"</code> to create a primary
+                  light-colored alert</span
+                >
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</app-card>

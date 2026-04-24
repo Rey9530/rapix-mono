@@ -1,0 +1,61 @@
+<div class="container-fluid dashboard-7">
+  <div class="row">
+    <div class="col-xxl-9 box-col-12">
+      <div class="row">
+        <div class="col-xxl-4 col-md-5">
+          <app-academic-performance />
+        </div>
+        <div class="col-xxl-8 col-md-7">
+          <app-school-performance />
+        </div>
+
+        @for (details of schoolDetails; track details) {
+          <div class="col-sm-4">
+            <app-school-details [details]="details" />
+          </div>
+        }
+
+        <div class="col-xl-4 col-sm-6 box-col-5">
+          <app-school-finance />
+        </div>
+        <div class="col-xl-8 col-12 order-1 order-xl-0 box-col-7">
+          <app-performance-overview />
+        </div>
+        <div class="col-xl-4 col-sm-6 order-0">
+          <app-school-calendar />
+        </div>
+        <div class="col-xl-8 order-2">
+          <app-today-task />
+        </div>
+      </div>
+    </div>
+    <div class="col-xxl-3 d-xxl-block d-none box-col-none">
+      <div class="row">
+        <div class="col-xl-12 d-xl-block d-none">
+          <app-increase-knowledge />
+        </div>
+        <div class="col-xl-12 notification box-col-6 d-xl-block d-none">
+          <app-notice-board />
+        </div>
+        <div class="col-xl-12 d-xl-block d-none">
+          <app-shinning-stars />
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <app-unpaid-fees />
+    </div>
+    <div class="col-md-6">
+      <app-top-student />
+    </div>
+    <div class="col-xl-3 col-sm-5 order-xl-0 order-sm-1">
+      <app-student />
+    </div>
+    <div class="col-xl-5 col-12 order-xl-0 order-sm-3">
+      <app-new-enroll-student />
+    </div>
+    <div class="col-xl-4 col-sm-7 order-xl-0 order-sm-2">
+      <app-attendance />
+    </div>
+  </div>
+</div>

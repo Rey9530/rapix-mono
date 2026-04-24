@@ -1,0 +1,36 @@
+<app-card
+  [headerTitle]="'Pagination Sizing'"
+  [border]="true"
+  [padding]="false"
+  [cardClass]="'height-equal'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use <code>[pagination-lg/pagination-md/pagination-lg]</code> for additional
+    sizes.
+  </p>
+  @for (details of paginationSizing; track details) {
+    <nav class="{{ details.class }}" aria-label="Page navigation example">
+      <ul
+        class="pagination pagination-{{
+          details.size_class
+        }} pagination-info pagin-border-info"
+      >
+        <li class="page-item">
+          <a class="page-link" href="javascript:void(0)">Previous</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="javascript:void(0)">1</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="javascript:void(0)">2</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="javascript:void(0)">3</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="javascript:void(0)">Next</a>
+        </li>
+      </ul>
+    </nav>
+  }
+</app-card>

@@ -1,0 +1,104 @@
+<form
+  class="row g-3 needs-validation"
+  novalidate=""
+  [formGroup]="formValidation"
+  (ngSubmit)="next()"
+>
+  <div class="col-md-12">
+    <div class="accordion dark-accordion" id="accordionExample-a">
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button
+            class="accordion-button collapsed accordion-light-primary txt-primary"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseOne-a"
+            aria-expanded="true"
+            aria-controls="collapseOne-a"
+            (click)="open()"
+          >
+            NET BANKING
+            <app-feather-icon class="svg-color" [icon]="'chevron-down'" />
+          </button>
+        </h2>
+        <div
+          class="accordion-collapse collapse"
+          id="collapseOne-a"
+          [class.show]="openMenu"
+        >
+          <div class="accordion-body weight-title card-wrapper">
+            <h6 class="sub-title f-14">SELECT YOUR BANK</h6>
+            <div class="row choose-bank">
+              @for (radio of netBanking; track radio) {
+                <div class="col-sm-6">
+                  @for (item of radio.details; track item) {
+                    <div class="form-check radio radio-primary">
+                      <input
+                        class="form-check-input"
+                        [id]="item.id"
+                        type="radio"
+                        name="flexRadioDefault-v"
+                        [checked]="item.checked"
+                      />
+                      <label class="form-check-label" [for]="item.id">{{
+                        item.title
+                      }}</label>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12">
+    <textarea
+      class="form-control"
+      id="validationTextarea24"
+      placeholder="Your Feedback"
+      formControlName="feedback"
+      [class]="{
+        'is-invalid':
+          formValidation.controls['feedback'].touched &&
+          formValidation.controls['feedback'].errors?.['required'],
+        'is-valid': formValidation.controls['feedback'].valid,
+      }"
+    >
+      @if(formValidation.controls['feedback'].touched && formValidation.controls['feedback'].errors?.['required']) {
+        <div class="invalid-feedback">Please enter a message in the textarea.</div>
+    }
+  </textarea
+    >
+  </div>
+  <div class="col-12">
+    <div class="form-check mb-0">
+      <input
+        class="form-check-input"
+        id="invalidCheck67"
+        type="checkbox"
+        value=""
+        formControlName="agree"
+        [class]="{
+          'is-invalid':
+            formValidation.controls['agree'].touched &&
+            formValidation.controls['agree'].errors?.['required'],
+          'is-valid': formValidation.controls['agree'].valid,
+        }"
+      />
+      @if (
+        formValidation.controls["agree"].touched &&
+        formValidation.controls["agree"].errors?.["required"]
+      ) {
+        <div class="invalid-feedback">You must agree before submitting.</div>
+      }
+      <label class="form-check-label mb-0" for="invalidCheck67"
+        >Agree to terms and conditions</label
+      >
+    </div>
+  </div>
+  <div class="col-12 text-end">
+    <button class="btn btn-success" type="submit">Finish</button>
+  </div>
+</form>

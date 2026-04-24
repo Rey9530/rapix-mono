@@ -1,0 +1,39 @@
+<app-card
+  [headerTitle]="'Dark Variant'"
+  [border]="true"
+  [padding]="false"
+  [cardClass]="'height-equal'"
+>
+  <p class="f-m-light mt-1" header5>
+    Add <code>carousel-dark</code> to the <code>carousel</code> to apply darker
+    controls, indicators, and captions, creating a more visually distinct theme.
+    In this example, the <code>ngx-owl-carousel-o</code> module is configured
+    with autoplay, navigation buttons, and dots.
+  </p>
+  <div
+    class="carousel carousel-dark slide common-carousel"
+    id="carouselExampleDark"
+    data-bs-ride="carousel"
+  >
+    <div class="carousel-indicators"></div>
+    <div class="carousel-inner">
+      <owl-carousel-o [options]="options">
+        @for (details of darkVariant; track details) {
+          <ng-template carouselSlide>
+            <div class="carousel-item active">
+              <img
+                class="d-block w-100"
+                [src]="details.img"
+                alt="drawing-room"
+              />
+              <div class="carousel-caption d-none d-md-block carousel-opacity">
+                <h5>{{ details.title }}</h5>
+                <p>{{ details.description }}</p>
+              </div>
+            </div>
+          </ng-template>
+        }
+      </owl-carousel-o>
+    </div>
+  </div>
+</app-card>

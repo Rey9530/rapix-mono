@@ -1,0 +1,38 @@
+<app-card
+  [cardClass]="'height-equal'"
+  [headerTitle]="'Left Border Alert'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'live-dark dark-alert-msg'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use <code>border-left-*</code> class to add left border to alert.
+  </p>
+
+  <ngb-alert
+    [type]="'bg-dark'"
+    [dismissible]="true"
+    class="light txt-dark border-left-dark"
+  >
+    <app-feather-icon [icon]="'help-circle'" />
+    <p>Dark Alert: border-left-wrapper</p>
+  </ngb-alert>
+
+  <ngb-alert
+    [type]="'bg-secondary'"
+    [dismissible]="true"
+    class="light txt-secondary border-left-secondary"
+  >
+    <app-feather-icon [icon]="'alert-octagon'" />
+    <p>Secondary Alert: border-left-secondary</p>
+  </ngb-alert>
+
+  <ngb-alert
+    [type]="'bg-success'"
+    [dismissible]="true"
+    class="light txt-success border-left-success"
+  >
+    <app-feather-icon [icon]="'check-square'" />
+    <p>Success Alert: border-left-success</p>
+  </ngb-alert>
+</app-card>

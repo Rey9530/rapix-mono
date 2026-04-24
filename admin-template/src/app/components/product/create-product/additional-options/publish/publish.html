@@ -1,0 +1,34 @@
+<form class="row g-3 common-form">
+  <div class="col-xxl-6 col-xl-12 col-md-6">
+    <label class="form-label" for="publishStatus">Publish Status</label>
+    <select2
+      [data]="publishStatus"
+      [templates]="template"
+      placeholder="Publish"
+    >
+      <ng-template #template let-item="label">
+        {{ item }}
+      </ng-template>
+    </select2>
+  </div>
+  <div class="col-xxl-6 col-xl-12 col-md-6">
+    <label class="form-label" for="datetime-local1">Publish Date & Time</label>
+    <div class="input-group flatpicker-calender product-date">
+      <input
+        class="form-control"
+        [owlDateTime]="dt1"
+        [owlDateTimeTrigger]="dt1"
+      />
+      <owl-date-time #dt1 />
+    </div>
+  </div>
+  <div class="col-12 product-buttons">
+    <button class="btn" type="button" (click)="previous()">
+      <app-svg-icon [icon]="'back-arrow'" />Previous
+    </button>
+    <button class="btn sweet-15" type="button" (click)="showSuccess()">
+      Submit
+      <app-svg-icon [icon]="'front-arrow'" />
+    </button>
+  </div>
+</form>

@@ -1,0 +1,10 @@
+<app-card
+  [headerTitle]="'Line Chart'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'chart-block'"
+>
+  <div class="chart-overflow" id="line-chart">
+    <google-chart [data]="lineChart" />
+  </div>
+</app-card>

@@ -1,0 +1,46 @@
+<app-card>
+  <div class="row g-3">
+    <div class="col-md">
+      <label class="form-label">Parent Category</label>
+      <select2
+        [data]="parentCategory"
+        [templates]="template"
+        placeholder="Select category"
+      >
+        <ng-template #template let-category="label">
+          {{ category }}
+        </ng-template>
+      </select2>
+    </div>
+
+    <div class="col-md">
+      <label class="form-label">Category Type</label>
+      <select2
+        [data]="categoryType"
+        [templates]="template"
+        placeholder="Select category type"
+      >
+        <ng-template #template let-category="label">
+          {{ category }}
+        </ng-template>
+      </select2>
+    </div>
+
+    <div class="col-md">
+      <label class="form-label">Category Status</label>
+      <select2
+        [data]="categoryStatus"
+        [templates]="template"
+        placeholder="Select category status"
+      >
+        <ng-template #template let-category="label">
+          {{ category }}
+        </ng-template>
+      </select2>
+    </div>
+
+    <div class="col d-flex justify-content-start align-items-center m-t-40">
+      <a class="btn btn-primary f-w-500" href="javascript:void(0)">Submit</a>
+    </div>
+  </div>
+</app-card>

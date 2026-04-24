@@ -1,0 +1,188 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <app-card
+        [headerTitle]="'Styled Borders'"
+        [border]="true"
+        [padding]="false"
+      >
+        <p class="f-m-light mt-1" header5>
+          Use different styles of borders, like
+          <code>border radius, border-color, and border-width</code> use of any
+          components.
+        </p>
+
+        <div class="row g-3">
+          <div class="col-xxl-3 col-sm-6">
+            <div class="border-wrapper h-100 alert-light-light dark-helper">
+              <app-borders
+                [title]="'Custom Border-radius Class'"
+                [details]="borderRadiusClasses"
+                [class]="'helper-box bg-light border'"
+              />
+            </div>
+          </div>
+
+          <div class="col-xxl-3 col-sm-6">
+            <div class="border-wrapper h-100 alert-light-light dark-helper">
+              <app-borders
+                [title]="'Border Color'"
+                [details]="colors"
+                [class]="'helper-box border border-'"
+                [color]="true"
+              />
+            </div>
+          </div>
+
+          <div class="col-xxl-3 col-sm-6">
+            <div class="border-wrapper h-100 alert-light-light dark-helper">
+              <app-borders
+                [title]="'Border Width'"
+                [details]="borderWidth"
+                [class]="'helper-box border border-'"
+              />
+            </div>
+          </div>
+
+          <div class="col-xxl-3 col-sm-6">
+            <div class="border-wrapper alert-light-light h-100 dark-helper">
+              <app-borders
+                [title]="'Text Colors'"
+                [details]="colors"
+                [class]="'helper-box helper-text border txt-'"
+                [text]="true"
+              />
+            </div>
+          </div>
+        </div>
+      </app-card>
+    </div>
+
+    <div class="col-12">
+      <app-card
+        [headerTitle]="'Variation of Borders and Displays'"
+        [border]="true"
+        [padding]="false"
+      >
+        <p class="f-m-light mt-1" header5>
+          Use border utilities to add or remove an element's borders.
+        </p>
+
+        <div class="row g-3">
+          <div class="col-xl-4 col-sm-6">
+            <div class="border-wrapper h-100 border">
+              <app-borders
+                [title]="'Additive Border'"
+                [details]="additiveBorder"
+                [class]="'helper-box bg-light'"
+              />
+            </div>
+          </div>
+
+          <div class="col-xl-4 col-sm-6">
+            <div class="border-wrapper h-100 border subtract-border">
+              <app-borders
+                [title]="'Subtractive Border'"
+                [details]="subtractiveBorder"
+                [class]="'helper-box bg-light border'"
+              />
+            </div>
+          </div>
+
+          <div class="col-xl-4 col-sm-12">
+            <div class="border-wrapper h-100 border">
+              <app-borders
+                [title]="'Additive Radius'"
+                [details]="additiveRadius"
+                [class]="'helper-radius radius-wrapper'"
+              />
+            </div>
+          </div>
+        </div>
+      </app-card>
+    </div>
+
+    <div class="col-12">
+      <app-card
+        [headerTitle]="'Background Colors'"
+        [border]="true"
+        [padding]="false"
+      >
+        <p class="f-m-light mt-1" header5>
+          Use any component in a theme, use the colors <code>bg-* </code>and
+          <code>alert-light-*.</code>
+        </p>
+
+        <div class="row g-3">
+          <div class="col-xl-4 col-sm-6">
+            <div class="border-wrapper h-100 border">
+              <app-borders
+                [title]="'Dark Backgrounds'"
+                [details]="colorsTwo"
+                [class]="'helper-box bg-'"
+                [color]="true"
+                [backgroundColor]="true"
+                [helperText]="'bg'"
+              />
+            </div>
+          </div>
+
+          <div class="col-xl-4 col-sm-6">
+            <div class="border-wrapper h-100 border">
+              <app-borders
+                [title]="'Light Backgrounds'"
+                [details]="colorsTwo"
+                [class]="'helper-box alert-light-'"
+                [color]="true"
+                [backgroundColor]="true"
+                [helperText]="'alert-light'"
+              />
+            </div>
+          </div>
+
+          <div class="col-xl-4 col-sm-12">
+            <div class="border-wrapper h-100 border">
+              <app-extender-background-color />
+            </div>
+          </div>
+        </div>
+      </app-card>
+    </div>
+
+    <div class="col-12">
+      <app-border-position />
+    </div>
+    <div class="col-xxl-6">
+      <app-image-size />
+    </div>
+    <div class="col-xxl-6">
+      <app-font-style />
+    </div>
+    <div class="col-xl-6">
+      <app-font-weight />
+    </div>
+    <div class="col-xl-6">
+      <app-text-colors />
+    </div>
+    <div class="col-xl-12">
+      <app-padding />
+    </div>
+    @for (types of borderTypes; track types) {
+      <div class="col-xl-3">
+        <app-border-types [borderType]="types.type" />
+      </div>
+    }
+    <div class="col-xl-12">
+      <app-one-side-padding />
+    </div>
+    <div class="col-xl-12">
+      <app-margins />
+    </div>
+    <div class="col-xl-12">
+      <app-one-side-margin />
+    </div>
+    <div class="col-12">
+      <app-font-size />
+    </div>
+  </div>
+</div>

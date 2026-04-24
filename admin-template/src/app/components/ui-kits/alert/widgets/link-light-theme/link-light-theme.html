@@ -1,0 +1,43 @@
+<app-card
+  [headerTitle]="'Link Color in Light Theme'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'dark-alert-msg'"
+>
+  <p class="f-m-light mt-1" header5>
+    To create a light-colored alert using <code>ngb-alert</code>, set the
+    <code>type</code> property to one of the Bootstrap color classes (e.g.,
+    <code>"primary"</code>, <code>"secondary"</code>, etc.) and the
+    <code>[dismissible]</code> property to <code>false</code> to make it
+    non-dismissible. For example, use <code>[type]="'light-primary'"</code> to
+    create a primary light-colored alert.
+  </p>
+  <div class="row">
+    @for (i of [0, 4]; track i) {
+      <div class="col-xl-6">
+        @for (color of colors.slice(i, i + 4); track color) {
+          <p class="mb-0">{{ color.color | titlecase }} Alert</p>
+          <ngb-alert [dismissible]="false" [type]="'light-' + color.color">
+            <p
+              [ngClass]="
+                color.color === 'light' ? 'text-dark' : 'txt-' + color.color
+              "
+            >
+              The
+              <a
+                class="alert-link"
+                [ngClass]="
+                  color.color === 'light' ? 'txt-dark' : 'txt-' + color.color
+                "
+                href="javascript:void(0)"
+              >
+                "alert-{{ color.color }}"
+              </a>
+              class can be used to create an alert like this one.
+            </p>
+          </ngb-alert>
+        }
+      </div>
+    }
+  </div>
+</app-card>

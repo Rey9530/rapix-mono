@@ -1,0 +1,118 @@
+<app-card
+  [headerTitle]="'Buttons with Dropdowns'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'main-custom-form card-wrapper input-group-wrapper'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use <code>input-group </code>and <code>[aria-label='']</code> through
+    buttons with dropdowns.
+  </p>
+  <div
+    class="input-group"
+    ngbDropdown
+    role="group"
+    aria-label="Button group with nested dropdown"
+  >
+    <button
+      type="button"
+      class="btn btn-outline-primary dropdown-toggle"
+      ngbDropdownToggle
+    >
+      Dropdown
+    </button>
+    <div class="dropdown-menu dropdown-block" ngbDropdownMenu>
+      <li><a class="dropdown-item" ngbDropdownItem>Ecommerce</a></li>
+      <li><a class="dropdown-item" ngbDropdownItem>Email</a></li>
+      <li><a class="dropdown-item" ngbDropdownItem>Users</a></li>
+      <li>
+        <hr class="dropdown-divider" />
+      </li>
+      <li><a class="dropdown-item" ngbDropdownItem>Bookmarks</a></li>
+    </div>
+    <input
+      class="form-control"
+      type="text"
+      aria-label="Text input with segmented dropdown button"
+    />
+  </div>
+  <div
+    class="input-group"
+    ngbDropdown
+    role="group"
+    aria-label="Button group with nested dropdown"
+  >
+    <input
+      class="form-control"
+      type="text"
+      aria-label="Text input with dropdown button"
+    />
+    <button type="button" class="btn btn-outline-secondary" ngbDropdownToggle>
+      Dropdown
+    </button>
+    <div class="dropdown-menu dropdown-block" ngbDropdownMenu>
+      <li><a class="dropdown-item" ngbDropdownItem>Starter kit</a></li>
+      <li><a class="dropdown-item" ngbDropdownItem>Gallery</a></li>
+      <li><a class="dropdown-item" ngbDropdownItem>Blog</a></li>
+      <li>
+        <hr class="dropdown-divider" />
+      </li>
+      <li><a class="dropdown-item" ngbDropdownItem>Maps</a></li>
+    </div>
+  </div>
+  <div
+    class="input-group"
+    role="group"
+    aria-label="Button group with nested dropdown"
+  >
+    <div ngbDropdown>
+      <button
+        type="button"
+        class="btn btn-primary"
+        id="dropdownBasic1"
+        ngbDropdownToggle
+      >
+        Dropdown
+      </button>
+      <div class="dropdown-menu dropdown-block" ngbDropdownMenu>
+        <li><a class="dropdown-item" ngbDropdownItem>Widgets</a></li>
+        <li><a class="dropdown-item" ngbDropdownItem>Project</a></li>
+        <li><a class="dropdown-item" ngbDropdownItem>Contacts</a></li>
+        <li>
+          <hr class="dropdown-divider" />
+        </li>
+        <li><a class="dropdown-item" ngbDropdownItem>Tasks</a></li>
+      </div>
+    </div>
+    <input
+      class="form-control"
+      type="text"
+      aria-label="Text input with segmented dropdown button"
+    />
+    <div ngbDropdown>
+      <button
+        type="button"
+        class="btn btn-primary"
+        id="dropdownBasic2"
+        ngbDropdownToggle
+      >
+        Dropdown
+      </button>
+      <div class="dropdown-menu dropdown-block" ngbDropdownMenu>
+        <li><a class="dropdown-item" ngbDropdownItem>To-Do</a></li>
+        <li><a class="dropdown-item" ngbDropdownItem>FAQ</a></li>
+        <li><a class="dropdown-item" ngbDropdownItem>Knowledgebase</a></li>
+        <li>
+          <hr class="dropdown-divider" />
+        </li>
+        <li><a class="dropdown-item" ngbDropdownItem>Support Ticket</a></li>
+      </div>
+    </div>
+  </div>
+  <div
+    class="input-group"
+    ngbDropdown
+    role="group"
+    aria-label="Button group with nested dropdown"
+  ></div>
+</app-card>

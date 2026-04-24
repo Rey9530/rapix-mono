@@ -1,0 +1,86 @@
+<app-card
+  [headerTitle]="'Order Overview'"
+  [padding]="false"
+  [dropdownType]="'simple'"
+  [options]="cardToggleOption"
+  [cardBodyClass]="'pt-0'"
+>
+  <div class="row m-0 overall-card overview-card">
+    <div class="col-xl-9 col-md-8 col-sm-8 p-0 box-col-8 w-md-100">
+      <div class="chart-right">
+        <div class="row">
+          <div class="col-xl-12">
+            <div class="card-body p-0">
+              <ul class="balance-data">
+                @for (
+                  details of orderOverviewBarChart.chartLabelsDetails;
+                  track details
+                ) {
+                  <li>
+                    <span class="circle bg-{{ details.color }}"></span>
+                    <span class="f-light ms-1">{{ details.label }}</span>
+                  </li>
+                }
+              </ul>
+              <div class="current-sale-container order-container">
+                <div class="overview-wrapper" id="orderoverview">
+                  <apx-chart
+                    [series]="orderOverviewChart.series"
+                    [chart]="orderOverviewChart.chart"
+                    [stroke]="orderOverviewChart.stroke"
+                    [grid]="orderOverviewChart.grid"
+                    [plotOptions]="orderOverviewChart.plotOptions"
+                    [colors]="orderOverviewChart.colors"
+                    [fill]="orderOverviewChart.fill"
+                    [labels]="orderOverviewChart.labels"
+                    [markers]="orderOverviewChart.markers"
+                    [xaxis]="orderOverviewChart.xaxis"
+                    [legend]="orderOverviewChart.legend"
+                    [yaxis]="orderOverviewChart.yaxis"
+                    [tooltip]="orderOverviewChart.tooltip"
+                    [responsive]="orderOverviewChart.responsive"
+                  />
+                </div>
+                <div class="back-bar-container">
+                  <div id="order-bar">
+                    <apx-chart
+                      [series]="orderOverviewBarChart.series"
+                      [chart]="orderOverviewBarChart.chart"
+                      [plotOptions]="orderOverviewBarChart.plotOptions"
+                      [colors]="orderOverviewBarChart.colors"
+                      [grid]="orderOverviewBarChart.grid"
+                      [dataLabels]="orderOverviewBarChart.dataLabels"
+                      [stroke]="orderOverviewBarChart.stroke"
+                      [xaxis]="orderOverviewBarChart.xaxis"
+                      [yaxis]="orderOverviewBarChart.yaxis"
+                      [fill]="orderOverviewBarChart.fill"
+                      [tooltip]="orderOverviewBarChart.tooltip"
+                      [states]="orderOverviewBarChart.states"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-4 col-sm-4 p-0 box-col-4e ds-md-none">
+      <div class="row g-sm-3 g-2">
+        @for (details of orderOverviewBarChart.orderDetails; track details) {
+          <div class="col-md-12">
+            <div class="light-card balance-card widget-hover">
+              <div class="svg-box">
+                <app-svg-icon [icon]="details.icon" [class]="'svg-fill'" />
+              </div>
+              <div>
+                <span class="f-light">{{ details.title }}</span>
+                <h6 class="mt-1 mb-0 counter">{{ details.value }}</h6>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</app-card>

@@ -1,0 +1,21 @@
+<app-card
+  [headerTitle]="'Delay Popover'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'common-flex popover-wrapper'"
+>
+  <p class="mb-0 mt-1" header5>
+    To create delay popovers using <code>ngbPopover</code> use
+    <code>[openDelay]="1500" </code>attribute.
+  </p>
+  <button
+    class="btn btn-primary example-popover mb-0 me-0"
+    type="button"
+    [openDelay]="1500"
+    placement="end"
+    ngbPopover="And here's some amazing content. It's very engaging. Right?"
+    popoverTitle="Disable Popover Title"
+  >
+    Delay Popover
+  </button>
+</app-card>

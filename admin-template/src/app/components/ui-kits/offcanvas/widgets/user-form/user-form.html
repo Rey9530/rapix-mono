@@ -1,0 +1,82 @@
+<div class="offcanvas-header pb-0">
+  <h5 class="offcanvas-title" id="offcanvasTopLabel">{{ title }}</h5>
+  <button class="btn-close" type="button" (click)="closeOffcanvas()"></button>
+</div>
+<div class="offcanvas-body custom-input custom-scrollbar">
+  <form class="row g-3">
+    <div class="col-md-4">
+      <label class="form-label" for="validationDefault03">First name</label>
+      <input
+        class="form-control"
+        id="validationDefault03"
+        type="text"
+        value="Mark"
+        required=""
+      />
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="validationDefault02">Last name</label>
+      <input
+        class="form-control"
+        id="validationDefault02"
+        type="text"
+        value="Otto"
+        required=""
+      />
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="validationDefaultUsername1"
+        >Username</label
+      >
+      <div class="input-group">
+        <span class="input-group-text" id="inputGroupPrepend2">&#64;</span>
+        <input
+          class="form-control"
+          id="validationDefaultUsername1"
+          type="text"
+          aria-describedby="inputGroupPrepend2"
+          required=""
+        />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label" for="validationDefaultCity">City</label>
+      <input
+        class="form-control"
+        id="validationDefaultCity"
+        type="text"
+        required=""
+      />
+    </div>
+    <div class="col-md-3">
+      <label class="form-label" for="validationCountry">Country</label>
+      <select class="form-select" id="validationCountry" required="">
+        <option selected="" disabled="" value="">Choose...</option>
+        <option>US</option>
+        <option>UK</option>
+        <option>Africa</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label" for="validationZip">Zip</label>
+      <input class="form-control" id="validationZip" type="text" required="" />
+    </div>
+    <div class="col-12">
+      <div class="form-check checkbox-checked">
+        <input
+          class="form-check-input"
+          id="termsCondition4"
+          type="checkbox"
+          value=""
+          required=""
+        />
+        <label class="form-check-label" for="termsCondition4"
+          >Agree to terms and conditions</label
+        >
+      </div>
+    </div>
+    <div class="col-12">
+      <button class="btn btn-primary" type="submit">Submit</button>
+    </div>
+  </form>
+</div>

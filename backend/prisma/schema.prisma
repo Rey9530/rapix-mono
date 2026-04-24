@@ -1,0 +1,63 @@
+// Prisma 7 — generator prisma-client (ESM) + driver adapter @prisma/adapter-pg
+// Ver BASE_DE_DATOS.md para el schema completo del sistema de delivery.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// --- Modelos placeholder ---
+// El schema completo (Usuario, Pedido, Zona, Repartidor, etc.) se define siguiendo
+// BASE_DE_DATOS.md una vez que la base esté levantada.
+
+enum RolUsuario {
+  ADMIN
+  OPERADOR
+  CLIENTE
+  REPARTIDOR
+}
+
+enum EstadoPedido {
+  PENDIENTE_ASIGNACION
+  ASIGNADO
+  RECOGIDO
+  EN_TRANSITO
+  EN_PUNTO_INTERCAMBIO
+  EN_REPARTO
+  ENTREGADO
+  FALLIDO
+  CANCELADO
+  DEVUELTO
+}
+
+model Usuario {
+  id             String          @id @default(uuid()) @db.Uuid
+  email          String          @unique
+  hashContrasena String
+  nombre         String
+  rol            RolUsuario      @default(CLIENTE)
+  activo         Boolean         @default(true)
+  creadoEn       DateTime        @default(now())
+  actualizadoEn  DateTime        @updatedAt
+  tokensRefresco TokenRefresco[]
+
+  @@map("usuarios")
+}
+
+model TokenRefresco {
+  id         String   @id @default(uuid()) @db.Uuid
+  usuarioId  String   @db.Uuid
+  token      String   @unique
+  expiraEn   DateTime
+  revocadoEn DateTime?
+  creadoEn   DateTime @default(now())
+  usuario    Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId])
+  @@map("tokens_refresco")
+}

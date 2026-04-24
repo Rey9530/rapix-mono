@@ -1,0 +1,31 @@
+<div class="container-fluid main-tasks">
+  <div class="email-wrap bookmark-wrap">
+    <div class="row main-bookmark">
+      <div class="col-xxl-3 box-col-6">
+        <app-sidebar
+          (selectedStatus)="taskService.handleStatus($event)"
+          (selectedImportance)="taskService.handleImportance($event)"
+        />
+      </div>
+      <div class="col-xxl-9 col-md-12 box-col-12">
+        <app-card
+          [cardClass]="'heading-space'"
+          [headerTitle]="'Tasks'"
+          [padding]="false"
+          [cardBodyClass]="'px-0 pt-0 common-task-table'"
+        >
+          <div class="table-responsive custom-scrollbar">
+            <app-table
+              [hasCheckbox]="true"
+              [tableConfig]="taskService.tableConfig"
+              [pageSize]="10"
+              [paginateDetails]="true"
+              [showPaginate]="true"
+              [selectedRows]="true"
+            />
+          </div>
+        </app-card>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+<app-card
+  [headerTitle]="'School Calendar'"
+  [padding]="false"
+  [cardClass]="'default-inline-calender'"
+  [cardBodyClass]="'pt-0 school-calender'"
+  [dropdownType]="'simple'"
+  [options]="cardToggleOption | slice: 0 : 3"
+>
+  <div class="input-group main-inline-calender">
+    <ngb-datepicker [(ngModel)]="model" />
+  </div>
+</app-card>

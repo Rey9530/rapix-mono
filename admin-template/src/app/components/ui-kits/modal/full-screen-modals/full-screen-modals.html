@@ -1,0 +1,56 @@
+<app-card
+  [headerTitle]="'Fullscreen Modals'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'common-flex'"
+>
+  <p class="f-m-light mt-1" header5>
+    Another override is the option to pop up a modal that covers the user
+    viewport, available via modifier classes that are placed on a<code>
+      modal-dialog</code
+    >.
+  </p>
+
+  <button
+    class="btn btn-outline-secondary-2x"
+    type="button"
+    (click)="openModal('fullScreen')"
+  >
+    Fullscreen Modal
+  </button>
+  <button
+    class="btn btn-outline-info-2x"
+    type="button"
+    (click)="openModal('below-sm')"
+  >
+    Fullscreen Below sm
+  </button>
+  <button
+    class="btn btn-outline-success-2x"
+    type="button"
+    (click)="openModal('below-md')"
+  >
+    Fullscreen Below md
+  </button>
+  <button
+    class="btn btn-outline-warning-2x"
+    type="button"
+    (click)="openModal('below-lg')"
+  >
+    Fullscreen Below lg
+  </button>
+  <button
+    class="btn btn-outline-primary-2x"
+    type="button"
+    (click)="openModal('below-xl')"
+  >
+    Fullscreen Below xl
+  </button>
+  <button
+    class="btn btn-outline-danger-2x"
+    type="button"
+    (click)="openModal('below-xxl')"
+  >
+    Fullscreen Below xxl
+  </button>
+</app-card>

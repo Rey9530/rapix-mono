@@ -1,0 +1,28 @@
+<app-card
+  [headerTitle]="'Basic Modals'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'common-flex'"
+>
+  <p class="mt-1 f-m-light" header5>
+    Different types of basic modals using like
+    <code>simple / scrolling / tooltips / grid / varying modal</code>.
+  </p>
+
+  <button class="btn btn-secondary" type="button" (click)="openSimpleModal()">
+    Simple
+  </button>
+  <button class="btn btn-success" type="button" (click)="openScrollingModal()">
+    Scrolling Content
+  </button>
+  <button
+    class="btn btn-info"
+    type="button"
+    (click)="openTooltipPopoverModal()"
+  >
+    Tooltips and Popovers
+  </button>
+  <button class="btn btn-primary" type="button" (click)="openCubaModal()">
+    Open Modal for Cuba
+  </button>
+</app-card>

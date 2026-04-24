@@ -1,0 +1,220 @@
+<form class="custom-input">
+  <div class="row g-3">
+    <div class="mt-0 mb-3 col-md-12">
+      <label>Name</label>
+      <div class="row g-3">
+        <div class="col-xxl-6">
+          <input
+            class="form-control"
+            id="first_name1"
+            type="text"
+            [value]="activeContact() ? activeContact()!.first_name : ''"
+            placeholder="First Name"
+            value="first_name1"
+          />
+        </div>
+        <div class="col-xxl-6">
+          <input
+            class="form-control"
+            id="last_name1"
+            type="text"
+            [value]="activeContact()! ? activeContact()!.last_name : ''"
+            placeholder="Last Name"
+            value="last_name1"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="mt-0 mb-3 col-md-12">
+      <label>Email Address</label>
+      <input
+        class="form-control"
+        id="email_add1"
+        type="text"
+        [value]="activeContact()! ? activeContact()!.email : ''"
+        autocomplete="off"
+      />
+    </div>
+    <div class="mt-0 mb-3 col-md-12">
+      <label>Phone</label>
+      <div class="row g-3">
+        <div class="col-xxl-6">
+          <input
+            class="form-control"
+            id="mobile_num1"
+            type="text"
+            [value]="activeContact() ? activeContact()!.contact_number : ''"
+            autocomplete="off"
+          />
+        </div>
+        <div class="col-xxl-6">
+          <select2
+            [data]="contactTypes"
+            [templates]="template"
+            placeholder="Select contact type"
+            noResultMessage="No contactTypes"
+            resettable
+            [value]="activeContact()! && activeContact()!.contact_type"
+          >
+            <ng-template #template let-contact="label">
+              {{ contact }}
+            </ng-template>
+          </select2>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="row more-data"
+    [style.display]="moreInformation ? 'block' : 'none'"
+  >
+    <div class="mt-0 mb-3 col-md-12">
+      <label>URLS</label>
+      <div class="row g-3">
+        <div class="col-xxl-6 xl-100">
+          <input class="form-control" id="url_add1" type="url" required="" />
+        </div>
+        <div class="col-xxl-6 xl-100">
+          <select2
+            [data]="urlTypes"
+            [templates]="template"
+            placeholder="Select url type"
+            noResultMessage="No URLTypes"
+            resettable
+          >
+            <ng-template #template let-item="label">
+              {{ item }}
+            </ng-template>
+          </select2>
+        </div>
+      </div>
+    </div>
+    <div class="mt-0 mb-3 col-md-12">
+      <label>Personal</label>
+      <div class="d-block">
+        <label class="me-3" for="edo-ani2">
+          <input
+            class="radio_animated"
+            id="edo-ani2"
+            type="radio"
+            name="rdo-ani1"
+            [checked]="activeContact()! && activeContact()!.gender === 'Male'"
+          />
+          <span>Male</span>
+        </label>
+        <label for="edo-ani3">
+          <input
+            class="radio_animated"
+            id="edo-ani3"
+            type="radio"
+            name="rdo-ani1"
+            [checked]="activeContact()! && activeContact()!.gender === 'Female'"
+          />
+          <span>Female</span>
+        </label>
+      </div>
+    </div>
+    <div class="mt-0 mb-3 col-md-12">
+      <div class="row g-3">
+        <div class="col-12">
+          <div class="input-group">
+            <input
+              ngbDatepicker
+              #dob="ngbDatepicker"
+              class="form-control"
+              placeholder="yyyy-mm-dd"
+              name="dob"
+              [(ngModel)]="selectedDate"
+            />
+            <button
+              class="btn btn-outline-secondary fa-solid fa-calendar-days"
+              (click)="dob.toggle()"
+              type="button"
+            ></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mt-0 mb-3 col-md-12">
+      <div class="row g-3">
+        <div class="col-xxl-6">
+          <label>Personality</label>
+          <input
+            class="form-control"
+            id="personality1"
+            type="text"
+            [value]="activeContact()! ? activeContact()!.personality : ''"
+            autocomplete="off"
+          />
+        </div>
+        <div class="col-xxl-6">
+          <label>Interest</label>
+          <input
+            class="form-control"
+            id="interest1"
+            type="text"
+            [value]="activeContact()! ? activeContact()!.interest : ''"
+            autocomplete="off"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="mb-3 col-md-12">
+      <label>Home Address</label>
+      <div class="row g-3">
+        <div class="col-12">
+          <div class="mb-2">
+            <input class="form-control" type="text" placeholder="Address" />
+          </div>
+        </div>
+        <div class="col-xxl-6">
+          <div class="mb-2">
+            <input
+              class="form-control"
+              id="city"
+              type="text"
+              placeholder="City"
+              [value]="activeContact()! ? activeContact()!.city : ''"
+            />
+          </div>
+        </div>
+        <div class="col-xxl-6">
+          <div class="mb-2">
+            <input class="form-control" type="text" placeholder="State" />
+          </div>
+        </div>
+        <div class="col-xxl-6">
+          <div>
+            <input class="form-control" type="text" placeholder="Country" />
+          </div>
+        </div>
+        <div class="col-xxl-6">
+          <div>
+            <input class="form-control" type="text" placeholder="Postal code" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a
+    class="ps-0 edit-information"
+    href="javascript:void(0)"
+    (click)="editMoreInformation()"
+    [style.display]="moreInformation ? 'none' : 'block'"
+    >Edit more information</a
+  >
+  <button
+    class="btn btn-primary update-contact me-2"
+    type="button"
+    (click)="save()"
+  >
+    Save
+  </button>
+  <button
+    class="btn button-light-primary"
+    type="button"
+    data-bs-dismiss="modal"
+  >
+    Cancel
+  </button>
+</form>

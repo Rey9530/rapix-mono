@@ -1,0 +1,31 @@
+<app-card
+  [headerTitle]="'Offcanvas Directions'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'common-flex common-offcanvas'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use the <code>ngbOffcanvas</code> directive to create a slide-in panel for
+    additional content. The <code>open()</code> method toggles the visibility of
+    the offcanvas panel, with options like <code>scroll</code> for enabling
+    content scrolling, <code>backdrop</code> to control the backdrop behavior,
+    and <code>keyboard</code> to manage keyboard interactions (e.g., disabling
+    the backdrop or preventing closure with the Escape key).
+  </p>
+
+  <button class="btn btn-info" type="button" (click)="openScrolling()">
+    Enable Body Scrolling
+  </button>
+
+  <button
+    class="btn btn-warning"
+    type="button"
+    (click)="openBackdropScrolling()"
+  >
+    Enable Both Scrolling &amp; Backdrop
+  </button>
+
+  <button class="btn btn-info" type="button" (click)="openStatic()">
+    Toggle Static Offcanvas
+  </button>
+</app-card>

@@ -1,0 +1,28 @@
+<app-card [headerTitle]="'With Controls'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>ngx-owl-carousel-o</code> with previous and next controls for
+    navigation. In this example, <code>carousel-control-prev</code> and
+    <code>carousel-control-next</code> allow users to navigate between slides.
+  </p>
+  <div
+    class="carousel slide common-carousel"
+    id="carouselExampleControls"
+    data-bs-ride="carousel"
+  >
+    <div class="carousel-inner">
+      <owl-carousel-o [options]="options">
+        @for (details of withControls; track details) {
+          <ng-template carouselSlide>
+            <div class="carousel-item active">
+              <img
+                class="d-block w-100"
+                [src]="details.image"
+                alt="drawing-room"
+              />
+            </div>
+          </ng-template>
+        }
+      </owl-carousel-o>
+    </div>
+  </div>
+</app-card>

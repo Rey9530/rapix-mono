@@ -1,0 +1,152 @@
+<app-card
+  [headerTitle]="'Dropdown Sizing'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'dark-dropdown-box'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use <code>btn-*</code>[ sm / lg ] class through buttons of all sizes
+    including default and split dropdown buttons.
+  </p>
+
+  <div class="common-flex">
+    <div class="btn-group" ngbDropdown>
+      <button
+        class="btn btn-dark light btn-lg dropdown-toggle"
+        type="button"
+        ngbDropdownToggle
+      >
+        Large button
+      </button>
+      <ul class="dropdown-menu dropdown-block" ngbDropdownMenu>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Action</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Another action</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Something else here</a
+          >
+        </li>
+        <li>
+          <hr class="dropdown-divider" />
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Separated link</a
+          >
+        </li>
+      </ul>
+    </div>
+    <div class="btn-group" ngbDropdown>
+      <button class="btn btn-outline-secondary btn-lg" type="button">
+        Large split button
+      </button>
+      <button
+        class="btn btn-lg btn-secondary dropdown-toggle dropdown-toggle-split"
+        type="button"
+        ngbDropdownToggle
+      ></button>
+      <ul class="dropdown-menu dropdown-block" ngbDropdownMenu>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Action</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Another action</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Something else here</a
+          >
+        </li>
+        <li>
+          <hr class="dropdown-divider" />
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Separated link</a
+          >
+        </li>
+      </ul>
+    </div>
+    <div class="btn-group" ngbDropdown>
+      <button
+        class="btn btn-dark light btn-sm dropdown-toggle"
+        type="button"
+        ngbDropdownToggle
+      >
+        Small button
+      </button>
+      <ul class="dropdown-menu dropdown-block" ngbDropdownMenu>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Action</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Another action</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Something else here
+          </a>
+        </li>
+        <li>
+          <hr class="dropdown-divider" />
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Separated link</a
+          >
+        </li>
+      </ul>
+    </div>
+    <div class="btn-group" ngbDropdown>
+      <button class="btn btn-outline-secondary btn-sm" type="button">
+        Small split button
+      </button>
+      <button
+        class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split"
+        type="button"
+        ngbDropdownToggle
+      ></button>
+      <ul class="dropdown-menu dropdown-block" ngbDropdownMenu>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Action</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Another action</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Something else here</a
+          >
+        </li>
+        <li>
+          <hr class="dropdown-divider" />
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Separated link</a
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+</app-card>

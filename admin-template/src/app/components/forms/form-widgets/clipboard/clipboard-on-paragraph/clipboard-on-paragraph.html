@@ -1,0 +1,22 @@
+<app-card
+  [headerTitle]="'Clipboard On Paragraph'"
+  [border]="true"
+  [padding]="false"
+>
+  <div class="clipboaard-container">
+    <p class="card-description mb-2">Copy from Paragraph</p>
+    <h6 class="border rounded card-body f-w-400">
+      {{ paragraphDetails }}
+    </h6>
+    <div class="mt-3 text-end">
+      <button
+        class="btn btn-info btn-clipboard"
+        type="button"
+        (click)="copyFunction(paragraphDetails)"
+      >
+        <i class="fa fa-copy"></i>
+        Copy
+      </button>
+    </div>
+  </div>
+</app-card>

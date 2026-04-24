@@ -1,0 +1,77 @@
+<app-card [headerTitle]="'Common Links'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Link utilities are used to stylize your anchors to adjust their link opacity
+    <code> (link-opacity-*), </code>hovered link Opacity
+    <code>(link-opacity-*-hover), </code>underline opacity
+    <code>(link-underline-opacity-*), </code>underline offset
+    <code>(link-offset-*), </code>and more.
+  </p>
+
+  <div class="row g-3">
+    <div class="col-sm-6 col-xxl-3">
+      <div class="card-wrapper border rounded-3 h-100">
+        <h6 class="sub-title fw-bold">Link Opacity</h6>
+        <div class="link-opacity-wrapper">
+          @for (opacity of commonOpacity; track opacity) {
+            <p>
+              <a class="link-opacity-{{ opacity }}" href="javascript:void(0)"
+                >Link opacity {{ opacity }}</a
+              >
+            </p>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-xxl-3">
+      <div class="card-wrapper border rounded-3 h-100">
+        <h6 class="sub-title fw-bold">Hovered Link Opacity</h6>
+        <div class="link-opacity-wrapper">
+          @for (opacity of commonOpacity; track opacity) {
+            <p>
+              <a
+                class="link-opacity-{{ opacity }}-hover"
+                href="javascript:void(0)"
+                >Link hover opacity {{ opacity }}</a
+              >
+            </p>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-xxl-3">
+      <div class="card-wrapper border rounded-3 h-100">
+        <h6 class="sub-title fw-bold">Underline Opacity</h6>
+        <div class="underline-opacity-wrapper">
+          @for (opacity of underlineOpacity; track opacity) {
+            <p>
+              <a
+                class="link-offset-2 link-underline link-underline-opacity-{{
+                  opacity
+                }}"
+                href="javascript:void(0)"
+                >Underline opacity {{ opacity }}</a
+              >
+            </p>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-xxl-3">
+      <div class="card-wrapper border rounded-3 h-100">
+        <h6 class="sub-title fw-bold">Underline Offset</h6>
+        <div class="underline-opacity-wrapper">
+          <p>
+            <a href="javascript:void(0)">Default link</a>
+          </p>
+          @for (opacity of defaultLink; track opacity) {
+            <p>
+              <a class="link-offset-{{ opacity }}" href="javascript:void(0)"
+                >Offset {{ opacity }} link</a
+              >
+            </p>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</app-card>

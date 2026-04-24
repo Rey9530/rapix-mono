@@ -1,0 +1,89 @@
+<app-card
+  [headerTitle]="'Form Validation with Effects'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'animated-form'"
+>
+  <p class="f-m-light mt-1" header5>
+    If your form layout allows it, you can swap the
+    <code> &#123;valid|invalid &#125;</code>-feedback classes for
+    <code> &#123;valid|invalid &#125;</code>
+    - classes to display validation in a styled effect.
+  </p>
+  <form
+    class="row g-3 needs-validation custom-input"
+    novalidate=""
+    [formGroup]="formValidation"
+    (ngSubmit)="submitForm()"
+  >
+    <div class="col-12 position-relative">
+      <label class="form-label" for="validationTooltipName">Full Name</label>
+      <input
+        class="form-control required"
+        id="validationTooltipName"
+        type="text"
+        placeholder="Enter your name"
+        formControlName="fullName"
+        [class]="{
+          'is-invalid':
+            formValidation.controls['fullName'].touched &&
+            formValidation.controls['fullName'].errors?.['required'],
+          'is-valid': formValidation.controls['fullName'].valid,
+        }"
+      />
+    </div>
+    <div class="col-12 position-relative">
+      <label class="form-label" for="validationTooltipGmail">Gmail</label>
+      <input
+        class="form-control required email"
+        id="validationTooltipGmail"
+        type="email"
+        placeholder="pixelstrap@gmail.com"
+        formControlName="gmail"
+        [class]="{
+          'is-invalid':
+            formValidation.controls['gmail'].touched &&
+            formValidation.controls['gmail'].errors?.['required'],
+          'is-valid': formValidation.controls['gmail'].valid,
+        }"
+      />
+    </div>
+    <div class="col-lg-6 position-relative">
+      <label class="col-form-label" for="inputTooltipPassword">Password</label>
+      <input
+        class="form-control required"
+        id="inputTooltipPassword"
+        type="password"
+        placeholder="Enter your password"
+        formControlName="password"
+        [class]="{
+          'is-invalid':
+            formValidation.controls['password'].touched &&
+            formValidation.controls['password'].errors?.['required'],
+          'is-valid': formValidation.controls['password'].valid,
+        }"
+      />
+    </div>
+    <div class="col-lg-6 position-relative">
+      <label class="col-form-label" for="inputConfirmPassword"
+        >Confirm Password</label
+      >
+      <input
+        class="form-control required confirmation"
+        id="inputConfirmPassword"
+        type="password"
+        placeholder="Enter your confirm password"
+        formControlName="confirm_password"
+        [class]="{
+          'is-invalid':
+            formValidation.controls['confirm_password'].touched &&
+            formValidation.controls['confirm_password'].errors?.['required'],
+          'is-valid': formValidation.controls['confirm_password'].valid,
+        }"
+      />
+    </div>
+    <div class="col-6">
+      <button class="btn btn-primary" type="submit">Submit form</button>
+    </div>
+  </form>
+</app-card>

@@ -1,0 +1,45 @@
+<app-card
+  [headerTitle]="'Default Style'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'megaoptions-border-space-sm'"
+>
+  <p class="f-m-light mt-1" header5>It's a default style for radio buttons.</p>
+  <form class="mega-inline">
+    <div class="row">
+      @for (item of defaultStyle; track item) {
+        <div class="col-sm-6">
+          <div class="card">
+            <div class="d-flex p-20">
+              <div class="form-check radio {{ item.radio_class }} m-0">
+                <input
+                  class="form-check-input"
+                  [id]="item.id"
+                  type="radio"
+                  [name]="item.name"
+                  [value]="item.value"
+                />
+                <label class="form-check-label" [for]="item.id">
+                  <span class="flex-grow-1 megaoption-space">
+                    <span class="mt-0 mega-title-badge">
+                      {{ item.label }}
+                      <span
+                        class="badge {{ item.badge_class }} pull-right digits"
+                        >{{ item.badge }}</span
+                      >
+                    </span>
+                    <span>{{ item.description }}</span>
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </form>
+  <div class="card-footer text-end" details>
+    <button class="btn btn-primary m-r-15" type="submit">Submit</button>
+    <button class="btn btn-light" type="submit">Cancel</button>
+  </div>
+</app-card>

@@ -1,0 +1,126 @@
+<app-card
+  [headerTitle]="'Border Tabs'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'bottom-border-tab'"
+>
+  <p class="mt-1 f-m-light" header5>
+    Use the <code>ngbNav</code> directive to create tab navigation in Angular
+    with <code>"Ico" </code>icons.
+  </p>
+
+  <ul
+    class="nav nav-tabs border-tab mb-0"
+    id="bottom-tab"
+    ngbNav
+    #nav="ngbNav"
+    [(activeId)]="activeTab"
+  >
+    <li [ngbNavItem]="'home'">
+      <a class="nav-border txt-primary tab-primary pt-0" ngbNavLink>
+        <i class="icofont icofont-ui-home"> </i>
+        Home
+      </a>
+      <ng-template ngbNavContent>
+        <p class="pt-3">
+          This is some placeholder content the
+          <strong>Home tab's </strong> associated content. Clicking another tab
+          will toggle the visibility of this one for the next. The tab
+          JavaScript swaps classes to control the content visibility and
+          styling. You can use it with tabs, pills, and any other
+          <strong>.nav</strong>-powered navigation.To convey the
+          <strong>active </strong> state to assistive technologies, use the
+          <strong>aria-current </strong> attribute — using the page value for
+          current page, or true for the current item in a set. The base
+          <strong>nav </strong> component is built with flexbox and provide a
+          strong foundation for building all types of navigation components.
+        </p>
+      </ng-template>
+    </li>
+    <li [ngbNavItem]="'inbox'">
+      <a class="nav-border txt-primary tab-primary" ngbNavLink>
+        <i class="icofont icofont-ui-message"></i>
+        Inbox
+      </a>
+      <ng-template ngbNavContent>
+        <div class="card-body pb-0">
+          <div class="main-inbox">
+            <div class="header-inbox">
+              <div class="header-left-inbox">
+                <div class="inbox-img">
+                  <img src="assets/images/ecommerce/06.jpg" alt="profile" />
+                </div>
+                <div class="inbox-content">
+                  <h6>Dalbult Caslin</h6>
+                  <p class="text-muted">stroman.rogers&#64;gmail.com</p>
+                </div>
+              </div>
+              <ul class="header-right-inbox">
+                <li>
+                  <p>8 JAN 11:30PM</p>
+                </li>
+                <li>
+                  <i class="txt-danger icofont icofont-ui-delete"></i>
+                </li>
+                <li>
+                  <i class="icofont icofont-telegram"></i>
+                </li>
+              </ul>
+            </div>
+            <div class="body-inbox mt-2">
+              <div class="body-h-wrapper">
+                <i class="me-2 tab-space icofont icofont-star"></i>
+                <em
+                  >Compare Prices Find the Best Computer Assessors Fronted
+                  Issue.</em
+                >
+              </div>
+              <p class="pt-2">
+                Site speed and design are two of the most important ranking
+                factors Google takes into consideration, as they have the
+                biggest effect of customer staying on site as the website
+                respond faster.
+              </p>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </li>
+    <li [ngbNavItem]="'contact'">
+      <a class="nav-border txt-primary tab-primary" ngbNavLink>
+        <i class="icofont icofont-man-in-glasses"></i>
+        Contact
+      </a>
+      <ng-template ngbNavContent>
+        <div class="card-body px-0 pb-0">
+          <div class="form">
+            <div class="mb-3">
+              <label class="form-label" for="exampleFormControltwo"
+                >Email Address</label
+              >
+              <input
+                class="form-control"
+                id="exampleFormControltwo"
+                type="email"
+                placeholder="youremail@gmail.com"
+              />
+            </div>
+            <div class="mb-0">
+              <label class="form-label" for="exampleFormControlTextarea1"
+                >Example Textarea</label
+              >
+              <textarea
+                class="form-control"
+                id="exampleFormControlTextarea1"
+                rows="3"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </li>
+  </ul>
+  <div class="card-body px-0 pb-0">
+    <div [ngbNavOutlet]="nav"></div>
+  </div>
+</app-card>

@@ -1,0 +1,57 @@
+<div class="d-flex page-notification">
+  <img
+    class="img-50 img-fluid m-r-20 rounded-circle"
+    [src]="myProfile.profile"
+    alt
+  />
+  <div class="flex-grow-1">
+    <h6 class="font-primary pb-1">My Page</h6>
+    <span class="d-block">
+      <span>
+        <i class="fa-regular fa-comments"> </i>
+        <span class="px-2">
+          Messages
+          <span class="badge rounded-pill badge-light ms-2">
+            {{ myProfile.message }}</span
+          >
+        </span>
+      </span>
+    </span>
+    <span class="d-block">
+      <span>
+        <i class="fa-regular fa-bell"> </i>
+        <span class="px-2">
+          Notification
+          <span class="badge rounded-pill badge-light ms-2">{{
+            myProfile.notification
+          }}</span>
+        </span>
+      </span>
+    </span>
+  </div>
+</div>
+<div class="social-btngroup d-flex">
+  <button class="btn btn-primary text-center" type="button">Likes</button>
+  <button class="btn btn-light text-center ms-2" type="button">View</button>
+</div>
+<div class="likes-profile text-center">
+  <h5>
+    <span class="counter">
+      <i class="fa-solid fa-heart font-danger"></i>
+      {{ myProfile.total_likes }}</span
+    >
+  </h5>
+</div>
+<div class="text-center">
+  {{ myProfile.this_week_likes }} New Likes This Week
+</div>
+<div class="customers text-center social-group">
+  <ul>
+    @for (user of myProfile.liked_by; track user) {
+      <li class="d-inline-block" placement="top" [ngbTooltip]="user.name">
+        <img class="img-40 rounded-circle" [src]="user.profile"  alt="img"/>
+      </li>
+    }
+  </ul>
+</div>
+<img class="img-fluid mt-xl-5 mt-4 w-100" alt [src]="myProfile.post_image" />

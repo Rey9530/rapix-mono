@@ -1,0 +1,30 @@
+<app-card
+  [headerTitle]="instagramSubscribers.title"
+  [padding]="false"
+  [dropdownType]="'simple'"
+  [options]="cardToggleOption"
+  [cardBodyClass]="'pt-0'"
+>
+  <span class="f-14 f-w-500 ms-1 f-light" header>
+    {{ instagramSubscribers.description }}
+  </span>
+
+  <div class="subscriber-chart-container">
+    <div id="subscriber-chart">
+      <apx-chart
+        [series]="instagramSubscribers.series"
+        [chart]="instagramSubscribers.chart"
+        [grid]="instagramSubscribers.grid"
+        [colors]="instagramSubscribers.colors"
+        [stroke]="instagramSubscribers.stroke"
+        [markers]="instagramSubscribers.markers"
+        [tooltip]="instagramSubscribers.tooltip"
+        [xaxis]="instagramSubscribers.xaxis"
+        [fill]="instagramSubscribers.fill"
+        [yaxis]="instagramSubscribers.yaxis"
+        [legend]="instagramSubscribers.legend"
+        [responsive]="instagramSubscribers.responsive"
+      />
+    </div>
+  </div>
+</app-card>

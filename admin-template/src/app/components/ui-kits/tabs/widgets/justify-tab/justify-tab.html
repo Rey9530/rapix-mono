@@ -1,0 +1,48 @@
+<app-card [headerTitle]="'Justify Tabs'" [border]="true" [padding]="false">
+  <p class="mt-1 f-m-light" header5>
+    Use <code>class="nav-pills"</code> for tabs pill shape and set content using
+    flex property..
+  </p>
+
+  <div
+    class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2 pb-2 p-0"
+  >
+    <p>CUBA Profiles For New Employees:</p>
+    <ul
+      class="nav nav-pills nav-primary"
+      ngbNav
+      #nav="ngbNav"
+      [(activeId)]="activeTab"
+    >
+      @for (tab of justifyTabs; track tab) {
+        <li [ngbNavItem]="tab.value">
+          <a class="nav-link" ngbNavLink>{{ tab.title }}</a>
+          <ng-template ngbNavContent>
+            <div class="designer-details">
+              @for (employee of employees; track employee) {
+                @if (employee.designation === activeTab) {
+                  <div class="designer-profile">
+                    <div class="designer-wrap">
+                      <img
+                        class="designer-img"
+                        [src]="employee.profile"
+                        alt="profile"
+                      />
+                      <div class="designer-content">
+                        <h6>{{ employee.name }}</h6>
+                        <p>{{ employee.contact }}</p>
+                      </div>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+          </ng-template>
+        </li>
+      }
+    </ul>
+  </div>
+  <div class="card-body px-0 pb-0">
+    <div [ngbNavOutlet]="nav"></div>
+  </div>
+</app-card>

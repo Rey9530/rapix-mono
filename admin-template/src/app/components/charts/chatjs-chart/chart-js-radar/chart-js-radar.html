@@ -1,0 +1,16 @@
+<app-card
+  [headerTitle]="'Radar Graph'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'chart-block main-radar-graph'"
+>
+  <canvas
+    baseChart
+    class="chart"
+    [datasets]="radarGraphData"
+    [labels]="radarGraphLabels"
+    [options]="radarGraphOptions"
+    [type]="'radar'"
+  >
+  </canvas>
+</app-card>

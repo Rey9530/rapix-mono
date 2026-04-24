@@ -1,0 +1,40 @@
+<div class="container-fluid dashboard-5">
+  <div class="row">
+    <div class="col-12 od-xl-1">
+      <div class="row">
+        @for (details of socialMediaDetails; track details) {
+          <div class="col s-xxl-3 box-col-4">
+            <app-social-media-details [details]="details" />
+          </div>
+        }
+      </div>
+    </div>
+    <div class="col-xxl-3 col-xl-4 col-md-5 od-xl-2 box-col-4">
+      <app-social-media-announcement />
+    </div>
+    <div class="col-xxl-6 col-xl-4 od-xl-4 box-col-4">
+      <app-instagram-subscribers />
+    </div>
+    <div class="col-xxl-3 col-xl-4 col-md-7 od-xl-3 box-col-4">
+      <app-facebook-campaign />
+    </div>
+    <div class="col-xxl-8 col-xl-7 od-xl-5 box-col-7">
+      <app-all-campaigns />
+    </div>
+    <div class="col-xxl-4 col-xl-5 od-xl-6 box-col-5">
+      <div class="row social-clicks">
+        @for (analyticsChart of socialAnalyticsChart; track analyticsChart) {
+          <div class="col-sm-6">
+            <app-social-analytics-charts [analyticsChart]="analyticsChart" />
+          </div>
+        }
+      </div>
+    </div>
+    <div class="col-md-7 od-xl-7">
+      <app-social-analytics />
+    </div>
+    <div class="col-md-5 od-xl-8">
+      <app-top-followers />
+    </div>
+  </div>
+</div>

@@ -1,0 +1,67 @@
+<app-card
+  [headerTitle]="'Helper Cards'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'rtl-dropdown helper-cards'"
+>
+  <p class="f-m-light mt-1" header5>
+    To create a dropdown using <code>ngbDropdown</code>, wrap the button inside
+    a <code>btn-group</code> with the <code>ngbDropdown</code> directive. Use
+    <code>ngbDropdownToggle</code> for the toggle button and
+    <code>ngbDropdownMenu</code> to define the dropdown menu items.
+  </p>
+
+  <div class="common-flex">
+    <div class="btn-group" ngbDropdown>
+      <button
+        class="btn btn-secondary dropdown-toggle"
+        type="button"
+        ngbDropdownToggle
+      >
+        Helper Card
+      </button>
+      <ul class="dropdown-menu dropdown-block p-3 dark-form" ngbDropdownMenu>
+        <li>
+          <h6 class="fs-6 pb-2">Learn More!</h6>
+          <p ngbDropdownItem class="dropdown-item">
+            There is a lot of information available here
+          </p>
+        </li>
+      </ul>
+    </div>
+    <div class="btn-group" ngbDropdown>
+      <button
+        class="btn btn-warning dropdown-toggle"
+        type="button"
+        ngbDropdownToggle
+      >
+        Warning Card
+      </button>
+      <ul class="dropdown-menu dropdown-block p-3 dark-form" ngbDropdownMenu>
+        <li>
+          <h6 class="fs-6 pb-2">Warning!</h6>
+          <p ngbDropdownItem class="dropdown-item helper-truncate">
+            Please! Check your notifications.
+          </p>
+        </li>
+      </ul>
+    </div>
+    <div class="btn-group" ngbDropdown>
+      <button
+        class="btn btn-info dropdown-toggle"
+        type="button"
+        ngbDropdownToggle
+      >
+        Alert Card
+      </button>
+      <ul class="dropdown-menu dropdown-block p-3 dark-form" ngbDropdownMenu>
+        <li>
+          <h6 class="fs-6 pb-2">Danger</h6>
+          <p ngbDropdownItem class="dropdown-item helper-truncate">
+            It's a danger path.
+          </p>
+        </li>
+      </ul>
+    </div>
+  </div>
+</app-card>

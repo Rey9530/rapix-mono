@@ -1,0 +1,56 @@
+<div class="container-fluid dashboard-12">
+  <div class="row">
+    <div class="col-xxl-6 box-col-12">
+      <div class="row small-stats">
+        @for (details of projectDetails; track details; let i = $index) {
+          <div
+            [ngClass]="
+              projectDetails.length % 2 !== 0 && i === projectDetails.length - 1
+                ? 'col-md-4 col-12'
+                : 'col-md-4 col-sm-6'
+            "
+          >
+            <app-details [details]="details" />
+          </div>
+        }
+
+        <div class="col-12">
+          <app-priority-task />
+        </div>
+      </div>
+    </div>
+    <div class="col-xxl-3 col-xl-4 col-md-6 ord-xl-1 box-ord-1 box-col-4">
+      <app-task-statistics />
+    </div>
+    <div class="col-xxl-3 col-xl-4 col-md-6 ord-xl-2 box-ord-2 box-col-4">
+      <app-today-task />
+    </div>
+    <div class="col-xxl-7 box-col-12">
+      <app-all-projects />
+    </div>
+    <div class="col-xxl-5 col-md-6 ord-xl-5 box-ord-5 box-col-6">
+      <app-estimated-actual-chart />
+    </div>
+    <div class="col-xxl-4 col-md-6 ord-xl-4 box-ord-4 box-col-6">
+      <app-team-performance />
+    </div>
+    <div class="col-xl-4 col-md-5 ord-xl-3 box-ord-3 box-col-4">
+      <div class="row main-expenses">
+        @for (chart of expensesChart; track chart) {
+          <div class="col-md-12 col-sm-6">
+            <app-expenses-chart [chart]="chart" />
+          </div>
+        }
+      </div>
+    </div>
+    <div class="col-xxl-4 col-md-7 ord-xl-6 box-ord-6 box-col-6">
+      <app-upcoming-deadline />
+    </div>
+    <div class="col-xxl-6 col-xl-5 ord-xl-7 box-ord-7 box-col-6">
+      <app-project-analysis />
+    </div>
+    <div class="col-xxl-6 ord-xl-8 box-ord-8 box-col-12">
+      <app-recent-activity />
+    </div>
+  </div>
+</div>

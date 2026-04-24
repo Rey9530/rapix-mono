@@ -1,0 +1,21 @@
+<app-card [headerTitle]="'Select on exact'" [border]="true" [padding]="false">
+  <p class="mt-1 mb-0" header5>
+    A typeahead with <code>[selectOnExact]</code> example that selects the item
+    when it is the only one that matches the user input
+  </p>
+  <div class="mb-3 row">
+    <div class="col">
+      <input
+        id="typeahead-template"
+        type="text"
+        class="form-control col"
+        placeholder="Countries"
+        [(ngModel)]="model"
+        [ngbTypeahead]="search"
+        [inputFormatter]="formatter"
+        [resultFormatter]="formatter"
+        [selectOnExact]="true"
+      />
+    </div>
+  </div>
+</app-card>

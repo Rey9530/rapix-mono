@@ -1,0 +1,29 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12 col-xl-6">
+      <app-basic-card />
+    </div>
+    <div class="col-sm-12 col-xl-6">
+      <app-flat-card />
+    </div>
+    <div class="col-sm-12 col-xl-6">
+      <app-shadow-card />
+    </div>
+    <div class="col-sm-12 col-xl-6">
+      <app-icon-heading />
+    </div>
+    <div class="col-sm-12">
+      <app-dark-color-card />
+    </div>
+
+    @for (details of infoCard | slice: 3 : 6; track details; let i = $index) {
+      <div
+        [ngClass]="
+          i === infoCard.length - 4 ? 'col-xl-4 col-12' : 'col-xl-4 col-sm-6'
+        "
+      >
+        <app-info-card [details]="details" />
+      </div>
+    }
+  </div>
+</div>

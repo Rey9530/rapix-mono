@@ -1,0 +1,62 @@
+<app-card [headerTitle]="'Nesting'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Border styles, active styles, and table variants are not inherited by nested
+    tables.
+  </p>
+  <div class="card-block row">
+    <div class="col-sm-12 col-lg-12 col-xl-12">
+      <div class="table-responsive custom-scrollbar">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Student Name</th>
+              <th scope="col">Status</th>
+              <th scope="col">Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (details of nestingTable; track details) {
+              <tr>
+                <td>{{ details.date }}</td>
+                <td>{{ details.student_name }}</td>
+                <td>
+                  <span class="badge badge-{{ details.class }}">{{
+                    details.status
+                  }}</span>
+                </td>
+                <td>{{ details.notes }}</td>
+              </tr>
+              <tr>
+                @if (details.courses) {
+                  <td colspan="4">
+                    <table class="table mb-0 table-bordered">
+                      <thead>
+                        <tr>
+                          <th scope="col">Course Name</th>
+                          <th scope="col">Instructor</th>
+                          <th scope="col">Day</th>
+                          <th scope="col">Time</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (item of details.courses; track item) {
+                          <tr>
+                            <td>{{ item.course_name }}</td>
+                            <td>{{ item.instructor }}</td>
+                            <td>{{ item.day }}</td>
+                            <td>{{ item.time }}</td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</app-card>

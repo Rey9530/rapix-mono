@@ -1,0 +1,51 @@
+<app-card
+  [headerTitle]="'Alerts with Icons and Text Actions'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'dark-txt alert-text-action'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use<code> border-* </code>class to add dismiss text instead of icon within
+    any ngb-alert with <code>type=''</code
+    ><code> [solid/double/inset/outset]</code>.
+  </p>
+
+  @if (showWarningAlert) {
+    <ngb-alert type="" [dismissible]="true" class="border-warning p-0">
+      <div class="alert-arrow bg-warning">
+        <i class="icon-timer"></i>
+      </div>
+      <p>Your time Over after <strong class="txt-dark">5</strong> minute</p>
+      @if (!isCheckButtonClicked) {
+        <button
+          class="p-0 border-0 me-2 ms-auto"
+          type="button"
+          (click)="onCheckButtonClicked()"
+        >
+          <span class="bg-warning px-3 py-1">Check</span>
+        </button>
+      }
+    </ngb-alert>
+  }
+
+  @if (showDangerAlert) {
+    <ngb-alert type="" [dismissible]="true" class="border-danger p-0 mb-0">
+      <div class="alert-arrow bg-danger">
+        <i class="icon-heart"></i>
+      </div>
+      <p>
+        Oh snap! Change a few things up
+        <strong class="txt-dark">Notification check</strong>
+      </p>
+      @if (!isAlertButtonClicked) {
+        <button
+          class="p-0 border-0 me-2 ms-auto"
+          type="button"
+          (click)="onAlertButtonClicked()"
+        >
+          <span class="bg-danger text-white px-3 py-1">Alert</span>
+        </button>
+      }
+    </ngb-alert>
+  }
+</app-card>

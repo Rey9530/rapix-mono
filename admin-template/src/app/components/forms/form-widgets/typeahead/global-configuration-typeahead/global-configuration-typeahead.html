@@ -1,0 +1,22 @@
+<app-card
+  [headerTitle]="'Global configuration of typeahead'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="mt-1 mb-0" header5>
+    This typeahead shows a hint when the input matches because the default
+    values have been customized.
+  </p>
+  <div class="mb-3 row">
+    <div class="col">
+      <input
+        id="typeahead-config"
+        type="text"
+        class="form-control"
+        placeholder="Search for a state"
+        [(ngModel)]="model"
+        [ngbTypeahead]="search"
+      />
+    </div>
+  </div>
+</app-card>

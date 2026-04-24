@@ -1,0 +1,116 @@
+<app-card
+  [headerTitle]="'Divider Dropdowns'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'rtl-dropdown'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use <code>dropdown-divider </code>class through separate groups of related
+    menu items with a divider.
+  </p>
+
+  <div class="common-flex">
+    <div class="btn-group" ngbDropdown>
+      <button
+        class="btn btn-success rounded-pill dropdown-toggle"
+        type="button"
+        ngbDropdownToggle
+      >
+        Wishlist
+      </button>
+      <ul class="dropdown-menu dropdown-block" ngbDropdownMenu>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Shoes
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Bag</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Clothes</a
+          >
+        </li>
+        <li>
+          <hr class="dropdown-divider" />
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Separated link</a
+          >
+        </li>
+      </ul>
+    </div>
+    <div class="btn-group" ngbDropdown>
+      <button
+        class="btn btn-primary rounded-pill dropdown-toggle"
+        type="button"
+        ngbDropdownToggle
+      >
+        Sports
+      </button>
+      <ul class="dropdown-menu dropdown-block" ngbDropdownMenu>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Badminton</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Cricket</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Kho-Kho</a
+          >
+        </li>
+        <li>
+          <hr class="dropdown-divider" />
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Separated link</a
+          >
+        </li>
+      </ul>
+    </div>
+    <div class="btn-group" ngbDropdown>
+      <button
+        class="btn btn-secondary rounded-pill dropdown-toggle"
+        type="button"
+        ngbDropdownToggle
+      >
+        Colors
+      </button>
+      <ul class="dropdown-menu dropdown-block" ngbDropdownMenu>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Orange</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Yellow
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Red
+          </a>
+        </li>
+        <li>
+          <hr class="dropdown-divider" />
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Separated link</a
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+</app-card>

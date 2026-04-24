@@ -1,0 +1,21 @@
+<app-card
+  [headerTitle]="'No Gutters'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'no-gutter'"
+>
+  <p class="mt-1 f-m-light" header5>
+    Use <code>g-0</code> on the <code> row </code> to eliminate spacing between
+    columns.<code> container </code> and use <code> mx-0 </code> on the
+    <code> row </code> to prevent overflow.
+  </p>
+
+  <div class="row g-0 text-center">
+    <div class="col-sm-6 col-md-8">
+      <div class="p-3"><span>col-sm-6 & col-md-8</span></div>
+    </div>
+    <div class="col-6 col-md-4">
+      <div class="p-3"><span class="col-6">col-md-4</span></div>
+    </div>
+  </div>
+</app-card>

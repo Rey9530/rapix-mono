@@ -1,0 +1,212 @@
+<app-card
+  [headerTitle]="'Alignment Options'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'dark-dropdown-box'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use the <code>[placement]</code> attribute in <code>ngbDropdown</code> to
+    control the dropdown’s position dynamically.
+    <br />
+    - Set <code>placement="bottom-right"</code> to align the dropdown at the
+    bottom-right.
+    <br />
+    - Use <code>placement="bottom-left"</code> to align it at the bottom-left.
+    <br />
+    - To position the dropdown dynamically based on screen size, bind
+    <code>[placement]</code> to a variable that changes using screen width
+    conditions.
+    <br />
+    - For directional dropdowns, set <code>placement="start"</code> for
+    left-aligned (dropstart), <code>placement="end"</code> for right-aligned
+    (dropend), and <code>placement="top"</code> for upward dropdowns (dropup).
+  </p>
+
+  <div class="common-flex">
+    <div class="btn-group" ngbDropdown>
+      <button
+        class="btn btn-dark dropdown-toggle"
+        type="button"
+        ngbDropdownToggle
+      >
+        Dropdown
+      </button>
+      <ul class="dropdown-menu" ngbDropdownMenu>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Menu item</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Menu item</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Menu item</a
+          >
+        </li>
+      </ul>
+    </div>
+    <div class="btn-group" ngbDropdown placement="bottom-right">
+      <button
+        class="btn btn-dark dropdown-toggle"
+        type="button"
+        ngbDropdownToggle
+      >
+        Right-aligned menu
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end" ngbDropdownMenu>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Menu item</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Menu item</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Menu item</a
+          >
+        </li>
+      </ul>
+    </div>
+    <div class="btn-group" ngbDropdown [placement]="dropdownPlacementOne">
+      <button
+        class="btn btn-dark dropdown-toggle"
+        type="button"
+        ngbDropdownToggle
+      >
+        Left-aligned, right-aligned lg
+      </button>
+      <ul class="dropdown-menu dropdown-menu-lg-end" ngbDropdownMenu>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Menu item</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Menu item</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Menu item</a
+          >
+        </li>
+      </ul>
+    </div>
+    <div class="btn-group" ngbDropdown [placement]="dropdownPlacementTwo">
+      <button
+        class="btn btn-dark dropdown-toggle"
+        type="button"
+        ngbDropdownToggle
+      >
+        Right-aligned, left-aligned lg
+      </button>
+      <ul
+        class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start"
+        ngbDropdownMenu
+      >
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Menu item</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Menu item</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Menu item</a
+          >
+        </li>
+      </ul>
+    </div>
+    <div class="btn-group dropstart" ngbDropdown [placement]="'start'">
+      <button
+        class="btn btn-dark dropdown-toggle"
+        type="button"
+        ngbDropdownToggle
+      >
+        Dropstart
+      </button>
+      <ul class="dropdown-menu" ngbDropdownMenu>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Menu item</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Menu item</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Menu item</a
+          >
+        </li>
+      </ul>
+    </div>
+    <div class="btn-group dropend" ngbDropdown [placement]="'end'">
+      <button
+        class="btn btn-dark dropdown-toggle"
+        type="button"
+        ngbDropdownToggle
+      >
+        Dropend
+      </button>
+      <ul class="dropdown-menu" ngbDropdownMenu>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Menu item</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Menu item</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Menu item</a
+          >
+        </li>
+      </ul>
+    </div>
+    <div class="btn-group dropup" ngbDropdown [placement]="'top'">
+      <button
+        class="btn btn-dark dropdown-toggle"
+        type="button"
+        ngbDropdownToggle
+      >
+        Dropup
+      </button>
+      <ul class="dropdown-menu" ngbDropdownMenu>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Menu item</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Menu item</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Menu item</a
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+</app-card>

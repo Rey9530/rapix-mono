@@ -1,0 +1,245 @@
+<app-card
+  [headerTitle]="'Max Length Elements'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="f-m-light mt-1" header5>
+    Use <code>[*-maxlength] </code>classes to define maxlength for textarea and
+    inputs.
+  </p>
+  <form class="row g-3 custom-input max-length-wrapper">
+    <div class="col-sm-6">
+      <label class="form-label">Basic Maxlength</label>
+      <input
+        class="form-control basic-maxlength"
+        type="text"
+        [maxlength]="basicMaxLength"
+        name="basic-max-length"
+        [(ngModel)]="basicText"
+        (focus)="basicLengthVisible = true"
+        (blur)="basicLengthVisible = false"
+        autocomplete="off"
+      />
+      @if (basicLengthVisible) {
+        <small
+          class="max-length-badge badge position-absolute"
+          [class]="{
+            'badge-info': basicText.length < basicMaxLength,
+            'badge-success': basicText.length === basicMaxLength,
+          }"
+          >{{ basicText.length + "/" + basicMaxLength }}</small
+        >
+      }
+    </div>
+    <div class="col-sm-6">
+      <label class="form-label">Change the threshold value</label>
+      <input
+        class="form-control threshold-maxlength"
+        type="text"
+        [maxlength]="thresholdLength"
+        name="thresold-max-length"
+        [(ngModel)]="thresholdText"
+        (focus)="thresholdValueVisible = true"
+        (blur)="thresholdValueVisible = false"
+        autocomplete="off"
+      />
+      @if (thresholdValueVisible) {
+        <small
+          class="max-length-badge badge position-absolute"
+          [class]="{
+            'badge-warning': thresholdText.length < thresholdLength,
+            'badge-success': thresholdText.length === thresholdLength,
+          }"
+          >{{ thresholdText.length + "/" + thresholdLength }}</small
+        >
+      }
+    </div>
+    <div class="col-sm-6">
+      <label class="form-label">Show</label>
+      <input
+        class="form-control show-maxlength"
+        type="text"
+        [maxlength]="showBadgeLength"
+        name="show-badge-length"
+        [(ngModel)]="showBadgeText"
+        (focus)="showBadgeLengthVisible = true"
+        (blur)="showBadgeLengthVisible = false"
+        autocomplete="off"
+      />
+      @if (showBadgeLengthVisible && showBadge) {
+        <small
+          class="max-length-badge badge position-absolute"
+          [class]="{
+            'badge-info': showBadgeText.length < showBadgeLength,
+            'badge-success': showBadgeText.length === showBadgeLength,
+          }"
+          >{{ showBadgeText.length + "/" + showBadgeLength }}</small
+        >
+      }
+    </div>
+    <div class="col-sm-6">
+      <label class="form-label">Customized Text</label>
+      <input
+        class="form-control custom-maxlength"
+        type="text"
+        [maxlength]="customizedTextLength"
+        name="customized-max-length"
+        [(ngModel)]="customizedText"
+        (focus)="customizedTextVisible = true"
+        (blur)="customizedTextVisible = false"
+        autocomplete="off"
+      />
+      @if (customizedTextVisible) {
+        <small
+          class="max-length-badge badge position-absolute"
+          [class]="{
+            'badge-success': customizedTextLength - customizedText.length > 10,
+            'badge-warning':
+              customizedTextLength - customizedText.length <= 10 &&
+              customizedTextLength - customizedText.length >= 1,
+            'badge-danger': customizedText.length === customizedTextLength,
+          }"
+        >
+          {{
+            customizedTextLength - customizedText.length <= 10 &&
+            customizedTextLength - customizedText.length > 0
+              ? "only"
+              : ""
+          }}
+          {{
+            customizedTextLength -
+              customizedText.length +
+              "/" +
+              customizedTextLength
+          }}
+          characters left.</small
+        >
+      }
+    </div>
+    <div class="col-12">
+      <label class="form-label">Basic Textarea</label>
+      <textarea
+        class="textarea-maxlength form-control custom-scrollbar"
+        rows="3"
+        [maxlength]="textAreaLength"
+        name="textarea-max-length"
+        [(ngModel)]="textAreaText"
+        (focus)="textAreaTextVisible = true"
+        (blur)="textAreaTextVisible = false"
+        autocomplete="off"
+      ></textarea>
+      @if (textAreaTextVisible) {
+        <small
+          class="max-length-badge badge position-absolute"
+          [class]="{
+            'badge-warning': textAreaText.length < textAreaLength,
+            'badge-success': textAreaText.length === textAreaLength,
+          }"
+          >{{ textAreaText.length + "/" + textAreaLength }}</small
+        >
+      }
+    </div>
+    <div class="col-12">
+      <div class="row g-3">
+        <div class="col-12">
+          <label class="form-label mb-0"
+            >Badge Positions: (top-left
+            ,top-right,bottom-left,bottom-right)</label
+          >
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <input
+            class="topleft-maxlength form-control"
+            type="text"
+            placeholder="Position top-left"
+            [maxlength]="topLeftLength"
+            name="top-left-max-length"
+            [(ngModel)]="topLeftText"
+            (focus)="topLeftBadgeVisible = true"
+            (blur)="topLeftBadgeVisible = false"
+            autocomplete="off"
+          />
+          @if (topLeftBadgeVisible) {
+            <small
+              class="max-length-badge badge position-absolute"
+              [class]="{
+                'badge-primary': topLeftText.length < topLeftLength,
+                'badge-success': topLeftText.length === topLeftLength,
+              }"
+              >{{ topLeftText.length + "/" + topLeftLength }}</small
+            >
+          }
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <input
+            class="topright-maxlength form-control"
+            type="text"
+            placeholder="Position top-right"
+            [maxlength]="topRightLength"
+            name="top-right-max-length"
+            [(ngModel)]="topRightText"
+            (focus)="topRightBadgeVisible = true"
+            (blur)="topRightBadgeVisible = false"
+            autocomplete="off"
+          />
+          @if (topRightBadgeVisible) {
+            <small
+              class="max-length-badge badge position-absolute"
+              [class]="{
+                'badge-secondary': topRightText.length < topRightLength,
+                'badge-success': topRightText.length === topRightLength,
+              }"
+              >{{ topRightText.length + "/" + topRightLength }}</small
+            >
+          }
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <input
+            class="bottomright-maxlength form-control"
+            type="text"
+            placeholder="Position bottom-right"
+            [maxlength]="BottomRightLength"
+            name="bottom-right-max-length"
+            [(ngModel)]="BottomRightText"
+            (focus)="BottomRightBadgeVisible = true"
+            (blur)="BottomRightBadgeVisible = false"
+            autocomplete="off"
+          />
+          @if (BottomRightBadgeVisible) {
+            <small
+              class="max-length-badge badge position-absolute"
+              [class]="{
+                'badge-warning': BottomRightText.length < BottomRightLength,
+                'badge-success': BottomRightText.length === BottomRightLength,
+              }"
+              >{{ BottomRightText.length + "/" + BottomRightLength }}</small
+            >
+          }
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <input
+            class="bottomleft-maxlength form-control"
+            type="text"
+            placeholder="Position bottom-left"
+            [maxlength]="BottomLeftLength"
+            name="bottom-left-max-length"
+            [(ngModel)]="BottomLeftText"
+            (focus)="BottomLeftBadgeVisible = true"
+            (blur)="BottomLeftBadgeVisible = false"
+            autocomplete="off"
+          />
+          @if (BottomLeftBadgeVisible) {
+            <small
+              class="max-length-badge badge position-absolute"
+              [class]="{
+                'badge-info': BottomLeftText.length < BottomLeftLength,
+                'badge-success': BottomLeftText.length === BottomLeftLength,
+              }"
+              >{{ BottomLeftText.length + "/" + BottomLeftLength }}</small
+            >
+          }
+        </div>
+      </div>
+    </div>
+  </form>
+</app-card>

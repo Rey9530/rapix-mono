@@ -1,0 +1,62 @@
+<div
+  class="container-fluid product-wrapper"
+  [class.sidebaron]="productService.sidebarOpen"
+>
+  <div class="product-grid">
+    <div class="feature-products">
+      <div class="common-f-start justify-content-md-end mb-3">
+        <a
+          class="btn btn-primary f-w-500"
+          href="javascript:void(0)"
+          [routerLink]="['/product/create']"
+        >
+          <i class="fa-solid fa-plus pe-2"></i>
+          Add Products
+        </a>
+      </div>
+
+      <app-product-sort />
+
+      <div class="row">
+        <div class="col-md-3 col-sm-6">
+          <app-product-sidebar />
+        </div>
+        <div class="col-md-9 col-sm-12">
+          <form>
+            <div class="form-group m-0">
+              <input
+                class="form-control"
+                type="search"
+                placeholder="Search.."
+                data-original-title=""
+                title=""
+              />
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div
+      class="product-wrapper-grid"
+      [class.list-view]="productService.listView"
+    >
+      <div class="row">
+        @for (product of products; track product) {
+          <div
+            [class.col-xl-6]="productService.col_xl_6"
+            [class.col-sm-6]="productService.col_sm_6"
+            [class.col-xl-4]="productService.col_xl_4"
+            [class.col-sm-4]="productService.col_sm_4"
+            [class.col-xl-3]="productService.col_xl_3"
+            [class.col-sm-3]="productService.col_sm_3"
+            [class.col-xl-2]="productService.col_xl_2"
+            [class.col-xl-12]="productService.col_xl_12"
+          >
+            <app-product-box [product]="product" />
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

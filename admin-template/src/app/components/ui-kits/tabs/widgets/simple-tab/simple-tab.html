@@ -1,0 +1,73 @@
+<app-card [headerTitle]="'Simple Tabs'" [border]="true" [padding]="false">
+  <p class="mt-1 f-m-light" header5>
+    Use the <code>ngbNav</code> directive to create tab navigation in Angular.
+    The <code>ngbNavLink</code> is used within each tab item to define the
+    clickable navigation links. The <code>active</code> class is applied
+    automatically to the active tab, and the <code>[(activeId)]</code> binding
+    allows you to dynamically control which tab is active. You can use
+    <code>ngbNavContent</code> to wrap the content associated with each tab.
+  </p>
+
+  <ul
+    class="simple-wrapper nav nav-tabs"
+    ngbNav
+    #nav="ngbNav"
+    [(activeId)]="activeTab"
+  >
+    <li [ngbNavItem]="'home'">
+      <a class="nav-link txt-primary" ngbNavLink>Home</a>
+      <ng-template ngbNavContent>
+        <p class="pt-3">
+          This is some placeholder content the <b>Home tab's </b>associated
+          content. Clicking another tab will toggle the visibility of this one
+          for the next. The tab JavaScript swaps classes to control the content
+          visibility and styling. You can use it with tabs, pills, and any other
+          .nav-powered navigation. Bootstrap provides a flexible and easy-to-use
+          tab component that allows developers to create tabbed navigation
+          effortlessly.
+        </p>
+      </ng-template>
+    </li>
+    <li [ngbNavItem]="'profile'">
+      <a class="nav-link txt-primary" ngbNavLink>Profile</a>
+      <ng-template ngbNavContent>
+        <div class="pt-3 mb-0">
+          <div class="flex-space flex-wrap align-items-center">
+            <img
+              class="tab-img"
+              src="assets/images/avatar/3.jpg"
+              alt="profile"
+            />
+            <ul class="d-flex flex-column gap-1">
+              <li>
+                <strong>Visit Us:</strong> 2600 Hollywood Blvd,Florida, United
+                States-33020
+              </li>
+              <li><strong>Mail Us:</strong> contact&#64;us&#64;gmail.com</li>
+              <li><strong>Contact Number: </strong> (954) 357-7760</li>
+            </ul>
+          </div>
+        </div>
+      </ng-template>
+    </li>
+    <li [ngbNavItem]="'contact'">
+      <a class="nav-link txt-primary" ngbNavLink>Contact</a>
+      <ng-template ngbNavContent>
+        <ul class="pt-3 d-flex flex-column gap-1">
+          <li>
+            Us Technology offers web & mobile development solutions for all
+            industry verticals.Include a short form using fields that'll help
+            your business understand who's contacting them.
+          </li>
+          <li>
+            <strong>Visit Us: </strong> 2600 Hollywood Blvd,Florida, United
+            States- 33020
+          </li>
+          <li><strong>Mail Us:</strong> contact&#64;us&#64;gmail.com</li>
+          <li><strong>Contact Number: </strong> (954) 357-7760</li>
+        </ul>
+      </ng-template>
+    </li>
+  </ul>
+  <div [ngbNavOutlet]="nav"></div>
+</app-card>

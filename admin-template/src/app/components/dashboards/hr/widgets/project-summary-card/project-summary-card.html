@@ -1,0 +1,41 @@
+<app-card [cardClass]="'project-finish-card overflow-hidden'">
+  <div>
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="project-left-content">
+          <h5>Congratulations</h5>
+          <p class="c-o-light">10 projects have been finished this year.</p>
+          <div class="growth-info">
+            <h5 class="txt-primary">95.10%</h5>
+            <p class="f-w-500 c-light">
+              Last Year
+              <span class="c-o-light f-w-400 f-12 ms-1 me-2">83.04%</span>
+              <span class="badge badge-light-success">+14%</span>
+            </p>
+          </div>
+          <div class="project-progress">
+            <span class="f-14 f-w-500">Clients Satisfaction</span>
+            <div class="progress">
+              <div class="progress-bar" role="progressbar" style="width: 50%">
+                <div class="common-f-start">
+                  <div class="progress-box">
+                    @for (step of item; track step; let i = $index) {
+                      <div [class.rounded-bar]="i"></div>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <img
+          class="project-right-content img-fluid"
+          src="assets/images/dashboard-11/vector-pc.png"
+          alt="vector pc"
+        />
+      </div>
+    </div>
+  </div>
+</app-card>

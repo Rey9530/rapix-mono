@@ -1,0 +1,36 @@
+<app-card
+  [headerTitle]="'Table Head Options'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="f-m-light mt-1" header5>
+    Similar to tables , use the modifier classes<code> table-[color]</code> to
+    make <code>thead</code> appear in any color.
+  </p>
+  <div class="card-block row">
+    <div class="col-sm-12 col-lg-12 col-xl-12">
+      <div class="table-responsive custom-scrollbar">
+        <table class="table">
+          <thead class="table-dark">
+            <tr>
+              <th scope="col">Id</th>
+              <th scope="col">First Name</th>
+              <th scope="col">Last Name</th>
+              <th scope="col">Username</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (details of tableHeadOption; track details) {
+              <tr>
+                <th scope="row">{{ details.id }}</th>
+                <td>{{ details.first_name }}</td>
+                <td>{{ details.last_name }}</td>
+                <td>{{ details.user_name }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</app-card>

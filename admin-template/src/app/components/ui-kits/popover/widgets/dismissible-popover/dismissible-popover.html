@@ -1,0 +1,26 @@
+<app-card
+  [headerTitle]="'Dismiss Popover'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'common-flex popover-wrapper'"
+>
+  <p class="mb-0 mt-1" header5>
+    To create dismissible popovers using <code>ngbPopover</code>, set the
+    <code>[autoClose]="false"</code> attribute to disable automatic closing, and
+    use triggers like <code>manual</code> to control popover behavior
+    programmatically.
+  </p>
+  <button
+    class="btn btn-danger popover-dismiss"
+    type="button"
+    [autoClose]="false"
+    triggers="manual"
+    #p="ngbPopover"
+    (click)="p.open()"
+    placement="end"
+    ngbPopover="And here's some amazing content. It's very engaging. Right?"
+    popoverTitle="Dismissible Popover"
+  >
+    Dismissible Popover
+  </button>
+</app-card>

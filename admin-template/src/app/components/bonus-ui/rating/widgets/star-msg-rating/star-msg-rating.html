@@ -1,0 +1,33 @@
+<app-card
+  [headerTitle]="'Star with Message Rating'"
+  [border]="true"
+  [padding]="false"
+  [cardClass]="'height-equal'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use<code> bar-rating </code> set star with message rating.
+  </p>
+  <div class="msg-emojis-wrapper">
+    <div class="star-widget">
+      <div class="rating">
+        <bar-rating [rate]="faoRate" (rateChange)="onFaoRate($event)" [max]="5">
+          <ng-template ratingActive>
+            <i class="fa fa-star fa-lg" style="color: #ffb829"></i>
+          </ng-template>
+          <ng-template ratingInactive>
+            <i class="fa fa-star fa-lg" style="color: #d2d2d2"></i>
+          </ng-template>
+          <ng-template ratingFraction>
+            <i class="fa fa-star fa-lg" style="color: #d2d2d2"></i>
+          </ng-template>
+        </bar-rating>
+        @if (faoRated) {
+          <p>{{ getRatingString(faoRate) }}</p>
+        }
+      </div>
+      <form action="#">
+        <header></header>
+      </form>
+    </div>
+  </div>
+</app-card>

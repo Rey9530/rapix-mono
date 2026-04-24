@@ -1,0 +1,32 @@
+<app-card
+  [headerTitle]="'Progress with Number Steps'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="f-m-light mt-1" header5>
+    Use the <code> position-absolute </code>to set progress numbers steps.
+  </p>
+  <div class="position-relative m-3 progress-number">
+    <ngb-progressbar
+      type="primary"
+      [value]="50"
+      class="progress progress-wrapper"
+    >
+      <button
+        class="position-absolute top-0 start-0 translate-middle btn-sm btn-primary rounded-circle"
+      >
+        1
+      </button>
+      <button
+        class="position-absolute top-0 start-50 translate-middle btn-sm btn-primary rounded-circle"
+      >
+        2
+      </button>
+      <button
+        class="progress-btn position-absolute top-0 start-100 translate-middle btn-sm rounded-circle"
+      >
+        3
+      </button>
+    </ngb-progressbar>
+  </div>
+</app-card>

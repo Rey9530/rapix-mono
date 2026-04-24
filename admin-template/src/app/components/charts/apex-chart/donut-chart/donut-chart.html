@@ -1,0 +1,15 @@
+<app-card
+  [headerTitle]="'Donut Chart'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'apex-chart'"
+>
+  <div id="donutchart">
+    <apx-chart
+      [chart]="donutChart.chart"
+      [series]="donutChart.series"
+      [responsive]="donutChart.responsive"
+      [colors]="donutChart.colors"
+    />
+  </div>
+</app-card>

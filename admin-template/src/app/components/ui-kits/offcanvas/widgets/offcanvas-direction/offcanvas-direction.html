@@ -1,0 +1,30 @@
+<app-card
+  [headerTitle]="'Offcanvas Directions'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'common-flex common-offcanvas'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use the <code>ngbOffcanvas</code> directive to create a slide-in panel for
+    additional content. The <code>open()</code> method toggles the visibility of
+    the offcanvas panel, with the <code>position</code> option allowing you to
+    specify its placement dynamically (e.g., 'top', 'end', 'start', or
+    'bottom').
+  </p>
+
+  <button class="btn btn-primary" type="button" (click)="openTop()">
+    Top Offcanvas
+  </button>
+
+  <button class="btn btn-secondary" type="button" (click)="openRight()">
+    Right Offcanvas
+  </button>
+
+  <button class="btn btn-dark" type="button" (click)="openBottom()">
+    Bottom Offcanvas
+  </button>
+
+  <button class="btn btn-success" type="button" (click)="openLeft()">
+    Left Offcanvas
+  </button>
+</app-card>

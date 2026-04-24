@@ -1,0 +1,80 @@
+<div class="container-fluid">
+  <div class="row general-widget-wrapper">
+    @for (chart of currencyChart; track chart) {
+      <div class="col-sm-4 col-xxl-2 box-col-4">
+        <app-currency-chart [chart]="chart" />
+      </div>
+    }
+
+    @for (details of averageDayDetails | slice: 0 : 2; track details) {
+      <div class="col-xxl-3 col-sm-6 box-col-6">
+        <app-average-day-details [details]="details" />
+      </div>
+    }
+
+    @for (detail of details; track detail; let i = $index) {
+      <div class="col-sm-6 col-xl-3 col-lg-6 box-col-3">
+        <app-details [detail]="detail" />
+      </div>
+    }
+
+    <div class="col-xxl-3 col-xl-4 col-12 box-col-4">
+      <div class="row">
+        @for (course of courses; track course) {
+          <div class="col-xl-12 col-sm-6 box-col-12">
+            <app-courses [course]="course" />
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="col-xxl-4 col-xl-3 col-md-6 box-col-3">
+      <app-website-traffic />
+    </div>
+    <div class="col-xl-5 col-md-6 box-col-5">
+      <app-session-by-device [type]="'classic'" />
+    </div>
+    <div class="col-12">
+      <div class="row">
+        @for (details of socialMediaDetails; track details) {
+          <div class="col s-xxl-3 box-col-4">
+            <app-social-media-details [details]="details" />
+          </div>
+        }
+      </div>
+    </div>
+    <div class="col-xxl-6 box-col-12">
+      <div class="row">
+        @for (details of lastMonthDetails; track details; let i = $index) {
+          <div
+            [ngClass]="
+              lastMonthDetails.length % 2 !== 0 &&
+              i === lastMonthDetails.length - 1
+                ? 'col-md-4 col-12'
+                : 'col-md-4 col-sm-6'
+            "
+          >
+            <app-last-month-details [details]="details" />
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="col-xxl-6 box-col-12">
+      <div class="row user-tread-cards">
+        <div class="col-sm-6">
+          <app-total-users />
+        </div>
+        <div class="col-sm-6">
+          <app-page-views />
+        </div>
+      </div>
+    </div>
+    <div class="col-xxl-6 col-md-6 ord-md-i box-col-6">
+      <app-all-visits />
+    </div>
+    <div class="col-xxl-6 col-md-6 box-col-6">
+      <app-activity-hours />
+    </div>
+  </div>
+</div>

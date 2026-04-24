@@ -1,0 +1,24 @@
+<app-card [headerTitle]="'Live Products'" [border]="true" [padding]="false">
+  <div class="chart-container">
+    <div class="row">
+      <div class="col-12">
+        <div id="chart-widget6">
+          <apx-chart
+            [chart]="liveProductChart.chart"
+            [stroke]="liveProductChart.stroke"
+            [series]="liveProductChart.series"
+            [fill]="liveProductChart.fill"
+            [dataLabels]="liveProductChart.dataLabels"
+            [grid]="liveProductChart.grid"
+            [colors]="liveProductChart.colors"
+            [labels]="liveProductChart.labels"
+            [markers]="liveProductChart.markers"
+            [xaxis]="liveProductChart.xaxis"
+            [yaxis]="liveProductChart.yaxis"
+            [tooltip]="liveProductChart.tooltip"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</app-card>

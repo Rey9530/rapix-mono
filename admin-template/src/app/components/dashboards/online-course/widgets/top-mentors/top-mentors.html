@@ -1,0 +1,16 @@
+<app-card
+  [headerTitle]="'Top Mentors'"
+  [cardBodyClass]="'px-0 pt-0 t-top-mentor'"
+  [dropdownType]="'simple'"
+  [options]="cardToggleOptions"
+  [padding]="false"
+>
+  <div class="table-responsive custom-scrollbar">
+    <app-table
+      [tableConfig]="tableConfig"
+      [hasCheckbox]="true"
+      [pageSize]="4"
+      [paginateDetails]="true"
+    />
+  </div>
+</app-card>

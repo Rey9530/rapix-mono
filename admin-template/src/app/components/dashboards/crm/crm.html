@@ -1,0 +1,61 @@
+<div class="container-fluid dashboard-09">
+  <div class="row">
+    <div class="col-xxl-6 box-col-12">
+      <div class="row">
+        @for (details of lastMonthDetails; track details; let i = $index) {
+          <div
+            [ngClass]="
+              lastMonthDetails.length % 2 !== 0 &&
+              i === lastMonthDetails.length - 1
+                ? 'col-md-4 col-12'
+                : 'col-md-4 col-sm-6'
+            "
+          >
+            <app-last-month-details [details]="details" />
+          </div>
+        }
+        <div class="col-sm-6">
+          <app-total-sales />
+        </div>
+        <div class="col-md-6">
+          <app-upgrade-plan />
+        </div>
+      </div>
+    </div>
+    <div class="col-xxl-6 box-col-12">
+      <div class="row">
+        <div class="col-md-6">
+          <app-sales-chart />
+        </div>
+        <div class="col-md-6">
+          <div class="row">
+            <div class="col-md-12 col-sm-6">
+              <app-revenue-growth />
+            </div>
+            <div class="col-md-12 col-sm-6">
+              <app-pipeline-breakdown />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xxl-3 col-md-6 box-col-6">
+      <app-crm-to-do />
+    </div>
+    <div class="col-xxl-5 col-md-6 box-col-6">
+      <app-finance-overview />
+    </div>
+    <div class="col-xxl-4 col-md-6 order-xxl-0 order-sm-4 box-col-6 box-ord-4">
+      <app-deals />
+    </div>
+    <div class="col-md-6 order-xxl-0 order-sm-1 box-ord-1">
+      <app-leads />
+    </div>
+    <div class="col-xxl-3 col-sm-6 order-xxl-0 order-sm-3 box-col-6 box-ord-3">
+      <app-sales-week />
+    </div>
+    <div class="col-xxl-3 col-sm-6 order-xxl-0 order-sm-2 box-col-6 box-ord-2">
+      <app-lead-source />
+    </div>
+  </div>
+</div>

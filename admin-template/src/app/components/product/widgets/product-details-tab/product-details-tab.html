@@ -1,0 +1,175 @@
+<div class="card">
+  <div class="row product-page-main">
+    <div class="col-sm-12">
+      <ul
+        ngbNav
+        #nav="ngbNav"
+        [(activeId)]="active"
+        class="nav nav-tabs border-tab nav-primary mb-0"
+      >
+        <li [ngbNavItem]="1">
+          <a class="nav-link" ngbNavLink>Description</a>
+          <ng-template ngbNavContent>
+            @for (details of productDetails.description; track details) {
+              <div class="info-part">
+                @if (details.title) {
+                  <h6>{{ details.title }}:</h6>
+                }
+                <p class="c-o-light">{{ details.description }}</p>
+              </div>
+            }
+          </ng-template>
+        </li>
+
+        <li [ngbNavItem]="2">
+          <a class="nav-link" ngbNavLink>Additional Info</a>
+          <ng-template ngbNavContent>
+            <div class="info-part">
+              <p class="c-o-light">
+                The model is wearing a white blouse from our stylist's
+                collection, see the image for a mock-up of what the actual
+                blouse would look like.it has text written on it in a black
+                cursive language which looks great on a white color.
+              </p>
+            </div>
+            <div class="product-info-table table-responsive custom-scrollbar">
+              <app-table
+                [tableConfig]="tableConfig"
+                [search]="false"
+                [pagination]="false"
+                [tableClass]="'table-striped'"
+              />
+            </div>
+          </ng-template>
+        </li>
+
+        <li [ngbNavItem]="3">
+          <a class="nav-link" ngbNavLink>Write Review</a>
+          <ng-template ngbNavContent>
+            <div class="review-box">
+              <div class="row g-4">
+                <div class="col-xl-6">
+                  <div class="product-rating-box">
+                    <div class="row">
+                      <div class="col-12">
+                        <div class="common-f-start mb-3">
+                          <h5 class="main-product-rating">
+                            {{ productDetails.review.review }}
+                            <i class="fa-solid fa-star"></i>
+                          </h5>
+                          <h6 class="ms-3 c-o-light">
+                            {{ productDetails.review.total_review }} Overall
+                            Rating
+                          </h6>
+                        </div>
+                      </div>
+                      <div class="col-12">
+                        <div class="rating-box">
+                          <ul>
+                            @for (
+                              count of productDetails.review.review_count;
+                              track count;
+                              let i = $index
+                            ) {
+                              <li>
+                                <div class="rating-list">
+                                  <h6>
+                                    {{ rating[rating.length - i - 1] }}
+                                    <i class="fa-solid fa-star"></i>
+                                  </h6>
+                                  <div class="progress">
+                                    <div
+                                      class="progress-bar"
+                                      role="progressbar"
+                                      [style.width]="(count /
+                                            productDetails.review
+                                              .total_review) *
+                                            100 +
+                                          '%'"
+                                      style="width: 85%"
+                                    ></div>
+                                  </div>
+                                </div>
+                              </li>
+                            }
+                          </ul>
+                        </div>
+                      </div>
+                      <div class="review-title-2">
+                        <h5>Review this product</h5>
+                        <p>Let other customers know what you think</p>
+                        <a
+                          class="btn btn-primary"
+                          href="javascript:void(0)"
+                          (click)="openReviewModal()"
+                          >Write a Review</a
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-6">
+                  <div class="review-people">
+                    <ul class="review-list custom-scrollbar">
+                      @for (
+                        review of productDetails.review.reviews;
+                        track review
+                      ) {
+                        <li>
+                          <div class="people-box">
+                            <img
+                              class="img-fluid"
+                              [src]="review.image"
+                              [alt]="review.name"
+                            />
+                            <div class="people-comment">
+                              <div class="people-name">
+                                <div>
+                                  <a class="name" href="javascript:void(0)">{{
+                                    review.name
+                                  }}</a>
+                                  <span class="c-o-light"
+                                    >({{ review.product }})</span
+                                  >
+                                </div>
+                                <div class="product-rating">
+                                  <div class="common-flex">
+                                    <div class="rating">
+                                      <ngb-rating [(rate)]="review.rating">
+                                        <ng-template let-fill="fill">
+                                          <i
+                                            [ngClass]="
+                                              fill === 100
+                                                ? 'fa-solid fa-star txt-warning'
+                                                : fill > 0
+                                                  ? 'fa-solid fa-star-half-stroke txt-warning'
+                                                  : 'fa-solid fa-star'
+                                            "
+                                          ></i>
+                                        </ng-template>
+                                      </ngb-rating>
+                                    </div>
+                                  </div>
+                                </div>
+                                <h6 class="text-content">{{ review.date }}</h6>
+                              </div>
+                              <div class="reply">
+                                <p>{{ review.review_text }}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </li>
+      </ul>
+
+      <div [ngbNavOutlet]="nav" class="mt-2"></div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+<app-card
+  [headerTitle]="'Line Chart'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'chart-block'"
+>
+  <canvas
+    baseChart
+    class="chart"
+    [datasets]="lineChartData"
+    [labels]="lineChartLabels"
+    [options]="lineChartOptions"
+    [legend]="lineChartLegend"
+    [type]="'line'"
+  >
+  </canvas>
+</app-card>

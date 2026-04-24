@@ -1,0 +1,98 @@
+<app-card [headerTitle]="'Bottom Tabs'" [border]="true" [padding]="false">
+  <p class="mt-1 f-m-light" header5>
+    Use <code>[ngbNavOutlet]="nav" </code>before the <code>ngbNav</code> for
+    bottom tab.
+  </p>
+
+  <div class="bg-navbar bottom-navbar">
+    <div [ngbNavOutlet]="nav"></div>
+    <ul
+      class="nav nav-pills nav-primary"
+      ngbNav
+      #nav="ngbNav"
+      [(activeId)]="activeTab"
+    >
+      <li [ngbNavItem]="'css'">
+        <a class="nav-link" ngbNavLink>
+          <img src="assets/images/tree/css.png" alt="css-logo" />CSS</a
+        >
+        <ng-template ngbNavContent>
+          <div class="common-flex">
+            <img src="assets/images/tree/css.png" alt="css-logo" />
+            <H5>CSS</H5>
+          </div>
+          <div class="tab-paragraph">
+            <i class="fa-solid fa-circle-arrow-right"></i>
+            <P
+              >"One of the three main web technologies is CSS. The terms
+              "cascading" and "style," with cascading indicating how one style
+              can cascade from another, are actually the key to understanding
+              CSS, which stands for Cascading Style Sheets."</P
+            >
+          </div>
+          <div class="tab-paragraph">
+            <i class="fa-solid fa-circle-arrow-right"></i>
+            <p>
+              To specify how HTML code will appear on a website, utilize CSS.
+            </p>
+          </div>
+        </ng-template>
+      </li>
+      <li [ngbNavItem]="'vendors'">
+        <a class="nav-link" ngbNavLink>
+          <img src="assets/images/tree/vendor.png" alt="vendor-logo" />
+          Vendors
+        </a>
+        <ng-template ngbNavContent>
+          <div class="common-flex">
+            <img src="assets/images/tree/vendor.png" alt="vendor-logo" />
+            <H5>Vendors</H5>
+          </div>
+          <div class="tab-paragraph">
+            <i class="fa-solid fa-circle-arrow-right"></i>
+            <P
+              >To improve the development of your website, find a carefully
+              chosen list of premier suppliers. Use our dependable network to
+              locate the ideal partners for the accomplishment of your
+              project.</P
+            >
+          </div>
+          <div class="tab-paragraph">
+            <i class="fa-solid fa-circle-arrow-right"></i>
+            <p>
+              Cutting-edge design tools, or specialized services, our curated
+              list ensures you have access to the best resources for a seamless
+              and successful website development experience.
+            </p>
+          </div>
+        </ng-template>
+      </li>
+      <li [ngbNavItem]="'javascript'">
+        <a class="nav-link" ngbNavLink>
+          <img src="assets/images/tree/js.png" alt="js-logo" />Javascript
+        </a>
+        <ng-template ngbNavContent>
+          <div class="common-flex">
+            <img src="assets/images/tree/js.png" alt="js-logo" />
+            <H5>Javascript</H5>
+          </div>
+          <div class="tab-paragraph">
+            <i class="fa-solid fa-circle-arrow-right"></i>
+            <P
+              >Development of interactive and adaptable websites is made
+              possible by JavaScript, the web's dynamic programming language.</P
+            >
+          </div>
+          <div class="tab-paragraph">
+            <i class="fa-solid fa-circle-arrow-right"></i>
+            <p>
+              Building strong and interactive online apps requires JavaScript,
+              which is essential for everything from enabling asynchronous
+              requests to designing captivating user interfaces.
+            </p>
+          </div>
+        </ng-template>
+      </li>
+    </ul>
+  </div>
+</app-card>

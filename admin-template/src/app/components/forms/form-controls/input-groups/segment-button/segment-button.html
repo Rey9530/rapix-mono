@@ -1,0 +1,70 @@
+<app-card
+  [headerTitle]="'Segmented Buttons '"
+  [border]="true"
+  [padding]="false"
+  [cardClass]="' height-equal'"
+  [cardBodyClass]="'main-segment-btn card-wrapper input-group-wrapper'"
+>
+  <p class="f-m-light mt-1" header5>
+    Multiple add-ons are supported and can be mixed with<code> dropdowns</code>
+    versions.
+  </p>
+  <div class="input-group">
+    <div
+      class="input-group"
+      ngbDropdown
+      role="group"
+      aria-label="Button group with nested dropdown"
+    >
+      <button type="button" class="btn btn-outline-primary">Primary</button>
+      <button
+        type="button"
+        class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+        ngbDropdownToggle
+      ></button>
+      <div class="dropdown-menu dropdown-block" ngbDropdownMenu>
+        <li><a class="dropdown-item" ngbDropdownItem>Learning</a></li>
+        <li><a class="dropdown-item" ngbDropdownItem>Editors</a></li>
+        <li><a class="dropdown-item" ngbDropdownItem>Users</a></li>
+        <li>
+          <hr class="dropdown-divider" />
+        </li>
+        <li><a class="dropdown-item" ngbDropdownItem>Social App</a></li>
+      </div>
+      <input
+        class="form-control"
+        type="text"
+        aria-label="Text input with segmented dropdown button"
+      />
+    </div>
+  </div>
+  <div class="input-group">
+    <div
+      class="input-group"
+      ngbDropdown
+      role="group"
+      aria-label="Button group with nested dropdown"
+    >
+      <input
+        class="form-control"
+        type="text"
+        aria-label="Text input with segmented dropdown button"
+      />
+      <button type="button" class="btn btn-outline-secondary">Secondary</button>
+      <button
+        type="button"
+        class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
+        ngbDropdownToggle
+      ></button>
+      <div class="dropdown-menu dropdown-block" ngbDropdownMenu>
+        <li><a class="dropdown-item" ngbDropdownItem>Search Result</a></li>
+        <li><a class="dropdown-item" ngbDropdownItem>Tasks</a></li>
+        <li><a class="dropdown-item" ngbDropdownItem>Projects</a></li>
+        <li>
+          <hr class="dropdown-divider" />
+        </li>
+        <li><a class="dropdown-item" ngbDropdownItem>Animation</a></li>
+      </div>
+    </div>
+  </div>
+</app-card>

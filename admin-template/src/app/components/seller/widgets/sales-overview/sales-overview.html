@@ -1,0 +1,57 @@
+<app-card
+  [cardClass]="'sales-report'"
+  [headerTitle]="'Sales Overview'"
+  [padding]="false"
+  [dropdownType]="'simple'"
+  [options]="cardToggleOption"
+  [cardBodyClass]="'pt-0'"
+>
+  <div class="social-tabs">
+    <ul
+      ngbNav
+      #nav="ngbNav"
+      [(activeId)]="activeTab"
+      class="nav nav-pills custom-scrollbar"
+    >
+      @for (details of salesOverviewCharts; track details) {
+        <li [ngbNavItem]="details.value">
+          <a
+            ngbNavLink
+            class="social-box bg-7-{{ details.color }}"
+            href="javascript:void(0)"
+          >
+            <div class="frame-image">
+              <div class="outline-20-{{ details.color }}">
+                <div class="bg-20-{{ details.color }}">
+                  <app-svg-icon [icon]="details.icon" />
+                </div>
+              </div>
+            </div>
+            <span>{{ details.title }}</span>
+          </a>
+          <ng-template ngbNavContent>
+            <div>
+              <div>
+                <apx-chart
+                  [series]="details.chart_details.series"
+                  [fill]="details.chart_details.fill"
+                  [chart]="details.chart_details.chart"
+                  [colors]="details.chart_details.colors"
+                  [dataLabels]="details.chart_details.dataLabels"
+                  [stroke]="details.chart_details.stroke"
+                  [tooltip]="details.chart_details.tooltip"
+                  [markers]="details.chart_details.markers"
+                  [xaxis]="details.chart_details.xaxis"
+                  [yaxis]="details.chart_details.yaxis"
+                  [legend]="details.chart_details.legend"
+                  [responsive]="details.chart_details.responsive"
+                />
+              </div>
+            </div>
+          </ng-template>
+        </li>
+      }
+    </ul>
+    <div [ngbNavOutlet]="nav" class="mt-2"></div>
+  </div>
+</app-card>

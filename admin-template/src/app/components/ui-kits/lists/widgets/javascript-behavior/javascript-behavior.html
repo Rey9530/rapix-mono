@@ -1,0 +1,150 @@
+<app-card
+  [headerTitle]="'JavaScript Behavior'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="f-m-light mt-1" header5>
+    Use tab javascript plugin—include it individually or through the
+    compiled<code> bootstrap.js </code>file to extend our list group to create
+    table panes of local content.
+  </p>
+
+  <div class="row">
+    <div class="col-sm-4">
+      <div
+        ngbNav
+        #nav="ngbNav"
+        [(activeId)]="active"
+        class="list-group"
+        orientation="vertical"
+      >
+        <ng-container ngbNavItem="home">
+          <button
+            ngbNavLink
+            class="list-group-item list-group-item-action bg-primary"
+            style="text-align: start"
+          >
+            Home
+          </button>
+          <ng-template ngbNavContent>
+            <div class="d-flex mb-xl-4 list-behavior-1">
+              <div class="flex-shrink-0">
+                <img
+                  class="tab-img img-fluid"
+                  src="assets/images/blog/img.png"
+                  alt="home"
+                />
+              </div>
+              <div class="flex-grow-1">
+                <p class="mb-xl-0 mb-sm-4">
+                  We provide end to end digital solutions, right from designing
+                  your website/application development: Domain, Web Hosting,
+                  Email Hosting Registration, Search Engine Optimization and
+                  other Internet Marketing, Renewal of Services timely and
+                  effectively.
+                </p>
+              </div>
+            </div>
+            <div class="d-flex list-behavior-1 mb-xl-4">
+              <div class="flex-grow-1">
+                <p class="mb-0">
+                  When someone visits your homepage, your design should inspire
+                  them to stay. Therefore, your value proposition should be
+                  established on the homepage for visitors to select to stay on
+                  your website.Building trust, expressing value, and guiding
+                  visitors to the next step all depend on a page's design.
+                </p>
+              </div>
+              <div class="flex-shrink-0">
+                <img
+                  class="tab-img img-fluid"
+                  src="assets/images/blog/blog.jpg"
+                  alt="home"
+                />
+              </div>
+            </div>
+          </ng-template>
+        </ng-container>
+        <ng-container ngbNavItem="profile">
+          <button
+            ngbNavLink
+            class="list-group-item list-group-item-action list-hover-primary"
+            style="text-align: start"
+          >
+            Profile
+          </button>
+          <ng-template ngbNavContent>
+            <div
+              class="flex-space align-items-center list-light-dark contact-profile"
+            >
+              <img
+                class="tab-img"
+                src="assets/images/avatar/3.jpg"
+                alt="profile"
+              />
+              <ul class="d-flex flex-column gap-2">
+                <li>
+                  <strong>Visit Us: </strong> 2600 Hollywood Blvd,Florida,
+                  United States- 33020
+                </li>
+                <li><strong>Mail Us:</strong>contact&#64;us&#64;gmail.com</li>
+                <li><strong>Contact Number: </strong>(954) 357-7760</li>
+              </ul>
+            </div>
+          </ng-template>
+        </ng-container>
+        <ng-container ngbNavItem="contact-us">
+          <button
+            ngbNavLink
+            class="list-group-item list-group-item-action list-hover-primary"
+            style="text-align: start"
+          >
+            Contact Us
+          </button>
+          <ng-template ngbNavContent>
+            <ul class="d-flex flex-column gap-1">
+              <li>
+                Us Technology offers web & mobile development solutions for all
+                industry verticals.Include a short form using fields that'll
+                help your business understand who's contacting them.
+              </li>
+              <li>
+                <strong>Visit Us: </strong> 2600 Hollywood Blvd,Florida, United
+                States- 33020
+              </li>
+              <li><strong>Mail Us:</strong>contact&#64;us&#64;gmail.com</li>
+              <li><strong>Contact Number: </strong>(954) 357-7760</li>
+            </ul>
+          </ng-template>
+        </ng-container>
+        <ng-container ngbNavItem="settings">
+          <button
+            ngbNavLink
+            class="list-group-item list-group-item-action list-hover-primary"
+            style="text-align: start"
+          >
+            Settings
+          </button>
+          <ng-template ngbNavContent>
+            <ul class="d-flex flex-column gap-2">
+              <li><strong>Available Pages in Theme: </strong></li>
+              <li>
+                --&gt; Typography: Typography is the art of arranging letters
+                and text in a way that makes the copy legible, clear, and
+                visually appealing to the reader.
+              </li>
+              <li>
+                --&gt; Tooltip: A tooltip is a brief, informative message that
+                appears when a user interacts with an element in a graphical
+                user interface (GUI).
+              </li>
+            </ul>
+          </ng-template>
+        </ng-container>
+      </div>
+    </div>
+    <div class="col-sm-8">
+      <div [ngbNavOutlet]="nav"></div>
+    </div>
+  </div>
+</app-card>

@@ -1,0 +1,16 @@
+<app-card
+  [headerTitle]="'Striped Progress Bars'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'progress-showcase'"
+>
+  <p class="f-m-light mt-1" header5>
+    Add the <code>striped</code> attribute to any
+    <code>ngb-progressbar</code> to enable a smooth the striped background,
+    using Bootstrap's built-in styles for visual enhancement.
+  </p>
+  <ngb-progressbar type="primary" [value]="10" [striped]="true" />
+  <ngb-progressbar type="warning" [value]="25" [striped]="true" />
+  <ngb-progressbar type="danger" [value]="50" [striped]="true" />
+  <ngb-progressbar type="success" [value]="75" [striped]="true" />
+</app-card>

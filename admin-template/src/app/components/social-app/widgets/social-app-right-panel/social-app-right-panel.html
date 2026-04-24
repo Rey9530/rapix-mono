@@ -1,0 +1,147 @@
+<div class="default-according style-1 faq-accordion job-accordion" ngbAccordion>
+  <div class="card" ngbAccordionItem [collapsed]="false">
+    <div class="card-header" ngbAccordionHeader>
+      <h2 class="mb-0">
+        <button class="btn btn-link" type="button" ngbAccordionButton>
+          Profile Intro
+        </button>
+      </h2>
+    </div>
+    <div class="collapse show" ngbAccordionCollapse>
+      <div class="card-body filter-cards-view" ngbAccordionBody>
+        <ng-template>
+          <div [innerHTML]="myProfile.introduction"></div>
+          <div class="social-network theme-form">
+            <span class="f-w-600">Social Networks</span>
+            <div class="d-flex">
+              @for (platform of myProfile.socialNetworks; track platform) {
+                <button
+                  class="btn social-btn btn-{{
+                    platform.platform_name
+                  }} text-center"
+                  platform="top"
+                  [ngbTooltip]="platform.platform_name"
+                >
+                  <i [class]="platform.icon" [ngClass]="'m-r-5'"></i>
+                </button>
+              }
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+  <div class="card" ngbAccordionItem [collapsed]="false">
+    <div class="card-header" ngbAccordionHeader>
+      <h2 class="mb-0">
+        <button class="btn btn-link" type="button" ngbAccordionButton>
+          Followers
+        </button>
+      </h2>
+    </div>
+    <div class="collapse show" ngbAccordionCollapse>
+      <div class="card-body social-list filter-cards-view" ngbAccordionBody>
+        <ng-template>
+          @for (friend of friends; track friend) {
+            @if (!friend.is_follower) {
+              <div class="d-flex">
+                <img
+                  class="img-50 img-fluid m-r-20 rounded-circle"
+                  [alt]="friend.name"
+                  [src]="friend.profile"
+                />
+                <div class="flex-grow-1">
+                  <span class="d-block">{{ friend.name }}</span>
+                  <a href="javascript:void(0)">Add Friend</a>
+                </div>
+              </div>
+            }
+          }
+        </ng-template>
+      </div>
+    </div>
+  </div>
+  <div class="card" ngbAccordionItem [collapsed]="false">
+    <div class="card-header" ngbAccordionHeader>
+      <h2 class="mb-0">
+        <button class="btn btn-link" type="button" ngbAccordionButton>
+          Followings
+        </button>
+      </h2>
+    </div>
+    <div class="collapse show" ngbAccordionCollapse>
+      <div class="card-body social-list filter-cards-view" ngbAccordionBody>
+        <ng-template>
+          @for (friend of friends; track friend) {
+            @if (!friend.is_following) {
+              <div class="d-flex">
+                <img
+                  class="img-50 img-fluid m-r-20 rounded-circle"
+                  [alt]="friend.name"
+                  [src]="friend.profile"
+                />
+                <div class="flex-grow-1">
+                  <span class="d-block">{{ friend.name }}</span>
+                  <a href="javascript:void(0)">Add Friend</a>
+                </div>
+              </div>
+            }
+          }
+        </ng-template>
+      </div>
+    </div>
+  </div>
+  <div class="card" ngbAccordionItem [collapsed]="false">
+    <div class="card-header" ngbAccordionHeader>
+      <h2 class="mb-0">
+        <button class="btn btn-link" type="button" ngbAccordionButton>
+          Latest Photos
+        </button>
+      </h2>
+    </div>
+    <div class="collapse show" ngbAccordionCollapse>
+      <div class="card-body photos filter-cards-view" ngbAccordionBody>
+        <ng-template>
+          <ul>
+            @for (photos of myProfile.latestPhotos; track photos) {
+              <li>
+                <img class="img-fluid" alt="post" [src]="photos.image" />
+              </li>
+            }
+          </ul>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+  <div class="card" ngbAccordionItem [collapsed]="false">
+    <div class="card-header" ngbAccordionHeader>
+      <h2 class="mb-0">
+        <button class="btn btn-link" type="button" ngbAccordionButton>
+          Friends
+        </button>
+      </h2>
+    </div>
+    <div class="collapse show" ngbAccordionCollapse>
+      <div class="card-body avatar-showcase filter-cards-view" ngbAccordionBody>
+        <ng-template>
+          @for (friend of friends; track friend) {
+            <div class="d-inline-block friend-pic">
+              <img
+                class="img-50 rounded-circle"
+                [src]="friend.profile"
+                [alt]="friend.name"
+              />
+            </div>
+          }
+        </ng-template>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <img
+      class="img-fluid"
+      src="assets/images/social-app/timeline-4.png"
+      alt="banner"
+    />
+  </div>
+</div>

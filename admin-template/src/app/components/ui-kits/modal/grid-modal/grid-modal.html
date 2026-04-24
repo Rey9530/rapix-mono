@@ -1,0 +1,87 @@
+<app-card
+  [cardClass]="'height-equal'"
+  [headerTitle]="'Grid Modal'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="f-m-light mt-1" header5>
+    Utilize the Bootstrap grid system within a modal by nesting
+    <code> container-fluid </code> within the <code> modal-body</code> . Then,
+    use the normal grid system classes as you would anywhere else.
+  </p>
+
+  <button class="btn btn-warning" type="button" (click)="openModal(gridModal)">
+    Grid Modal
+  </button>
+
+  <ng-template #gridModal let-modal>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Grid Modal</h5>
+        <button class="btn-close" type="button" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+          <div class="row common-align">
+            <div class="col-md-4">
+              <span class="grid-space bg-light-secondary txt-secondary"
+                >.col-md-4</span
+              >
+            </div>
+            <div class="col-md-4 ms-auto">
+              <span class="grid-space bg-light-secondary txt-secondary"
+                >.col-md-4 .ms-auto</span
+              >
+            </div>
+          </div>
+          <div class="row justify-content-center">
+            <div class="col-md-3 ms-auto">
+              <span class="grid-space bg-light-secondary txt-secondary"
+                >.col-md-3 .ms-auto</span
+              >
+            </div>
+            <div class="col-md-2 ms-auto">
+              <span class="grid-space bg-light-secondary txt-secondary"
+                >.col-md-2 .ms-auto</span
+              >
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 ms-auto">
+              <span class="grid-space bg-light-secondary txt-secondary"
+                >.col-md-6 .ms-auto</span
+              >
+            </div>
+          </div>
+          <div class="row common-align">
+            <div class="col-sm-9">
+              <span class="grid-space bg-light-secondary txt-secondary"
+                >Level 1: .col-sm-9</span
+              >
+              <div class="row">
+                <div class="col-8 col-sm-6">
+                  <span
+                    class="grid-space bg-light-secondary txt-secondary mb-0"
+                  >
+                    Level 2: .col-8 .col-sm-6</span
+                  >
+                </div>
+                <div class="col-4 col-sm-6">
+                  <span class="grid-space bg-light-secondary txt-secondary mb-0"
+                    >Level 2: .col-4 .col-sm-6</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" (click)="closeModal()">
+          Close
+        </button>
+        <button class="btn btn-primary" type="button">Save</button>
+      </div>
+    </div>
+  </ng-template>
+</app-card>

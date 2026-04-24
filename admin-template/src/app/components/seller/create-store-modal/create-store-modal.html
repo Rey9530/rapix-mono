@@ -1,0 +1,65 @@
+<ng-template #createStoreModal let-modal>
+  <div class="modal-content add-seller-modal">
+    <div class="modal-header">
+      <h5 class="modal-title" id="modaldashboard">Add Seller</h5>
+      <button
+        class="btn-close"
+        type="button"
+        data-bs-dismiss="modal"
+        aria-label="Close"
+        (click)="ngOnDestroy()"
+      ></button>
+    </div>
+    <div class="modal-body basic-wizard important-validation">
+      <div class="stepper-horizontal custom-scrollbar" id="stepper1">
+        @for (tab of addSeller; track tab) {
+          <div
+            class="stepper-{{ tab.class }}"
+            [ngClass]="{
+              'active done':
+                tab.id < activeTab ||
+                (activeTab === addSeller.length && tab.id === addSeller.length),
+            }"
+          >
+            <div class="step-circle">
+              <span>{{ tab.id }}</span>
+            </div>
+            <div class="step-title">{{ tab.title }}</div>
+            <div class="step-bar-left"></div>
+            <div class="step-bar-right"></div>
+          </div>
+        }
+      </div>
+      <div id="msform">
+        <div [style.display]="activeTab === 1 ? 'flex' : 'none'">
+          <app-personal-info />
+        </div>
+        <div [style.display]="activeTab === 2 ? 'flex' : 'none'">
+          <app-company-info />
+        </div>
+        <div [style.display]="activeTab === 3 ? 'flex' : 'none'">
+          <app-company-overview />
+        </div>
+        <div [style.display]="activeTab === 4 ? 'flex' : 'none'">
+          <app-financial-info />
+        </div>
+        <div [style.display]="activeTab === 5 ? 'block' : 'none'">
+          <app-finish />
+        </div>
+      </div>
+      <div class="wizard-footer d-flex gap-2 justify-content-end">
+        <button
+          class="btn button-light-primary"
+          id="backbtn"
+          (click)="handleStep(-1)"
+          [disabled]="activeTab === 1"
+        >
+          Back
+        </button>
+        <button class="btn btn-primary" id="nextbtn" (click)="handleStep(1)">
+          {{ activeTab === addSeller.length ? "Finish" : "Next" }}
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>

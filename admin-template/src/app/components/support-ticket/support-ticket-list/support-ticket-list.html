@@ -1,0 +1,50 @@
+<div class="row">
+  @for (item of ticketListStatus; track item) {
+    <div class="col-xl-4 col-sm-6 box-col-6">
+      <div class="card ecommerce-widget">
+        <div class="card-body support-ticket-font">
+          <div class="row">
+            <div class="col-5">
+              <span>{{ item.status_title }}</span>
+              <h3 class="total-num counter" data-target="2563">
+                {{ item.order }}
+              </h3>
+            </div>
+            <div class="col-7">
+              <div class="text-end">
+                <ul>
+                  <li>
+                    Profit
+                    <span class="product-stts txt-success ms-2">
+                      {{ item.profit }}
+                      <i class="icon-angle-up f-12 ms-1"></i>
+                    </span>
+                  </li>
+                  <li>
+                    Loss
+                    <span class="product-stts txt-danger ms-2">
+                      {{ item.loss }}
+                      <i class="icon-angle-down f-12 ms-1"></i>
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="progress-showcase">
+            <div class="progress sm-progress-bar">
+              <div
+                class="progress-bar bg-{{ item.level_color }}"
+                role="progressbar"
+                [style.width]="item.level"
+                aria-valuenow="25"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

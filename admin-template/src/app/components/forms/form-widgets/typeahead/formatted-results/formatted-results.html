@@ -1,0 +1,14 @@
+<app-card [headerTitle]="'Formatted results'" [border]="true" [padding]="false">
+  <p class="mt-1 mb-0" header5>
+    A typeahead example that uses a formatter function for string results
+  </p>
+  <input
+    id="typeahead-format"
+    type="text"
+    class="form-control"
+    placeholder="Countries"
+    [(ngModel)]="model"
+    [ngbTypeahead]="search"
+    [resultFormatter]="formatter"
+  />
+</app-card>

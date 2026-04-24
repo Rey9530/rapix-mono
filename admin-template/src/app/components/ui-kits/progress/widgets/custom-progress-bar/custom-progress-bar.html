@@ -1,0 +1,68 @@
+<app-card
+  [headerTitle]="'Custom Progress Bars'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'progress-showcase'"
+>
+  <p class="f-m-light mt-1" header5>
+    Add the <code>animated</code> attribute to any
+    <code>ngb-progressbar</code> along with <code>striped</code> to enable a
+    smooth animation effect on the striped background, using Bootstrap's
+    built-in styles for visual enhancement.
+  </p>
+
+  <div class="row">
+    <div class="col">
+      <h6 class="mb-2">0% Getting Started</h6>
+      <ngb-progressbar
+        class="mb-4"
+        [value]="0"
+        [striped]="true"
+        [animated]="true"
+      />
+
+      <h6 class="mb-2">30% Getting Uploading...</h6>
+      <ngb-progressbar
+        class="mb-4"
+        type="primary"
+        [value]="30"
+        [striped]="true"
+        [animated]="true"
+        textType="white"
+        [showValue]="true"
+      />
+
+      <h6 class="mb-2">60% Getting Pause...</h6>
+      <ngb-progressbar
+        class="mb-4"
+        type="secondary"
+        [value]="60"
+        [striped]="true"
+        [animated]="true"
+        textType="white"
+        [showValue]="true"
+      />
+
+      <h6 class="mb-2">70% Getting Uploading...</h6>
+      <ngb-progressbar
+        class="mb-4"
+        type="success"
+        [value]="75"
+        [striped]="true"
+        [animated]="true"
+        textType="white"
+        [showValue]="true"
+      />
+
+      <h6 class="mb-2">100% Completed</h6>
+      <ngb-progressbar
+        type="dark"
+        [value]="100"
+        [striped]="true"
+        [animated]="true"
+        textType="white"
+        [showValue]="true"
+      />
+    </div>
+  </div>
+</app-card>

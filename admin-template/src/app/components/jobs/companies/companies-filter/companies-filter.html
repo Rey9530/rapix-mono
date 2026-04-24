@@ -1,0 +1,101 @@
+<div class="md-sidebar">
+  <a
+    class="btn btn-primary email-aside-toggle md-sidebar-toggle"
+    (click)="openSidebar()"
+    >Filters</a
+  >
+  <div
+    class="md-sidebar-aside job-sidebar custom-scrollbar"
+    [class.open]="isOpen"
+  >
+    <app-card
+      [headerTitle]="'Filters'"
+      [cardBodyClass]="'filter-companies'"
+      [border]="true"
+      [padding]="false"
+    >
+      <div class="accordion" id="accordionExample" ngbAccordion>
+        @for (details of sidebar; track details) {
+          <div class="accordion-item" ngbAccordionItem [collapsed]="false">
+            <h2 class="accordion-header" ngbAccordionHeader>
+              <button
+                class="accordion-button"
+                type="button"
+                data-bs-toggle="collapse"
+                ngbAccordionButton
+              >
+                {{ details.title }}
+                <app-feather-icon class="svg-color" [icon]="'chevron-down'" />
+              </button>
+            </h2>
+            <div
+              class="accordion-collapse collapse show"
+              id="collapseOne"
+              ngbAccordionCollapse
+            >
+              <div class="accordion-body" ngbAccordionBody>
+                <ng-template>
+                  <div class="product-filter">
+                    <div class="checkbox-animated mt-0">
+                      @for (item of details.details; track item) {
+                        <div class="form-check">
+                          @if (item.rating && item.rate_number) {
+                            <input
+                              class="checkbox_animated"
+                              id="chk-ani12"
+                              type="checkbox"
+                              data-original-title=""
+                              title=""
+                            />
+                            <label class="form-check-label" for="chk-ani12">
+                              <span class="common-flex">
+                                <div class="rating">
+                                  <ngb-rating [rate]="item.rate_number">
+                                    <ng-template let-fill="fill">
+                                      <i
+                                        [ngClass]="
+                                          fill === 100
+                                            ? 'fa-solid fa-star'
+                                            : fill > 0
+                                              ? 'fa-solid fa-star-half-stroke'
+                                              : 'fa-regular fa-star'
+                                        "
+                                      ></i>
+                                    </ng-template>
+                                  </ngb-rating>
+                                </div>
+                              </span>
+                              <span class="number"
+                                >({{ item.badge_text }})</span
+                              >
+                            </label>
+                          } @else {
+                            <input
+                              class="checkbox_animated"
+                              id="{{ item.id }}"
+                              type="checkbox"
+                              data-original-title=""
+                              title=""
+                            />
+                            <label class="form-check-label" for="{{ item.id }}">
+                              <span>{{ item.title }}</span>
+                              @if (item.badge && !item.rating) {
+                                <span class="number"
+                                  >({{ item.badge_text }})</span
+                                >
+                              }
+                            </label>
+                          }
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </app-card>
+  </div>
+</div>

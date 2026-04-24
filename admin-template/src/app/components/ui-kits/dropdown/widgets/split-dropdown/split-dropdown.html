@@ -1,0 +1,38 @@
+<app-card
+  [cardClass]="'split-dropdown'"
+  [headerTitle]="'Split Dropdowns'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'dropdown-basic m-0'"
+>
+  <p class="f-m-light mt-1" header5>
+    To create a split dropdown using <code>ngbDropdown</code>, use a button
+    group with a primary button and a separate dropdown toggle button with
+    <code>ngbDropdownToggle</code>. The dropdown menu is defined inside
+    <code>ngbDropdownMenu</code>.
+  </p>
+  <div class="common-flex">
+    @for (dropdown of splitDropdown; track dropdown) {
+      <div class="btn-group" ngbDropdown>
+        <button class="btn btn-outline-{{ dropdown.color }}">
+          {{ dropdown.title }}
+        </button>
+        <div class="dropdown separated-btn">
+          <button
+            class="btn btn-{{ dropdown.color }} dropdown-toggle-split"
+            ngbDropdownToggle
+          >
+            <i class="icofont icofont-arrow-down"></i>
+          </button>
+          <ul class="dropdown-menu" ngbDropdownMenu>
+            @for (item of dropdown.dropdown_item; track item) {
+              <li class="dropdown-item" ngbDropdownItem>
+                <a href="javascript:void(0)">{{ item.item }}</a>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    }
+  </div>
+</app-card>

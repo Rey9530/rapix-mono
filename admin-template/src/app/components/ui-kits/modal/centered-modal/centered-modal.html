@@ -1,0 +1,39 @@
+<app-card [headerTitle]="'Centered Modal'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use<code> centered: true </code>option in <code>ngbModal</code> is used to
+    vertically center the modal on the screen when opened.
+  </p>
+
+  <button
+    class="btn btn-success"
+    type="button"
+    (click)="openModal(centeredModal)"
+  >
+    Vertically Centered
+  </button>
+
+  <ng-template #centeredModal let-modal>
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="modal-toggle-wrapper">
+          <ul class="modal-img">
+            <li><img src="assets/images/gif/danger.gif" alt="error" /></li>
+          </ul>
+          <h4 class="text-center pb-2">Ohh! Something went wrong!</h4>
+          <p class="text-center c-light">
+            Attackers on malicious activity may trick you into doing something
+            Dangerous like installing software or revealing your personal
+            Information.
+          </p>
+          <button
+            class="btn btn-secondary d-flex m-auto"
+            type="button"
+            (click)="closeModal()"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</app-card>

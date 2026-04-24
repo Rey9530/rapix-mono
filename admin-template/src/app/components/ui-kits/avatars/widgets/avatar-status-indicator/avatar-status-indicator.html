@@ -1,0 +1,25 @@
+<app-card
+  [cardClass]="'height-equal'"
+  [headerTitle]="'Status Indicator'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'avatar-showcase'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use status of avatar like<code> status-* (online/offline/dnd)</code>
+  </p>
+
+  <div class="avatars">
+    @for (avatar of statusIndicatorAvatar; track avatar) {
+      <div class="avatar">
+        <img
+          class="rounded-circle"
+          [ngClass]="avatar.size_class"
+          [src]="avatar.profile"
+          alt="javascript:void(0)"
+        />
+        <div class="status bg-{{ avatar.status }}"></div>
+      </div>
+    }
+  </div>
+</app-card>

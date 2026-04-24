@@ -1,0 +1,18 @@
+<app-card
+  [headerTitle]="'Polar Chart'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'chart-block chart-vertical-center'"
+>
+  <canvas
+    id="myPolarGraph"
+    baseChart
+    class="chart"
+    [datasets]="polarChartData"
+    [labels]="polarChartLabels"
+    [options]="polarChartOptions"
+    [legend]="polarChartLegend"
+    [type]="'polarArea'"
+  >
+  </canvas>
+</app-card>

@@ -1,0 +1,34 @@
+<app-card
+  [headerTitle]="'Current Rating Bar'"
+  [border]="true"
+  [padding]="false"
+  [cardClass]="'height-equal'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use<code> bar-rating </code> to set current rating.
+  </p>
+  <div class="rating-container current-ratingbar">
+    <div class="star-ratings">
+      <bar-rating [rate]="faoRate" (rateChange)="onFaoRate($event)" [max]="5">
+        <ng-template ratingActive>
+          <i class="fa fa-star fa-lg" style="color: #ffb829"></i>
+        </ng-template>
+        <ng-template ratingInactive>
+          <i class="fa fa-star fa-lg" style="color: #e9edf1"></i>
+        </ng-template>
+        <ng-template ratingFraction>
+          <i class="fa fa-star fa-lg" style="color: #e9edf1"></i>
+        </ng-template>
+      </bar-rating>
+      <p></p>
+      @if (!faoRated) {
+        <p>Current rating: {{ faoRate }}</p>
+      } @else if (faoRated) {
+        <p>
+          Your rating: {{ faoRate }}
+          <i class="link fa fa-times-circle fa-lg" (click)="faoReset()"></i>
+        </p>
+      }
+    </div>
+  </div>
+</app-card>

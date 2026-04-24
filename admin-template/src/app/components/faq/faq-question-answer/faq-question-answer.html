@@ -1,0 +1,46 @@
+<div class="header-faq">
+  <h5>Quick Questions are Answered</h5>
+</div>
+<div class="row default-according style-1 faq-accordion" id="accordionoc">
+  <div class="col-xl-8 xl-60 col-lg-6 col-md-7">
+    <ng-container ngbAccordion [closeOthers]="true">
+      @for (details of faqQuestionAnswer; track details) {
+        <div class="faq-title">
+          <h6>{{ details.header_title }}</h6>
+        </div>
+        @for (item of details.details; track item) {
+          <div class="card" ngbAccordionItem>
+            <div class="card-header" ngbAccordionHeader>
+              <h5 class="mb-0">
+                <button class="btn btn-link collapsed ps-0" ngbAccordionButton>
+                  <app-feather-icon [icon]="'help-circle'" />
+                  {{ item.title }}
+                </button>
+              </h5>
+            </div>
+            <div class="collapse" ngbAccordionCollapse>
+              <div class="card-body" ngbAccordionBody>
+                <ng-template>
+                  {{ item.description }}
+                </ng-template>
+              </div>
+            </div>
+          </div>
+        }
+      }
+    </ng-container>
+  </div>
+  <div class="col-xl-4 xl-40 col-lg-6 col-md-5">
+    <div class="row">
+      <div class="col-lg-12">
+        <app-faq-search-articles />
+      </div>
+      <div class="col-lg-12">
+        <app-faq-navigation />
+      </div>
+      <div class="col-lg-12">
+        <app-faq-latest-updates />
+      </div>
+    </div>
+  </div>
+</div>

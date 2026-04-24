@@ -1,0 +1,35 @@
+<app-card
+  [headerTitle]="'Rounded Dropdowns'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'rtl-dropdown'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use <code>rounded-pill </code>class through to change rounded dropdowns.
+  </p>
+  <div class="common-flex">
+    @for (dropdown of roundedDropdown; track dropdown) {
+      <div class="btn-group" ngbDropdown>
+        <button
+          class="btn btn-{{ dropdown.color }} rounded-pill dropdown-toggle"
+          type="button"
+          ngbDropdownToggle
+        >
+          {{ dropdown.color | titlecase }}
+        </button>
+        <ul class="dropdown-menu dropdown-block" ngbDropdownMenu>
+          @for (item of dropdown.dropdown_item; track item) {
+            <li>
+              <a
+                ngbDropdownItem
+                class="dropdown-item"
+                href="javascript:void(0)"
+                >{{ item.item }}</a
+              >
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+</app-card>

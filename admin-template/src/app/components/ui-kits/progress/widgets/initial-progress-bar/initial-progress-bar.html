@@ -1,0 +1,37 @@
+<app-card
+  [headerTitle]="'Initial Progress Bars'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'progress-showcase'"
+>
+  <p class="f-m-light mt-1" header5>
+    The <code>ngb-progressbar</code> component in NgbBootstrap uses attributes
+    like type, value, and textType to customize the progress bar's appearance,
+    behavior, and displayed value.
+  </p>
+  <ngb-progressbar [value]="0" textType="white" [showValue]="true" />
+  <ngb-progressbar
+    type="primary"
+    [value]="25"
+    textType="white"
+    [showValue]="true"
+  />
+  <ngb-progressbar
+    type="secondary"
+    [value]="50"
+    textType="white"
+    [showValue]="true"
+  />
+  <ngb-progressbar
+    type="success"
+    [value]="75"
+    textType="white"
+    [showValue]="true"
+  />
+  <ngb-progressbar
+    type="info"
+    [value]="100"
+    textType="white"
+    [showValue]="true"
+  />
+</app-card>

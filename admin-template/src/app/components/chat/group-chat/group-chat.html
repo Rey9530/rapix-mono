@@ -1,0 +1,94 @@
+<div class="container-fluid">
+  <div class="row g-0">
+    <div class="col-xxl-3 col-xl-4 col-md-5 box-col-5 xl-40">
+      <div class="left-sidebar-wrapper card">
+        <app-sidebar
+          (currentUserChat)="handleChat($event)"
+          [recentChats]="groupChats"
+          [groupChat]="true"
+          [activeId]="1"
+        />
+      </div>
+    </div>
+    <div class="col-xxl-9 col-xl-8 col-md-7 box-col-7 xl-60">
+      <div class="card right-sidebar-chat">
+        <app-chat-details-header
+          [currentUserChat]="currentUserChat"
+          [groupChat]="true"
+        />
+
+        <div class="right-sidebar-Chats">
+          <div class="msger">
+            <div class="msger-chat" #chat>
+              @for (chats of currentUserChat.chats; track chats) {
+                <div
+                  class="msg"
+                  [ngClass]="chats.is_reply ? 'right-msg' : 'left-msg'"
+                >
+                  <div
+                    class="msg-img"
+                    [style.background-image]="'url(' +
+                        (chats.is_reply
+                          ? userDetails.user_profile
+                          : getUserProfile(
+                              currentUserChat.group_members,
+                              chats.user_name
+                            )) +
+                        ')'"
+                  ></div>
+
+                  <div class="msg-bubble">
+                    <div class="msg-info">
+                      <div class="msg-info-name">
+                        {{
+                          chats.is_reply
+                            ? userDetails.name
+                            : currentUserChat.group_name
+                        }}
+                      </div>
+                      <div class="msg-info-time">{{ chats.time }}</div>
+                    </div>
+                    <div class="msg-text">{{ chats.chat }}</div>
+                  </div>
+                </div>
+              }
+            </div>
+            <form class="msger-inputarea" [formGroup]="chatForm">
+              <div class="dropdown-form dropdown-toggle" ngbDropdown>
+                <i class="icon-plus" ngbDropdownToggle></i>
+                <div
+                  class="chat-icon dropdown-menu dropdown-menu-start"
+                  ngbDropdownMenu
+                >
+                  <div class="dropdown-item mb-2" ngbDropdownItem>
+                    <app-svg-icon [icon]="'camera'" />
+                  </div>
+                  <div class="dropdown-item" ngbDropdownItem>
+                    <app-svg-icon [icon]="'attchment'" />
+                  </div>
+                </div>
+              </div>
+              <input
+                class="msger-input two uk-textarea"
+                type="text"
+                placeholder="Type Message here.."
+                formControlName="inputMessage"
+                (keypress)="handleKeyPress($event)"
+              />
+              <div class="open-emoji">
+                <div class="second-btn uk-button"></div>
+              </div>
+              <button
+                class="msger-send-btn"
+                type="submit"
+                (click)="handleMessage()"
+              >
+                <i class="fa fa-location-arrow"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

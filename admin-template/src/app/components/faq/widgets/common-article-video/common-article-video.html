@@ -1,0 +1,26 @@
+<div class="header-faq">
+  <h5>{{ headerTitle() }}</h5>
+</div>
+<div class="row {{ faqClass() }}">
+  @for (article of details(); track article) {
+    <div class="col-xl-4 {{ article.class }}">
+      <div class="row">
+        @for (item of article.details; track item) {
+          <div class="col-xl-12 {{ item.class }}">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex articles-icons">
+                  <app-feather-icon [icon]="item.icon" [class]="'m-r-20'" />
+                  <div class="flex-grow-1">
+                    <h6>{{ item.title }}</h6>
+                    <p class="c-light">{{ item.description }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

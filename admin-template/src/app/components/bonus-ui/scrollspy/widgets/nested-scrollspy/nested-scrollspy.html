@@ -1,0 +1,256 @@
+<app-card
+  [headerTitle]="'Nested Scrollspy'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'nested-scrollspy'"
+>
+  <p class="f-m-light mt-1" header5>
+    To implement a Navbar Scrollspy with nested navigation, start by adding a
+    <code>nav</code> element with <code>ngbScrollSpyMenu</code> to track
+    scrolling sections. Each navigation item should use
+    <code>ngbScrollSpyItem</code> and reference the corresponding section. For
+    nested navigation, wrap child items inside another <code>nav</code> element,
+    ensuring they have <code>ngbScrollSpyItem</code> and a
+    <code>parent</code> attribute linking them to their main section. This
+    allows both main and nested items to highlight correctly as you scroll.
+    Scroll through the sections below to see the active class update
+    automatically.
+  </p>
+
+  <div class="row g-4">
+    <div class="col-xl-3 col-lg-4 col-md-5 xl-40 box-col-4e">
+      <nav
+        class="h-100 nested-scrollspy-menu flex-column align-items-stretch"
+        [ngbScrollSpyMenu]="navbarScrollspy"
+      >
+        <nav class="nav nav-pills flex-column">
+          <a
+            class="nav-link f-16 txt-dark"
+            href="javascript:void(0)"
+            ngbScrollSpyItem="section-1"
+            >Experience</a
+          >
+          <nav class="nav nav-pills flex-column">
+            <a
+              class="nav-link ms-3 my-1"
+              href="javascript:void(0)"
+              ngbScrollSpyItem="section-2"
+              parent="section-1"
+              >Web Development
+            </a>
+            <a
+              class="nav-link ms-3 my-1"
+              href="javascript:void(0)"
+              ngbScrollSpyItem="section-3"
+              parent="section-1"
+              >Cyber Security</a
+            >
+          </nav>
+          <a
+            class="nav-link f-16 txt-dark"
+            href="javascript:void(0)"
+            ngbScrollSpyItem="section-4"
+            >Get in Touch</a
+          >
+          <a
+            class="nav-link f-16 txt-dark"
+            href="javascript:void(0)"
+            ngbScrollSpyItem="section-5"
+            >Projects</a
+          >
+          <nav class="nav nav-pills flex-column">
+            <a
+              class="nav-link ms-3 my-1"
+              href="javascript:void(0)"
+              ngbScrollSpyItem="section-6"
+              parent="section-5"
+              >Group Projects</a
+            >
+            <a
+              class="nav-link ms-3 my-1"
+              href="javascript:void(0)"
+              ngbScrollSpyItem="section-7"
+              parent="section-5"
+              >Individual Projects</a
+            >
+          </nav>
+        </nav>
+      </nav>
+    </div>
+    <div class="col-xl-9 col-lg-8 col-md-7 xl-60 box-col-8">
+      <div
+        class="scrollspy-example-2 custom-scrollbar"
+        ngbScrollSpy
+        #navbarScrollspy="ngbScrollSpy"
+      >
+        <div id="item-1" ngbScrollSpyFragment="section-1">
+          <h6 class="f-18">Experience</h6>
+          <div class="common-align gap-lg-3 gap-1">
+            <div class="flex-shrink-0">
+              <app-svg-icon [icon]="'experience-scrollspy'" />
+            </div>
+            <div class="flex-grow-1">
+              <p>
+                This is some placeholder content for the scrollspy page. Note
+                that as you scroll down the page, the appropriate navigation
+                link is highlighted. It's repeated throughout the component
+                example. We keep adding some more example copy here to emphasize
+                the scrolling and highlighting.Keep in mind that the JavaScript
+                plugin tries to pick the right element among all that may be
+                visible. Multiple visible scrollspy targets at the same time may
+                cause some issues.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div id="item-1-1" ngbScrollSpyFragment="section-2">
+          <h6>Experience / Web Development</h6>
+          <p>
+            This is some placeholder content for the scrollspy page. Note that
+            as you scroll down the page, the appropriate navigation link is
+            highlighted. It's repeated throughout the component example. We keep
+            adding some more example copy here to emphasize the scrolling and
+            highlighting.Keep in mind that the JavaScript plugin tries to pick
+            the right element among all that may be visible. Multiple visible
+            scrollspy targets at the same time may cause some issues. Try out
+            several setups and see how the clear navigation signals that
+            scrollspy offers improves user experience. On the other hand, you
+            should be cautious when working with intricate layouts or scrollspy
+            targets that overlap. Although the plugin makes an effort to choose
+            the most pertinent aspect, there may occasionally be conflicts when
+            there are several targets vying for the plugin's attention at once.
+            You may take full advantage of scrollspy and improve the usability
+            of your online application by anticipating problems and streamlining
+            your page structure.
+          </p>
+        </div>
+        <div id="item-1-2" ngbScrollSpyFragment="section-3">
+          <h6>Experience / Cyber Security</h6>
+          <p>
+            This is some placeholder content for the scrollspy page. Note that
+            as you scroll down the page, the appropriate navigation link is
+            highlighted. It's repeated throughout the component example. We keep
+            adding some more example copy here to emphasize the scrolling and
+            highlighting.Keep in mind that the JavaScript plugin tries to pick
+            the right element among all that may be visible. Multiple visible
+            scrollspy targets at the same time may cause some issues. It's
+            important to remember that even while the JavaScript plugin uses
+            visibility to determine which element is most relevant, having
+            numerous scrollspy targets visible at once may cause confusion or
+            unexpected behavior. In order to maximize usability and prevent any
+            potential problems, it is therefore advised that you carefully
+            organize your information when using scrollspy, making sure that
+            sections are clearly distinguished from one another.
+          </p>
+          <p>
+            In summary, Scrollspy is an effective solution that improves user
+            engagement and navigation, giving visitors to your website a smooth
+            surfing experience. You may improve the usability and interactivity
+            of your web pages and make them easier to navigate by making proper
+            use of its capabilities.
+          </p>
+        </div>
+        <div id="item-2" ngbScrollSpyFragment="section-4">
+          <h6 class="f-18">Get in Touch</h6>
+          <div class="common-align gap-lg-3 gap-1">
+            <div class="flex-shrink-0">
+              <app-svg-icon [icon]="'contact-us'" />
+            </div>
+            <div class="flex-grow-1">
+              <p>
+                This is some placeholder content for the scrollspy page. Note
+                that as you scroll down the page, the appropriate navigation
+                link is highlighted. It's repeated throughout the component
+                example. We keep adding some more example copy here to emphasize
+                the scrolling and highlighting.Keep in mind that the JavaScript
+                plugin tries to pick the right element among all that may be
+                visible. Multiple visible scrollspy targets at the same time may
+                cause some issues. When using scrollspy, it's important to
+                remember best practices, particularly with regard to the
+                arrangement and labelling of your page elements. The combination
+                of well-placed scrollable targets and comprehensible HTML code
+                guarantees optimal functionality and accessibility for all
+                users.
+              </p>
+              <p>
+                In summary, Scrollspy is an effective solution that improves
+                user engagement and navigation, giving visitors to your website
+                a smooth surfing experience. You may improve the usability and
+                interactivity of your web pages and make them easier to navigate
+                by making proper use of its capabilities.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div id="item-3" ngbScrollSpyFragment="section-5">
+          <h6 class="f-18">Projects</h6>
+          <div class="common-align gap-lg-3 gap-1">
+            <div class="flex-shrink-0">
+              <app-svg-icon [icon]="'project-info'" />
+            </div>
+            <div class="flex-grow-1">
+              <p>
+                This is some placeholder content for the scrollspy page. Note
+                that as you scroll down the page, the appropriate navigation
+                link is highlighted. It's repeated throughout the component
+                example. We keep adding some more example copy here to emphasize
+                the scrolling and highlighting.Keep in mind that the JavaScript
+                plugin tries to pick the right element among all that may be
+                visible. Multiple visible scrollspy targets at the same time may
+                cause some issues.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div id="item-3-1" ngbScrollSpyFragment="section-6">
+          <h6>Projects / Group Projects</h6>
+          <p>
+            This is some placeholder content for the scrollspy page. Note that
+            as you scroll down the page, the appropriate navigation link is
+            highlighted. It's repeated throughout the component example. We keep
+            adding some more example copy here to emphasize the scrolling and
+            highlighting.Keep in mind that the JavaScript plugin tries to pick
+            the right element among all that may be visible. Multiple visible
+            scrollspy targets at the same time may cause some issues. When using
+            scrollspy, it's important to remember best practices, particularly
+            with regard to the arrangement and labelling of your page elements.
+            The combination of well-placed scrollable targets and comprehensible
+            HTML code guarantees optimal functionality and accessibility for all
+            users.
+          </p>
+          <p>
+            In summary, Scrollspy is an effective solution that improves user
+            engagement and navigation, giving visitors to your website a smooth
+            surfing experience. You may improve the usability and interactivity
+            of your web pages and make them easier to navigate by making proper
+            use of its capabilities.
+          </p>
+        </div>
+        <div id="item-3-2" ngbScrollSpyFragment="section-7">
+          <h6>Projects / Individual Projects</h6>
+          <p>
+            This is some placeholder content for the scrollspy page. Note that
+            as you scroll down the page, the appropriate navigation link is
+            highlighted. It's repeated throughout the component example. We keep
+            adding some more example copy here to emphasize the scrolling and
+            highlighting.Keep in mind that the JavaScript plugin tries to pick
+            the right element among all that may be visible. Multiple visible
+            scrollspy targets at the same time may cause some issues. When using
+            scrollspy, it's important to remember best practices, particularly
+            with regard to the arrangement and labelling of your page elements.
+            The combination of well-placed scrollable targets and comprehensible
+            HTML code guarantees optimal functionality and accessibility for all
+            users.
+          </p>
+          <p class="mb-0">
+            In summary, Scrollspy is an effective solution that improves user
+            engagement and navigation, giving visitors to your website a smooth
+            surfing experience. You may improve the usability and interactivity
+            of your web pages and make them easier to navigate by making proper
+            use of its capabilities.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-card>

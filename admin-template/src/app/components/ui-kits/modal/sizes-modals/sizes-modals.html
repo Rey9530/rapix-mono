@@ -1,0 +1,24 @@
+<app-card
+  [headerTitle]="'Sizes Modal'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'common-flex'"
+>
+  <p class="mt-1 f-m-light" header5>
+    Modals have three optional sizes, available via modifier classes to be
+    placed on a <code>modal-dialog</code>.
+  </p>
+
+  <div class="btn btn-secondary" (click)="openModal('fullScreen')">
+    Full Screen Modal
+  </div>
+  <div class="btn btn-info" (click)="openModal('extraLarge')">
+    Extra Large Modal
+  </div>
+  <button class="btn btn-success" type="button" (click)="openModal('large')">
+    Large Modal
+  </button>
+  <button class="btn btn-primary" type="button" (click)="openModal('small')">
+    Small Modal
+  </button>
+</app-card>

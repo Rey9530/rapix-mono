@@ -1,0 +1,104 @@
+<app-card
+  [headerTitle]="'Background Pill Tabs'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="mt-1 f-m-light" header5>
+    Use backdrop tab with <code>class="nav-pills"</code> for tabs pill shape.
+  </p>
+
+  <div class="bg-navbar">
+    <ul
+      class="nav nav-pills nav-primary"
+      ngbNav
+      #nav="ngbNav"
+      [(activeId)]="activeTab"
+    >
+      <li [ngbNavItem]="'sofa'">
+        <a class="nav-link" ngbNavLink>Sofa</a>
+        <ng-template ngbNavContent>
+          <div class="row g-3 pt-3">
+            <div class="col-4">
+              <img
+                class="img-fluid"
+                src="assets/images/switch/s1.jpg"
+                alt="sofa"
+              />
+            </div>
+            <div class="col-4">
+              <img
+                class="img-fluid"
+                src="assets/images/switch/s2.jpg"
+                alt="sofa"
+              />
+            </div>
+            <div class="col-4">
+              <img
+                class="img-fluid"
+                src="assets/images/switch/s3.jpg"
+                alt="sofa"
+              />
+            </div>
+          </div>
+        </ng-template>
+      </li>
+      <li [ngbNavItem]="'chair'">
+        <a class="nav-link" ngbNavLink>Chairs</a>
+        <ng-template ngbNavContent>
+          <div class="row g-3 pt-3">
+            <div class="col-4">
+              <img
+                class="img-fluid"
+                src="assets/images/switch/c1.jpg"
+                alt="chairs"
+              />
+            </div>
+            <div class="col-4">
+              <img
+                class="img-fluid"
+                src="assets/images/switch/c2.jpg"
+                alt="chairs"
+              />
+            </div>
+            <div class="col-4">
+              <img
+                class="img-fluid"
+                src="assets/images/switch/c3.jpg"
+                alt="chairs"
+              />
+            </div>
+          </div>
+        </ng-template>
+      </li>
+      <li [ngbNavItem]="'tables'">
+        <a class="nav-link" ngbNavLink>Tables</a>
+        <ng-template ngbNavContent>
+          <div class="row g-3 pt-3">
+            <div class="col-4">
+              <img
+                class="img-fluid"
+                src="assets/images/switch/t1.jpg"
+                alt="table"
+              />
+            </div>
+            <div class="col-4">
+              <img
+                class="img-fluid"
+                src="assets/images/switch/t2.jpg"
+                alt="table"
+              />
+            </div>
+            <div class="col-4">
+              <img
+                class="img-fluid"
+                src="assets/images/switch/t3.jpg"
+                alt="table"
+              />
+            </div>
+          </div>
+        </ng-template>
+      </li>
+    </ul>
+    <div [ngbNavOutlet]="nav"></div>
+  </div>
+</app-card>

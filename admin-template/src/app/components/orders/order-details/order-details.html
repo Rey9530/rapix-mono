@@ -1,0 +1,65 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xxl-9 col-xl-8 box-col-8e">
+      <div class="row">
+        <div class="col-12">
+          <app-card
+            [headerTitle]="'Order Status'"
+            [border]="true"
+            [padding]="false"
+            [cardBodyClass]="'track-order-details'"
+          >
+            <h6 id="order-status-timeline">
+              <div class="status-bar progress step-{{ currentTab }}"></div>
+              <div class="main-status-line">
+                <ul>
+                  @for (tab of orderDetailsTab; track tab) {
+                    <li>
+                      <div
+                        class="order-process"
+                        [class.active]="tab.id <= currentTab"
+                      >
+                        <span>{{ tab.id }}</span>
+                      </div>
+                      <h6>{{ tab.title }}</h6>
+                    </li>
+                  }
+                </ul>
+              </div>
+            </h6>
+          </app-card>
+        </div>
+        <div class="col-12">
+          <app-card
+            [headerTitle]="'Order Number: #1801'"
+            [padding]="false"
+            [cardBodyClass]="'order-details-product pt-0'"
+          >
+            <div class="table-responsive custom-scrollbar">
+              <app-table
+                [tableConfig]="tableConfig"
+                [pageSize]="4"
+                [search]="false"
+                [pagination]="false"
+              />
+            </div>
+          </app-card>
+        </div>
+      </div>
+    </div>
+    <div class="col-xxl-3 col-xl-4 box-col-4">
+      <div class="row">
+        <div class="col-12">
+          <app-billing-details
+            [billing_details]="orderDetails.billing_details"
+          />
+        </div>
+        <div class="col-12">
+          <app-customer-details
+            [customer_details]="orderDetails.customer_details"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,20 @@
+<app-card [headerTitle]="'Border Colors'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>b-*/ b-t-*/ b-b-*/ b-l-*/ b-r-* </code>class for borders.
+  </p>
+
+  <div class="gradient-border">
+    @for (color of colors; track color) {
+      @for (position of borderPosition; track position) {
+        <div class="helper-common-box">
+          <div
+            class="helper-box {{ position.position }}{{
+              color.color
+            }} border fill-wrapper"
+          ></div>
+          <span>{{ position.position }}{{ color.color }}</span>
+        </div>
+      }
+    }
+  </div>
+</app-card>

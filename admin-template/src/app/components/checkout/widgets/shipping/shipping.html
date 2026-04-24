@@ -1,0 +1,115 @@
+<form
+  class="stepper-two row g-3 needs-validation shipping-wizard"
+  novalidate=""
+>
+  <div class="col-xxl-5 col-md-6 box-col-6">
+    <div class="shipping-title">
+      <h6>Delivery Address</h6>
+      <button
+        class="btn btn-primary"
+        type="button"
+        (click)="openAddressModal()"
+      >
+        <i class="fa-solid fa-square-plus f-20"></i>
+      </button>
+    </div>
+    <div class="row g-3 mt-0 flex-column">
+      @for (address of userDetails.addresses; track address) {
+        <div class="col-12">
+          <div class="card-wrapper border rounded-3 h-100 light-card">
+            <div class="collect-address">
+              <div class="d-flex gap-2 align-items-center">
+                <div class="form-check radio radio-primary">
+                  <input
+                    class="form-check-input"
+                    id="shipping-{{ address.id }}"
+                    type="radio"
+                    name="radio{{ address.id }}"
+                    value="option{{ address.id }}"
+                    checked=""
+                  />
+                  <label
+                    class="form-check-label mb-0"
+                    for="shipping-{{ address.id }}"
+                    >{{ userDetails.name }}</label
+                  >
+                </div>
+              </div>
+              <div class="card-icon">
+                <i class="fa-solid fa-pencil"></i>
+                <i class="fa-solid fa-trash-can"></i>
+                @if (address.tag) {
+                  <span class="badge badge-primary">{{ address.tag }}</span>
+                }
+              </div>
+            </div>
+            <div class="shipping-address">
+              <span> <strong>Address: </strong>{{ address.address }} </span>
+              <span> <strong>Pincode: </strong>{{ address.pin_code }} </span>
+              <span> <strong>Contact: </strong>{{ address.contact }} </span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+  <div class="col-xxl-7 col-md-6 box-col-6">
+    <h6>Delivery Options</h6>
+    <div class="row shipping-method g-3 mt-0 flex-column">
+      <div class="col-12">
+        <div class="card-wrapper border rounded-3 h-100 light-card">
+          <div class="form-check radio radio-primary">
+            <input
+              class="form-check-input"
+              id="shipping-choose3"
+              type="radio"
+              name="radio2"
+              value="option1"
+              checked=""
+            />
+            <label class="form-check-label mb-0" for="shipping-choose3"
+              >Standard Delivery - Free</label
+            >
+          </div>
+          <p>Estimated 5-7 days shipping</p>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="card-wrapper border rounded-3 h-100 light-card">
+          <div class="form-check radio radio-primary">
+            <input
+              class="form-check-input"
+              id="shipping-choose4"
+              type="radio"
+              name="radio2"
+              value="option1"
+              checked=""
+            />
+            <label class="form-check-label mb-0" for="shipping-choose4"
+              >Express Delivery - $30</label
+            >
+          </div>
+          <P>Estimated 1-2 days shipping</P>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="card-wrapper border rounded-3 h-100 light-card">
+          <div class="form-check radio radio-primary">
+            <input
+              class="form-check-input"
+              id="shipping-choose6"
+              type="radio"
+              name="radio2"
+              value="option1"
+              checked=""
+            />
+            <label class="form-check-label mb-0" for="shipping-choose6"
+              >Future Delivery</label
+            >
+          </div>
+          <input class="form-control future-date" type="date" />
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

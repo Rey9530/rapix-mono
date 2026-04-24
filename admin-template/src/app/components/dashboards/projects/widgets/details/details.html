@@ -1,0 +1,18 @@
+<app-card [cardClass]="'widget-hover'">
+  <div class="common-space">
+    <div>
+      <span class="c-o-light f-w-500">{{ details()?.title }}</span>
+      <h4 class="counter" data-target="204">{{ details()?.count }}</h4>
+      <span class="font-{{ details()?.text_class }} f-12 f-w-500">
+        <i class="icon-arrow-{{ details()?.icon }}"></i>
+        <span>{{ details()?.percentage }}</span>
+      </span>
+    </div>
+    <div class="project-state bg-light-{{ details()?.class }}">
+      <app-svg-icon
+        class="fill-{{ details()?.class }}"
+        [icon]="details()?.image"
+      />
+    </div>
+  </div>
+</app-card>

@@ -1,0 +1,23 @@
+<app-card
+  [cardClass]="'height-equal'"
+  [headerTitle]="'Border Opacity'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'border-opacity-wrapper'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use <code>border-opacity-* (10,25,50,75)</code> class to border opacity
+    links.
+  </p>
+
+  <div class="border p-2 mb-xl-3 mb-2 border-primary">
+    <a href="javascript:void(0)">This is default primary border</a>
+  </div>
+  @for (opacity of opacity; track opacity) {
+    <div class="border p-2 mb-xl-3 mb-2 border-opacity-{{ opacity }}">
+      <a href="javascript:void(0)"
+        >This is {{ opacity }}% opacity primary border</a
+      >
+    </div>
+  }
+</app-card>

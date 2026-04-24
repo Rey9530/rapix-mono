@@ -1,0 +1,131 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12">
+      <app-card
+        [headerTitle]="'Modal with Animations'"
+        [border]="true"
+        [padding]="false"
+        [cardBodyClass]="'animated-modal-wrapper'"
+      >
+        <p class="f-m-light mt-1" header5>
+          Make use of the various modal fades and animations.
+        </p>
+        <div class="row common-align">
+          <div class="col-xl-6 col-md-8">
+            <div class="animate-img" id="animation-box">
+              <div class="card mb-0">
+                <div class="animate-widget">
+                  <div>
+                    <img
+                      class="img-fluid"
+                      src="assets/images/slider/6.jpg"
+                      alt="Drawing-room"
+                    />
+                  </div>
+                  <div class="text-center p-25">
+                    <h5>It&apos;s Magic!!</h5>
+                    <span class="f-light"
+                      >Select the animation options given below and then click
+                      on the launch button.</span
+                    >
+                    <p></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-6">
+            <form class="form-inline theme-form animated-modal">
+              <div class="animated-modal-md-mb row">
+                <label class="col-md-2 mb-0 custom-col-2">IN</label>
+                <select2
+                  class="w-75"
+                  [data]="modalInValues"
+                  name="in"
+                  [(ngModel)]="modalInSelectedValue"
+                  resetSelectedValue="bounceIn"
+                  placeholder="Select Value"
+                  noResultMessage="No Value Found."
+                  listPosition="above"
+                />
+              </div>
+              <div class="animated-modal-md-mb row">
+                <label class="col-md-2 mb-0 custom-col-2">Out</label>
+                <select2
+                  class="w-75"
+                  [data]="modalOutValues"
+                  name="out"
+                  [(ngModel)]="modalOutSelectedValue"
+                  resetSelectedValue="flipOutX"
+                  placeholder="Select Value"
+                  noResultMessage="No Value Found."
+                  listPosition="above"
+                />
+              </div>
+              <div class="mt-2 text-center w-100">
+                <button
+                  class="btn btn-primary"
+                  type="button"
+                  (click)="openModal(animationModal)"
+                >
+                  Launch Modal
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </app-card>
+    </div>
+  </div>
+</div>
+
+<ng-template let-modal #animationModal>
+  <div>
+    <button
+      class="btn-close theme-close"
+      type="button"
+      (click)="closeModal()"
+    ></button>
+    <div class="modal-body">
+      <div class="card">
+        <div class="animate-widget">
+          <div>
+            <img
+              class="img-fluid"
+              src="assets/images/slider/6.jpg"
+              alt="Drawing-room"
+            />
+          </div>
+          <div class="text-center p-25">
+            <p class="text-muted mb-0">
+              <strong class="txt-danger">Wow!!!</strong> It's so beautiful
+              animations in cuba theme...
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<div class="animated-toast position-fixed bottom-0 end-0 p-3">
+  <div
+    class="toast"
+    id="liveToastFirst"
+    role="alert"
+    [class.show]="toastVisible"
+  >
+    <div class="toast-header">
+      <h6 class="me-auto">Use this value for animated modal</h6>
+      <button
+        class="btn-close"
+        type="button"
+        (click)="toastVisible = false"
+      ></button>
+    </div>
+    <div class="toast-body" id="toasts-body">
+      <p>{{ modalInSelectedValue }}</p>
+      <p>{{ modalOutSelectedValue }}</p>
+    </div>
+  </div>
+</div>

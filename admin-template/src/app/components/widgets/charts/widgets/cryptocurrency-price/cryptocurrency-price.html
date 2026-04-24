@@ -1,0 +1,26 @@
+<app-card
+  [headerTitle]="'Cryptocurrency Prices'"
+  [border]="true"
+  [padding]="false"
+>
+  <div class="chart-container crypto-chart">
+    <div class="row">
+      <div class="col-12">
+        <div id="chart-crypto">
+          <apx-chart
+            [chart]="cryptoCurrencyPriceChart.chart"
+            [dataLabels]="cryptoCurrencyPriceChart.dataLabels"
+            [stroke]="cryptoCurrencyPriceChart.stroke"
+            [xaxis]="cryptoCurrencyPriceChart.xaxis"
+            [grid]="cryptoCurrencyPriceChart.grid"
+            [fill]="cryptoCurrencyPriceChart.fill"
+            [colors]="cryptoCurrencyPriceChart.colors"
+            [series]="cryptoCurrencyPriceChart.series"
+            [tooltip]="cryptoCurrencyPriceChart.tooltip"
+            [responsive]="cryptoCurrencyPriceChart.responsive"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</app-card>

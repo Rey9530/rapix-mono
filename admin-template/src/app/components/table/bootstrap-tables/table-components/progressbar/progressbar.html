@@ -1,0 +1,59 @@
+<app-card
+  [headerTitle]="'Progressbar'"
+  [padding]="false"
+  [cardBodyClass]="'p-0'"
+>
+  <div class="card-block row">
+    <div class="col-sm-12 col-lg-12 col-xl-12">
+      <div class="table-responsive custom-scrollbar">
+        <table class="table table-bordered checkbox-td-width">
+          <tbody>
+            <tr>
+              <td>Default Progress</td>
+              <td class="w-50">
+                <ngb-progressbar type="primary" [value]="75" />
+              </td>
+              <td>
+                <span
+                  >Uses a progress bar with class
+                  <code>ngb-progressbar</code> set the
+                  <code>type</code> property to one of the Bootstrap color
+                  classes (e.g., <code>"primary"</code>,
+                  <code>"secondary"</code>, etc.) For example, use
+                  <code>[type]="'secondary'"</code>and also change</span
+                >
+              </td>
+            </tr>
+            <tr>
+              <td>Striped Progress</td>
+              <td>
+                <ngb-progressbar type="primary" [value]="75" [striped]="true" />
+              </td>
+              <td>
+                <span
+                  >Uses a progress bar with class<code> ngb-progressbar</code>
+                  and the <code> [striped] </code> property to<code>
+                    true
+                  </code></span
+                >
+              </td>
+            </tr>
+            <tr>
+              <td>Progress Sizes</td>
+              <td>
+                <ngb-progressbar type="primary" [value]="75" height="20px" />
+              </td>
+              <td>
+                <span
+                  >Different sized progress. For Default progress, class need
+                  <code>ngb-progressbar </code>on div. set a value
+                  <code> property </code> and <code> height </code>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</app-card>

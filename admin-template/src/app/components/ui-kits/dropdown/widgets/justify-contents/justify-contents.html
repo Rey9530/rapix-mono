@@ -1,0 +1,92 @@
+<app-card
+  [headerTitle]="'Justify Contents'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'dropdown-basic m-0'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use <code>text-start / text-center / text-end</code> to change dropdown
+    texts.
+  </p>
+
+  <div class="common-flex">
+    <div class="btn-group" ngbDropdown>
+      <button
+        class="btn btn-primary dropdown-toggle"
+        type="button"
+        ngbDropdownToggle
+      >
+        Text-left
+      </button>
+      <ul class="dropdown-menu dropdown-block text-start" ngbDropdownMenu>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Hello..</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >How are you?</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >What are you doing?</a
+          >
+        </li>
+      </ul>
+    </div>
+    <div class="btn-group" ngbDropdown>
+      <button
+        class="btn btn-info dropdown-toggle"
+        type="button"
+        ngbDropdownToggle
+      >
+        Text-center
+      </button>
+      <ul class="dropdown-menu dropdown-block text-center" ngbDropdownMenu>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Chocolate</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Ice-cream</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Trophy</a
+          >
+        </li>
+      </ul>
+    </div>
+    <div class="btn-group" ngbDropdown>
+      <button
+        class="btn btn-primary dropdown-toggle"
+        type="button"
+        ngbDropdownToggle
+      >
+        Text-right
+      </button>
+      <ul class="dropdown-menu dropdown-block text-end" ngbDropdownMenu>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >I'm fine.</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >ohh wow!!</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >That's the good news!
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</app-card>

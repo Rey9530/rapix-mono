@@ -1,0 +1,29 @@
+<app-card
+  [headerTitle]="'Star Rating'"
+  [border]="true"
+  [padding]="false"
+  [cardClass]="'height-equal'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use<code> ngb-rating </code> to set default rating.
+  </p>
+  <div class="main-star-rating">
+    <div class="common-flex star-box justify-content-center">
+      <div class="rating">
+        <ngb-rating [(rate)]="rating">
+          <ng-template let-fill="fill" let-index="index">
+            <i
+              [ngClass]="
+                fill === 100
+                  ? 'fa-solid fa-star'
+                  : fill > 0
+                    ? 'fa-solid fa-star-half-stroke'
+                    : 'fa-regular fa-star'
+              "
+            ></i>
+          </ng-template>
+        </ngb-rating>
+      </div>
+    </div>
+  </div>
+</app-card>

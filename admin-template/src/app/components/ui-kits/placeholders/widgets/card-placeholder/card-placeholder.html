@@ -1,0 +1,55 @@
+<app-card
+  [headerTitle]="'Placeholder Cards'"
+  [headerClass]="'mb-0'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'loading-card-wrapper'"
+>
+  <p class="f-m-light mt-1" header5>
+    In the example below, we take a typical card component and recreate it with
+    placeholders applied to create a <code> loading card </code>and create
+    placeholders with the <code>placeholder </code>class.
+  </p>
+
+  <div class="row gy-3">
+    <div class="col-sm-6">
+      <div class="card mb-0 h-100">
+        <img
+          class="card-img-top img-fluid"
+          src="assets/images/masonry/5.jpg"
+          alt="image"
+        />
+        <div class="card-body">
+          <h6 class="card-title">Card Title</h6>
+          <p class="card-text c-o-light">
+            Some quick example text to build on the card title and make up the
+            bulk of the card&apos;s content.
+          </p>
+          <a class="btn btn-primary" href="javascript:void(0)">Go somewhere</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="card mb-0 h-100">
+        <img
+          class="card-img-top img-fluid"
+          src="assets/images/masonry/13.jpg"
+          alt="image"
+        />
+        <div class="card-body">
+          <h6 class="card-title placeholder-glow">
+            <span class="placeholder col-6 placeholder-light"></span>
+          </h6>
+          <div class="card-text placeholder-glow mb-3">
+            <div class="placeholder col-7 placeholder-light"></div>
+            <div class="placeholder col-4 placeholder-light"></div>
+            <div class="placeholder col-4 placeholder-light"></div>
+            <div class="placeholder col-6 placeholder-light"></div>
+            <div class="placeholder col-8 placeholder-light"></div>
+          </div>
+          <a class="btn btn-primary disabled placeholder col-6" href="#!"></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-card>

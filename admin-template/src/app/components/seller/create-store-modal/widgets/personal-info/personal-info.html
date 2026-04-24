@@ -1,0 +1,86 @@
+<form class="stepper-one row g-3 needs-validation custom-input" novalidate="">
+  <div class="col-sm-6">
+    <label class="form-label" for="sellerFirstName">Full Name</label>
+    <input
+      class="form-control"
+      id="sellerFirstName"
+      type="text"
+      required=""
+      placeholder="Enter your full name"
+    />
+  </div>
+  <div class="col-sm-6">
+    <label class="col-sm-12 form-label" for="sellerNumber">Phone</label>
+    <input
+      class="form-control"
+      id="sellerNumber"
+      type="number"
+      placeholder="Enter your phone number"
+      required=""
+    />
+  </div>
+  <div class="col-sm-4">
+    <label class="col-sm-12 form-label">Country</label>
+    <select2
+      [data]="country"
+      [templates]="template"
+      placeholder="Select Country"
+      (update)="onCountryChange($event)"
+      noResultMessage="No Data Found"
+      resettable
+    >
+      <ng-template #template let-country="label">
+        {{ country }}
+      </ng-template>
+    </select2>
+  </div>
+  <div class="col-sm-4">
+    <label class="form-label">State</label>
+    <select2
+      [data]="states"
+      [templates]="template"
+      placeholder="Select State"
+      noResultMessage="No Data Found"
+      resettable
+      (update)="onStateChange($event)"
+    >
+      <ng-template #template let-state="label">
+        {{ state }}
+      </ng-template>
+    </select2>
+  </div>
+  <div class="col-sm-4">
+    <label class="col-sm-12 form-label">City</label>
+    <select2
+      [data]="city"
+      [templates]="template"
+      placeholder="Select City"
+      noResultMessage="No Data Found"
+      resettable
+    >
+      <ng-template #template let-city="label">
+        {{ city }}
+      </ng-template>
+    </select2>
+  </div>
+  <div class="col-sm-6">
+    <label class="col-sm-12 form-label" for="sellerMail">Email</label>
+    <input
+      class="form-control"
+      id="sellerMail"
+      type="email"
+      placeholder="Enter your email"
+      required=""
+    />
+  </div>
+  <div class="col-sm-6">
+    <label class="form-label" for="postalCode">Postal Code</label>
+    <input
+      class="form-control"
+      id="postalCode"
+      type="text"
+      placeholder="Enter your postal code"
+      required=""
+    />
+  </div>
+</form>

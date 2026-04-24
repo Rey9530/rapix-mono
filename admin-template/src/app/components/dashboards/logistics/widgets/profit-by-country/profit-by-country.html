@@ -1,0 +1,41 @@
+<app-card
+  [headerTitle]="'Profit By Country'"
+  [padding]="false"
+  [cardClass]="'country-option'"
+  [cardBodyClass]="'pt-0'"
+  [dropdownType]="'simple'"
+  [options]="cardToggleOption"
+>
+  <div class="row">
+    <div class="col-xxl-8 c-xl-60 col-lg-12 col-sm-8 box-col-12">
+      <div class="profitable-country-chart">
+        <div id="profitable-country-chart">
+          <apx-chart
+            [series]="profitByCountry.series"
+            [chart]="profitByCountry.chart"
+            [grid]="profitByCountry.grid"
+            [plotOptions]="profitByCountry.plotOptions"
+            [annotations]="profitByCountry.annotations"
+            [xaxis]="profitByCountry.xaxis"
+            [dataLabels]="profitByCountry.dataLabels"
+            [legend]="profitByCountry.legend"
+            [yaxis]="profitByCountry.yaxis"
+            [colors]="profitByCountry.colors"
+            [fill]="profitByCountry.fill"
+            [responsive]="profitByCountry.responsive"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="col-xxl-4 c-xl-40 col-lg-12 col-sm-4 box-col-12">
+      <ul>
+        @for (details of profitByCountry.details; track details) {
+          <li>
+            <span class="bg-{{ details.class }}"></span>
+            {{ details.name }}
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</app-card>

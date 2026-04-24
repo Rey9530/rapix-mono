@@ -1,0 +1,37 @@
+<div class="review-people">
+  <ul class="review-list custom-scrollbar">
+    @for (review of productReview; track review) {
+      <li>
+        <div class="people-box">
+          <img class="img-fluid" [src]="review.image" [alt]="review.name" />
+          <div class="people-comment">
+            <div class="people-name">
+              <a class="name" href="javascript:void(0)">{{ review.name }}</a>
+              <div class="date-time">
+                <h6 class="text-content">{{ review.product }}</h6>
+                <div class="product-rating">
+                  <div class="common-flex">
+                    <ngb-rating [(rate)]="review.rating">
+                      <ng-template let-fill="fill">
+                        <i
+                          [ngClass]="
+                            fill === 100
+                              ? 'fa-solid fa-star txt-warning'
+                              : fill > 0
+                                ? 'fa-solid fa-star-half-stroke txt-warning'
+                                : 'fa-regular fa-star txt-warning'
+                          "
+                        ></i>
+                      </ng-template>
+                    </ngb-rating>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p>{{ review.review_text }}</p>
+      </li>
+    }
+  </ul>
+</div>

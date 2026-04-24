@@ -1,0 +1,25 @@
+<app-card
+  [headerTitle]="'Dismissing Light Alert'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'dark-alert-msg'"
+>
+  <p class="f-m-light mt-1" header5>
+    To create a alert using <code>ngb-alert</code>, set the
+    <code>type</code> property to one of the Bootstrap color classes (e.g.,
+    <code>"primary"</code>, <code>"secondary"</code>, etc.) and the
+    <code>[dismissible]</code> property to <code>false</code> to make it
+    non-dismissible. For example, use <code>[type]="'light-warning'"</code> to
+    create a primary colored alert.
+  </p>
+
+  <ngb-alert [type]="'bg-warning'" [dismissible]="true">
+    <app-feather-icon [icon]="'bell'" />
+    <p>
+      The
+      <a class="alert-link txt-warning" href="javascript:void(0)"
+        >"alert-bg-warning" </a
+      >class can be used to create an alert like this one.
+    </p>
+  </ngb-alert>
+</app-card>

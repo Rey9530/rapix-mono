@@ -1,0 +1,80 @@
+<app-card
+  [cardClass]="'height-equal'"
+  [headerTitle]="'Vertical Tabs'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'main-vertical-tab'"
+>
+  <p class="mt-1 f-m-light" header5>
+    Use <code>class="nav-pills"</code> for pills and the
+    <code>orientation="vertical"</code> to change nav orientation
+  </p>
+
+  <div class="row">
+    <div class="col-md-4 col-xs-12">
+      <div
+        class="nav flex-column nav-pills nav-secondary"
+        ngbNav
+        #nav="ngbNav"
+        [(activeId)]="activeTab"
+        orientation="vertical"
+      >
+        <ng-container ngbNavItem="home">
+          <a class="nav-link" ngbNavLink>Home</a>
+          <ng-template ngbNavContent>
+            <p>
+              This is some placeholder content the <b>Home tab's </b> associated
+              content. Clicking another tab will toggle the visibility of this
+              one for the next. The tab JavaScript swaps classes to control the
+              content visibility and styling. You can use it with tabs, pills,
+              and any other <b>.nav</b>-powered navigation.
+            </p>
+          </ng-template>
+        </ng-container>
+        <ng-container ngbNavItem="components">
+          <a class="nav-link" ngbNavLink>Components</a>
+          <ng-template ngbNavContent>
+            <p>
+              This is some placeholder content the
+              <b>Component tab's </b> associated content. Clicking another tab
+              will toggle the visibility of this one for the next. The tab
+              JavaScript swaps classes to control the content visibility and
+              styling. You can use it with tabs, pills, and any other
+              <b>.nav</b>-powered navigation.
+            </p>
+          </ng-template>
+        </ng-container>
+        <ng-container ngbNavItem="page">
+          <a class="nav-link" ngbNavLink
+            >Pages<span class="badge badge-light-light p-1 px-2">3</span></a
+          >
+          <ng-template ngbNavContent>
+            <p>
+              This is some placeholder content the <b>Page tab's </b> associated
+              content. Clicking another tab will toggle the visibility of this
+              one for the next. The tab JavaScript swaps classes to control the
+              content visibility and styling. You can use it with tabs, pills,
+              and any other <b>.nav</b>-powered navigation.
+            </p>
+          </ng-template>
+        </ng-container>
+        <ng-container ngbNavItem="setting">
+          <a class="nav-link" ngbNavLink>Settings</a>
+          <ng-template ngbNavContent>
+            <p>
+              This is some placeholder content the
+              <b>Setting tab's </b> associated content. Clicking another tab
+              will toggle the visibility of this one for the next. The tab
+              JavaScript swaps classes to control the content visibility and
+              styling. You can use it with tabs, pills, and any other
+              <b>.nav</b>-powered navigation.
+            </p>
+          </ng-template>
+        </ng-container>
+      </div>
+    </div>
+    <div class="col-md-8 col-xs-12">
+      <div [ngbNavOutlet]="nav"></div>
+    </div>
+  </div>
+</app-card>

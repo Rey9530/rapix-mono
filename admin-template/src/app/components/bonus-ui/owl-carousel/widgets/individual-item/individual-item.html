@@ -1,0 +1,35 @@
+<app-card
+  [headerTitle]="'Individual Carousel-Item Interval'"
+  [border]="true"
+  [padding]="false"
+  [cardClass]="'height-equal'"
+>
+  <p class="f-m-light mt-1" header5>
+    Add <code> setInterval </code> to a <code>carousel-item</code> to control
+    the time delay between automatically cycling to the next item. In this
+    example, the <code>ngx-owl-carousel-o</code> module is used with autoplay
+    enabled, and the interval setting allows you to adjust the timing for each
+    slide transition.
+  </p>
+  <div
+    class="carousel slide common-carousel"
+    id="carouselExampleInterval"
+    data-bs-ride="carousel"
+  >
+    <div class="carousel-inner">
+      <owl-carousel-o [options]="options">
+        @for (details of individual; track details) {
+          <ng-template carouselSlide>
+            <div class="carousel-item active">
+              <img
+                class="d-block w-100"
+                [src]="details.image"
+                alt="drawing-room"
+              />
+            </div>
+          </ng-template>
+        }
+      </owl-carousel-o>
+    </div>
+  </div>
+</app-card>

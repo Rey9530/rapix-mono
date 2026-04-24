@@ -1,0 +1,31 @@
+<app-card
+  [headerTitle]="'Multiple Bars'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'progress-showcase'"
+>
+  <p class="f-m-light mt-1" header5>
+    The <code>ngb-progressbar-stacked</code> component is used to group multiple
+    <code>ngb-progressbar</code> components together, allowing you to display
+    multiple progress bars stacked within a single container. Each
+    <code>ngb-progressbar</code> represents a separate progress bar with its own
+    value and style.
+  </p>
+
+  <ngb-progressbar-stacked class="m-b-10">
+    <ngb-progressbar type="primary" [value]="30" />
+    <ngb-progressbar type="secondary" [value]="20" />
+    <ngb-progressbar type="success" [value]="15" />
+  </ngb-progressbar-stacked>
+
+  <ngb-progressbar-stacked>
+    <ngb-progressbar type="primary" [value]="10" />
+    <ngb-progressbar type="secondary" [value]="10" />
+    <ngb-progressbar type="success" [value]="10" />
+    <ngb-progressbar type="info" [value]="10" />
+    <ngb-progressbar type="warning" [value]="10" />
+    <ngb-progressbar type="danger" [value]="10" />
+    <ngb-progressbar type="primary" [value]="10" />
+    <ngb-progressbar type="light" [value]="10" />
+  </ngb-progressbar-stacked>
+</app-card>

@@ -1,0 +1,43 @@
+<app-card
+  [headerTitle]="'Tree Structure Sitemap'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'horizontal-sitemap'"
+>
+  <ul class="main-site">
+    <li>
+      <a class="main-root" href="javascript:void(0)">Home</a>
+      <ul class="tier-1 custom-scrollbar">
+        @for (menu of menuItem | slice: 0 : 10; track menu) {
+          @if (menu.title && menu.children) {
+            <div
+              *ngTemplateOutlet="
+                recursiveMenu;
+                context: { $implicit: menu, index: 1 }
+              "
+            ></div>
+          }
+        }
+        <ng-template #recursiveMenu let-menu let-index="index">
+          @if (menu.title) {
+            <li>
+              <a href="javascript:void(0)">{{ menu.title }}</a>
+              @if (menu.children) {
+                <ul class="tier-{{ index + 1 }}">
+                  @for (child of menu.children | slice: 0 : 5; track child) {
+                    <div
+                      *ngTemplateOutlet="
+                        recursiveMenu;
+                        context: { $implicit: child, index: index + 1 }
+                      "
+                    ></div>
+                  }
+                </ul>
+              }
+            </li>
+          }
+        </ng-template>
+      </ul>
+    </li>
+  </ul>
+</app-card>

@@ -1,0 +1,44 @@
+<app-card
+  [cardClass]="'total-balance'"
+  [padding]="false"
+  [headerTitle]="'Welcome,'"
+  [cardBodyClass]="'pt-0'"
+  [rightSideDetails]="true"
+>
+  <span class="txt-primary" header>Emay Walter</span>
+
+  <div class="d-flex align-items-center f-light mt-1" headerTitleValue>
+    <p class="mb-0">Your Balance</p>
+  </div>
+
+  <h3>
+    $<span class="counter">{{ "3050010" | number }}</span>
+  </h3>
+  <p class="f-light">
+    <span>Total</span>
+    <span class="ms-2"
+      >USD 45,000
+      <span class="font-success">(67,11%)</span>
+    </span>
+  </p>
+  <div class="common-f-start">
+    <div class="d-flex">
+      <span class="f-light me-3">Profit </span>
+      <div class="bg-light-success">
+        <i class="fa-solid fa-arrow-up txt-success"></i>
+      </div>
+    </div>
+    <div class="d-flex">
+      <span class="f-light me-3">Loss</span>
+      <div class="bg-light-danger">
+        <i class="fa-solid fa-arrow-down txt-danger"></i>
+      </div>
+    </div>
+  </div>
+  <a
+    class="btn bg-light-primary font-primary w-100"
+    [routerLink]="['/seller/1']"
+    >Top Up Balance
+    <i class="ms-2 icofont icofont-arrow-right"></i>
+  </a>
+</app-card>

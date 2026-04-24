@@ -1,0 +1,24 @@
+<app-card
+  [headerTitle]="'Anatomy (Table Head)'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="f-m-light mt-1" header5>
+    Similar to tables and dark tables, use the modifier classes
+    <code>table-light </code>or <code>table-dark </code>to make
+    <code>&lt;thead&gt;</code>s appear light or dark gray.
+  </p>
+  <div class="card-block row">
+    <div class="col-sm-12 col-lg-12 col-xl-12">
+      <div class="table-responsive custom-scrollbar">
+        <app-table
+          [tableConfig]="tableConfig"
+          [pageSize]="10"
+          [search]="false"
+          [pagination]="false"
+          [tableClass]="'table table-light'"
+        />
+      </div>
+    </div>
+  </div>
+</app-card>

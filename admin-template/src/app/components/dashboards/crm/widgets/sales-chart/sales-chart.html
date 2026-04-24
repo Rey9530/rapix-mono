@@ -1,0 +1,33 @@
+<div class="card">
+  <div class="card-header card-no-border">
+    <div class="header-top">
+      <div>
+        <h5>Sales</h5>
+        <span class="f-w-500 c-o-light">Last 6 Month</span>
+      </div>
+      <app-card-dropdown-button
+        [dropdownType]="'simple'"
+        [options]="cardToggleOption"
+      />
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="sales-chart-wrapper">
+      <div id="sales-chart">
+        <apx-chart
+          [series]="salesChart.chart_details.series"
+          [chart]="salesChart.chart_details.chart"
+          [title]="salesChart.chart_details.title"
+          [markers]="salesChart.chart_details.markers"
+          [fill]="salesChart.chart_details.fill"
+          [stroke]="salesChart.chart_details.stroke"
+          [xaxis]="salesChart.chart_details.xaxis"
+          [yaxis]="salesChart.chart_details.yaxis"
+          [legend]="salesChart.chart_details.legend"
+          [plotOptions]="salesChart.chart_details.plotOptions"
+          [responsive]="salesChart.chart_details.responsive"
+        />
+      </div>
+    </div>
+  </div>
+</div>

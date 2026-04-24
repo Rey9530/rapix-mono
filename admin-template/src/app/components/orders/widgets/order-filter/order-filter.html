@@ -1,0 +1,59 @@
+<app-card>
+  <div class="row g-3 custom-input">
+    <div class="col-xl col-md-6">
+      <label class="form-label" for="datetime-local">From: </label>
+      <div class="input-group flatpicker-calender">
+        <input
+          class="form-control digits"
+          id="datetime-local"
+          placeholder="yyyy-mm-dd"
+          name="from"
+          ngbDatepicker
+          #fromDate="ngbDatepicker"
+          (click)="fromDate.toggle()"
+        />
+      </div>
+    </div>
+    <div class="col-xl col-md-6">
+      <label class="form-label" for="datetime-local3">To: </label>
+      <div class="input-group flatpicker-calender">
+        <input
+          class="form-control digits"
+          id="datetime-local3"
+          placeholder="yyyy-mm-dd"
+          name="to"
+          ngbDatepicker
+          #toDate="ngbDatepicker"
+          (click)="toDate.toggle()"
+        />
+      </div>
+    </div>
+    <div class="col-xl col-md-6">
+      <label class="form-label">Payment Status</label>
+      <select2
+        [data]="paymentStatus"
+        [templates]="template"
+        placeholder="Select payment status"
+      >
+        <ng-template #template let-item="label">
+          {{ item }}
+        </ng-template>
+      </select2>
+    </div>
+    <div class="col-xl col-md-6">
+      <label class="form-label">Payment Methods</label>
+      <select2
+        [data]="paymentMethod"
+        [templates]="template"
+        placeholder="Select payment method"
+      >
+        <ng-template #template let-item="label">
+          {{ item }}
+        </ng-template>
+      </select2>
+    </div>
+    <div class="col d-flex justify-content-start align-items-center m-t-40">
+      <a class="btn btn-primary f-w-500" href="javascript:void(0)">Submit</a>
+    </div>
+  </div>
+</app-card>

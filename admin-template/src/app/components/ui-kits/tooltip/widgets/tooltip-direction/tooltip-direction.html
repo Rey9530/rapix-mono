@@ -1,0 +1,42 @@
+<app-card
+  [headerTitle]="'Tooltip Directions'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="f-m-light mt-1" header5>
+    Use <code>[ngbTooltip]</code> to set the tooltip content and configure its
+    placement with the <code>placement</code> attribute. Tooltips can be
+    positioned in all directions: <code>top</code>, <code>right</code> (end),
+    <code>bottom</code>, and <code>left</code> (start).
+  </p>
+  <div class="common-flex">
+    <button
+      class="mb-0 me-0 btn btn-primary"
+      placement="top"
+      [ngbTooltip]="'Tooltip on top'"
+    >
+      Tooltip on top
+    </button>
+    <button
+      class="mb-0 me-0 btn btn-secondary"
+      placement="end"
+      [ngbTooltip]="'Tooltip on right'"
+    >
+      Tooltip on right
+    </button>
+    <button
+      class="mb-0 me-0 btn btn-success"
+      placement="bottom"
+      [ngbTooltip]="'Tooltip on bottom'"
+    >
+      Tooltip on bottom
+    </button>
+    <button
+      class="mb-0 me-0 btn btn-warning"
+      placement="start"
+      [ngbTooltip]="'Tooltip on left'"
+    >
+      Tooltip on left
+    </button>
+  </div>
+</app-card>

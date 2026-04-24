@@ -1,0 +1,14 @@
+<app-card
+  [headerTitle]="'Leads'"
+  [padding]="false"
+  [rightSideDetails]="true"
+  [cardBodyClass]="'px-0 pt-0'"
+>
+  <a class="btn btn-light f-w-500 c-o-light" href="javascript:void(0)" header3
+    >View All</a
+  >
+
+  <div class="recent-table table-responsive custom-scrollbar lead-table">
+    <app-table [tableConfig]="tableConfig" [pageSize]="4" />
+  </div>
+</app-card>

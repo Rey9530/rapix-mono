@@ -1,0 +1,60 @@
+<app-card
+  [cardClass]="'height-equal'"
+  [headerTitle]="'Scrolling Long Content Modal'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="f-m-light mt-1" header5>
+    Use the <code>scrollable: true</code> option in <code>ngbModal</code> to
+    allow the modal content to be scrollable while keeping the header and footer
+    fixed.
+  </p>
+
+  <button
+    class="btn btn-secondary"
+    type="button"
+    (click)="openModal(scrollingContent)"
+  >
+    Scrolling Modal
+  </button>
+
+  <ng-template #scrollingContent let-modal>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Scrolling Long Modal</h5>
+        <button class="btn-close" type="button" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body custom-scrollbar scroll-modal">
+        @for (content of modalContent; track content) {
+          <h6>{{ content.title }}</h6>
+
+          @for (
+            description of content.content;
+            track description;
+            let i = $index
+          ) {
+            <div class="d-flex mt-2">
+              <div class="flex-shrink-0">
+                <app-feather-icon
+                  [icon]="'arrow-right-circle'"
+                  [class]="'svg-modal'"
+                />
+              </div>
+              <div class="flex-grow-1 ms-2">
+                <p [ngClass]="i === content.content.length - 1 ? 'pb-4' : ''">
+                  {{ description.description }}
+                </p>
+              </div>
+            </div>
+          }
+        }
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" (click)="closeModal()">
+          Close
+        </button>
+        <button class="btn btn-primary" type="button">Save</button>
+      </div>
+    </div>
+  </ng-template>
+</app-card>

@@ -1,0 +1,21 @@
+<div class="container-fluid product-report-wrapper">
+  <div class="row">
+    <div class="col-12">
+      <app-card [cardBodyClass]="'px-0 pt-0'">
+        <div class="product-report table-responsive custom-scrollbar">
+          <div class="recent-table">
+            <app-table
+              [hasCheckbox]="true"
+              [tableConfig]="tableConfig"
+              [pageSize]="10"
+              [paginateDetails]="true"
+              [selectedRows]="true"
+              [dateFilter]="true"
+              [downloadReports]="true"
+            />
+          </div>
+        </div>
+      </app-card>
+    </div>
+  </div>
+</div>

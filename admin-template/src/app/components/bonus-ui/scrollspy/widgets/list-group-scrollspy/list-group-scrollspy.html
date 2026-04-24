@@ -1,0 +1,96 @@
+<app-card
+  [headerTitle]="'List Group Scrollspy'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="f-m-light mt-1" header5>
+    To implement a List Group Scrollspy, start by adding a
+    <code>div</code> element with <code>ngbScrollSpyMenu</code> to track
+    scrolling sections. Each list group item should use
+    <code>ngbScrollSpyItem</code> and reference the corresponding section.
+    Inside the content area, mark sections with
+    <code>ngbScrollSpyFragment</code> to enable tracking. As you scroll through
+    the content, the corresponding list item in the sidebar will automatically
+    highlight, ensuring smooth navigation. Scroll through the sections below to
+    see the active class update dynamically.
+  </p>
+
+  <div class="row gap-sm-0 gap-3">
+    <div class="col-sm-4">
+      <div class="list-group" [ngbScrollSpyMenu]="navbarScrollspy">
+        <a
+          class="list-group-item list-group-item-action"
+          href="javascript:void(0)"
+          ngbScrollSpyItem="section-1"
+          >Item 1</a
+        >
+        <a
+          class="list-group-item list-group-item-action"
+          href="javascript:void(0)"
+          ngbScrollSpyItem="section-2"
+          >Item 2</a
+        >
+        <a
+          class="list-group-item list-group-item-action"
+          href="javascript:void(0)"
+          ngbScrollSpyItem="section-3"
+          >Item 3</a
+        >
+        <a
+          class="list-group-item list-group-item-action"
+          href="javascript:void(0)"
+          ngbScrollSpyItem="section-4"
+          >Item 4</a
+        >
+      </div>
+    </div>
+    <div class="col-sm-8">
+      <div
+        class="scrollspy-example-3 custom-scrollbar"
+        ngbScrollSpy
+        #navbarScrollspy="ngbScrollSpy"
+      >
+        <h6 ngbScrollSpyFragment="section-1">Item 1</h6>
+        <p>
+          This content is a stand-in for the scrollspy page. You'll notice that
+          the relevant navigation link is highlighted as you scroll down the
+          page. It appears again in the component example. Here, we'll continue
+          to add sample copy to highlight the scrolling and highlighting.Keep in
+          mind that the JavaScript plugin tries to pick the right element among
+          all that may be visible. Multiple visible scrollspy targets at the
+          same time may cause some issues.
+        </p>
+        <h6 ngbScrollSpyFragment="section-2">Item 2</h6>
+        <p>
+          For the scrollspy page, this is some placeholder content. Take note of
+          the highlighted navigation link at the bottom of the page as you
+          scroll down. It appears again and again in the component example. To
+          highlight the scrolling and highlighting, we're going to keep adding
+          more sample copy here.Keep in mind that the JavaScript plugin tries to
+          pick the right element among all that may be visible. Multiple visible
+          scrollspy targets at the same time may cause some issues.
+        </p>
+        <h6 ngbScrollSpyFragment="section-3">Item 3</h6>
+        <p>
+          The content that appears here is a placeholder for the scrollspy page.
+          The relevant navigation link is highlighted as you scroll down the
+          page. The component example contains repetitions of it. In order to
+          highlight the scrolling and highlighting, we will continue to add more
+          sample copy here.Keep in mind that the JavaScript plugin tries to pick
+          the right element among all that may be visible. Multiple visible
+          scrollspy targets at the same time may cause some issues.
+        </p>
+        <h6 ngbScrollSpyFragment="section-4">Item 4</h6>
+        <p>
+          The content that appears here is a placeholder for the scrollspy page.
+          The relevant navigation link is highlighted as you scroll down the
+          page. The component example contains repetitions of it. In order to
+          highlight the scrolling and highlighting, we will continue to add more
+          sample copy here.Keep in mind that the JavaScript plugin tries to pick
+          the right element among all that may be visible. Multiple visible
+          scrollspy targets at the same time may cause some issues.
+        </p>
+      </div>
+    </div>
+  </div>
+</app-card>

@@ -1,0 +1,35 @@
+<div class="card card-mb-faq">
+  <div class="card-header faq-header pb-0">
+    <h5>Navigation</h5>
+    <app-feather-icon [icon]="'settings'" />
+  </div>
+  <div class="card-body faq-body">
+    <div class="navigation-btn">
+      <a class="btn btn-primary" href="javascript:void(0)">
+        <app-feather-icon [icon]="'message-square'" [class]="'m-r-10'" />
+        Ask Question
+      </a>
+    </div>
+    <div class="navigation-option">
+      <ul>
+        @for (details of navigation; track details) {
+          @if (details.section) {
+            <hr />
+          } @else {
+            <li>
+              <a href="javascript:void(0)">
+                <app-feather-icon [icon]="details.icon" />
+                {{ details.title }}
+              </a>
+              @if (details.badge) {
+                <span class="badge badge-primary rounded-pill pull-right">{{
+                  details.badge_text
+                }}</span>
+              }
+            </li>
+          }
+        }
+      </ul>
+    </div>
+  </div>
+</div>

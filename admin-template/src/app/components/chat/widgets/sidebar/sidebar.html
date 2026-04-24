@@ -1,0 +1,183 @@
+<div class="left-sidebar-chat">
+  <div class="input-group">
+    <span class="input-group-text">
+      <app-feather-icon [icon]="'search'" [class]="'search-icon text-gray'" />
+    </span>
+    <input class="form-control" type="text" placeholder="Search here.." />
+  </div>
+</div>
+
+<div class="advance-options">
+  <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav border-tab">
+    <li [ngbNavItem]="'chats'">
+      <a ngbNavLink>Chats</a>
+      <ng-template ngbNavContent>
+        <div class="common-space">
+          <p>Recent chats</p>
+          <div class="header-top">
+            <a
+              class="btn badge-light-primary f-w-500"
+              href="javascript:void(0)"
+            >
+              <i class="fa-solid fa-plus"></i>
+            </a>
+          </div>
+        </div>
+        <ul class="chats-user">
+          @for (chat of recentChats(); track chat) {
+            <li
+              class="common-space"
+              [class.active]="activeChat === chat.id"
+              (click)="handleChat(chat)"
+            >
+              @if (groupChat()) {
+                <div class="chat-time">
+                  <div class="active-profile">
+                    @if (chat.group_profile && chat.group_name) {
+                      <img
+                        class="img-fluid rounded-circle"
+                        [src]="chat.group_profile"
+                        [alt]="chat.group_name"
+                      />
+                    }
+                  </div>
+                  <div>
+                    <span>{{ chat.group_name }}</span>
+                    <p>{{ chat.last_message }}</p>
+                  </div>
+                </div>
+              } @else {
+                <div class="chat-time">
+                  <div class="active-profile">
+                    @if (chat.user_profile && chat.user_name) {
+                      <img
+                        class="img-fluid rounded-circle"
+                        [src]="chat.user_profile"
+                        [alt]="chat.user_name"
+                      />
+                    }
+                    <div
+                      class="status bg-{{
+                        chat.user_status === 'Online' ? 'success' : 'warning'
+                      }}"
+                    ></div>
+                  </div>
+                  <div>
+                    <span>{{ chat.user_name }}</span>
+                    <p>{{ chat.last_message }}</p>
+                  </div>
+                </div>
+              }
+              <div>
+                <p>{{ chat.message_time }}</p>
+                @if (chat.unread_message) {
+                  <div class="badge badge-light-success">
+                    {{ chat.unread_message }}
+                  </div>
+                }
+              </div>
+            </li>
+          }
+        </ul>
+      </ng-template>
+    </li>
+    <li [ngbNavItem]="'contact'">
+      <a ngbNavLink>Contacts</a>
+      <ng-template ngbNavContent>
+        <div class="common-space">
+          <p>Contacts</p>
+          <div class="header-top">
+            <a
+              class="btn badge-light-primary f-w-500"
+              href="javascript:void(0)"
+            >
+              <i class="fa-solid fa-plus"></i>
+            </a>
+          </div>
+        </div>
+        <div class="search-contacts">
+          <input
+            class="form-control"
+            type="text"
+            placeholder="Name and phone number"
+          />
+          <app-svg-icon [icon]="'stroke-search'" />
+          <app-feather-icon class="mic-search" [icon]="'mic'" />
+        </div>
+        <div class="contact-wrapper">
+          @for (group of objectKeys(getContactGroup()); track group) {
+            <p>{{ group }}</p>
+            <ul class="border-0">
+              @for (
+                contact of getContactGroup()[group];
+                track contact;
+                let i = $index
+              ) {
+                <li class="common-space">
+                  <div class="chat-time">
+                    @if (contact.user_profile) {
+                      <img
+                        class="img-fluid rounded-circle"
+                        [src]="contact.user_profile"
+                        [alt]="contact.user_name"
+                      />
+                    } @else {
+                      <div
+                        class="custom-name bg-light-{{
+                          chatService.getTextColor(
+                            chatService.getUserText(contact.user_name)
+                          )
+                        }}"
+                      >
+                        <p
+                          class="txt-{{
+                            chatService.getTextColor(
+                              chatService.getUserText(contact.user_name)
+                            )
+                          }} f-w-500"
+                        >
+                          {{ chatService.getUserText(contact.user_name) }}
+                        </p>
+                      </div>
+                    }
+                    <div>
+                      <span>{{ contact.user_name }}n</span>
+                      <p>{{ contact.contact_number }}</p>
+                    </div>
+                  </div>
+                  <div class="contact-edit" ngbDropdown>
+                    <app-svg-icon [icon]="'menubar'" ngbDropdownToggle />
+                    <div
+                      class="dropdown-menu dropdown-menu-end"
+                      ngbDropdownMenu
+                    >
+                      <a
+                        class="dropdown-item"
+                        href="javascript:void(0)"
+                        ngbDropdownItem
+                        >View Details</a
+                      >
+                      <a
+                        class="dropdown-item"
+                        href="javascript:void(0)"
+                        ngbDropdownItem
+                        >Send Messages</a
+                      >
+                      <a
+                        class="dropdown-item"
+                        href="javascript:void(0)"
+                        ngbDropdownItem
+                        >Add To Favorites</a
+                      >
+                    </div>
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </ng-template>
+    </li>
+  </ul>
+  <div [ngbNavOutlet]="nav"></div>
+</div>

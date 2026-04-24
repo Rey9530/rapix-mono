@@ -1,0 +1,105 @@
+<div class="right-sidebar-title">
+  <div class="common-space">
+    <div class="chat-time-chat" [class.group-chat]="groupChat()">
+      @if (groupChat()) {
+        <ul>
+          @for (member of currentUserChat()?.group_members; track member) {
+            <li>
+              <img
+                class="img-fluid rounded-circle"
+                [src]="member.user_profile"
+                [alt]="member.user_name"
+              />
+            </li>
+          }
+          @if (
+            currentUserChat()?.total_members && currentUserChat()?.group_members
+          ) {
+            <li>
+              <div class="custom-name profile-count light-background">
+                <p class="f-w-500">
+                  {{
+                    (currentUserChat()?.total_members ?? 0) -
+                      (currentUserChat()?.group_members?.length ?? 0)
+                  }}+
+                </p>
+              </div>
+            </li>
+          }
+        </ul>
+        <div>
+          <span>{{ currentUserChat()?.group_name }}</span>
+          @if (currentUserChat()?.total_members) {
+            <p>{{ currentUserChat()?.total_members }} Members</p>
+          }
+        </div>
+      } @else {
+        <div class="active-profile-chat">
+          @if (currentUserChat()?.user_profile) {
+            <img
+              class="img-fluid rounded-circle"
+              [src]="currentUserChat()?.user_profile"
+              [alt]="currentUserChat()?.user_name"
+            />
+          } @else {
+            @if (currentUserChat()?.user_name) {
+              <div
+                class="custom-name bg-light-{{
+                  chatService.getTextColor(
+                    chatService.getUserText(currentUserChat()?.user_name ?? '')
+                  )
+                }}"
+              >
+                <p
+                  class="txt-{{
+                    chatService.getTextColor(
+                      chatService.getUserText(
+                        currentUserChat()?.user_name ?? ''
+                      )
+                    )
+                  }} f-w-500"
+                >
+                  {{
+                    chatService.getUserText(currentUserChat()?.user_name ?? "")
+                  }}
+                </p>
+              </div>
+            }
+          }
+          <div
+            class="status bg-{{
+              currentUserChat()?.user_status === 'Online' ? 'success' : 'warning'
+            }}"
+          ></div>
+        </div>
+        <div>
+          <span>{{ currentUserChat()?.user_name }}</span>
+          @if (currentUserChat()?.user_status === "Online") {
+            <p>{{ currentUserChat()?.user_status }}</p>
+          } @else {
+            <p>{{ currentUserChat()?.last_seen }}</p>
+          }
+        </div>
+      }
+    </div>
+    <div class="d-flex gap-2 offcanvas-wrapper">
+      <div class="contact-edit chat-alert">
+        <app-svg-icon [icon]="'spam'" />
+      </div>
+      <div class="contact-edit chat-alert" ngbDropdown>
+        <app-svg-icon [icon]="'menubar'" ngbDropdownToggle />
+        <div class="dropdown-menu dropdown-menu-end" ngbDropdownMenu>
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >View Details</a
+          >
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Send Messages</a
+          >
+          <a class="dropdown-item" href="javascript:void(0)" ngbDropdownItem
+            >Add To Favorites</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

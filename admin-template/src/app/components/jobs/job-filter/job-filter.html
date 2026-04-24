@@ -1,0 +1,125 @@
+<div class="md-sidebar">
+  <a
+    class="btn btn-primary email-aside-toggle md-sidebar-toggle"
+    (click)="openSidebar()"
+    >Job filter</a
+  >
+  <div class="md-sidebar-aside job-sidebar" [class.open]="isOpen">
+    <div class="default-according style-1 faq-accordion job-accordion">
+      <div class="accordion" ngbAccordion>
+        @for (details of sidebars; track details) {
+          <div class="card" ngbAccordionItem [collapsed]="false">
+            <div class="card-header" id="headingOne" ngbAccordionHeader>
+              <h2 class="mb-0">
+                <button
+                  class="btn btn-link btn-block text-start"
+                  type="button"
+                  ngbAccordionButton
+                >
+                  {{ details.title }}
+                </button>
+              </h2>
+            </div>
+            <div class="collapse show" ngbAccordionCollapse>
+              <div
+                class="card-body animate-chk {{ details.card_body_class }}"
+                ngbAccordionBody
+              >
+                <ng-template>
+                  @if (details.search) {
+                    <div class="job-filter mb-2">
+                      <div class="faq-form">
+                        <input
+                          class="form-control"
+                          type="text"
+                          placeholder="Search.."
+                        />
+                        <app-feather-icon
+                          [icon]="'search'"
+                          [class]="'search-icon'"
+                        />
+                      </div>
+                    </div>
+                  }
+                  @if (details.location) {
+                    <div class="job-filter">
+                      <div class="faq-form">
+                        <input
+                          class="form-control"
+                          type="text"
+                          placeholder="location.."
+                        />
+                        <app-feather-icon
+                          [icon]="'map-pin'"
+                          [class]="'search-icon'"
+                        />
+                      </div>
+                    </div>
+                  }
+                  @if (details.check) {
+                    <div [class]="details.class">
+                      @for (item of details.details; track item) {
+                        <div class="form-check">
+                          <input
+                            class="checkbox_animated"
+                            [id]="item.check_id"
+                            type="checkbox"
+                            data-original-title=""
+                            title=""
+                          />
+                          <label class="form-check-label" [for]="item.check_id">
+                            <span>{{ item.title }}</span>
+                            @if (item.badge) {
+                              <span class="number"
+                                >({{ item.badge_text }})</span
+                              >
+                            }
+                          </label>
+                        </div>
+                      }
+                    </div>
+                  } @else {
+                    <div [class]="details.class">
+                      @for (item of details.details; track item) {
+                        <label class="d-block" for="{{ item.check_id }}">
+                          <input
+                            class="checkbox_animated"
+                            [id]="item.check_id"
+                            type="checkbox"
+                          />
+                          {{ item.title }}
+                          @if (item.country_code) {
+                            <span class="d-block"
+                              >{{ item.country_code }} ({{
+                                item.badge_text
+                              }})</span
+                            >
+                          } @else if (item.badge) {
+                            ({{ item.badge_text }})
+                          }
+                        </label>
+                      }
+                    </div>
+                  }
+                  @if (details.search && details.location) {
+                    <button class="btn btn-primary text-center" type="button">
+                      {{ details.button }}
+                    </button>
+                  }
+                </ng-template>
+              </div>
+              @if (!details.search && !details.location) {
+                <button
+                  class="btn btn-block btn-primary text-center"
+                  type="button"
+                >
+                  {{ details.button }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

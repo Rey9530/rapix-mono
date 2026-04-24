@@ -1,0 +1,18 @@
+<app-card
+  [headerTitle]="'Horizontal Dashed Divider'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'main-divider'"
+>
+  <p class="mb-0 mt-1" header5>
+    Use <code>divider-body-2</code> class for dashed divider.
+  </p>
+
+  @for (divider of horizontalDashedDivider; track divider) {
+    <div class="divider-body divider-body-2 divider-{{ divider.color }}">
+      <div class="divider-circle bg-light-{{ divider.color }}">
+        <i class="{{ divider.icon }} txt-{{ divider.color }}"></i>
+      </div>
+    </div>
+  }
+</app-card>

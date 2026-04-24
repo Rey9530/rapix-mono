@@ -1,0 +1,8 @@
+<app-card [headerTitle]="'Square Rating Bar'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use<code> bar-rating </code> to set square rating.
+  </p>
+  <div class="rating-container">
+    <bar-rating theme="square" [(rate)]="squareRate" [max]="5" />
+  </div>
+</app-card>

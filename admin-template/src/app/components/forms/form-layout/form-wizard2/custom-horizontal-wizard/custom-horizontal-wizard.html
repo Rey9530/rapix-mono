@@ -1,0 +1,64 @@
+<app-card [headerTitle]="title()" [border]="true" [padding]="false">
+  <div
+    class="horizontal-wizard-wrapper"
+    [class.vertical-options]="type() ? 'vertical' : ''"
+  >
+    <div class="row g-3">
+      <div
+        class="col-12 main-horizontal-header"
+        [class.col-md-3]="type() ? 'vertical' : ''"
+      >
+        <div
+          ngbNav
+          #nav="ngbNav"
+          [(activeId)]="active"
+          class="nav nav-pills horizontal-options"
+          id="horizontal-wizard-tab"
+        >
+          @for (tab of customHorizontal; track tab; let i = $index) {
+            <div [ngbNavItem]="i + 1">
+              <a class="nav-link" ngbNavLink>
+                <div class="horizontal-wizard">
+                  <div class="stroke-icon-wizard">
+                    <i class="fa-solid fa-{{ tab.icon }}"></i>
+                  </div>
+                  <div class="horizontal-wizard-content">
+                    <h6>{{ tab.title }}</h6>
+                  </div>
+                </div>
+              </a>
+              <ng-template ngbNavContent>
+                @if (tab.value === "personal info") {
+                  <app-personal-info
+                    [active]="active"
+                    (changeTab)="changeTab($event)"
+                  />
+                }
+                @if (tab.value === "connect bank account") {
+                  <app-connect-bank-account
+                    [active]="active"
+                    (changeTab)="changeTab($event)"
+                  />
+                }
+                @if (tab.value === "inquiries") {
+                  <app-inquiries
+                    [active]="active"
+                    (changeTab)="changeTab($event)"
+                  />
+                }
+                @if (tab.value === "completed") {
+                  <app-completed />
+                }
+              </ng-template>
+            </div>
+          }
+        </div>
+      </div>
+      <div class="col-12" [class.col-md-9]="type() ? 'vertical' : ''">
+        <div class="dark-field">
+          <div [ngbNavOutlet]="nav"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-card>

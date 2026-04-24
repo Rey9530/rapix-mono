@@ -1,0 +1,17 @@
+<app-card
+  [headerTitle]="'Doughnut Chart'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'chart-block chart-vertical-center'"
+>
+  <canvas
+    baseChart
+    class="chart"
+    [datasets]="doughnutChartData"
+    [labels]="doughnutChartLabels"
+    [options]="doughnutChartOptions"
+    [legend]="doughnutChartLegend"
+    [type]="'doughnut'"
+  >
+  </canvas>
+</app-card>

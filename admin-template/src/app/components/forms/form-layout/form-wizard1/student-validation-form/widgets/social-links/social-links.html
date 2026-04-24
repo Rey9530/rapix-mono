@@ -1,0 +1,56 @@
+<h5 class="mb-2">Social Links</h5>
+<div class="row g-3">
+  <div class="col-sm-6">
+    <label class="form-label" for="twitterControlInput">Twitter</label>
+    <input
+      class="form-control"
+      id="twitterControlInput"
+      type="url"
+      placeholder="https://twitter.com"
+    />
+  </div>
+  <div class="col-sm-6">
+    <label class="form-label" for="githubControlInput">Github</label>
+    <input
+      class="form-control"
+      id="githubControlInput"
+      type="url"
+      placeholder="https:/github.com"
+    />
+  </div>
+  <div class="col-12">
+    <div class="input-group">
+      <input
+        class="form-control"
+        id="inputGroupFile04"
+        type="file"
+        aria-describedby="inputGroupFileAddon04"
+        aria-label="Upload"
+      />
+      <button
+        class="btn btn-outline-secondary"
+        id="inputGroupFileAddon04"
+        type="button"
+      >
+        Submit
+      </button>
+    </div>
+  </div>
+  <div class="col-12">
+    <select2
+      [data]="selectPosition"
+      [templates]="template"
+      placeholder="Positions"
+    >
+      <ng-template #template let-item="label">
+        {{ item }}
+      </ng-template>
+    </select2>
+  </div>
+  <div class="col-12">
+    <label class="form-label" for="customTextarea"
+      >Why do you want to take this position?</label
+    >
+    <textarea class="form-control" id="customTextarea" rows="2"></textarea>
+  </div>
+</div>

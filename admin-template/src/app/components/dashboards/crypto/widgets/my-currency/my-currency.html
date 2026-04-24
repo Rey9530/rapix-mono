@@ -1,0 +1,13 @@
+<app-card
+  [headerTitle]="'My Currencies'"
+  [cardBodyClass]="'px-0 pt-0'"
+  [padding]="false"
+>
+  <div class="recent-table table-responsive currency-table custom-scrollbar">
+    <app-table
+      [tableConfig]="tableConfig"
+      [pageSize]="4"
+      [paginateDetails]="true"
+    />
+  </div>
+</app-card>

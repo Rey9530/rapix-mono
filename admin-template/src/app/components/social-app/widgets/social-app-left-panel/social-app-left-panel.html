@@ -1,0 +1,97 @@
+<div class="default-according style-1 faq-accordion" ngbAccordion>
+  <div class="card" ngbAccordionItem [collapsed]="false">
+    <div class="card-header" ngbAccordionHeader>
+      <h2 class="mb-0">
+        <button
+          class="btn btn-link btn-block text-start"
+          type="button"
+          ngbAccordionButton
+        >
+          My Profile
+        </button>
+      </h2>
+    </div>
+    <div class="collapse show" ngbAccordionCollapse>
+      <div class="card-body socialprofile filter-cards-view" ngbAccordionBody>
+        <ng-template>
+          <app-my-profile />
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mutual-friends" ngbAccordionItem [collapsed]="false">
+    <div class="card-header" ngbAccordionHeader>
+      <h2 class="mb-0">
+        <button
+          class="btn btn-link btn-block text-start"
+          type="button"
+          ngbAccordionButton
+        >
+          Mutual Friends
+        </button>
+      </h2>
+    </div>
+    <div class="collapse show" ngbAccordionCollapse>
+      <div class="card-body social-status filter-cards-view" ngbAccordionBody>
+        <ng-template>
+          @for (friend of friends; track friend) {
+            <div class="d-flex">
+              <img
+                class="img-50 rounded-circle m-r-15"
+                [src]="friend.profile"
+                [alt]="friend.name"
+              />
+              <div class="social-status social-{{ friend.status }}"></div>
+              <div class="flex-grow-1">
+                <span class="f-w-600 d-block">{{ friend.name }}</span>
+                <span class="d-block fw-normal">{{ friend.email }}</span>
+              </div>
+            </div>
+          }
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" ngbAccordionItem [collapsed]="false">
+    <div class="card-header" ngbAccordionHeader>
+      <h2 class="mb-0">
+        <button
+          class="btn btn-link btn-block text-start"
+          type="button"
+          ngbAccordionButton
+        >
+          Activity Feed
+        </button>
+      </h2>
+    </div>
+    <div class="collapse show" ngbAccordionCollapse>
+      <div class="card-body social-status filter-cards-view" ngbAccordionBody>
+        <ng-template>
+          @for (friend of friends; track friend) {
+            @if (friend.last_activity_time && friend.user_profile) {
+              <div class="d-flex">
+                <img
+                  class="img-50 rounded-circle m-r-15"
+                  [src]="friend.profile"
+                  [alt]="friend.name"
+                />
+                <div class="flex-grow-1">
+                  <span class="f-w-600 d-block">{{ friend.name }}</span>
+                  <p>
+                    Commented on {{ friend.user_profile }}'s
+                    <a href="javascript:void(0)">Photo</a>
+                  </p>
+                  <span class="light-span"
+                    >{{ friend.last_activity_time }} ago</span
+                  >
+                </div>
+              </div>
+            }
+          }
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

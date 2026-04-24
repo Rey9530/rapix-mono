@@ -1,0 +1,12 @@
+<app-card [headerTitle]="'Radial Bar Chart'" [border]="true" [padding]="false">
+  <div id="circlechart">
+    <apx-chart
+      [chart]="radialBarChart.chart"
+      [plotOptions]="radialBarChart.plotOptions"
+      [series]="radialBarChart.series"
+      [labels]="radialBarChart.labels"
+      [responsive]="radialBarChart.responsive"
+      [colors]="radialBarChart.colors"
+    />
+  </div>
+</app-card>

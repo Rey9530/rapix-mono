@@ -1,0 +1,27 @@
+<app-card [cardClass]="'o-hidden'" [cardBodyClass]="'row pb-0 m-0'">
+  <div class="col-xl-9 col-lg-8 col-9 p-0">
+    <h6 class="mb-2">{{ chart_details()?.title }}</h6>
+    <h4>{{ chart_details()?.value }}</h4>
+    <span>{{ chart_details()?.description }}</span>
+  </div>
+  <div class="col-xl-3 col-lg-4 col-3 text-end p-0">
+    <h6 class="txt-success">{{ chart_details()?.increase_value }}</h6>
+  </div>
+  <div>
+    <div id="chart-widget1">
+      <apx-chart
+        [chart]="chart_details()?.chart_details!.chart"
+        [dataLabels]="chart_details()?.chart_details!.dataLabels"
+        [stroke]="chart_details()?.chart_details!.stroke"
+        [xaxis]="chart_details()?.chart_details!.xaxis"
+        [yaxis]="chart_details()?.chart_details!.yaxis"
+        [grid]="chart_details()?.chart_details!.grid"
+        [fill]="chart_details()?.chart_details!.fill"
+        [colors]="chart_details()?.chart_details!.colors"
+        [series]="chart_details()?.chart_details!.series"
+        [tooltip]="chart_details()?.chart_details!.tooltip"
+        [responsive]="chart_details()?.chart_details!.responsive"
+      />
+    </div>
+  </div>
+</app-card>

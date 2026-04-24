@@ -1,0 +1,22 @@
+<app-card
+  [headerTitle]="'Fleet Status'"
+  [padding]="false"
+  [cardBodyClass]="'pt-0'"
+  [dropdownType]="'simple'"
+  [options]="cardToggleOption"
+>
+  <div class="fleet-status-chart">
+    <div id="fleet-status">
+      <apx-chart
+        [labels]="fleetStatus.labels"
+        [series]="fleetStatus.series"
+        [chart]="fleetStatus.chart"
+        [plotOptions]="fleetStatus.plotOptions"
+        [stroke]="fleetStatus.stroke"
+        [legend]="fleetStatus.legend"
+        [colors]="fleetStatus.colors"
+        [responsive]="fleetStatus.responsive"
+      />
+    </div>
+  </div>
+</app-card>

@@ -1,0 +1,23 @@
+<app-card
+  [headerTitle]="'Default Sitemap'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'default-sitemap'"
+>
+  <div class="row g-5">
+    @for (menu of menuItem; track menu) {
+      @if (menu.title && menu.children && menu.children.length) {
+        <div class="col-xxl-3 col-md-4 col-sm-6 box-col-4">
+          <h6 class="sub-title">{{ menu.title }}</h6>
+          @if (menu.children && menu.children.length) {
+            <div class="common-flex">
+              @for (child of menu.children | slice: 0 : 5; track child) {
+                <a href="javascript:void(0)">{{ child.title }}</a>
+              }
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+</app-card>

@@ -1,0 +1,32 @@
+<app-card
+  [cardClass]="'height-equal'"
+  [headerTitle]="'Badge-Indicator'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'avatar-showcase'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use<code> badge </code>class with avatar to indicate and provide indication.
+  </p>
+
+  <div class="avatars badge-avatar">
+    @for (avatar of badgeIndicatorAvatar; track avatar) {
+      <div class="avatar">
+        <img
+          class="rounded-circle"
+          [ngClass]="avatar.class"
+          [src]="avatar.profile"
+          alt="avatar"
+        />
+        <div
+          class="badge badge-{{
+            avatar.badge_color
+          }} position-absolute rounded-circle"
+          [ngClass]="avatar.badge_class"
+        >
+          {{ avatar.badge_text }}
+        </div>
+      </div>
+    }
+  </div>
+</app-card>

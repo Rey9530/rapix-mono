@@ -1,0 +1,160 @@
+<div class="container-fluid">
+  <div class="email-wrap bookmark-wrap">
+    <div class="row main-bookmark">
+      <div class="col-xxl-3 box-col-6">
+        <app-sidebar
+          (currentTab)="handleCurrentTab($event)"
+          (newBookmark)="handleAddBookmark($event)"
+        />
+      </div>
+      <div class="col-xxl-9 col-md-12 box-col-12">
+        <div class="email-right-aside bookmark-tabcontent">
+          <div class="card email-body radius-left">
+            <div class="ps-0">
+              <div class="tab-content">
+                <div class="tab-pane fade active show">
+                  <div class="card mb-0">
+                    <div class="card-header d-flex">
+                      <h6 class="mb-0">
+                        {{ activeTab ? activeTab.title : "" }}
+                      </h6>
+                      <ul>
+                        <li>
+                          <a
+                            class="grid-bookmark-view"
+                            href="javascript:void(0)"
+                            (click)="toggleListView(false)"
+                          >
+                            <app-feather-icon [icon]="'grid'" />
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            class="list-layout-view"
+                            href="javascript:void(0)"
+                            (click)="toggleListView(true)"
+                          >
+                            <app-feather-icon [icon]="'list'" />
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="card-body pb-0">
+                      <div
+                        class="details-bookmark text-center"
+                        [class.list-bookmark]="isListView"
+                      >
+                        <div class="row" id="bookmarkData">
+                          @for (
+                            bookmark of getFilteredBookmark();
+                            track bookmark
+                          ) {
+                            <div class="col-xxl-3 col-md-4 col-ed-4 col-sm-6">
+                              <div
+                                class="card card-with-border bookmark-card o-hidden"
+                              >
+                                <div class="details-website">
+                                  <img
+                                    class="img-fluid"
+                                    [src]="bookmark.image"
+                                    [alt]="bookmark.title"
+                                  />
+                                  <div
+                                    class="favourite-icon favourite_0"
+                                    [class.favourite]="bookmark.is_favorite"
+                                    (click)="favoriteBookmark(bookmark)"
+                                  >
+                                    <a href="javascript:void(0)">
+                                      <i class="fa-solid fa-star"></i>
+                                    </a>
+                                  </div>
+                                  <div class="desciption-data">
+                                    <div class="title-bookmark">
+                                      <h6 class="title_0">
+                                        {{ bookmark.title }}
+                                      </h6>
+                                      <p class="weburl_0">{{ bookmark.url }}</p>
+                                      <div class="hover-block">
+                                        <ul>
+                                          <li>
+                                            <a
+                                              href="javascript:void(0)"
+                                              (click)="
+                                                BookmarkModal()?.openModal(
+                                                  bookmark
+                                                )
+                                              "
+                                            >
+                                              <app-feather-icon
+                                                [icon]="'edit-2'"
+                                              />
+                                            </a>
+                                          </li>
+                                          <li>
+                                            <a href="javascript:void(0)">
+                                              <app-feather-icon
+                                                [icon]="'link'"
+                                              />
+                                            </a>
+                                          </li>
+                                          <li>
+                                            <a href="javascript:void(0)">
+                                              <app-feather-icon
+                                                [icon]="'share-2'"
+                                              />
+                                            </a>
+                                          </li>
+                                          <li>
+                                            <a
+                                              href="javascript:void(0)"
+                                              (click)="deleteBookmark(bookmark)"
+                                            >
+                                              <app-feather-icon
+                                                [icon]="'trash-2'"
+                                              />
+                                            </a>
+                                          </li>
+                                          <li class="pull-right text-end">
+                                            <a href="javascript:void(0)">
+                                              <app-feather-icon
+                                                [icon]="'tag'"
+                                              />
+                                            </a>
+                                          </li>
+                                        </ul>
+                                      </div>
+                                      <div class="content-general">
+                                        <p class="desc_0">
+                                          {{ bookmark.description }}
+                                        </p>
+                                        @if (bookmark.collection) {
+                                          <span class="collection_0">{{
+                                            bookmark.collection
+                                          }}</span>
+                                        }
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          } @empty {
+                            <div class="details-bookmark text-center">
+                              <span>No Bookmarks Found.</span>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-bookmark-modal #bookmarkModal />

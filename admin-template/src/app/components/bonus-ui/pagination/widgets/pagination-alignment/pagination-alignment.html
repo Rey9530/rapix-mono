@@ -1,0 +1,36 @@
+<app-card
+  [headerTitle]="'Pagination Alignment'"
+  [border]="true"
+  [padding]="false"
+  [cardClass]="'height-equal'"
+>
+  <p class="f-m-light mt-1" header5>
+    Change the alignment of pagination components with flexbox utilities. For
+    example, with <code>justify-content-center:*</code>.
+  </p>
+  @for (details of paginationAlignment; track details) {
+    <nav class="{{ details.class }}" aria-label="Page navigation example">
+      <ul
+        class="pagination justify-content-{{
+          details.alignment_class
+        }} pagin-border-{{ details.color_class }} pagination-{{
+          details.color_class
+        }}"
+      >
+        <li class="page-item">
+          <a class="page-link" href="javascript:void(0)">Previous</a>
+        </li>
+        @for (items of details.text; track items) {
+          <li [class.active]="items.active" class="page-item">
+            <a class="page-link" href="javascript:void(0)">{{
+              items.number
+            }}</a>
+          </li>
+        }
+        <li class="page-item">
+          <a class="page-link" href="javascript:void(0)">Next</a>
+        </li>
+      </ul>
+    </nav>
+  }
+</app-card>

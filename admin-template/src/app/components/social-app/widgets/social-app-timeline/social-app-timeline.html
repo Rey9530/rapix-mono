@@ -1,0 +1,109 @@
+<div class="row">
+  <div class="col-xl-3 xl-40 col-lg-6 col-md-5 box-col-4">
+    <app-social-app-left-panel />
+  </div>
+  <div class="col-xl-6 xl-60 col-lg-6 col-md-7 box-col-8e">
+    <div class="row">
+      <div class="col-sm-12">
+        @for (post of userPost; track post) {
+          <div class="card">
+            <div class="card-body">
+              <div class="new-users-social">
+                <div class="d-flex">
+                  <img
+                    class="rounded-circle image-radius m-r-15"
+                    [src]="post.user_profile"
+                    [alt]="post.user_name"
+                  />
+                  <div class="flex-grow-1">
+                    <h6>{{ post.user_name }}</h6>
+                    <p class="c-o-light">{{ post.post_date }}</p>
+                  </div>
+                  <span class="pull-right mt-0">
+                    <app-feather-icon [icon]="'more-vertical'" />
+                  </span>
+                </div>
+              </div>
+              <img class="img-fluid" alt="post" [src]="post.post_image" />
+              <div class="timeline-content">
+                <p>{{ post.description }}</p>
+                <div class="like-content">
+                  <span>
+                    <i class="fa-solid fa-heart font-danger"></i>
+                  </span>
+                  <span class="pull-right comment-number">
+                    <span>{{ post.comment }}</span>
+                    <span>
+                      <i class="fa-solid fa-share-nodes"></i>
+                    </span>
+                  </span>
+                  <span class="pull-right comment-number">
+                    <span>{{ post.share }} </span>
+                    <span>
+                      <i class="fa-regular fa-comments"></i>
+                    </span>
+                  </span>
+                </div>
+                <div class="social-chat">
+                  @for (comment of post.comments; track comment) {
+                    <div
+                      [ngClass]="comment.is_reply ? 'other-msg' : 'your-msg'"
+                    >
+                      <div class="d-flex">
+                        <img
+                          class="img-50 img-fluid m-r-20 rounded-circle"
+                          [alt]="comment.user_name"
+                          [src]="comment.user_profile"
+                        />
+                        <div class="flex-grow-1">
+                          <span class="f-w-500"
+                            >{{ comment.user_name }}
+                            <span
+                              >{{ comment.time }} ago
+                              <i class="fa-solid fa-reply font-primary"></i>
+                            </span>
+                          </span>
+                          <p>{{ comment.comment }}</p>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                  <div class="text-center">
+                    <a href="javascript:vois(0)">More Comments</a>
+                  </div>
+                </div>
+                <div class="comments-box">
+                  <div class="d-flex">
+                    <img
+                      class="img-50 img-fluid m-r-20 rounded-circle"
+                      alt="user"
+                      src="assets/images/user/1.jpg"
+                    />
+                    <div class="flex-grow-1">
+                      <div class="input-group text-box">
+                        <input
+                          class="form-control input-txt-bx"
+                          type="text"
+                          name="message-to-send"
+                          placeholder="Post your comments"
+                        />
+                        <div class="input-group-append">
+                          <button class="btn btn-transparent" type="button">
+                            <i class="fa-regular fa-face-smile"> </i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 xl-100 box-col-12">
+    <app-social-app-right-panel />
+  </div>
+</div>

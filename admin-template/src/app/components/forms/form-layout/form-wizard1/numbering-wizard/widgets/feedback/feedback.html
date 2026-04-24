@@ -1,0 +1,61 @@
+<form class="stepper-three row g-3 needs-validation custom-input" novalidate="">
+  <div class="col-sm-6">
+    <label class="form-label" for="email-basic"
+      >LinkedIn<span class="txt-danger">*</span></label
+    >
+    <input
+      class="form-control"
+      id="email-basic"
+      type="url"
+      required=""
+      placeholder="https://linkedIn.com/cuba"
+    />
+    <div class="invalid-feedback">Please enter your valid link</div>
+    <div class="valid-feedback">Looks's Good!</div>
+  </div>
+  <div class="col-sm-6">
+    <label class="form-label" for="validationCustom996"
+      >Github<span class="txt-danger">*</span></label
+    >
+    <input
+      class="form-control"
+      id="validationCustom996"
+      type="url"
+      required=""
+      placeholder="https://github.com/cuba"
+    />
+    <div class="invalid-feedback">Please enter your valid link</div>
+    <div class="valid-feedback">Looks's Good!</div>
+  </div>
+  <div class="col-12">
+    <label class="form-label" for="validationCustom09"
+      >Select State<span class="txt-danger">*</span></label
+    >
+    <select2 [data]="selectState" [templates]="template" placeholder="Choose..">
+      <ng-template #template let-item="label">
+        {{ item }}
+      </ng-template>
+    </select2>
+    <div class="invalid-feedback">Please select a valid state.</div>
+  </div>
+  <div class="col-12">
+    <label class="form-label" for="giveFeedBack">Give Feedback</label>
+    <textarea class="form-control" id="giveFeedBack" required=""></textarea>
+    <div class="invalid-feedback">Please enter a message in the textarea.</div>
+  </div>
+  <div class="col-12">
+    <div class="form-check">
+      <input
+        class="form-check-input"
+        id="invalidCheck46"
+        type="checkbox"
+        value=""
+        required=""
+      />
+      <label class="form-check-label mb-0" for="invalidCheck46"
+        >Agree to terms and conditions</label
+      >
+      <div class="invalid-feedback">You must agree before submitting.</div>
+    </div>
+  </div>
+</form>

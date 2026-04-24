@@ -1,0 +1,42 @@
+<app-card
+  [headerTitle]="'Static Backdrop Modal'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="f-m-light mt-1" header5>
+    Use <code>backdrop: 'static'</code> option in <code>ngbModal</code> to
+    prevent closing the modal when clicking outside, keeping it static on the
+    screen when opened.
+  </p>
+
+  <button
+    class="btn btn-warning"
+    type="button"
+    (click)="openModal(staticBackdrop)"
+  >
+    Static Backdrop Modal
+  </button>
+
+  <ng-template #staticBackdrop let-modal>
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="modal-toggle-wrapper">
+          <ul class="modal-img">
+            <li><img src="assets/images/gif/time.gif" alt="alarm" /></li>
+          </ul>
+          <h4 class="text-center pb-2">Failed to establish a connection.</h4>
+          <p class="text-center">
+            Getting back in touch in <b class="txt-warning">14 seconds...</b>
+          </p>
+          <button
+            class="btn btn-warning d-flex m-auto"
+            type="button"
+            (click)="closeModal()"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</app-card>

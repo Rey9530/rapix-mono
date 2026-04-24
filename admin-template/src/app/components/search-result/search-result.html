@@ -1,0 +1,64 @@
+<div class="container-fluid search-page">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header">
+          <form class="theme-form">
+            <div class="input-group m-0 flex-nowrap">
+              <input
+                class="form-control-plaintext"
+                type="search"
+                placeholder="Pixelstrap .."
+              />
+              <span class="btn btn-primary input-group-text">Search</span>
+            </div>
+          </form>
+        </div>
+        <div class="card-body">
+          <div class="text-center">
+            <ul
+              ngbNav
+              #nav="ngbNav"
+              [(activeId)]="active"
+              class="nav nav-tabs search-list"
+            >
+              @for (tab of searchResultTab; track tab) {
+                <li class="nav-item" [ngbNavItem]="tab.value">
+                  <a class="nav-link" ngbNavLink>
+                    <i class="icon-{{ tab.icon }}"></i>
+                    {{ tab.title }}
+                  </a>
+                  <ng-template ngbNavContent>
+                    <div class="tab-content" id="top-tabContent">
+                      <div
+                        class="tab-pane fade show active"
+                        [class.search-links]="active === 'all'"
+                      >
+                        @if (active === "all") {
+                          <app-search-results />
+                        }
+                        @if (active === "images") {
+                          <app-social-app-photos [likesSection]="false" />
+                        }
+                        @if (active === "videos") {
+                          <app-search-result-video />
+                        }
+                        @if (active === "audio") {
+                          <app-search-result-audio />
+                        }
+                        @if (active === "setting") {
+                          <app-search-result-setting />
+                        }
+                      </div>
+                    </div>
+                  </ng-template>
+                </li>
+              }
+            </ul>
+          </div>
+          <div [ngbNavOutlet]="nav"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

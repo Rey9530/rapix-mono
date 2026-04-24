@@ -1,0 +1,41 @@
+<app-card
+  [headerTitle]="'Breakpoint Specific'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="f-m-light mt-1" header5>
+    Use <code>table-responsive"❴-sm|-md|-lg|-xl|-xxl❵"</code> functions like a
+    heading for a table. It helps users with screen readers to find a table and
+    understand what it’s about and decide if they want to read it.
+  </p>
+  <div class="card-block row">
+    <div class="col-sm-12 col-lg-12 col-xl-12">
+      <div class="table-responsive custom-scrollbar">
+        <table class="table table-responsive-sm">
+          <thead>
+            <tr>
+              <th scope="col">Id</th>
+              <th scope="col">Name</th>
+              <th scope="col">Order Id</th>
+              <th scope="col">Price</th>
+              <th scope="col">Quantity</th>
+              <th scope="col">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (details of breakpointTable; track details) {
+              <tr>
+                <th scope="row">{{ details.id }}</th>
+                <td>{{ details.name }}</td>
+                <td>{{ details.order_id }}</td>
+                <td>${{ details.price }}</td>
+                <td>{{ details.quantity }}</td>
+                <td>{{ details.total }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</app-card>

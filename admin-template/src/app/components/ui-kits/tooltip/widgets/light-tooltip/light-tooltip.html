@@ -1,0 +1,52 @@
+<app-card [headerTitle]="'Light Tooltips'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>button-light-*</code> to change light background color and set the
+    tooltip content using <code>[ngbTooltip]</code> and configure its placement
+    with the <code>placement</code> attribute.
+  </p>
+
+  <div class="common-flex">
+    <button
+      class="mb-0 me-0 btn button-light-primary"
+      placement="top"
+      [ngbTooltip]="'Primary'"
+    >
+      Primary
+    </button>
+    <button
+      class="mb-0 me-0 btn button-light-secondary"
+      placement="top"
+      [ngbTooltip]="'Secondary'"
+    >
+      Secondary
+    </button>
+    <button
+      class="mb-0 me-0 btn button-light-warning"
+      placement="top"
+      [ngbTooltip]="'Warning'"
+    >
+      Warning
+    </button>
+    <button
+      class="mb-0 me-0 btn button-light-success"
+      placement="top"
+      [ngbTooltip]="'Success'"
+    >
+      Success
+    </button>
+    <button
+      class="mb-0 me-0 btn button-light-danger"
+      placement="top"
+      [ngbTooltip]="'Danger'"
+    >
+      Danger
+    </button>
+    <button
+      class="mb-0 me-0 btn button-light-info"
+      placement="top"
+      [ngbTooltip]="'info'"
+    >
+      Info
+    </button>
+  </div>
+</app-card>

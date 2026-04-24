@@ -1,0 +1,171 @@
+@if (mailDetails()) {
+  <div class="mail-header-wrapper header-wrapper1">
+    <div class="mail-header1">
+      <div class="light-square" (click)="goPrevious()">
+        <app-svg-icon [icon]="'back-arrow'" [class]="'btn-email'" />
+      </div>
+      <span>{{
+        mailDetails() && mailDetails()!.email_title
+          ? mailDetails()!.email_title
+          : "No Subject"
+      }}</span>
+    </div>
+    <div class="mail-body1">
+      <div class="light-square" placement="top" [ngbTooltip]="'Achieve'">
+        <app-svg-icon [icon]="'sms'" />
+      </div>
+      <div class="light-square" placement="top" [ngbTooltip]="'Bookmark'">
+        <app-svg-icon [icon]="'bookmark'" [class]="'bookmark-box'" />
+      </div>
+      <div class="light-square" placement="top" [ngbTooltip]="'Spam'">
+        <app-svg-icon [icon]="'spam'" />
+      </div>
+      <div
+        class="light-square bg-light-danger"
+        placement="top"
+        [ngbTooltip]="'Trash'"
+      >
+        <app-svg-icon [icon]="'mail-trash'" [class]="'stroke-danger'" />
+      </div>
+      <div class="light-square" placement="top" [ngbTooltip]="'Settings'">
+        <app-svg-icon [icon]="'setting'" />
+      </div>
+    </div>
+  </div>
+  <div class="mail-body-wrapper" id="DivIdToPrint">
+    <div class="user-mail-wrapper">
+      <div class="user-title">
+        <div>
+          <div class="rounded-border">
+            @if (mailDetails()!.user_profile) {
+              <img
+                class="img-fluid"
+                [src]="mailDetails()!.user_profile"
+                [alt]="mailDetails()!.user_name"
+              />
+            } @else {
+              <div
+                class="circle-{{
+                  getTextColor(getUserText(mailDetails()!.user_name))
+                }}"
+              >
+                <p
+                  class="txt-{{
+                    getTextColor(getUserText(mailDetails()!.user_name))
+                  }}"
+                >
+                  {{ getUserText(mailDetails()!.user_name) }}
+                </p>
+              </div>
+            }
+          </div>
+          <div class="dropdown-subtitle">
+            <p>{{ mailDetails()!.user_name }}</p>
+            <div class="onhover-dropdown">
+              <button class="btn p-0 dropdown-button">
+                To me
+                <app-feather-icon [icon]="'chevron-down'" />
+              </button>
+              <div class="inbox-security onhover-show-div">
+                <p>
+                  From: <span>{{ mailDetails()!.email }}</span>
+                </p>
+                <p>to: <span>Me</span></p>
+                <p>
+                  reply-to:<span>{{ mailDetails()!.email }}</span>
+                </p>
+                <p>
+                  date: <span>{{ mailDetails()!.time }}</span>
+                </p>
+                <p>
+                  subject: <span>{{ mailDetails()!.email_title }}</span>
+                </p>
+                <p>security: <span>standard encryption (TLS)</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="inbox-options">
+          <span>
+            @if (mailDetails()!.date) {
+              {{ mailDetails()!.date }} ({{ mailDetails()!.time }})
+            } @else {
+              {{ mailDetails()!.time }}
+            }
+          </span>
+          <div class="light-square">
+            <app-svg-icon
+              [icon]="'fill-star'"
+              [class]="
+                'important-mail ' + (mailDetails()!.is_favorite ? 'active' : '')
+              "
+            />
+          </div>
+          <button type="" class="light-square" (click)="print()">
+            <app-svg-icon [icon]="'print'" />
+          </button>
+          <div class="light-square" ngbDropdown>
+            <div role="main" ngbDropdownToggle>
+              <app-svg-icon [icon]="'menubar'" />
+            </div>
+            <div class="dropdown-menu dropdown-block" ngbDropdownMenu>
+              <a
+                class="dropdown-item"
+                href="javascript:void(0)"
+                ngbDropdownItem
+              >
+                <i class="fa fa-mail-reply"></i>
+                Reply
+              </a>
+              <a
+                class="dropdown-item"
+                href="javascript:void(0)"
+                ngbDropdownItem
+              >
+                <i class="fa fa-mail-forward"></i>
+                Forward
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="user-body">
+        <p>Dear Customer,</p>
+        <p>{{ mailDetails()!.description }}</p>
+        <div class="mail-subcontent">
+          <p>Yours faithfully,</p>
+          <p>Account Security Team</p>
+        </div>
+      </div>
+      <div class="user-footer">
+        <div>
+          <app-svg-icon [icon]="'attchment'" />
+          <span class="f-light">Attachments</span>
+        </div>
+        <div class="d-inline-block">
+          <div class="attachment-file common-flex">
+            <div class="common-flex align-items-center">
+              <img src="assets/images/email-template/pdfs.png" alt="pdf" />
+              <div class="d-block">
+                <p>Offer_Letter.pdf</p>
+                <p>200KB</p>
+              </div>
+            </div>
+            <a href="assets/pug/pages/template/text_file.pdf" download>
+              <i class="fa fa-download f-light"></i>
+            </a>
+          </div>
+        </div>
+        <div class="toolbar-box">
+          <angular-editor />
+        </div>
+      </div>
+      <div class="send-btn">
+        <button class="btn btn-primary">
+          Send
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+}

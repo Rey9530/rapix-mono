@@ -1,0 +1,21 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12">
+      <app-card
+        [headerTitle]="'IMAGE GALLERY'"
+        [cardBodyClass]="'gallery my-gallery row'"
+        [border]="true"
+        [padding]="false"
+        gallerize
+      >
+        @for (img of galleryGridDetails; track img) {
+          <figure class="col-xl-3 col-md-4 col-6">
+            <a href="javascript:void(0)">
+              <img class="img-thumbnail" [src]="img.src_url" alt="img"/>
+            </a>
+          </figure>
+        }
+      </app-card>
+    </div>
+  </div>
+</div>

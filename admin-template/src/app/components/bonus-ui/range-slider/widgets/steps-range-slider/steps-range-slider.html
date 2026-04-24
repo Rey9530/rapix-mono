@@ -1,0 +1,22 @@
+<app-card
+  [headerTitle]="'Steps Range Slider'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="f-m-light mt-1" header5>
+    Use <code>ngx-slider</code> for creating a range slider with step values.
+    This implementation uses the <code>minValue</code> and
+    <code>maxValue</code> to define the slider's current range, and the
+    <code>options</code> object to configure the slider's floor, ceiling, and
+    ticks display.
+  </p>
+  <div class="form-group row justify-content-center">
+    <div class="col-md-10">
+      <ngx-slider
+        [(value)]="minValue"
+        [(highValue)]="maxValue"
+        [options]="options"
+      />
+    </div>
+  </div>
+</app-card>

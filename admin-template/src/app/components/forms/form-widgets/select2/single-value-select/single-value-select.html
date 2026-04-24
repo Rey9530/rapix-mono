@@ -1,0 +1,59 @@
+<app-card
+  [headerTitle]="'Single-value Select'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="f-m-light mt-1" header5>
+    Use <code>ng-select2-component</code> for select.
+  </p>
+  <form class="row g-3 select2-wrapper">
+    <div class="col-xl-3 col-sm-6">
+      <select2
+        [data]="selectTheme"
+        [templates]="template"
+        placeholder="Please select"
+        class="bg-light-primary"
+      >
+        <ng-template #template let-item="label">
+          {{ item }}
+        </ng-template>
+      </select2>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+      <select2
+        [data]="designation"
+        [templates]="template"
+        placeholder="Please select"
+        class="bg-light-secondary"
+      >
+        <ng-template #template let-item="label">
+          {{ item }}
+        </ng-template>
+      </select2>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+      <select2
+        [data]="component"
+        [templates]="template"
+        placeholder="Please select"
+        class="bg-light-primary"
+      >
+        <ng-template #template let-item="label">
+          {{ item }}
+        </ng-template>
+      </select2>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+      <select2
+        [data]="selectDetails"
+        [templates]="template"
+        placeholder="Please select"
+        class="bg-light-secondary"
+      >
+        <ng-template #template let-item="label">
+          {{ item }}
+        </ng-template>
+      </select2>
+    </div>
+  </form>
+</app-card>

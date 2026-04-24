@@ -1,0 +1,16 @@
+<app-card
+  [headerTitle]="'Completed Course'"
+  [cardBodyClass]="'px-0 pt-0 completed-course-table'"
+  [dropdownType]="'simple'"
+  [options]="cardToggleOptions"
+  [padding]="false"
+>
+  <div class="table-responsive custom-scrollbar">
+    <app-table
+      [tableConfig]="tableConfig"
+      [hasCheckbox]="true"
+      [pageSize]="4"
+      [paginateDetails]="true"
+    />
+  </div>
+</app-card>

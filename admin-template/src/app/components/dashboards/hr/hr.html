@@ -1,0 +1,45 @@
+<div class="container-fluid dashboard-11">
+  <div class="row">
+    <div class="col-xxl-8 box-col-12">
+      <div class="row">
+        @for (details of employeeDetails; track details) {
+          <div class="col-xl-3 col-hr-6 col-sm-6">
+            <app-employee-details [details]="details" />
+          </div>
+        }
+
+        <div class="col-md-6 xl-60 box-col-6">
+          <app-project-summary-card />
+        </div>
+        <div class="col-md-6 xl-40 box-col-6">
+          <app-application-overview />
+        </div>
+        <div class="col-xxl-12 col-md-6 box-col-6">
+          <app-employee-list />
+        </div>
+        <div class="col-xxl-8 col-md-6 box-col-6">
+          <app-attendance-overview />
+        </div>
+        <div class="col-xxl-4 col-sm-5 box-col-5">
+          <app-today-birthday />
+        </div>
+        <div class="col-xxl-12 col-sm-7 box-col-7">
+          <app-recruitment-analysis />
+        </div>
+      </div>
+    </div>
+    <div class="col-xxl-4 box-col-12">
+      <div class="row">
+        <div class="col-12">
+          <app-today-schedule />
+        </div>
+        <div class="col-xxl-12 col-md-6 box-col-6">
+          <app-interview-schedule />
+        </div>
+        <div class="col-xxl-12 col-md-6 box-col-6">
+          <app-leave-request />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

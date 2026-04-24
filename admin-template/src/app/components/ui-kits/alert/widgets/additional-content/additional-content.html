@@ -1,0 +1,24 @@
+<app-card
+  [headerTitle]="'Additional Contents'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'dark-alert alert-addition-content'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use<code> alert </code> utility class to provide additional content within
+    any alerts.
+  </p>
+
+  @for (alert of alertAdditionalContent; track alert) {
+    <ngb-alert
+      [type]="''"
+      class="bg-light-{{ alert.color }}"
+      [dismissible]="false"
+    >
+      <h5 class="alert-heading pb-2 txt-{{ alert.color }}">
+        {{ alert.title }}
+      </h5>
+      <p [innerHTML]="alert.description"></p>
+    </ngb-alert>
+  }
+</app-card>

@@ -1,0 +1,30 @@
+<app-card
+  [headerTitle]="'Live Alert'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'live-dark'"
+>
+  <p class="f-m-light mt-1" header5>
+    Click the button below to show an alert, then dismiss (and destroy) it with
+    the built-in close button.
+  </p>
+
+  @for (item of alerts; track item) {
+    <ngb-alert
+      [type]="'light-dark'"
+      class="txt-dark mb-3"
+      (closed)="close(item)"
+    >
+      <div>Nice, you triggered this alert message!</div>
+    </ngb-alert>
+    <div id="liveAlertPlaceholder"></div>
+  }
+  <button
+    class="btn btn-dark"
+    id="liveAlertBtn"
+    type="button"
+    (click)="addAlert()"
+  >
+    Show Live Alert
+  </button>
+</app-card>

@@ -1,0 +1,29 @@
+<app-card [headerTitle]="'With Indicators'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>ngx-owl-carousel-o</code> with carousel indicators to show
+    navigation dots that correspond to each slide. In this example, the carousel
+    is set to loop, autoplay, and display dots as indicators.
+  </p>
+  <div
+    class="carousel slide common-carousel"
+    id="carouselExampleIndicators"
+    data-bs-ride="true"
+  >
+    <div class="carousel-indicators"></div>
+    <div class="carousel-inner">
+      <owl-carousel-o [options]="options">
+        @for (details of withIndicators; track details) {
+          <ng-template carouselSlide>
+            <div class="carousel-item active">
+              <img
+                class="d-block w-100"
+                [src]="details.image"
+                alt="drawing-room"
+              />
+            </div>
+          </ng-template>
+        }
+      </owl-carousel-o>
+    </div>
+  </div>
+</app-card>

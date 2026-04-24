@@ -1,0 +1,43 @@
+<app-card
+  [cardClass]="'height-equal'"
+  [headerTitle]="'Simple Accordion'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="f-m-light mt-1" header5>
+    Use the <code>ngbAccordion</code> directive to create an accordion, with
+    each section controlled by <code>ngbAccordionItem</code>. Set the
+    <code>[collapsed]</code> attribute dynamically to control the open state,
+    where <code>[collapsed]="accordion.id != 1"</code> keeps the first item
+    expanded by default. The <code>ngbAccordionButton</code> manages toggling,
+    and <code>ngbAccordionCollapse</code> ensures smooth transitions between
+    open and closed states.
+  </p>
+  <div class="accordion dark-accordion" ngbAccordion>
+    @for (accordion of simpleAccordion; track accordion) {
+      <div
+        class="accordion-item"
+        ngbAccordionItem
+        [collapsed]="accordion.id !== 1"
+      >
+        <h2 class="accordion-header" ngbAccordionHeader>
+          <button
+            class="accordion-button collapsed accordion-light-primary txt-primary active"
+            type="button"
+            ngbAccordionButton
+          >
+            {{ accordion.title }}
+            <app-feather-icon [icon]="'chevron-down'" [class]="'svg-color'" />
+          </button>
+        </h2>
+        <div class="accordion-collapse collapse show" ngbAccordionCollapse>
+          <div
+            class="accordion-body"
+            ngbAccordionBody
+            [innerHTML]="accordion.description"
+          ></div>
+        </div>
+      </div>
+    }
+  </div>
+</app-card>

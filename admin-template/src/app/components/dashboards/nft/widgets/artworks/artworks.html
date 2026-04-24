@@ -1,0 +1,19 @@
+<div class="card-header card-no-border ps-md-0">
+  <div class="header-top">
+    <h5>Artworks</h5>
+    <app-card-dropdown-button
+      [dropdownType]="'simple'"
+      [options]="dropdownToggleOption"
+    />
+  </div>
+</div>
+<div class="card-body pt-0 sale-status-table ps-md-0">
+  <div class="table-responsive">
+    <app-table
+      [tableConfig]="tableConfig"
+      [pageSize]="artworks.length"
+      [pagination]="false"
+      [search]="false"
+    />
+  </div>
+</div>

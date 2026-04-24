@@ -1,0 +1,24 @@
+<app-card [headerTitle]="'Close Badges'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use<code> badge-l-*</code>classes to provide background-colors and
+    <code>border-* </code>classes to provide border-colors.
+  </p>
+
+  <div class="badge-spacing image-badges">
+    @for (color of colors; track color) {
+      <span
+        class="badge common-align txt-{{ color.color }} rounded-pill badge-l-{{
+          color.color
+        }} rounded-pill border border-{{ color.color }}"
+      >
+        {{ color.color | titlecase }}
+        <a href="javascript:void(0)">
+          <app-feather-icon
+            [icon]="'x-circle'"
+            [class]="'ms-1 stroke-' + color.color"
+          />
+        </a>
+      </span>
+    }
+  </div>
+</app-card>

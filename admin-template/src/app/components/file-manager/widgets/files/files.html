@@ -1,0 +1,89 @@
+<app-card [headerTitle]="'All Files'" [border]="true" [padding]="false">
+  <p class="mb-0 f-light" header5>Recently opened files</p>
+
+  <div class="common-file-manager">
+    <div class="filemanger">
+      <div class="top-menu d-flex gap-2 flex-wrap">
+        <button (click)="openModal('New File', 'file')">
+          <i class="fa-solid fa-file-circle-plus me-1"></i> Add Files
+        </button>
+        <button (click)="openModal('New Folder', 'folder')">
+          <i class="fa-regular fa-folder-open me-1"></i> Add Folder
+        </button>
+        <button (click)="openModal('Rename', 'rename')">
+          <i class="fa-solid fa-pen-to-square me-1"></i> Rename
+        </button>
+        <button (click)="deleteModal()">
+          <i class="fa-solid fa-trash me-1"></i> Delete
+        </button>
+      </div>
+
+      <div
+        class="top-folder-path mt-3 d-flex flex-wrap gap-3 align-items-center justify-content-between"
+      >
+        <div class="path-action-btns d-flex gap-2">
+          <button [disabled]="!isSubFolder" (click)="navigate('back')">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <button
+            [disabled]="forwardStack.length === 0"
+            (click)="navigate('next')"
+          >
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+          <button (click)="goHome()">
+            <i class="fa-solid fa-house"></i>
+          </button>
+        </div>
+
+        <div
+          class="folder-path-write d-flex align-items-center gap-2 flex-grow-1"
+        >
+          <input type="text" class="form-control" [value]="location" disabled />
+          <button>
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="file-manager-grid block-wrapper mt-4">
+        @if (files.length > 0) {
+          @for (file of files; track file) {
+            <div
+              [class]="{
+                file: file.type === 'file',
+                folder: file.type === 'folder',
+                'item-selected': selected?.id === file.id,
+              }"
+            >
+              @if (file.type === "file") {
+                <div class="doc-icon-container" (click)="select(file)">
+                  <div class="doc-icon">
+                    <p>{{ file.text }}</p>
+                  </div>
+                </div>
+              }
+              @if (file.type === "folder") {
+                <div
+                  class="folder-icon-container"
+                  (dblclick)="openFolder(file.id)"
+                  (click)="select(file)"
+                >
+                  <div class="folder-icon"></div>
+                </div>
+              }
+              <div class="common-space">
+                <p class="folder-name">{{ file.name }}</p>
+              </div>
+            </div>
+          }
+        } @else {
+          <div class="folderEmpty text-center" [style.display]="'block'">
+            <app-svg-icon [icon]="'folder-empty'"></app-svg-icon>
+            <h5>This folder is currently empty!</h5>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</app-card>

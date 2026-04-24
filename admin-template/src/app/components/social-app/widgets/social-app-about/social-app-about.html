@@ -1,0 +1,159 @@
+<div class="row">
+  <div class="col-xl-3 xl-40 col-lg-12 col-md-5 box-col-4">
+    <app-social-app-left-panel />
+  </div>
+  <div class="col-xl-6 xl-60 col-lg-12 col-md-7 box-col-8e">
+    <div class="row">
+      <div class="col-sm-12">
+        <app-card
+          [headerTitle]="'People You May Know'"
+          [border]="true"
+          [padding]="false"
+          [cardBodyClass]="'avatar-showcase'"
+        >
+          <div class="pepole-knows">
+            <ul>
+              @for (friend of friends | slice: 0 : 6; track friend) {
+                <li>
+                  <div class="add-friend text-center">
+                    <img
+                      class="img-60 img-fluid rounded-circle"
+                      [alt]="friend.name"
+                      [src]="friend.profile"
+                    />
+                    <span class="d-block">{{ friend.name }}</span>
+                    <button class="btn btn-primary btn-xs">Add Friend</button>
+                  </div>
+                </li>
+              }
+            </ul>
+          </div>
+        </app-card>
+      </div>
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-header social-header">
+            <h5 class="common-space">
+              <span>Hobbies and Interests</span>
+              <span class="pull-right">
+                <app-feather-icon [icon]="'more-vertical'" />
+              </span>
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row details-about gy-4">
+              @for (
+                hobbies of myProfile.hobbiesInterest;
+                track hobbies;
+                let i = $index
+              ) {
+                <div class="col-sm-6">
+                  <div
+                    class="your-details"
+                    [class.your-details-xs]="i % 2 === 0"
+                  >
+                    <span class="f-w-500 mb-2 d-block"
+                      >{{ hobbies.title }}:</span
+                    >
+                    <p>{{ hobbies.description }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-header social-header">
+            <h5 class="common-space">
+              <span>Education and Employment</span>
+              <span class="pull-right">
+                <app-feather-icon [icon]="'more-vertical'" />
+              </span>
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row details-about">
+              @for (
+                eduction of myProfile.eduction_employment;
+                track eduction;
+                let i = $index
+              ) {
+                <div class="col-sm-6">
+                  <div
+                    class="your-details"
+                    [class.your-details-xs]="i % 2 === 0"
+                  >
+                    <span class="f-w-500 d-block">{{ eduction.title }}:</span>
+                    <p>{{ eduction.year }}</p>
+                    <p>{{ eduction.description }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-12">
+        <app-card
+          [headerTitle]="'Viewed Your Profile'"
+          [border]="true"
+          [padding]="false"
+          [cardBodyClass]="'avatar-showcase'"
+        >
+          <div class="pepole-knows">
+            <ul>
+              @for (friend of friends | slice: 0 : 6; track friend) {
+                <li>
+                  <div class="add-friend text-center">
+                    <img
+                      class="img-60 img-fluid rounded-circle"
+                      [alt]="friend.name"
+                      [src]="friend.profile"
+                    />
+                    <span class="d-block">{{ friend.name }}</span>
+                    <button class="btn btn-primary btn-xs">Add Friend</button>
+                  </div>
+                </li>
+              }
+            </ul>
+          </div>
+        </app-card>
+      </div>
+      <div class="col-sm-12">
+        <app-card
+          [headerTitle]="'Activity Log'"
+          [border]="true"
+          [padding]="false"
+        >
+          <div class="activity-log">
+            @for (group of objectKeys(getActivityGroup()); track group) {
+              <div class="my-activity">
+                <h6 class="mb-3">{{ getDate(group) }}</h6>
+                @for (
+                  activity of getActivityGroup()[group];
+                  track activity;
+                  let i = $index
+                ) {
+                  <p>
+                    <span>
+                      <app-feather-icon
+                        [icon]="activity.icon"
+                        [class]="'m-r-20'"
+                      />
+                    </span>
+                    {{ activity.activity }}
+                  </p>
+                }
+              </div>
+            }
+          </div>
+        </app-card>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 xl-100 box-col-12">
+    <app-social-app-right-panel />
+  </div>
+</div>

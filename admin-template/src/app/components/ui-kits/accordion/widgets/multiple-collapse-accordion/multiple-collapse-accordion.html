@@ -1,0 +1,78 @@
+<app-card
+  [headerTitle]="'Multiple Collapse Accordion'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="f-m-light mt-1" header5>
+    Use the <code>ngbCollapse</code> directive to create multiple collapsible
+    sections. The <code>#collapseFirst="ngbCollapse"</code> and
+    <code>#collapseSecond="ngbCollapse"</code> references allow independent
+    toggling of each section. The <code>[(ngbCollapse)]</code> binding manages
+    the open/close state dynamically. Buttons trigger the toggle functionality
+    for one or both sections, enabling a smooth transition handled by the
+    <code>collapse</code> class.
+  </p>
+
+  <div class="common-flex">
+    <button
+      class="btn btn-primary"
+      type="button"
+      (click)="collapseFirst.toggle()"
+    >
+      Toggle First Element
+    </button>
+    <button
+      class="btn btn-secondary"
+      type="button"
+      (click)="collapseSecond.toggle()"
+    >
+      Toggle Second Element
+    </button>
+    <button
+      class="btn btn-primary"
+      type="button"
+      (click)="collapseFirst.toggle()"
+      (click)="collapseSecond.toggle()"
+    >
+      Toggle Both Elements
+    </button>
+  </div>
+
+  <div class="row">
+    <div class="col-xl-6">
+      <div
+        class="collapse multi-collapse dark-accordion"
+        #collapseFirst="ngbCollapse"
+        [(ngbCollapse)]="isCollapsedFirst"
+      >
+        <div
+          class="card card-body mt-3 mb-0 collapse-wrapper accordion-light-primary"
+        >
+          The collapse JavaScript plugin is used to show and hide content.
+          Buttons or anchors are used as triggers that are mapped to specific
+          elements you toggle. Collapsing an element will animate the height
+          from it's current value to 0. Given how CSS handles animations, you
+          cannot use padding on a .collapse element. Instead, use the class as
+          an independent wrapping element.
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-6">
+      <div
+        class="collapse multi-collapse dark-accordion"
+        #collapseSecond="ngbCollapse"
+        [(ngbCollapse)]="isCollapsedSecond"
+      >
+        <div
+          class="card card-body mt-3 mb-0 collapse-wrapper accordion-light-secondary"
+        >
+          This is the first item's accordion body. It is shown by default, until
+          the collapse plugin adds the appropriate classes that we use to style
+          each element. These classes control the overall appearance, as well as
+          the showing and hiding via CSS transitions. You can modify any of this
+          with custom CSS or overriding our default variables.
+        </div>
+      </div>
+    </div>
+  </div>
+</app-card>

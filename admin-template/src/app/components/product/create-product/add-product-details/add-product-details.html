@@ -1,0 +1,38 @@
+<div class="tab-content custom-input">
+  <div class="sidebar-body">
+    <form class="row g-3 common-form">
+      <div class="col-12">
+        <label class="form-label" for="exampleFormControlInput1"
+          >Product SKU</label
+        >
+        <input
+          class="form-control"
+          id="exampleFormControlInput1"
+          type="text"
+          placeholder="Enter a number"
+        />
+      </div>
+      <div class="col-md-12">
+        <label class="form-label" for="validationProductTitle"
+          >Product Title</label
+        >
+        <input
+          class="form-control"
+          id="validationProductTitle"
+          type="text"
+          placeholder="Title"
+        />
+      </div>
+      <div class="col-md-12">
+        <label class="form-label">Product Description</label>
+        <angular-editor [placeholder]="'Enter text here...'" />
+      </div>
+      <div class="col-12 product-buttons">
+        <button class="btn m-0" type="button" (click)="next()">
+          Next
+          <app-svg-icon [icon]="'front-arrow'" />
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

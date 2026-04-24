@@ -1,0 +1,52 @@
+<app-card
+  [headerTitle]="'Sales Statistical Overview'"
+  [cardBodyClass]="'pt-0'"
+  [dropdownType]="'classic'"
+  [dropdownClass]="'custom-dropdown'"
+  [options]="cardToggleOptions"
+  [padding]="false"
+>
+  <div class="row m-0 overall-card">
+    <div class="col-12 p-0">
+      <div class="chart-right">
+        <div class="row">
+          <div class="col-xl-12">
+            <div class="card-body p-0 statistical-card">
+              <ul class="d-flex m-b-15">
+                <li>
+                  <h5 class="counter">{{ 19897 | number }}</h5>
+                  <span class="f-light">Total Cost</span>
+                </li>
+                <li>
+                  <h5>
+                    <span class="counter">$8,49,058</span>
+                  </h5>
+                  <span class="f-light">Total Revenue</span>
+                </li>
+              </ul>
+              <div class="current-sale-container">
+                <div id="chart-currently">
+                  <apx-chart
+                    [series]="salesStatisticalChart.series"
+                    [chart]="salesStatisticalChart.chart"
+                    [plotOptions]="salesStatisticalChart.plotOptions"
+                    [grid]="salesStatisticalChart.grid"
+                    [dataLabels]="salesStatisticalChart.dataLabels"
+                    [stroke]="salesStatisticalChart.stroke"
+                    [fill]="salesStatisticalChart.fill"
+                    [legend]="salesStatisticalChart.legend"
+                    [states]="salesStatisticalChart.states"
+                    [colors]="salesStatisticalChart.colors"
+                    [yaxis]="salesStatisticalChart.yaxis"
+                    [xaxis]="salesStatisticalChart.xaxis"
+                    [responsive]="salesStatisticalChart.responsive"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-card>

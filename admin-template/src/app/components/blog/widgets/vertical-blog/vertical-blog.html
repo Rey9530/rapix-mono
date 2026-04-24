@@ -1,0 +1,28 @@
+<div class="card">
+  <div class="blog-box blog-list row">
+    <div class="col-sm-5">
+      <img
+        class="img-fluid sm-100-w"
+        [src]="blog()?.image"
+        [alt]="blog()?.title"
+      />
+    </div>
+    <div class="col-sm-7">
+      <div class="blog-details">
+        <div class="blog-date">
+          <span>{{ blog()?.date }}</span>
+          {{ blog()?.year }}
+        </div>
+        <h6>{{ blog()?.title }}</h6>
+        <div class="blog-bottom-content">
+          <ul class="blog-social">
+            <li>by: {{ blog()?.created_by }}</li>
+            <li>{{ blog()?.hits }} Hits</li>
+          </ul>
+          <hr />
+          <p class="mt-0">{{ blog()?.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

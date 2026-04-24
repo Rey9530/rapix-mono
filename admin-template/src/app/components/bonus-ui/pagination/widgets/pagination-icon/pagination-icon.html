@@ -1,0 +1,41 @@
+<app-card
+  [headerTitle]="'Pagination With Icons'"
+  [border]="true"
+  [padding]="false"
+  [cardClass]="'height-equal'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use an icon or symbol in place of text for some pagination links.
+  </p>
+  <nav aria-label="Page navigation example">
+    <ul class="pagination pagination-secondary pagin-border-secondary">
+      <li class="page-item">
+        <a class="page-link" href="javascript:void(0)" aria-label="Previous">
+          <span aria-hidden="true">«</span>
+          <span class="sr-only">Previous</span>
+        </a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="javascript:void(0)">1</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="javascript:void(0)">2</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="javascript:void(0)">3</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="javascript:void(0)">...</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="javascript:void(0)">20</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="javascript:void(0)" aria-label="Next">
+          <span aria-hidden="true">»</span>
+          <span class="sr-only">Next</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</app-card>

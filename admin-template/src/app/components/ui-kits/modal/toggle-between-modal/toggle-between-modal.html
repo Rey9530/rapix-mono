@@ -1,0 +1,76 @@
+<app-card
+  [headerTitle]="'Toggle Between Modal'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="f-m-light mt-1" header5>
+    To create stacked modals in <code>ngbModal</code>, open multiple modals
+    sequentially by calling <code>modalService.open()</code> for each modal.
+  </p>
+
+  <a class="btn btn-dark" (click)="openModal(first)">Open First Modal</a>
+
+  <ng-template #first>
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="modal-toggle-wrapper">
+          <ul class="modal-img">
+            <li><img src="assets/images/gif/whatapp.gif" alt="whatsapp" /></li>
+            <li>
+              <img src="assets/images/gif/instagram.gif" alt="instagram" />
+            </li>
+            <li><img src="assets/images/gif/facebook.gif" alt="facebook" /></li>
+          </ul>
+          <h6>
+            Remove your complete account from your phone or tablet to sign out
+            of the Gmail app.
+          </h6>
+          <button
+            class="btn btn-dark rounded-pill w-100 mt-4"
+            (click)="openModal(second)"
+          >
+            Connect new account
+          </button>
+          <button
+            class="btn rounded-pill w-100 pb-0 dark-toggle-btn"
+            type="button"
+            (click)="closeModal()"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #second>
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="modal-toggle-wrapper">
+          <ul class="modal-img">
+            <li><img src="assets/images/gif/logout.gif" alt="logout" /></li>
+          </ul>
+          <h4 class="pt-3 text-center">Already leaving??</h4>
+          <p class="text-center">Are you sure want to logout this dashboard?</p>
+          <span class="d-block text-center mb-4">
+            Not a member?
+            <a
+              class="ms-1"
+              href="javascript:void(0)"
+              [routerLink]="['/dashboard/e-commerce']"
+              (click)="closeModal()"
+              >Register</a
+            >
+          </span>
+          <button
+            class="btn btn-dark d-flex m-auto"
+            type="button"
+            (click)="closeModal()"
+          >
+            Yes, Log out
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</app-card>

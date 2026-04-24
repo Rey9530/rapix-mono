@@ -1,0 +1,28 @@
+<app-card [headerTitle]="'Slides Only'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>ngx-owl-carousel-o</code> to create a simple, auto-playing
+    carousel with customized options. The carousel is set to loop off, disable
+    mouse dragging, and automatically play with no dots or navigation.
+  </p>
+  <div
+    class="carousel slide"
+    id="carouselExampleSlidesOnly"
+    data-bs-ride="carousel"
+  >
+    <div class="carousel-inner">
+      <owl-carousel-o [options]="options">
+        @for (details of slidesOnly; track details) {
+          <ng-template carouselSlide>
+            <div class="carousel-item active">
+              <img
+                class="d-block w-100"
+                [src]="details.image"
+                alt="drawing-room"
+              />
+            </div>
+          </ng-template>
+        }
+      </owl-carousel-o>
+    </div>
+  </div>
+</app-card>

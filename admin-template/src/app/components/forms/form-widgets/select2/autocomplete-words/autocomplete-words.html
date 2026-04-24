@@ -1,0 +1,19 @@
+<app-card
+  [headerTitle]="'Autocomplete Words'"
+  [border]="true"
+  [padding]="false"
+  [cardClass]="'height-equal'"
+>
+  <p class="f-m-light mt-1" header5>
+    Enter any letter and display autocomplete words.
+  </p>
+  <div class="select-box">
+    <select2
+      [data]="languageSearch"
+      [templates]="template"
+      [placeholder]="'Search programming language'"
+    >
+      <ng-template #template let-item="label">{{ item }}</ng-template>
+    </select2>
+  </div>
+</app-card>

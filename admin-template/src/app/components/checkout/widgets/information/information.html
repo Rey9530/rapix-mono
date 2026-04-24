@@ -1,0 +1,90 @@
+<form
+  class="stepper-one row g-3 needs-validation shipping-wizard"
+  novalidate=""
+>
+  <div class="row g-3 custom-input">
+    <div class="col-sm-6">
+      <label class="form-label" for="customName">Full Name</label>
+      <input
+        class="form-control"
+        id="customName"
+        type="text"
+        placeholder="Enter full name"
+      />
+    </div>
+    <div class="col-sm-6">
+      <label class="form-label" for="customContact">Contact Number</label>
+      <input
+        class="form-control"
+        id="customContact"
+        type="number"
+        placeholder="Enter number"
+      />
+    </div>
+    <div class="col-sm-12">
+      <label class="form-label" for="customEmail">Email</label>
+      <input
+        class="form-control"
+        id="customEmail"
+        type="email"
+        placeholder="pixelstrap@example.com"
+      />
+    </div>
+    <div class="col-12">
+      <label class="form-label" for="currentAddress1">Current Address </label>
+      <textarea
+        class="form-control"
+        id="currentAddress1"
+        rows="3"
+        placeholder="Enter your current address"
+      ></textarea>
+    </div>
+    <div class="col-12">
+      <label class="form-label" for="otherNotes1">Other Notes</label>
+      <textarea
+        class="form-control"
+        id="otherNotes1"
+        rows="3"
+        placeholder="Enter your queries..."
+      ></textarea>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="customSelectCountry">Country</label>
+      <select2
+        [data]="country"
+        [templates]="template"
+        placeholder="Select Country"
+        (update)="onCountryChange($event)"
+        noResultMessage="No Data Found"
+        resettable
+      >
+        <ng-template #template let-country="label">
+          {{ country }}
+        </ng-template>
+      </select2>
+    </div>
+    <div class="col-md-4 col-sm-6">
+      <label class="form-label" for="customstate">State</label>
+      <select2
+        [data]="states"
+        [templates]="template"
+        placeholder="Select State"
+        noResultMessage="No Data Found"
+        resettable
+      >
+        <ng-template #template let-state="label">
+          {{ state }}
+        </ng-template>
+      </select2>
+    </div>
+    <div class="col-md-4 col-sm-6">
+      <label class="form-label" for="customPostalCode">Postal Code</label>
+      <input
+        class="form-control"
+        id="customPostalCode"
+        type="text"
+        placeholder="Enter postal code"
+      />
+    </div>
+  </div>
+</form>

@@ -1,0 +1,40 @@
+<div class="container-fluid card-view-wrapper">
+  <div class="row">
+    <div class="col-xl-3 xl-40 box-col-12">
+      <app-job-filter />
+    </div>
+    <div class="col-xl-9 xl-60 box-col-12">
+      <div class="row">
+        @for (details of jobCards; track details) {
+          <div class="col-xl-6 xl-100">
+            <app-common-card [jobCard]="details" />
+          </div>
+        }
+
+        <div class="col-sm-12">
+          <div class="job-pagination">
+            <nav aria-label="Page navigation example">
+              <ul class="pagination pagination-primary">
+                <li class="page-item disabled">
+                  <a class="page-link" href="javascript:void(0)">Previous</a>
+                </li>
+                <li class="page-item active">
+                  <a class="page-link" href="javascript:void(0)">1</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="javascript:void(0)">2</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="javascript:void(0)">3</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="javascript:void(0)">Next</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

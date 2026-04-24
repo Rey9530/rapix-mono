@@ -1,0 +1,38 @@
+<app-card
+  [headerTitle]="'Collapse Accordion'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'collapse-accordion'"
+>
+  <p class="f-m-light mt-1" header5>
+    The <code>ngbCollapse</code> directive is used to manage the open/close
+    state of collapsible sections. By binding to the
+    <code>[(ngbCollapse)]</code> directive, you can dynamically control the
+    collapse state of each section. Use <code>collapse.toggle()</code> in
+    buttons or links to trigger the opening and closing actions. The collapse
+    transition is smoothly handled by the <code>collapse</code> class, ensuring
+    a fluid user experience.
+  </p>
+
+  <p class="common-flex">
+    <a
+      class="btn btn-dark"
+      href="javascript:void(0)"
+      (click)="collapse.toggle()"
+      >Link With Href</a
+    >
+    <button class="btn btn-dark" type="button" (click)="collapse.toggle()">
+      Button With Data-bs-target
+    </button>
+  </p>
+  <div
+    class="collapse btn-dark"
+    #collapse="ngbCollapse"
+    [(ngbCollapse)]="isCollapsed"
+  >
+    <div class="card card-body mb-0 dark-accordion">
+      Some placeholder content for the collapse component. This panel is hidden
+      by default but revealed when the user activates the relevant trigger.
+    </div>
+  </div>
+</app-card>

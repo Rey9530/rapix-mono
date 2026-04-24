@@ -1,0 +1,82 @@
+<app-card
+  [cardClass]="'recent-order'"
+  [headerTitle]="'Recent Orders'"
+  [padding]="false"
+  [cardBodyClass]="'pt-0'"
+>
+  <div class="recent-sliders">
+    <div
+      class="nav nav-pills recent-order-scroll custom-scrollbar"
+      id="v-pills-tab"
+      role="tablist"
+    >
+      @for (category of categories; track category) {
+        <a
+          class="frame-box"
+          href="javascript:void(0)"
+          [class.active]="activeCategory === category.value"
+          (click)="changeCategory(category)"
+        >
+          <span placement="bottom" [ngbTooltip]="category.title">
+            <span class="frame-image">
+              <img [src]="category.image" [alt]="category.title" />
+            </span>
+          </span>
+        </a>
+      }
+    </div>
+
+    <div class="tab-content">
+      <div
+        class="tab-pane fade show active"
+        id="v-pills-furniture"
+        role="tabpanel"
+      >
+        <div
+          class="recent-table table-responsive custom-scrollbar recent-items"
+        >
+          <table class="table">
+            <thead>
+              <tr>
+                <th class="c-light">Item</th>
+                <th class="c-light">Qty</th>
+                <th class="c-light">Price</th>
+                <th class="c-light">Total Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (order of filteredOrders; track order) {
+                <tr>
+                  <td>
+                    <div class="product-content">
+                      <div class="order-image">
+                        <img [src]="order.image" [alt]="order.title" />
+                      </div>
+                      <div>
+                        <h6 class="f-14 mb-0">
+                          <a
+                            href="javascript:void(0)"
+                            [routerLink]="['/order/list']"
+                            >{{ order.title }}</a
+                          >
+                        </h6>
+                        <span class="f-light f-12"
+                          >Id : #{{ order.product_id }}</span
+                        >
+                      </div>
+                    </div>
+                  </td>
+                  <td class="f-w-500">{{ order.quantity }}</td>
+                  <td class="f-w-500">${{ order.price | number: "1.2-2" }}</td>
+                  <td class="f-w-500">
+                    ${{ order.total_price | number: "1.2-2" }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-card>

@@ -1,0 +1,50 @@
+<div class="header-faq">
+  <h5 class="mb-0">{{ headerTitle() }}</h5>
+</div>
+<div class="row">
+  @for (featured of details(); track featured) {
+    <div class="col-xl-3 xl-50 col-md-6 box-col-6">
+      <div class="card features-faq product-box">
+        <div class="faq-image product-img">
+          <img
+            class="img-fluid"
+            [src]="featured.image"
+            [alt]="featured.title"
+          />
+          <div class="product-hover">
+            <ul>
+              <li>
+                <i class="icon-link"></i>
+              </li>
+              <li>
+                <i class="icon-import"></i>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="card-body">
+          <h6 class="pb-1">{{ featured.title }}</h6>
+          <p class="c-light">{{ featured.description }}</p>
+        </div>
+        <div class="card-footer">
+          <span>{{ featured.date }}</span>
+          <span class="pull-right">
+            <ngb-rating [(rate)]="featured.rating">
+              <ng-template let-fill="fill">
+                <i
+                  [ngClass]="
+                    fill === 100
+                      ? 'fa-solid fa-star font-primary'
+                      : fill > 0
+                        ? 'fa-solid fa-star-half-stroke font-primary'
+                        : 'fa-regular fa-star font-primary'
+                  "
+                ></i>
+              </ng-template>
+            </ngb-rating>
+          </span>
+        </div>
+      </div>
+    </div>
+  }
+</div>

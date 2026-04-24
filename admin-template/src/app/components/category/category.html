@@ -1,0 +1,38 @@
+<div class="container-fluid e-category">
+  <div class="row">
+    <div class="col-12">
+      <app-category-filter />
+    </div>
+
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header card-no-border text-end">
+          <div class="card-header-right-icon">
+            <a
+              class="btn btn-primary f-w-500"
+              href="javascript:void(0)"
+              (click)="openCategoryModal()"
+            >
+              <i class="fa-solid fa-plus pe-2"></i>
+              Add Category
+            </a>
+          </div>
+        </div>
+        <div class="card-body px-0 pt-0">
+          <div class="list-product list-category">
+            <div class="recent-table table-responsive custom-scrollbar">
+              <app-table
+                [tableConfig]="tableConfig"
+                [hasCheckbox]="true"
+                [pageSize]="5"
+                [paginateDetails]="true"
+                [showPaginate]="true"
+                (action)="handleAction($event)"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

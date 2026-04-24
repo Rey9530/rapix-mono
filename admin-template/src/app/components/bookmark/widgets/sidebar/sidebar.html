@@ -1,0 +1,90 @@
+<div class="md-sidebar">
+  <a
+    class="btn btn-primary md-sidebar-toggle"
+    href="javascript:void(0)"
+    (click)="toggleFilter()"
+    >bookmark filter</a
+  >
+  <div class="md-sidebar-aside job-left-aside" [class.open]="filterOpen">
+    <div class="email-left-aside">
+      <app-card [cardBodyClass]="'custom-scrollbar'">
+        <div class="email-app-sidebar left-bookmark">
+          <div class="common-flex align-items-center">
+            <div class="media-size-email">
+              <img
+                class="rounded-circle"
+                [src]="userDetails.user_profile"
+                [alt]="userDetails.name"
+              />
+            </div>
+            <div class="flex-grow-1">
+              <h6>{{ userDetails.name }}</h6>
+              <p>{{ userDetails.user_email }}</p>
+            </div>
+          </div>
+
+          <ul class="nav main-menu" role="tablist">
+            <li class="nav-item">
+              <button
+                class="button-primary btn-block btn-mail w-100"
+                type="button"
+                (click)="BookmarkModal()?.openModal()"
+              >
+                <app-feather-icon [icon]="'bookmark'" [class]="'me-2'" />
+                New Bookmark
+              </button>
+            </li>
+            <li class="nav-item">
+              <ul>
+                <li>
+                  <span class="main-title">
+                    <i class="icofont icofont-filter"></i>
+                    Filter By
+                  </span>
+                </li>
+                @for (item of bookmarkFilter; track item) {
+                  <li (click)="handleTab(item)">
+                    <a
+                      href="javascript:void(0)"
+                      [class.active]="item.value === activeTab.value"
+                    >
+                      <span class="title">{{ item.title }}</span>
+                    </a>
+                  </li>
+                }
+              </ul>
+            </li>
+            <li>
+              <hr />
+            </li>
+            <li>
+              <span class="main-title">
+                Tags
+                <span class="pull-right">
+                  <a
+                    href="javascript:void(0)"
+                    (click)="TagModal()?.openModal()"
+                  >
+                    <app-feather-icon [icon]="'plus-circle'" />
+                  </a>
+                </span>
+              </span>
+              <ul class="tag-names">
+                @for (tag of bookmarkTags; track tag) {
+                  <li>
+                    <span class="title badge badge-secondary">
+                      {{ tag.label }}</span
+                    >
+                  </li>
+                }
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </app-card>
+    </div>
+  </div>
+</div>
+
+<app-bookmark-modal #bookmarkModal (newBookmark)="handleAddBookmark($event)" />
+<app-tag-modal #tagModal />

@@ -1,0 +1,21 @@
+<app-card
+  [headerTitle]="'Default Buttons'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'common-flex'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use<code> btn </code>class to set default buttons and set background color
+    like this : <code>bg-* [primary/secondary..]. </code>
+  </p>
+
+  @for (button of defaultButton; track button) {
+    <button
+      class="btn btn-{{ button | lowercase }}"
+      type="button"
+      [ngbTooltip]="'btn btn-' + button"
+    >
+      {{ button }} Button
+    </button>
+  }
+</app-card>

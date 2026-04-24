@@ -1,0 +1,22 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xl-9 xl-60 order-xl-0 order-1 box-col-12">
+      <div class="row">
+        @for (list of courseList | slice: 0 : 2; track list) {
+          <div class="col-xl-12">
+            <app-vertical-blog [blog]="list" />
+          </div>
+        }
+
+        @for (list of courseList | slice: 2 : 8; track list) {
+          <div class="col-xl-4 xl-50 col-sm-6 box-col-6">
+            <app-horizontal-blog [blog]="list" />
+          </div>
+        }
+      </div>
+    </div>
+    <div class="col-xl-3 xl-40 box-col-12 learning-filter">
+      <app-course-filter />
+    </div>
+  </div>
+</div>

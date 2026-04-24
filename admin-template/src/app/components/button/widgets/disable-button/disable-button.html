@@ -1,0 +1,17 @@
+<app-card
+  [headerTitle]="'Disabled Buttons'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'common-flex'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use<code> disabled</code> class or
+    <code>disabled="disabled"</code> attribute for disabled button
+  </p>
+
+  @for (button of disableButton; track button) {
+    <button class="btn btn-{{ button.class }}" type="button">
+      {{ button.name }}
+    </button>
+  }
+</app-card>

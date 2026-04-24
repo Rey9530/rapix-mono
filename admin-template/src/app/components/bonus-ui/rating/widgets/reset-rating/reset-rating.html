@@ -1,0 +1,35 @@
+<app-card
+  [headerTitle]="'Reset Rating'"
+  [border]="true"
+  [padding]="false"
+  [cardClass]="'height-equal'"
+  [cardBodyClass]="'reset-rating-wrapper'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use<code> ngb-rating </code> and set and reset rating.
+  </p>
+  <div class="ratingCard">
+    <div class="reset-rating">
+      <div class="rating">
+        <ngb-rating [rate]="4" [formControl]="ctrl" [readonly]="readonly">
+          <ng-template let-fill="fill">
+            <i
+              [ngClass]="
+                fill === 100
+                  ? 'fa-solid fa-star'
+                  : fill > 0
+                    ? 'fa-solid fa-star-half-stroke'
+                    : 'fa-regular fa-star'
+              "
+            ></i>
+          </ng-template>
+        </ngb-rating>
+      </div>
+    </div>
+    <div class="buttonContainer">
+      <button class="reset-btn btn btn-primary" (click)="ctrl.setValue(null)">
+        Reset
+      </button>
+    </div>
+  </div>
+</app-card>

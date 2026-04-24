@@ -1,0 +1,43 @@
+<app-card
+  [headerTitle]="'Outlined Tooltip'"
+  [border]="true"
+  [padding]="false"
+  [cardBodyClass]="'fill-tooltip'"
+>
+  <p class="f-m-light mt-1" header5>
+    Use <code>btn-outline-*</code> to change dark background color and set the
+    tooltip content using <code>[ngbTooltip]</code> and configure its placement
+    with the <code>placement</code> attribute.
+  </p>
+
+  <div class="common-flex">
+    <button
+      class="mb-0 me-0 btn btn-outline-primary"
+      placement="top"
+      [ngbTooltip]="'Tooltip Primary'"
+    >
+      Tooltip Primary
+    </button>
+    <button
+      class="mb-0 me-0 btn btn-outline-secondary"
+      placement="top"
+      [ngbTooltip]="'Tooltip Secondary'"
+    >
+      Tooltip Secondary
+    </button>
+    <button
+      class="mb-0 me-0 btn btn-outline-success"
+      placement="top"
+      [ngbTooltip]="'Tooltip Success'"
+    >
+      Tooltip Success
+    </button>
+    <button
+      class="mb-0 me-0 btn btn-outline-info"
+      placement="top"
+      [ngbTooltip]="'Tooltip Info'"
+    >
+      Tooltip Info
+    </button>
+  </div>
+</app-card>

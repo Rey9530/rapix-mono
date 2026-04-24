@@ -1,0 +1,53 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">Tooltip and Popover Modal</h5>
+    <button
+      class="btn-close py-0"
+      type="button"
+      (click)="closeModal()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <h5>Popover in a modal</h5>
+    <p class="mt-2">
+      This
+      <button
+        class="btn btn-info"
+        placement="end"
+        ngbPopover="Popover body content is set in this attribute."
+        popoverTitle="Popover title"
+      >
+        button
+      </button>
+      triggers a popover on click.
+    </p>
+    <hr />
+    <h5>Tooltips in a modal</h5>
+    <p class="mt-2">
+      <a
+        class="tooltip-test txt-primary"
+        href="javascript:void(0)"
+        title="Tooltip"
+        placement="top"
+        [ngbTooltip]="'tooltip'"
+        >This link</a
+      >
+      and
+      <a
+        class="tooltip-test txt-primary"
+        href="javascript:void(0)"
+        title="Tooltip"
+        placement="top"
+        [ngbTooltip]="'tooltip'"
+        >that link</a
+      >
+      have tooltips on hover.
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-secondary" type="button" (click)="closeModal()">
+      Close
+    </button>
+    <button class="btn btn-primary" type="button">Save</button>
+  </div>
+</div>

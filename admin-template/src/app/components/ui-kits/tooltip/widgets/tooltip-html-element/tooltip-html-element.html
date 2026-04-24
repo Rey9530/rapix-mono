@@ -1,0 +1,44 @@
+<app-card
+  [headerTitle]="'HTML Elements with Hover Effect'"
+  [border]="true"
+  [padding]="false"
+>
+  <p class="f-m-light mt-1" header5>
+    Use <code>[ngbTooltip]</code> to display tooltips with custom HTML content
+    using <code>ng-template</code>. Configure the tooltip content dynamically
+    and enhance user interaction.
+  </p>
+  <div class="common-flex">
+    <button
+      class="mb-0 me-0 btn btn-primary"
+      placement="top"
+      [ngbTooltip]="template1"
+    >
+      Notifications
+    </button>
+    <button
+      class="mb-0 me-0 btn btn-warning"
+      placement="top"
+      [ngbTooltip]="template2"
+    >
+      Alert
+    </button>
+    <button
+      class="mb-0 me-0 btn btn-danger"
+      placement="top"
+      [ngbTooltip]="template1"
+    >
+      It's Danger
+    </button>
+    <button
+      class="mb-0 me-0 btn btn-info"
+      placement="top"
+      [ngbTooltip]="template2"
+    >
+      Coming soon
+    </button>
+  </div>
+</app-card>
+
+<ng-template #template1> <em>Thank</em>&nbsp;<u>you</u> </ng-template>
+<ng-template #template2> <b>Thank</b>&nbsp;<em>you</em> </ng-template>

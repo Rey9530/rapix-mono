@@ -1,0 +1,29 @@
+.kanban-board {
+  .kanban-column {
+    background: #f4f4f4;
+    padding: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+
+    &:hover {
+      background: #eaeaea;
+    }
+
+    h3 {
+      margin-top: 0;
+    }
+  }
+
+  .kanban-task {
+    padding: 8px;
+    margin-bottom: 8px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: grab;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+}

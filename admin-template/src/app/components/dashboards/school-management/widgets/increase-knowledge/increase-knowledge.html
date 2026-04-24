@@ -1,0 +1,27 @@
+<app-card
+  [headerTitle]="'Increase your knowledge by Learning!'"
+  [padding]="false"
+  [header]="'pb-4'"
+  [cardBodyClass]="'pt-0 position-relative pb-0 pe-0 increase-content'"
+>
+  <div class="knowledge-wrapper">
+    <div>
+      <p class="f-light">
+        The essential way to learn about anything is by reading quality
+        literature!
+      </p>
+      <a
+        class="btn btn-primary btn-hover-effect f-w-500 knowledge-btn"
+        [routerLink]="['/courses/courses-details']"
+        >Learn More</a
+      >
+    </div>
+    <div class="knowledgebase-wrapper">
+      <img
+        class="knowledge-img img-fluid w-100"
+        src="assets/images/dashboard-7/knowledge-base.png"
+        alt="knowledge-base"
+      />
+    </div>
+  </div>
+</app-card>
