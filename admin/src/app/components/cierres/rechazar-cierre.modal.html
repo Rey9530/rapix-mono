@@ -1,0 +1,36 @@
+<div class="modal-header">
+  <h5 class="modal-title">Rechazar cierre</h5>
+  <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+</div>
+
+<form [formGroup]="form" (ngSubmit)="rechazar()">
+  <div class="modal-body">
+    <label class="form-label">Motivo</label>
+    <textarea
+      class="form-control"
+      rows="4"
+      formControlName="motivo"
+      placeholder="Describe brevemente por qué se rechaza..."
+    ></textarea>
+    @if (
+      form.controls.motivo.touched && form.controls.motivo.errors?.["required"]
+    ) {
+      <div class="text-danger small mt-1">El motivo es obligatorio</div>
+    }
+    @if (
+      form.controls.motivo.touched &&
+      form.controls.motivo.errors?.["minlength"]
+    ) {
+      <div class="text-danger small mt-1">Mínimo 5 caracteres</div>
+    }
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">
+      Cancelar
+    </button>
+    <button type="submit" class="btn btn-danger" [disabled]="enviando">
+      {{ enviando ? "Rechazando..." : "Rechazar" }}
+    </button>
+  </div>
+</form>

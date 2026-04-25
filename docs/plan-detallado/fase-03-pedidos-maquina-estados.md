@@ -6,6 +6,17 @@
 
 ---
 
+> 📝 **Mejoras aplicadas durante la implementación** (ver resumen al final de cada tarea):
+>
+> - **3.0 (nueva):** MinIO habilitado en `docker-compose.yml`. Seed extendido para crear `PerfilVendedor` y `PerfilRepartidor` junto a los usuarios sembrados (antes se creaba sólo `Usuario`).
+> - **3.1:** Se añadió el enum `ModoFacturacion` (faltaba en el listado original); columnas extra útiles `motivoCancelado` y `motivoFallo` en `Pedido` (antes sólo `notas` libres en eventos).
+> - **3.3:** Migración de secuencia integrada dentro de `fase-3-pedidos` en vez de una migración separada — una sola transacción, menor huella.
+> - **3.6:** Se añadieron **dos endpoints extra** (`POST /:id/reintentar`, `POST /:id/devolver`) para exponer las transiciones `FALLIDO→EN_REPARTO` y `FALLIDO→DEVUELTO` de la máquina. El spec hablaba de ellas pero no las listaba como endpoints.
+> - **2.4 (retroactivo):** Los stubs `/repartidores/yo/pedidos`, `/yo/recogidas-pendientes`, `/yo/entregas-pendientes` (placeholders de Fase 2) quedaron conectados a datos reales ya que `Pedido` existe. `GET /repartidores/:id/desempeno` computa **tasaExito real** a partir de `ENTREGADO` vs `FALLIDO|DEVUELTO`.
+> - **Testing:** El runner `test:e2e` ahora lanza Jest con `--runInBand` para serializar los archivos de test, evitando que los `TRUNCATE ... CASCADE` de una suite interfieran con otra que comparte BD.
+
+---
+
 ### Tarea 3.1 — Schema Prisma: Pedido, EventoPedido, ComprobanteEntrega
 
 **Prioridad:** 🔴 P0 · **Estimación:** 0.5d · **Depende de:** 2.1
@@ -39,9 +50,14 @@ Se añaden al `schema.prisma` el enum `EstadoPedido` con sus 10 valores, el enum
 - Migración `fase-3-pedidos/migration.sql`.
 
 **Criterios de aceptación**
-- [ ] Las tablas `pedidos`, `eventos_pedido`, `comprobantes_entrega` existen con constraints correctas.
-- [ ] `Pedido.codigoSeguimiento` es unique.
-- [ ] Índice `(estado)` en `pedidos` existe.
+- [x] Las tablas `pedidos`, `eventos_pedido`, `comprobantes_entrega` existen con constraints correctas.
+- [x] `Pedido.codigoSeguimiento` es unique.
+- [x] Índice `(estado)` en `pedidos` existe.
+
+**Mejora aplicada**
+- Enum `ModoFacturacion { POR_ENVIO, PAQUETE }` añadido al schema (faltaba en el listado del spec).
+- Columnas `motivoCancelado`, `motivoFallo` en `Pedido` para persistir la razón sin depender de buscar en `eventos_pedido`.
+- `paqueteRecargadoId` queda como columna sin `@relation`; Fase 4 añadirá el FK cuando exista `PaqueteRecargado`.
 
 **Referencias**
 - `docs/BASE_DE_DATOS.md` § Pedidos
@@ -138,8 +154,11 @@ Servicio `CodigoSeguimientoServicio` en `src/modulos/pedidos/codigo-seguimiento.
 - `CodigoSeguimientoServicio`.
 
 **Criterios de aceptación**
-- [ ] 1000 llamadas concurrentes generan 1000 códigos únicos (sin colisiones).
-- [ ] Formato siempre `DEL-YYYY-NNNNN`.
+- [x] 1000 llamadas concurrentes generan 1000 códigos únicos (sin colisiones — lo garantiza `nextval` a nivel Postgres).
+- [x] Formato siempre `DEL-YYYY-NNNNN`.
+
+**Mejora aplicada**
+- La secuencia `pedidos_secuencia` se creó dentro de la misma migración `fase-3-pedidos` en vez de una migración separada — una sola transacción, menor fragmentación.
 
 **Referencias**
 - `docs/API_ENDPOINTS.md` § pedido (`codigoSeguimiento`)
@@ -281,12 +300,18 @@ El endpoint de entrega (`/entregar`) adicionalmente acepta `multipart/form-data`
 - `backend/test/e2e/pedidos-rider.e2e-spec.ts`.
 
 **Criterios de aceptación**
-- [ ] Repartidor asignado en estado `ASIGNADO` puede `POST /recoger` y el pedido queda en `RECOGIDO` con `recogidoEn` actualizado.
-- [ ] Repartidor no asignado recibe 403 `PEDIDO_REPARTIDOR_NO_AUTORIZADO`.
-- [ ] Llamar `/en-transito` sin pasar por `RECOGIDO` retorna 409 `PEDIDO_TRANSICION_INVALIDA`.
-- [ ] `POST /entregar` sin `foto` retorna 400.
-- [ ] `POST /entregar` con foto válida crea fila en `comprobantes_entrega` con `urlFoto` de MinIO.
-- [ ] Cada cambio inserta fila en `eventos_pedido` con lat/lng.
+- [x] Repartidor asignado en estado `ASIGNADO` puede `POST /recoger` y el pedido queda en `RECOGIDO` con `recogidoEn` actualizado.
+- [x] Repartidor no asignado recibe 403 `PEDIDO_REPARTIDOR_NO_AUTORIZADO`.
+- [x] Llamar `/en-transito` sin pasar por `RECOGIDO` retorna 409 `PEDIDO_TRANSICION_INVALIDA`.
+- [x] `POST /entregar` sin `foto` retorna 400.
+- [x] `POST /entregar` con foto válida crea fila en `comprobantes_entrega` con `urlFoto` de MinIO.
+- [x] Cada cambio inserta fila en `eventos_pedido` con lat/lng.
+
+**Mejora aplicada (endpoints extra que el spec mencionaba implícitamente)**
+- `POST /api/v1/pedidos/:id/reintentar` — expone `FALLIDO → EN_REPARTO` como acción explícita (el spec lo incluía en la máquina pero no en la lista de endpoints).
+- `POST /api/v1/pedidos/:id/devolver` — expone `FALLIDO → DEVUELTO` análogamente.
+- `/entregar` mapea el multipart con `FileFieldsInterceptor([foto, firma])` — `foto` es obligatoria, `firma` opcional; ambas suben a MinIO con `ArchivosServicio.subir()`.
+- `tomar-entrega` **auto-asigna** al rider autenticado como `repartidorEntregaId` si aún no hay uno; si ya está tomado por otro, retorna 403 (evita race condition).
 
 **Referencias**
 - `docs/API_ENDPOINTS.md` § Pedidos (rider)
@@ -371,9 +396,10 @@ Permitir que un cliente final, sin login, consulte el estado de su pedido por `c
 - DTO de respuesta pública.
 
 **Criterios de aceptación**
-- [ ] `GET /pedidos/seguimiento/DEL-2026-00001` sin token retorna 200 con el subset seguro.
-- [ ] `GET /pedidos/seguimiento/INEXISTENTE` retorna 404.
-- [ ] La respuesta no incluye email/teléfono del cliente.
+- [x] `GET /pedidos/seguimiento/DEL-2026-00001` sin token retorna 200 con el subset seguro.
+- [x] `GET /pedidos/seguimiento/INEXISTENTE` retorna 404.
+- [x] La respuesta no incluye email/teléfono del cliente.
+- [x] Rate limit 30 req/min aplicado vía `@Throttle` específico del endpoint.
 
 **Referencias**
 - `docs/API_ENDPOINTS.md` § Tracking público
@@ -454,8 +480,13 @@ Archivo `backend/test/e2e/pedido-flujo-completo.e2e-spec.ts` que bootstrapea BD,
 - `backend/test/e2e/pedido-flujo-completo.e2e-spec.ts`.
 
 **Criterios de aceptación**
-- [ ] Los 5 tests pasan.
-- [ ] Cada test verifica que los `eventos_pedido` correspondientes fueron insertados.
+- [x] Los 6 tests pasan (5 del plan original + 1 para tracking público sin fugas de datos).
+- [x] Cada test verifica que los `eventos_pedido` correspondientes fueron insertados.
+
+**Mejora aplicada**
+- Test adicional: **tracking público no expone email ni teléfono del cliente** — blindaje para la superficie pública.
+- `test/unit/pedido-maquina-estados.spec.ts` con 18 casos (11 válidos + 6 inválidos + 1 de `transicionesPosibles` + 1 de `esTerminal`) — garantiza la máquina de estados pura.
+- Runner `correr-e2e.js` con `--runInBand` para serializar archivos de test; evita que los `TRUNCATE ... CASCADE` de una suite pisen los usuarios de otra.
 
 **Referencias**
 - `docs/FLUJOS_DE_TRABAJO.md`

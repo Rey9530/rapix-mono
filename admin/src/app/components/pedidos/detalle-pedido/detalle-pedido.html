@@ -1,0 +1,147 @@
+<div class="container-fluid">
+  <div class="page-title mb-3">
+    <a [routerLink]="['/pedidos']">← Volver a pedidos</a>
+  </div>
+
+  @if (cargando()) {
+    <div class="text-center p-5">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  } @else if (error(); as err) {
+    <div class="alert alert-danger">{{ err }}</div>
+  } @else if (pedido(); as p) {
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="card mb-3">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="m-0">Pedido {{ p.codigoSeguimiento }}</h5>
+            <span class="badge bg-info">{{ p.estado }}</span>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <h6>Cliente</h6>
+                <p class="mb-1">{{ p.nombreCliente }}</p>
+                <p class="mb-1 text-muted">
+                  {{ p.telefonoCliente }}
+                  @if (p.emailCliente) {
+                    · {{ p.emailCliente }}
+                  }
+                </p>
+              </div>
+              <div class="col-md-6">
+                <h6>Pago</h6>
+                <p class="mb-1">{{ p.metodoPago }}</p>
+                <p class="mb-1">Costo envío: ${{ p.costoEnvio }}</p>
+                @if (p.montoContraEntrega) {
+                  <p class="mb-1">Contra entrega: ${{ p.montoContraEntrega }}</p>
+                }
+              </div>
+            </div>
+            <hr />
+            <div class="row">
+              <div class="col-md-6">
+                <h6>Origen</h6>
+                <p class="mb-1">{{ p.direccionOrigen }}</p>
+                <p class="text-muted small mb-0">
+                  Zona: {{ p.zonaOrigen?.nombre ?? "—" }}
+                </p>
+              </div>
+              <div class="col-md-6">
+                <h6>Destino</h6>
+                <p class="mb-1">{{ p.direccionDestino }}</p>
+                <p class="text-muted small mb-0">
+                  Zona: {{ p.zonaDestino?.nombre ?? "—" }}
+                </p>
+              </div>
+            </div>
+            <hr />
+            <div class="row">
+              <div class="col-md-6">
+                <h6>Repartidores</h6>
+                <p class="mb-1">
+                  Recogida:
+                  {{
+                    p.repartidorRecogida?.usuario?.nombreCompleto ?? "Sin asignar"
+                  }}
+                </p>
+                <p class="mb-1">
+                  Entrega:
+                  {{
+                    p.repartidorEntrega?.usuario?.nombreCompleto ?? "Sin asignar"
+                  }}
+                </p>
+              </div>
+              <div class="col-md-6">
+                <h6>Tiempos</h6>
+                <p class="mb-1">Creado: {{ p.creadoEn | date: "short" }}</p>
+                @if (p.entregadoEn) {
+                  <p class="mb-1 text-success">
+                    Entregado: {{ p.entregadoEn | date: "short" }}
+                  </p>
+                }
+                @if (p.canceladoEn) {
+                  <p class="mb-1 text-danger">
+                    Cancelado: {{ p.canceladoEn | date: "short" }} —
+                    {{ p.motivoCancelado }}
+                  </p>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+
+        @if (p.comprobantes.length > 0) {
+          <div class="card mb-3">
+            <div class="card-header"><h6 class="m-0">Comprobantes</h6></div>
+            <div class="card-body">
+              <div class="row g-3">
+                @for (c of p.comprobantes; track c.id) {
+                  <div class="col-md-4">
+                    <a [href]="c.urlFoto" target="_blank">
+                      <img
+                        [src]="c.urlFoto"
+                        class="img-fluid rounded"
+                        alt="Comprobante"
+                      />
+                    </a>
+                    @if (c.recibidoPor) {
+                      <p class="mt-2 small text-muted mb-0">
+                        Recibido por: {{ c.recibidoPor }}
+                      </p>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-header"><h6 class="m-0">Línea de tiempo</h6></div>
+          <div class="card-body">
+            @if (p.eventos.length === 0) {
+              <p class="text-muted">Sin eventos.</p>
+            } @else {
+              <ul class="list-unstyled timeline">
+                @for (ev of p.eventos; track ev.id) {
+                  <li class="mb-3">
+                    <strong>{{ ev.estado }}</strong>
+                    <div class="small text-muted">
+                      {{ ev.creadoEn | date: "short" }}
+                    </div>
+                    @if (ev.notas) {
+                      <div class="small">{{ ev.notas }}</div>
+                    }
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

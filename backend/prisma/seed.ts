@@ -1,74 +1,92 @@
 // Seed de desarrollo — idempotente via upsert.
-// Poblado soportado hoy:
+// Pobla:
 //   - Admin raíz (+ PerfilAdmin)
-//   - 2 vendedores (el PerfilVendedor se persistirá cuando llegue Tarea 2.1)
-//   - 3 repartidores (el PerfilRepartidor se persistirá cuando llegue Tarea 2.4)
-// Pendiente:
-//   - 2 reglas de tarifa — el modelo `ReglaTarifa` entra en Tarea 4.1.
-//     Mientras tanto, la sección queda comentada abajo.
-//
-// Ejecución: `yarn prisma:seed` (o `yarn prisma db seed` — Prisma 7 lee el
-// comando desde `prisma.config.ts#migrations.seed`).
+//   - 2 vendedores (+ PerfilVendedor con direccion/lat/lng)
+//   - 3 repartidores (+ PerfilRepartidor con tipoVehiculo/documentoIdentidad)
+//   - 2 reglas de tarifa (POR_ENVIO $3, PAQUETE 100 envíos $250)
 
 import 'dotenv/config';
 import { PrismaPg } from '@prisma/adapter-pg';
 import bcrypt from 'bcrypt';
 import { PrismaClient } from '../src/generated/prisma/client.js';
 
-interface DatosUsuario {
+interface SeedVendedor {
   email: string;
   telefono: string;
   contrasena: string;
   nombreCompleto: string;
-  rol: 'ADMIN' | 'VENDEDOR' | 'REPARTIDOR';
+  nombreNegocio: string;
+  direccion: string;
+  latitud: number;
+  longitud: number;
 }
 
-const ADMIN: DatosUsuario = {
+interface SeedRepartidor {
+  email: string;
+  telefono: string;
+  contrasena: string;
+  nombreCompleto: string;
+  tipoVehiculo: string;
+  placa?: string;
+  documentoIdentidad: string;
+}
+
+const ADMIN = {
   email: 'admin@delivery.com',
   telefono: '+50370000000',
   contrasena: 'Admin123!',
   nombreCompleto: 'Administrador Raíz',
-  rol: 'ADMIN',
 };
 
-const VENDEDORES: DatosUsuario[] = [
+const VENDEDORES: SeedVendedor[] = [
   {
     email: 'vendedor1@delivery.com',
     telefono: '+50370010001',
     contrasena: 'Vendedor123!',
     nombreCompleto: 'Tienda Uno',
-    rol: 'VENDEDOR',
+    nombreNegocio: 'Tienda Uno',
+    direccion: 'Col Escalón #123, San Salvador',
+    latitud: 13.6929,
+    longitud: -89.2182,
   },
   {
     email: 'vendedor2@delivery.com',
     telefono: '+50370010002',
     contrasena: 'Vendedor123!',
     nombreCompleto: 'Tienda Dos',
-    rol: 'VENDEDOR',
+    nombreNegocio: 'Tienda Dos',
+    direccion: 'Col Roma #45, San Salvador',
+    latitud: 13.6950,
+    longitud: -89.2200,
   },
 ];
 
-const REPARTIDORES: DatosUsuario[] = [
+const REPARTIDORES: SeedRepartidor[] = [
   {
     email: 'repartidor1@delivery.com',
     telefono: '+50370020001',
     contrasena: 'Repartidor123!',
     nombreCompleto: 'Carlos Recogedor',
-    rol: 'REPARTIDOR',
+    tipoVehiculo: 'moto',
+    placa: 'M-1001',
+    documentoIdentidad: '01234567-1',
   },
   {
     email: 'repartidor2@delivery.com',
     telefono: '+50370020002',
     contrasena: 'Repartidor123!',
     nombreCompleto: 'María Repartidora',
-    rol: 'REPARTIDOR',
+    tipoVehiculo: 'moto',
+    placa: 'M-1002',
+    documentoIdentidad: '01234567-2',
   },
   {
     email: 'repartidor3@delivery.com',
     telefono: '+50370020003',
     contrasena: 'Repartidor123!',
     nombreCompleto: 'Pedro Ciclista',
-    rol: 'REPARTIDOR',
+    tipoVehiculo: 'bicicleta',
+    documentoIdentidad: '01234567-3',
   },
 ];
 
@@ -76,7 +94,13 @@ const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
 });
 
-async function upsertUsuarioBasico(datos: DatosUsuario): Promise<string> {
+async function upsertUsuarioBasico(datos: {
+  email: string;
+  telefono: string;
+  contrasena: string;
+  nombreCompleto: string;
+  rol: 'ADMIN' | 'VENDEDOR' | 'REPARTIDOR';
+}): Promise<string> {
   const hash = await bcrypt.hash(datos.contrasena, 12);
   const usuario = await prisma.usuario.upsert({
     where: { email: datos.email },
@@ -94,31 +118,76 @@ async function upsertUsuarioBasico(datos: DatosUsuario): Promise<string> {
 }
 
 async function main() {
-  const adminId = await upsertUsuarioBasico(ADMIN);
+  const adminId = await upsertUsuarioBasico({ ...ADMIN, rol: 'ADMIN' });
   await prisma.perfilAdmin.upsert({
     where: { usuarioId: adminId },
     update: {},
     create: { usuarioId: adminId, permisos: ['*'] },
   });
-  console.log(`Admin raíz listo: ${ADMIN.email} (id=${adminId})`);
+  console.log(`Admin raíz listo: ${ADMIN.email}`);
 
   for (const v of VENDEDORES) {
-    const id = await upsertUsuarioBasico(v);
-    console.log(`Vendedor listo: ${v.email} (id=${id}) — PerfilVendedor pendiente 2.1`);
+    const id = await upsertUsuarioBasico({ ...v, rol: 'VENDEDOR' });
+    await prisma.perfilVendedor.upsert({
+      where: { usuarioId: id },
+      update: {},
+      create: {
+        usuarioId: id,
+        nombreNegocio: v.nombreNegocio,
+        direccion: v.direccion,
+        latitud: v.latitud,
+        longitud: v.longitud,
+      },
+    });
+    console.log(`Vendedor listo: ${v.email}`);
   }
 
   for (const r of REPARTIDORES) {
-    const id = await upsertUsuarioBasico(r);
-    console.log(`Repartidor listo: ${r.email} (id=${id}) — PerfilRepartidor pendiente 2.4`);
+    const id = await upsertUsuarioBasico({ ...r, rol: 'REPARTIDOR' });
+    await prisma.perfilRepartidor.upsert({
+      where: { usuarioId: id },
+      update: {},
+      create: {
+        usuarioId: id,
+        tipoVehiculo: r.tipoVehiculo,
+        placa: r.placa ?? null,
+        documentoIdentidad: r.documentoIdentidad,
+      },
+    });
+    console.log(`Repartidor listo: ${r.email}`);
   }
 
-  // Reglas de tarifa — el modelo ReglaTarifa entra en Tarea 4.1.
-  // Ejemplos:
-  //   - POR_ENVIO: $3.00
-  //   - PAQUETE: 100 envíos por $250
-  // Se insertarán aquí (también con upsert) cuando el modelo exista.
+  await sembrarReglasTarifa();
 
   console.log('\nSeed completado.');
+}
+
+async function sembrarReglasTarifa() {
+  const reglas = [
+    {
+      nombre: 'Tarifa estándar por envío',
+      modoFacturacion: 'POR_ENVIO' as const,
+      precioPorEnvio: '3.00',
+    },
+    {
+      nombre: 'Paquete 100 envíos',
+      modoFacturacion: 'PAQUETE' as const,
+      tamanoPaquete: 100,
+      precioPaquete: '250.00',
+    },
+  ];
+
+  for (const r of reglas) {
+    const existente = await prisma.reglaTarifa.findFirst({
+      where: { nombre: r.nombre, modoFacturacion: r.modoFacturacion },
+    });
+    if (existente) {
+      console.log(`Regla tarifa ya existe: ${r.nombre}`);
+      continue;
+    }
+    await prisma.reglaTarifa.create({ data: { ...r, activa: true } });
+    console.log(`Regla tarifa creada: ${r.nombre}`);
+  }
 }
 
 main()

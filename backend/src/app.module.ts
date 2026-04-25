@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { esquemaValidacionEnv } from './config/esquema-validacion.js';
 import { JwtAutenticacionGuardia } from './comun/guardias/jwt-autenticacion.guardia.js';
@@ -13,6 +14,13 @@ import { AutenticacionModulo } from './modulos/autenticacion/autenticacion.modul
 import { UsuariosModulo } from './modulos/usuarios/usuarios.modulo.js';
 import { ZonasModulo } from './modulos/zonas/zonas.modulo.js';
 import { RepartidoresModulo } from './modulos/repartidores/repartidores.modulo.js';
+import { ArchivosModulo } from './modulos/archivos/archivos.modulo.js';
+import { PedidosModulo } from './modulos/pedidos/pedidos.modulo.js';
+import { PaquetesRecargadosModulo } from './modulos/paquetes-recargados/paquetes-recargados.modulo.js';
+import { ReportesModulo } from './modulos/reportes/reportes.modulo.js';
+import { AuditoriaModulo } from './modulos/auditoria/auditoria.modulo.js';
+import { CierresFinancierosModulo } from './modulos/cierres-financieros/cierres-financieros.modulo.js';
+import { NotificacionesModulo } from './modulos/notificaciones/notificaciones.modulo.js';
 
 @Module({
   imports: [
@@ -27,14 +35,22 @@ import { RepartidoresModulo } from './modulos/repartidores/repartidores.modulo.j
         limit: Number(process.env.THROTTLE_LIMIT ?? 100),
       },
     ]),
-    EventEmitterModule.forRoot({ wildcard: true }),
+    EventEmitterModule.forRoot({ wildcard: true, maxListeners: 20 }),
+    ScheduleModule.forRoot(),
     PrismaModulo,
     RedisModulo,
+    ArchivosModulo,
+    AuditoriaModulo,
     SaludModulo,
     AutenticacionModulo,
     RepartidoresModulo,
     UsuariosModulo,
     ZonasModulo,
+    PaquetesRecargadosModulo,
+    PedidosModulo,
+    CierresFinancierosModulo,
+    NotificacionesModulo,
+    ReportesModulo,
   ],
   providers: [
     // Orden: Throttler primero, JWT, luego Roles.

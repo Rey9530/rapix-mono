@@ -74,7 +74,7 @@ Se ejecuta `yarn create nest backend` (o equivalente manual), se configura `"typ
 Modelar las tres entidades base de identidad y persistirlas en la BD mediante la primera migración Prisma, incluyendo los enums `RolUsuario` y `EstadoUsuario`.
 
 **Descripción detallada**
-Se añade al `schema.prisma` los modelos `Usuario`, `TokenRefresco`, `PerfilAdmin` y los enums asociados, siguiendo el glosario de `CLAUDE.md` y la especificación detallada de `BASE_DE_DATOS.md`. Se mapean los nombres de tabla a snake_case en español (`usuarios`, `tokens_refresco`, `perfiles_admin`). La migración también habilita las extensiones PostgreSQL `postgis` y `uuid-ossp` (adelantamos PostGIS aquí para no tener que crear una migración extra luego — aunque las tablas que la usan vienen en Fase 2).
+Se añade al `schema.prisma` los modelos `Usuario`, `TokenRefresco`, `PerfilAdmin` y los enums asociados, siguiendo el glosario de `docs/README.md` y la especificación detallada de `BASE_DE_DATOS.md`. Se mapean los nombres de tabla a snake_case en español (`usuarios`, `tokens_refresco`, `perfiles_admin`). La migración también habilita las extensiones PostgreSQL `postgis` y `uuid-ossp` (adelantamos PostGIS aquí para no tener que crear una migración extra luego — aunque las tablas que la usan vienen en Fase 2).
 
 **Alcance**
 - **Incluye:**
@@ -112,7 +112,7 @@ Se añade al `schema.prisma` los modelos `Usuario`, `TokenRefresco`, `PerfilAdmi
 
 **Referencias**
 - `docs/BASE_DE_DATOS.md` § Usuarios y Autenticación
-- `docs/CLAUDE.md` § Glosario maestro
+- `docs/README.md` § Glosario maestro
 
 ---
 

@@ -1,0 +1,62 @@
+<div class="container-fluid">
+  <div class="page-title">
+    <div class="row">
+      <div class="col-sm-6">
+        <h3>Tablero</h3>
+      </div>
+    </div>
+  </div>
+
+  @if (cargando()) {
+    <div class="text-center p-5">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  } @else if (kpis(); as k) {
+    <div class="row">
+      <div class="col-md-4 col-lg-2">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="text-muted">Pedidos totales</h6>
+            <h2>{{ k.pedidosTotales }}</h2>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 col-lg-2">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="text-muted">Entregados</h6>
+            <h2 class="text-success">{{ k.pedidosEntregados }}</h2>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 col-lg-2">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="text-muted">Cierres pendientes</h6>
+            <h2 class="text-warning">{{ k.cierresPendientes }}</h2>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 col-lg-2">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="text-muted">Vendedores</h6>
+            <h2>{{ k.vendedores }}</h2>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 col-lg-2">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="text-muted">Repartidores</h6>
+            <h2>{{ k.repartidores }}</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div class="alert alert-warning">
+      No se pudo cargar el resumen. Verifica que el backend esté arriba.
+    </div>
+  }
+</div>

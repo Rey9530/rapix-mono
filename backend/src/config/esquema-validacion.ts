@@ -21,4 +21,21 @@ export const esquemaValidacionEnv = Joi.object({
   REDIS_PORT: Joi.number().default(6379),
   THROTTLE_TTL: Joi.number().default(60),
   THROTTLE_LIMIT: Joi.number().default(100),
+
+  // Fase 6 — Notificaciones (todas opcionales: el adapter degrada
+  // a FALLIDO con `mensajeError = CANAL_NO_CONFIGURADO` si faltan).
+  WHATSAPP_API_VERSION: Joi.string().default('v20.0'),
+  WHATSAPP_PHONE_NUMBER_ID: Joi.string().optional().allow(''),
+  WHATSAPP_ACCESS_TOKEN: Joi.string().optional().allow(''),
+  SMTP_HOST: Joi.string().default('localhost'),
+  SMTP_PORT: Joi.number().default(1025),
+  SMTP_SECURE: Joi.boolean().truthy('true').falsy('false').default(false),
+  SMTP_USER: Joi.string().optional().allow(''),
+  SMTP_PASSWORD: Joi.string().optional().allow(''),
+  SMTP_FROM_EMAIL: Joi.string().email().default('no-reply@delivery.com'),
+  SMTP_FROM_NAME: Joi.string().default('Delivery System'),
+  FIREBASE_PROJECT_ID: Joi.string().optional().allow(''),
+  FIREBASE_PRIVATE_KEY: Joi.string().optional().allow(''),
+  FIREBASE_CLIENT_EMAIL: Joi.string().optional().allow(''),
+  NOTIFICACIONES_LIMITE_HORA: Joi.number().default(20),
 });

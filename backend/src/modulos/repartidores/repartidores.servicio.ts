@@ -113,15 +113,39 @@ export class RepartidoresServicio {
 
   async desempeno(id: string) {
     const r = await this.obtenerPorIdAdmin(id);
-    // Métricas reales sobre Pedidos llegan en Fase 3; aquí devolvemos lo que
-    // está en PerfilRepartidor + conteos derivados (tasaExito todavía no
-    // calculable, se deja 0 hasta que existan pedidos).
+    // Fase 3 — tasaExito real a partir de pedidos finalizados (no cancelados)
+    // que el rider participó (recogida o entrega).
+    const [entregados, fallidosODevueltos, activos] = await Promise.all([
+      this.prisma.pedido.count({
+        where: {
+          estado: 'ENTREGADO',
+          OR: [{ repartidorRecogidaId: id }, { repartidorEntregaId: id }],
+        },
+      }),
+      this.prisma.pedido.count({
+        where: {
+          estado: { in: ['FALLIDO', 'DEVUELTO'] },
+          OR: [{ repartidorRecogidaId: id }, { repartidorEntregaId: id }],
+        },
+      }),
+      this.prisma.pedido.count({
+        where: {
+          estado: { in: ['ASIGNADO', 'RECOGIDO', 'EN_TRANSITO', 'EN_PUNTO_INTERCAMBIO', 'EN_REPARTO'] },
+          OR: [{ repartidorRecogidaId: id }, { repartidorEntregaId: id }],
+        },
+      }),
+    ]);
+    const finalizados = entregados + fallidosODevueltos;
+    const tasaExito = finalizados === 0 ? null : Number((entregados / finalizados).toFixed(4));
     return {
       id: r.id,
       nombreCompleto: r.usuario.nombreCompleto,
       totalEntregas: r.totalEntregas,
       calificacion: r.calificacion,
-      tasaExito: 0,
+      entregados,
+      fallidosODevueltos,
+      activos,
+      tasaExito,
       disponible: r.disponible,
     };
   }
@@ -167,6 +191,35 @@ export class RepartidoresServicio {
     return this.prisma.perfilRepartidor.update({
       where: { id: perfil.id },
       data: { disponible },
+    });
+  }
+
+  async pedidosDeRepartidor(
+    usuarioId: string,
+    tipo: 'todos' | 'recogidas-pendientes' | 'entregas-pendientes',
+  ) {
+    const perfil = await this.perfilDeUsuario(usuarioId);
+    if (tipo === 'recogidas-pendientes') {
+      return this.prisma.pedido.findMany({
+        where: { repartidorRecogidaId: perfil.id, estado: 'ASIGNADO' },
+        orderBy: { creadoEn: 'asc' },
+      });
+    }
+    if (tipo === 'entregas-pendientes') {
+      return this.prisma.pedido.findMany({
+        where: { repartidorEntregaId: perfil.id, estado: 'EN_REPARTO' },
+        orderBy: { creadoEn: 'asc' },
+      });
+    }
+    return this.prisma.pedido.findMany({
+      where: {
+        OR: [
+          { repartidorRecogidaId: perfil.id },
+          { repartidorEntregaId: perfil.id },
+        ],
+      },
+      orderBy: { creadoEn: 'desc' },
+      take: 50,
     });
   }
 

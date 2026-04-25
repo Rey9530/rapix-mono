@@ -1,6 +1,6 @@
 # CubaAngular (Panel de Administración)
 
-> **Nota para desarrolladores**: El proyecto `admin-template/` funciona como la biblioteca de referencia para este panel. Consulta el archivo [admin-template/CLAUDE.md](../admin-template/CLAUDE.md) para localizar la ruta exacta de cualquier componente (modales, tablas, formularios, etc.) que necesites copiar o adaptar a este proyecto.
+> **Nota para desarrolladores**: El proyecto `admin-template/` funciona como la biblioteca de referencia para este panel. Consulta el archivo [admin-template/README.md](../admin-template/README.md) para localizar la ruta exacta de cualquier componente (modales, tablas, formularios, etc.) que necesites copiar o adaptar a este proyecto.
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.0.
 

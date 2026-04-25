@@ -4,25 +4,37 @@ import { IMenu } from "../interface/menu";
 
 export const menuItems: IMenu[] = [
   {
-    main_title: "General",
+    main_title: "Operación",
   },
   {
-    title: "Sample Pages",
+    title: "Tablero",
     icon: "home",
-    type: "sub",
-    active: true,
+    type: "link",
+    path: "/tablero",
     level: 1,
-    children: [
-      { path: "/pages/sample-page1", title: "Sample-page1", type: "link" },
-      { path: "/pages/sample-page2", title: "Sample-page2", type: "link" },
-    ],
   },
   {
-    title: "Sample-page",
+    title: "Pedidos",
     icon: "support-tickets",
     type: "link",
-    bookmark: true,
-    path: "/sample-page",
+    path: "/pedidos",
+    level: 1,
+  },
+  {
+    title: "Cierres financieros",
+    icon: "task",
+    type: "link",
+    path: "/cierres",
+    level: 1,
+  },
+  {
+    main_title: "Administración",
+  },
+  {
+    title: "Usuarios",
+    icon: "user",
+    type: "link",
+    path: "/usuarios",
     level: 1,
   },
 ];

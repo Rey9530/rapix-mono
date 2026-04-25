@@ -31,7 +31,10 @@ async function arrancar() {
 
   configurarSwagger(app);
 
-  await app.listen(Number(process.env.PORT ?? 3000));
+  const port = process.env.PORT ?? 3000; 
+  await app.listen(port);
+  console.log(`Application running on: http://localhost:${port}`);
+  console.log(`Swagger docs: http://localhost:${port}/api/docs`);
 }
 
 void arrancar();

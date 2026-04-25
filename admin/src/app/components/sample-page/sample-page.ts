@@ -1,4 +1,3 @@
-
 import { Component } from "@angular/core";
 
 import { SamplePage1 } from "../pages/sample-page1/sample-page1";

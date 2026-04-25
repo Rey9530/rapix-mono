@@ -57,7 +57,7 @@ Crear el repositorio raíz con la estructura de carpetas descrita en `CONFIGURAC
 
 **Referencias**
 - `docs/CONFIGURACION_INICIAL.md` § Estructura del repositorio
-- `docs/CLAUDE.md` (raíz) § Convenciones y Branching
+- `CLAUDE.md` (raíz) § Convenciones y Branching
 
 ---
 
@@ -257,7 +257,7 @@ Configurar ESLint + Prettier en backend y admin con la misma base (`@typescript-
 **Referencias**
 - `docs/GUIA_BACKEND.md` § Linting
 - `docs/GUIA_ADMIN.md` § Tooling
-- `docs/CLAUDE.md` § Convenciones
+- `docs/README.md` § Convenciones
 
 ---
 

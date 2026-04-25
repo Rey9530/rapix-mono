@@ -1,0 +1,51 @@
+<div class="modal-header">
+  <h5 class="modal-title">Asignar pedido {{ codigoSeguimiento }}</h5>
+  <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+</div>
+
+<form [formGroup]="form" (ngSubmit)="asignar()">
+  <div class="modal-body">
+    @if (repartidores.length === 0) {
+      <div class="alert alert-warning">
+        No hay repartidores disponibles en este momento.
+      </div>
+    } @else {
+      <div class="mb-3">
+        <label class="form-label">Repartidor de recogida</label>
+        <select class="form-select" formControlName="repartidorRecogidaId">
+          <option value="">Seleccione…</option>
+          @for (r of repartidores; track r.id) {
+            <option [value]="r.id">
+              {{ r.nombreCompleto }} —
+              vehículo: {{ r.tipoVehiculo }} ({{ r.totalEntregas }} entregas)
+            </option>
+          }
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">
+          Repartidor de entrega <small class="text-muted">(opcional)</small>
+        </label>
+        <select class="form-select" formControlName="repartidorEntregaId">
+          <option value="">— Igual al de recogida —</option>
+          @for (r of repartidores; track r.id) {
+            <option [value]="r.id">{{ r.nombreCompleto }}</option>
+          }
+        </select>
+      </div>
+    }
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">
+      Cancelar
+    </button>
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="enviando || repartidores.length === 0"
+    >
+      {{ enviando ? "Asignando..." : "Asignar" }}
+    </button>
+  </div>
+</form>

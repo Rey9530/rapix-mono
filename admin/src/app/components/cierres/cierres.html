@@ -1,0 +1,118 @@
+<div class="container-fluid">
+  <div class="page-title mb-3">
+    <h3 class="m-0">Cierres financieros</h3>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <select
+            class="form-select"
+            (change)="alCambiarEstado($any($event.target).value)"
+          >
+            <option value="">Todos los estados</option>
+            @for (e of estados; track e) {
+              <option [value]="e">{{ e }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (mensajeError(); as err) {
+    <div class="alert alert-danger">{{ err }}</div>
+  }
+
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Esperado</th>
+            <th>Reportado</th>
+            <th>Diferencia</th>
+            <th>Estado</th>
+            <th>Foto</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (cargando()) {
+            <tr>
+              <td colspan="7" class="text-center p-4">
+                <div class="spinner-border text-primary"></div>
+              </td>
+            </tr>
+          } @else if (datos().length === 0) {
+            <tr>
+              <td colspan="7" class="text-center p-4 text-muted">Sin resultados.</td>
+            </tr>
+          } @else {
+            @for (c of datos(); track c.id) {
+              <tr>
+                <td>{{ c.fechaCierre | date: "longDate" }}</td>
+                <td>${{ c.montoEsperado }}</td>
+                <td>${{ c.montoReportado }}</td>
+                <td
+                  [class.text-danger]="c.diferencia !== '0.00'"
+                  [class.text-success]="c.diferencia === '0.00'"
+                >
+                  ${{ c.diferencia }}
+                </td>
+                <td>
+                  <span class="badge bg-{{ estadoColor(c.estado) }}">
+                    {{ c.estado }}
+                  </span>
+                </td>
+                <td>
+                  <a [href]="c.urlComprobanteFoto" target="_blank" rel="noopener">
+                    Ver foto
+                  </a>
+                </td>
+                <td class="text-end">
+                  @if (puedeResolver(c)) {
+                    <button
+                      class="btn btn-sm btn-outline-success me-1"
+                      (click)="aprobar(c)"
+                    >
+                      Aprobar
+                    </button>
+                    <button
+                      class="btn btn-sm btn-outline-danger"
+                      (click)="rechazar(c)"
+                    >
+                      Rechazar
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  @if (totalPaginas() > 1) {
+    <nav class="mt-3">
+      <ul class="pagination">
+        <li class="page-item" [class.disabled]="filtros.pagina === 1">
+          <button class="page-link" (click)="irPagina((filtros.pagina ?? 1) - 1)">
+            ‹
+          </button>
+        </li>
+        <li class="page-item active">
+          <span class="page-link">{{ filtros.pagina }} / {{ totalPaginas() }}</span>
+        </li>
+        <li class="page-item" [class.disabled]="filtros.pagina === totalPaginas()">
+          <button class="page-link" (click)="irPagina((filtros.pagina ?? 1) + 1)">
+            ›
+          </button>
+        </li>
+      </ul>
+    </nav>
+  }
+</div>

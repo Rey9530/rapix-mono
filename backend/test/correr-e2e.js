@@ -38,7 +38,7 @@ console.log('[e2e] Aplicando migraciones en BD de test');
 correr('npx prisma migrate deploy', { env: { ...process.env, DATABASE_URL: URL_BD_TEST } });
 
 console.log('[e2e] Ejecutando Jest');
-correr('npx jest --config test/jest-e2e.json', {
+correr('npx jest --config test/jest-e2e.json --runInBand', {
   env: {
     ...process.env,
     DATABASE_URL: URL_BD_TEST,

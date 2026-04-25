@@ -55,24 +55,26 @@ export class RepartidoresControlador {
     return this.servicio.actualizarUbicacion(usuario.id, dto);
   }
 
-  // Stubs — implementación real llega en Fase 3 al existir Pedido.
+  // Listados del repartidor autenticado — reales a partir de Fase 3.
   @Roles('REPARTIDOR')
   @Get('yo/pedidos')
-  @ApiOperation({ summary: 'Pedidos del repartidor (stub Fase 3)' })
-  pedidosPropios() {
-    return [];
+  @ApiOperation({ summary: 'Todos los pedidos en los que participa' })
+  pedidosPropios(@UsuarioActual() usuario: Usuario) {
+    return this.servicio.pedidosDeRepartidor(usuario.id, 'todos');
   }
 
   @Roles('REPARTIDOR')
   @Get('yo/recogidas-pendientes')
-  recogidasPendientes() {
-    return [];
+  @ApiOperation({ summary: 'Pedidos ASIGNADOS al repartidor (recogida pendiente)' })
+  recogidasPendientes(@UsuarioActual() usuario: Usuario) {
+    return this.servicio.pedidosDeRepartidor(usuario.id, 'recogidas-pendientes');
   }
 
   @Roles('REPARTIDOR')
   @Get('yo/entregas-pendientes')
-  entregasPendientes() {
-    return [];
+  @ApiOperation({ summary: 'Pedidos EN_REPARTO del repartidor (entrega pendiente)' })
+  entregasPendientes(@UsuarioActual() usuario: Usuario) {
+    return this.servicio.pedidosDeRepartidor(usuario.id, 'entregas-pendientes');
   }
 
   // ─── Admin ────────────────────────────────────────────────────────

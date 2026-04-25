@@ -1,4 +1,5 @@
-import { Component, inject } from "@angular/core";
+import { HttpErrorResponse } from "@angular/common/http";
+import { Component, OnInit, inject } from "@angular/core";
 import {
   FormControl,
   FormGroup,
@@ -6,9 +7,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
-import { Router, RouterModule } from "@angular/router";
+import { ActivatedRoute, Router, RouterModule } from "@angular/router";
 
 import { ToastrService } from "ngx-toastr";
+
+import { AutenticacionServicio } from "../../nucleo/autenticacion/autenticacion.servicio";
 
 @Component({
   selector: "app-login",
@@ -16,56 +19,73 @@ import { ToastrService } from "ngx-toastr";
   templateUrl: "./login.html",
   styleUrl: "./login.scss",
 })
-export class Login {
-  router = inject(Router);
-  private toast = inject(ToastrService);
+export class Login implements OnInit {
+  private readonly auth = inject(AutenticacionServicio);
+  private readonly router = inject(Router);
+  private readonly ruta = inject(ActivatedRoute);
+  private readonly toast = inject(ToastrService);
 
-  public show: boolean = false;
+  public show = false;
+  public enviando = false;
   public loginForm: FormGroup;
-  public validate: boolean = false;
 
   constructor() {
-    const router = this.router;
-
-    const userDetails = localStorage.getItem("user");
-    if (userDetails?.length != null) {
-      router.navigate(["/dashboard/default"]);
-    }
-
     this.loginForm = new FormGroup({
-      email: new FormControl("Test@gmail.com", [
+      email: new FormControl("admin@delivery.com", [
         Validators.required,
         Validators.email,
       ]),
-      password: new FormControl("test123", Validators.required),
+      contrasena: new FormControl("Admin123!", [
+        Validators.required,
+        Validators.minLength(8),
+      ]),
     });
   }
 
-  showPassword() {
+  ngOnInit(): void {
+    if (this.auth.autenticado() && this.auth.esAdmin()) {
+      this.router.navigate(["/tablero"]);
+      return;
+    }
+    const mensaje = this.ruta.snapshot.queryParamMap.get("mensaje");
+    if (mensaje === "rol-no-autorizado") {
+      this.toast.error("Tu usuario no tiene rol ADMIN.");
+    }
+  }
+
+  showPassword(): void {
     this.show = !this.show;
   }
 
-  login() {
-    this.validate = true;
-    if (this.loginForm.valid) {
-      if (
-        this.loginForm.value["email"] == "Test@gmail.com" &&
-        this.loginForm.value["password"] == "test123"
-      ) {
-        let user = {
-          email: "Test@gmail.com",
-          password: "test123",
-          name: "test user",
-        };
-        localStorage.setItem("user", JSON.stringify(user));
-        this.router.navigate(["/dashboard/default"]);
-      } else {
-        this.toast.error("Please Enter valid email or password...!", "", {
-          positionClass: "toast-top-right",
-          closeButton: true,
-          timeOut: 2000,
-        });
-      }
+  login(): void {
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
     }
+    this.enviando = true;
+    const { email, contrasena } = this.loginForm.value;
+
+    this.auth.iniciarSesion(email, contrasena).subscribe({
+      next: (sesion) => {
+        this.enviando = false;
+        if (sesion.usuario.rol !== "ADMIN") {
+          this.auth.cerrarSesion();
+          this.toast.error("Tu usuario no tiene rol ADMIN.");
+          return;
+        }
+        this.toast.success(`Bienvenido, ${sesion.usuario.nombreCompleto}`);
+        this.router.navigate(["/tablero"]);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.enviando = false;
+        const mensaje =
+          (err.error as { mensaje?: string; message?: string })?.mensaje ??
+          (err.error as { mensaje?: string; message?: string })?.message ??
+          (err.status === 401
+            ? "Credenciales inválidas"
+            : "No se pudo iniciar sesión");
+        this.toast.error(mensaje);
+      },
+    });
   }
 }

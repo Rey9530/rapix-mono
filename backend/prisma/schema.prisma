@@ -31,6 +31,81 @@ enum EstadoUsuario {
 }
 
 // ============================================================
+// ENUMS — Pedidos (Fase 3)
+// ============================================================
+
+enum EstadoPedido {
+  PENDIENTE_ASIGNACION
+  ASIGNADO
+  RECOGIDO
+  EN_TRANSITO
+  EN_PUNTO_INTERCAMBIO
+  EN_REPARTO
+  ENTREGADO
+  CANCELADO
+  FALLIDO
+  DEVUELTO
+}
+
+enum MetodoPago {
+  CONTRA_ENTREGA
+  PREPAGADO
+  TARJETA
+  TRANSFERENCIA
+}
+
+enum ModoFacturacion {
+  POR_ENVIO
+  PAQUETE
+}
+
+// ============================================================
+// ENUMS — Paquetes Prepago (Fase 4)
+// ============================================================
+
+enum EstadoPaquete {
+  ACTIVO
+  PENDIENTE_PAGO
+  AGOTADO
+  EXPIRADO
+  CANCELADO
+}
+
+// ============================================================
+// ENUMS — Cierre Financiero (Fase 5)
+// ============================================================
+
+enum EstadoCierreFinanciero {
+  PENDIENTE_REVISION
+  APROBADO
+  RECHAZADO
+  CON_DISCREPANCIA
+}
+
+// ============================================================
+// ENUMS — Notificaciones (Fase 6)
+// ============================================================
+
+enum CanalNotificacion {
+  PUSH
+  WHATSAPP
+  EMAIL
+}
+
+enum EstadoNotificacion {
+  PENDIENTE
+  ENVIADO
+  FALLIDO
+  LEIDO
+}
+
+enum PlataformaDispositivo {
+  ANDROID
+  IOS
+  WEB
+}
+
+// ============================================================
 // MODELOS — Usuarios y Autenticación
 // ============================================================
 
@@ -47,10 +122,13 @@ model Usuario {
   creadoEn        DateTime      @default(now())
   actualizadoEn   DateTime      @updatedAt
 
-  perfilAdmin      PerfilAdmin?
-  perfilVendedor   PerfilVendedor?
-  perfilRepartidor PerfilRepartidor?
-  tokensRefresco   TokenRefresco[]
+  perfilAdmin        PerfilAdmin?
+  perfilVendedor     PerfilVendedor?
+  perfilRepartidor   PerfilRepartidor?
+  tokensRefresco     TokenRefresco[]
+  registrosAuditoria RegistroAuditoria[]
+  notificaciones     Notificacion[]
+  tokensDispositivo  TokenDispositivo[]
 
   @@index([rol, estado])
   @@map("usuarios")
@@ -100,7 +178,9 @@ model PerfilVendedor {
   creadoEn       DateTime @default(now())
   actualizadoEn  DateTime @updatedAt
 
-  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuario   Usuario            @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  pedidos   Pedido[]
+  paquetes  PaqueteRecargado[]
 
   @@map("perfiles_vendedor")
 }
@@ -121,8 +201,11 @@ model PerfilRepartidor {
   creadoEn           DateTime  @default(now())
   actualizadoEn      DateTime  @updatedAt
 
-  usuario Usuario          @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  zonas   ZonaRepartidor[]
+  usuario            Usuario            @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  zonas              ZonaRepartidor[]
+  pedidosRecogida    Pedido[]           @relation("RepartidorRecogida")
+  pedidosEntrega     Pedido[]           @relation("RepartidorEntrega")
+  cierresFinancieros CierreFinanciero[]
 
   @@map("perfiles_repartidor")
 }
@@ -166,6 +249,8 @@ model Zona {
 
   puntoIntercambio PuntoIntercambio? @relation(fields: [puntoIntercambioId], references: [id])
   repartidores     ZonaRepartidor[]
+  pedidosOrigen    Pedido[]          @relation("PedidoZonaOrigen")
+  pedidosDestino   Pedido[]          @relation("PedidoZonaDestino")
 
   @@index([activa])
   @@map("zonas")
@@ -182,4 +267,257 @@ model ZonaRepartidor {
 
   @@id([repartidorId, zonaId])
   @@map("zonas_repartidor")
+}
+
+// ============================================================
+// PEDIDOS — Fase 3
+// ============================================================
+
+model Pedido {
+  id                String       @id @default(uuid())
+  codigoSeguimiento String       @unique
+  vendedorId        String
+  estado            EstadoPedido @default(PENDIENTE_ASIGNACION)
+
+  nombreCliente   String
+  telefonoCliente String
+  emailCliente    String?
+
+  direccionOrigen String
+  latitudOrigen   Float
+  longitudOrigen  Float
+  zonaOrigenId    String?
+  notasOrigen     String?
+
+  direccionDestino String
+  latitudDestino   Float
+  longitudDestino  Float
+  zonaDestinoId    String?
+  notasDestino     String?
+
+  descripcionPaquete String?
+  pesoPaqueteKg      Decimal? @db.Decimal(6, 2)
+  valorDeclarado     Decimal? @db.Decimal(10, 2)
+
+  metodoPago         MetodoPago
+  modoFacturacion    ModoFacturacion @default(POR_ENVIO)
+  costoEnvio         Decimal         @db.Decimal(10, 2)
+  montoContraEntrega Decimal?        @db.Decimal(10, 2)
+  // FK opcional a PaqueteRecargado — el modelo llega en Fase 4.
+  // Se declara como columna simple ahora; Fase 4 añade la @relation.
+  paqueteRecargadoId String?
+
+  repartidorRecogidaId String?
+  repartidorEntregaId  String?
+
+  programadoPara  DateTime?
+  recogidoEn      DateTime?
+  enIntercambioEn DateTime?
+  entregadoEn     DateTime?
+  canceladoEn     DateTime?
+  motivoCancelado String?
+  motivoFallo     String?
+
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  vendedor           PerfilVendedor    @relation(fields: [vendedorId], references: [id])
+  zonaOrigen         Zona?             @relation("PedidoZonaOrigen", fields: [zonaOrigenId], references: [id])
+  zonaDestino        Zona?             @relation("PedidoZonaDestino", fields: [zonaDestinoId], references: [id])
+  repartidorRecogida PerfilRepartidor? @relation("RepartidorRecogida", fields: [repartidorRecogidaId], references: [id])
+  repartidorEntrega  PerfilRepartidor? @relation("RepartidorEntrega", fields: [repartidorEntregaId], references: [id])
+  paqueteRecargado   PaqueteRecargado? @relation(fields: [paqueteRecargadoId], references: [id])
+
+  eventos                  EventoPedido[]
+  comprobantes             ComprobanteEntrega[]
+  cierresFinancierosPedido CierreFinancieroPedido[]
+
+  @@index([estado])
+  @@index([vendedorId, creadoEn])
+  @@index([repartidorRecogidaId])
+  @@index([repartidorEntregaId])
+  @@map("pedidos")
+}
+
+model EventoPedido {
+  id       String       @id @default(uuid())
+  pedidoId String
+  estado   EstadoPedido
+  actorId  String?
+  latitud  Float?
+  longitud Float?
+  notas    String?
+  creadoEn DateTime     @default(now())
+
+  pedido Pedido @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+
+  @@index([pedidoId, creadoEn])
+  @@map("eventos_pedido")
+}
+
+model ComprobanteEntrega {
+  id          String   @id @default(uuid())
+  pedidoId    String
+  urlFoto     String
+  urlFirma    String?
+  recibidoPor String?
+  notas       String?
+  latitud     Float?
+  longitud    Float?
+  creadoEn    DateTime @default(now())
+
+  pedido Pedido @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+
+  @@index([pedidoId])
+  @@map("comprobantes_entrega")
+}
+
+// ============================================================
+// PAQUETES PREPAGO Y TARIFAS — Fase 4
+// ============================================================
+
+model ReglaTarifa {
+  id              String          @id @default(uuid())
+  nombre          String
+  modoFacturacion ModoFacturacion
+  precioPorEnvio  Decimal?        @db.Decimal(10, 2)
+  tamanoPaquete   Int?
+  precioPaquete   Decimal?        @db.Decimal(10, 2)
+  activa          Boolean         @default(true)
+  validaDesde     DateTime        @default(now())
+  validaHasta     DateTime?
+  creadoEn        DateTime        @default(now())
+  actualizadoEn   DateTime        @updatedAt
+
+  paquetes PaqueteRecargado[]
+
+  @@index([modoFacturacion, activa])
+  @@map("reglas_tarifa")
+}
+
+model PaqueteRecargado {
+  id              String        @id @default(uuid())
+  vendedorId      String
+  reglaTarifaId   String
+  nombre          String
+  enviosTotales   Int
+  enviosRestantes Int
+  precio          Decimal       @db.Decimal(10, 2)
+  estado          EstadoPaquete @default(ACTIVO)
+  compradoEn      DateTime      @default(now())
+  expiraEn        DateTime?
+  creadoEn        DateTime      @default(now())
+  actualizadoEn   DateTime      @updatedAt
+
+  vendedor    PerfilVendedor @relation(fields: [vendedorId], references: [id])
+  reglaTarifa ReglaTarifa    @relation(fields: [reglaTarifaId], references: [id])
+  pedidos     Pedido[]
+
+  @@index([vendedorId, estado])
+  @@map("paquetes_recargados")
+}
+
+// ============================================================
+// CIERRE FINANCIERO DIARIO — Fase 5
+// ============================================================
+
+model CierreFinanciero {
+  id                 String                 @id @default(uuid())
+  repartidorId       String
+  fechaCierre        DateTime               @db.Date
+  montoEsperado      Decimal                @db.Decimal(12, 2)
+  montoReportado     Decimal                @db.Decimal(12, 2)
+  diferencia         Decimal                @db.Decimal(12, 2)
+  urlComprobanteFoto String
+  notas              String?
+  estado             EstadoCierreFinanciero @default(PENDIENTE_REVISION)
+  motivoRechazo      String?
+  revisadoPor        String?
+  revisadoEn         DateTime?
+  creadoEn           DateTime               @default(now())
+  actualizadoEn      DateTime               @updatedAt
+
+  repartidor PerfilRepartidor         @relation(fields: [repartidorId], references: [id])
+  pedidos    CierreFinancieroPedido[]
+
+  @@unique([repartidorId, fechaCierre])
+  @@index([fechaCierre, estado])
+  @@map("cierres_financieros")
+}
+
+model CierreFinancieroPedido {
+  cierreId String
+  pedidoId String
+  monto    Decimal @db.Decimal(10, 2)
+
+  cierre CierreFinanciero @relation(fields: [cierreId], references: [id], onDelete: Cascade)
+  pedido Pedido           @relation(fields: [pedidoId], references: [id])
+
+  @@id([cierreId, pedidoId])
+  @@map("cierres_financieros_pedidos")
+}
+
+// ============================================================
+// AUDITORÍA — Fase 5 (Tarea 5.7)
+// ============================================================
+
+model RegistroAuditoria {
+  id          String   @id @default(uuid())
+  usuarioId   String?
+  accion      String
+  tipoEntidad String
+  entidadId   String?
+  metadatos   Json?
+  creadoEn    DateTime @default(now())
+
+  usuario Usuario? @relation(fields: [usuarioId], references: [id])
+
+  @@index([tipoEntidad, entidadId])
+  @@index([usuarioId, creadoEn])
+  @@map("registros_auditoria")
+}
+
+// ============================================================
+// NOTIFICACIONES — Fase 6
+//
+// `usuarioId` es opcional para soportar destinatarios externos
+// (cliente final del pedido) que no tienen Usuario en el sistema.
+// En esos casos `destino` lleva el email o teléfono E.164.
+// ============================================================
+
+model Notificacion {
+  id            String             @id @default(uuid())
+  usuarioId     String?
+  canal         CanalNotificacion
+  estado        EstadoNotificacion @default(PENDIENTE)
+  titulo        String
+  cuerpo        String
+  datos         Json?
+  destino       String?
+  enviadoEn     DateTime?
+  leidoEn       DateTime?
+  mensajeError  String?
+  creadoEn      DateTime           @default(now())
+  actualizadoEn DateTime           @updatedAt
+
+  usuario Usuario? @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+
+  @@index([usuarioId, creadoEn])
+  @@index([estado])
+  @@map("notificaciones")
+}
+
+model TokenDispositivo {
+  id            String                @id @default(uuid())
+  usuarioId     String
+  token         String                @unique
+  plataforma    PlataformaDispositivo
+  activo        Boolean               @default(true)
+  creadoEn      DateTime              @default(now())
+  actualizadoEn DateTime              @updatedAt
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId, activo])
+  @@map("tokens_dispositivo")
 }

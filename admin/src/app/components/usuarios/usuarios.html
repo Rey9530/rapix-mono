@@ -1,0 +1,142 @@
+<div class="container-fluid">
+  <div class="page-title d-flex justify-content-between align-items-center mb-3">
+    <h3 class="m-0">Usuarios</h3>
+    <button class="btn btn-primary" (click)="abrirCrear()">+ Nuevo</button>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <input
+            class="form-control"
+            type="search"
+            placeholder="Buscar por nombre, correo o teléfono..."
+            (input)="alBuscar($any($event.target).value)"
+          />
+        </div>
+        <div class="col-md-3">
+          <select
+            class="form-select"
+            (change)="alCambiarRol($any($event.target).value)"
+          >
+            <option value="">Todos los roles</option>
+            @for (r of roles; track r) {
+              <option [value]="r">{{ r }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select
+            class="form-select"
+            (change)="alCambiarEstado($any($event.target).value)"
+          >
+            <option value="">Todos los estados</option>
+            @for (e of estados; track e) {
+              <option [value]="e">{{ e }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (mensajeError(); as err) {
+    <div class="alert alert-danger">{{ err }}</div>
+  }
+
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Teléfono</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (cargando()) {
+            <tr>
+              <td colspan="6" class="text-center p-4">
+                <div class="spinner-border text-primary"></div>
+              </td>
+            </tr>
+          } @else if (datos().length === 0) {
+            <tr>
+              <td colspan="6" class="text-center p-4 text-muted">
+                Sin resultados.
+              </td>
+            </tr>
+          } @else {
+            @for (u of datos(); track u.id) {
+              <tr>
+                <td>{{ u.nombreCompleto }}</td>
+                <td>{{ u.email }}</td>
+                <td>{{ u.telefono }}</td>
+                <td>
+                  <span class="badge bg-info">{{ u.rol }}</span>
+                </td>
+                <td>
+                  <span class="badge bg-{{ estadoColor(u.estado) }}">
+                    {{ u.estado }}
+                  </span>
+                </td>
+                <td class="text-end">
+                  <button
+                    class="btn btn-sm btn-outline-secondary me-1"
+                    (click)="abrirEditar(u)"
+                    title="Editar"
+                  >
+                    Editar
+                  </button>
+                  @if (u.estado === "ACTIVO") {
+                    <button
+                      class="btn btn-sm btn-outline-warning me-1"
+                      (click)="cambiarEstado(u, 'SUSPENDIDO')"
+                    >
+                      Suspender
+                    </button>
+                  } @else if (u.estado === "SUSPENDIDO") {
+                    <button
+                      class="btn btn-sm btn-outline-success me-1"
+                      (click)="cambiarEstado(u, 'ACTIVO')"
+                    >
+                      Reactivar
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  @if (totalPaginas() > 1) {
+    <nav class="mt-3">
+      <ul class="pagination">
+        <li class="page-item" [class.disabled]="filtros.pagina === 1">
+          <button class="page-link" (click)="irPagina((filtros.pagina ?? 1) - 1)">
+            ‹
+          </button>
+        </li>
+        <li class="page-item active">
+          <span class="page-link">{{ filtros.pagina }} / {{ totalPaginas() }}</span>
+        </li>
+        <li
+          class="page-item"
+          [class.disabled]="filtros.pagina === totalPaginas()"
+        >
+          <button class="page-link" (click)="irPagina((filtros.pagina ?? 1) + 1)">
+            ›
+          </button>
+        </li>
+      </ul>
+    </nav>
+  }
+</div>
