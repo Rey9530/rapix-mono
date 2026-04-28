@@ -8,8 +8,11 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../../comun/decoradores/roles.decorador.js';
 import { UsuarioActual } from '../../comun/decoradores/usuario-actual.decorador.js';
 import { RespuestaPaginada } from '../../comun/dto/respuesta-paginada.js';
@@ -17,10 +20,20 @@ import type { Usuario } from '../../generated/prisma/client.js';
 import { UsuarioPublicoDto } from '../autenticacion/dto/usuario-publico.dto.js';
 import { ActualizarEstadoUsuarioDto } from './dto/actualizar-estado-usuario.dto.js';
 import { ActualizarPerfilPropioDto } from './dto/actualizar-perfil-propio.dto.js';
+import { ActualizarPerfilVendedorDto } from './dto/actualizar-perfil-vendedor.dto.js';
 import { ActualizarUsuarioDto } from './dto/actualizar-usuario.dto.js';
 import { CrearUsuarioDto } from './dto/crear-usuario.dto.js';
 import { ListarUsuariosDto } from './dto/listar-usuarios.dto.js';
+import { UsuarioDetalleDto } from './dto/usuario-detalle.dto.js';
 import { UsuariosServicio } from './usuarios.servicio.js';
+
+interface ArchivoMultipart {
+  buffer: Buffer;
+  mimetype: string;
+  originalname: string;
+  size: number;
+  fieldname: string;
+}
 
 @ApiTags('Usuarios')
 @ApiBearerAuth('autenticacion-jwt')
@@ -42,6 +55,32 @@ export class UsuariosControlador {
     @Body() dto: ActualizarPerfilPropioDto,
   ): Promise<UsuarioPublicoDto> {
     return this.servicio.actualizarYo(usuario.id, dto);
+  }
+
+  @Roles('VENDEDOR')
+  @Patch('yo/perfil-vendedor')
+  @ApiConsumes('multipart/form-data', 'application/json')
+  @ApiOperation({
+    summary:
+      'Actualiza el perfil del negocio del VENDEDOR autenticado (multipart, campo logo opcional)',
+  })
+  @UseInterceptors(FileInterceptor('logo'))
+  actualizarPerfilVendedor(
+    @UsuarioActual() usuario: Usuario,
+    @Body() dto: ActualizarPerfilVendedorDto,
+    @UploadedFile() logo?: ArchivoMultipart,
+  ): Promise<UsuarioDetalleDto> {
+    return this.servicio.actualizarPerfilVendedor(
+      usuario,
+      dto,
+      logo
+        ? {
+            buffer: logo.buffer,
+            mimetype: logo.mimetype,
+            originalname: logo.originalname,
+          }
+        : undefined,
+    );
   }
 
   @Roles('ADMIN')
@@ -71,7 +110,10 @@ export class UsuariosControlador {
 
   @Roles('ADMIN')
   @Get(':id')
-  obtenerPorId(@Param('id', ParseUUIDPipe) id: string): Promise<UsuarioPublicoDto> {
+  @ApiOperation({
+    summary: 'Detalle del usuario incluyendo perfil del rol (ADMIN)',
+  })
+  obtenerPorId(@Param('id', ParseUUIDPipe) id: string): Promise<UsuarioDetalleDto> {
     return this.servicio.obtenerPorId(id);
   }
 

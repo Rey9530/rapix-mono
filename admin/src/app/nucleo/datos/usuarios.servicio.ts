@@ -5,7 +5,12 @@ import { Observable } from "rxjs";
 
 import { environment } from "../../../environments/environment";
 import { RespuestaPaginada } from "../modelos/respuesta-paginada.modelo";
-import { EstadoUsuario, RolUsuario, Usuario } from "../modelos/usuario.modelo";
+import {
+  EstadoUsuario,
+  RolUsuario,
+  Usuario,
+  UsuarioDetalle,
+} from "../modelos/usuario.modelo";
 
 export interface FiltrosUsuario {
   pagina?: number;
@@ -51,8 +56,8 @@ export class UsuariosServicio {
     return this.http.get<RespuestaPaginada<Usuario>>(this.base, { params });
   }
 
-  obtenerPorId(id: string): Observable<Usuario> {
-    return this.http.get<Usuario>(`${this.base}/${id}`);
+  obtenerPorId(id: string): Observable<UsuarioDetalle> {
+    return this.http.get<UsuarioDetalle>(`${this.base}/${id}`);
   }
 
   crear(payload: CrearUsuarioPayload): Observable<Usuario> {
@@ -66,8 +71,15 @@ export class UsuariosServicio {
     return this.http.patch<Usuario>(`${this.base}/${id}`, payload);
   }
 
-  cambiarEstado(id: string, estado: EstadoUsuario): Observable<Usuario> {
-    return this.http.patch<Usuario>(`${this.base}/${id}/estado`, { estado });
+  cambiarEstado(
+    id: string,
+    estado: EstadoUsuario,
+    motivo?: string,
+  ): Observable<Usuario> {
+    const cuerpo: { estado: EstadoUsuario; motivo?: string } = { estado };
+    const motivoLimpio = motivo?.trim();
+    if (motivoLimpio) cuerpo.motivo = motivoLimpio;
+    return this.http.patch<Usuario>(`${this.base}/${id}/estado`, cuerpo);
   }
 
   eliminar(id: string): Observable<void> {

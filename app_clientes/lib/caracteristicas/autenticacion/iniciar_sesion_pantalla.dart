@@ -36,7 +36,7 @@ class _IniciarSesionPantallaEstado
         );
     if (!mounted) return;
     if (ok) {
-      context.go('/');
+      context.go('/inicio');
     } else {
       final error = ref.read(autenticacionControladorProvider).error;
       if (error != null) {

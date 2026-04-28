@@ -1,0 +1,81 @@
+<div class="modal-header">
+  <h5 class="modal-title">Detalle de zona</h5>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Cerrar"
+    (click)="modal.dismiss()"
+  ></button>
+</div>
+
+<div class="modal-body">
+  @if (cargando()) {
+    <div class="text-center p-4">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  } @else if (mensajeError(); as err) {
+    <div class="alert alert-danger">{{ err }}</div>
+  } @else if (zona(); as z) {
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <span class="badge bg-info fs-6">{{ z.codigo }}</span>
+      <h4 class="m-0">{{ z.nombre }}</h4>
+      @if (z.activa) {
+        <span class="badge bg-success">Activa</span>
+      } @else {
+        <span class="badge bg-secondary">Inactiva</span>
+      }
+    </div>
+
+    @if (z.descripcion) {
+      <p class="text-muted">{{ z.descripcion }}</p>
+    }
+
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <small class="text-muted d-block">Latitud del centro</small>
+            <strong>{{ z.latitudCentro }}</strong>
+          </div>
+          <div class="col-md-6">
+            <small class="text-muted d-block">Longitud del centro</small>
+            <strong>{{ z.longitudCentro }}</strong>
+          </div>
+          <div class="col-md-6">
+            <small class="text-muted d-block">Vértices del polígono</small>
+            <strong>{{ z.poligono?.length ?? 0 }}</strong>
+          </div>
+          <div class="col-md-6">
+            <small class="text-muted d-block">Punto de intercambio</small>
+            <strong>{{ z.puntoIntercambioId || "—" }}</strong>
+          </div>
+          @if (z.creadoEn) {
+            <div class="col-md-6">
+              <small class="text-muted d-block">Creada</small>
+              <span>{{ z.creadoEn | date: "medium" }}</span>
+            </div>
+          }
+          @if (z.actualizadoEn) {
+            <div class="col-md-6">
+              <small class="text-muted d-block">Actualizada</small>
+              <span>{{ z.actualizadoEn | date: "medium" }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <h6 class="mb-2">Polígono</h6>
+    <app-editor-poligono
+      modo="lectura"
+      [puntos]="z.poligono ?? []"
+      [centroInicial]="{ lat: z.latitudCentro, lng: z.longitudCentro }"
+    ></app-editor-poligono>
+  }
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">
+    Cerrar
+  </button>
+</div>

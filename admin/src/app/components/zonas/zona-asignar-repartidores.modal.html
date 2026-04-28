@@ -1,0 +1,111 @@
+<div class="modal-header">
+  <h5 class="modal-title">
+    Asignar repartidores
+    @if (codigoZona) {
+      <small class="text-muted ms-2">— {{ codigoZona }}</small>
+    }
+  </h5>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Cerrar"
+    (click)="modal.dismiss()"
+  ></button>
+</div>
+
+<div class="modal-body">
+  @if (cargando()) {
+    <div class="text-center p-4">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  } @else if (mensajeError(); as err) {
+    <div class="alert alert-danger">{{ err }}</div>
+  } @else if (repartidores().length === 0) {
+    <div class="text-center p-4 text-muted">
+      No hay repartidores registrados.
+    </div>
+  } @else {
+    <p class="text-muted">
+      Marca los repartidores que cubrirán esta zona y, opcionalmente, indica
+      cuál es el primario.
+    </p>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th style="width: 40px"></th>
+            <th>Repartidor</th>
+            <th>Vehículo</th>
+            <th>Disponible</th>
+            <th class="text-center">Primario</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of repartidores(); track r.id) {
+            <tr>
+              <td>
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  [id]="'rep-' + r.id"
+                  [checked]="estaSeleccionado(r.id)"
+                  (change)="alAlternar(r.id, $event)"
+                />
+              </td>
+              <td>
+                <label class="form-check-label" [for]="'rep-' + r.id">
+                  <strong>{{ r.nombreCompleto }}</strong>
+                  <br />
+                  <small class="text-muted">{{ r.email }}</small>
+                </label>
+              </td>
+              <td>
+                {{ r.tipoVehiculo }}
+                @if (r.placa) {
+                  <small class="text-muted d-block">{{ r.placa }}</small>
+                }
+              </td>
+              <td>
+                @if (r.disponible) {
+                  <span class="badge bg-success">Sí</span>
+                } @else {
+                  <span class="badge bg-secondary">No</span>
+                }
+              </td>
+              <td class="text-center">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="primario"
+                  [checked]="primarioId === r.id"
+                  [disabled]="!estaSeleccionado(r.id)"
+                  (change)="alElegirPrimario(r.id)"
+                />
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+<div class="modal-footer">
+  <button
+    type="button"
+    class="btn btn-secondary"
+    [disabled]="enviando()"
+    (click)="modal.dismiss()"
+  >
+    Cancelar
+  </button>
+  <button
+    type="button"
+    class="btn btn-primary"
+    [disabled]="enviando() || cargando() || seleccionados.size === 0"
+    (click)="guardar()"
+  >
+    {{ enviando() ? "Guardando..." : "Guardar asignación" }}
+  </button>
+</div>

@@ -5,7 +5,7 @@ class Entorno {
   /// URL base del backend NestJS. En emulador Android usar 10.0.2.2.
   static const String urlApi = String.fromEnvironment(
     'API_URL',
-    defaultValue: 'http://10.0.2.2:3000/api/v1',
+    defaultValue: 'https://ltks7gct-3000.use2.devtunnels.ms/api/v1',
   );
 
   /// Token publico de Mapbox.

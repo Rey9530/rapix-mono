@@ -188,7 +188,7 @@ SMTP_SECURE=false
 SMTP_USER=
 SMTP_PASSWORD=
 SMTP_FROM_EMAIL=no-reply@delivery.com
-SMTP_FROM_NAME="Delivery System"
+SMTP_FROM_NAME="Rapix"
 
 # Firebase (FCM)
 FIREBASE_PROJECT_ID=
@@ -260,7 +260,7 @@ async function arrancar() {
 
   // Swagger
   const config = new DocumentBuilder()
-    .setTitle('Delivery System API')
+    .setTitle('Rapix API')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

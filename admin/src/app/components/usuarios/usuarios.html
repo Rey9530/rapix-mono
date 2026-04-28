@@ -1,6 +1,18 @@
 <div class="container-fluid">
   <div class="page-title d-flex justify-content-between align-items-center mb-3">
-    <h3 class="m-0">Usuarios</h3>
+    <div class="d-flex align-items-center gap-2">
+      <h3 class="m-0">Usuarios</h3>
+      @if (cantidadPendientes() > 0) {
+        <button
+          type="button"
+          class="btn btn-sm btn-warning"
+          (click)="filtrarPendientes()"
+          title="Ver solo usuarios pendientes de verificación"
+        >
+          {{ cantidadPendientes() }} pendiente(s) de verificación
+        </button>
+      }
+    </div>
     <button class="btn btn-primary" (click)="abrirCrear()">+ Nuevo</button>
   </div>
 
@@ -87,23 +99,52 @@
                 </td>
                 <td class="text-end">
                   <button
+                    class="btn btn-sm btn-outline-info me-1"
+                    (click)="abrirDetalle(u)"
+                    title="Ver detalle"
+                  >
+                    Ver
+                  </button>
+                  <button
                     class="btn btn-sm btn-outline-secondary me-1"
                     (click)="abrirEditar(u)"
                     title="Editar"
                   >
                     Editar
                   </button>
-                  @if (u.estado === "ACTIVO") {
+                  @if (u.estado === "PENDIENTE_VERIFICACION") {
+                    <button
+                      class="btn btn-sm btn-outline-success me-1"
+                      (click)="verificar(u)"
+                      title="Verificar y activar la cuenta"
+                    >
+                      Verificar
+                    </button>
+                    <button
+                      class="btn btn-sm btn-outline-danger me-1"
+                      (click)="rechazar(u)"
+                      title="Rechazar y desactivar la cuenta"
+                    >
+                      Rechazar
+                    </button>
+                  } @else if (u.estado === "ACTIVO") {
                     <button
                       class="btn btn-sm btn-outline-warning me-1"
-                      (click)="cambiarEstado(u, 'SUSPENDIDO')"
+                      (click)="suspender(u)"
                     >
                       Suspender
                     </button>
                   } @else if (u.estado === "SUSPENDIDO") {
                     <button
                       class="btn btn-sm btn-outline-success me-1"
-                      (click)="cambiarEstado(u, 'ACTIVO')"
+                      (click)="reactivar(u)"
+                    >
+                      Reactivar
+                    </button>
+                  } @else if (u.estado === "INACTIVO") {
+                    <button
+                      class="btn btn-sm btn-outline-success me-1"
+                      (click)="reactivar(u)"
                     >
                       Reactivar
                     </button>

@@ -108,7 +108,11 @@ export class AsignacionServicio {
     const pedido = await this.prisma.pedido.findUnique({ where: { id: pedidoId } });
     if (!pedido) throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
 
-    const ids = [dto.repartidorRecogidaId, dto.repartidorEntregaId].filter(Boolean) as string[];
+    const ids = [
+      ...new Set(
+        [dto.repartidorRecogidaId, dto.repartidorEntregaId].filter(Boolean) as string[],
+      ),
+    ];
     const existentes = await this.prisma.perfilRepartidor.findMany({
       where: { id: { in: ids } },
       select: { id: true },

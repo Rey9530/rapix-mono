@@ -298,6 +298,7 @@ model Pedido {
   descripcionPaquete String?
   pesoPaqueteKg      Decimal? @db.Decimal(6, 2)
   valorDeclarado     Decimal? @db.Decimal(10, 2)
+  urlFotoPaquete     String?
 
   metodoPago         MetodoPago
   modoFacturacion    ModoFacturacion @default(POR_ENVIO)

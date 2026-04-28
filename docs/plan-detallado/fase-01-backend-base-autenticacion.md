@@ -414,7 +414,7 @@ Se instala `@nestjs/swagger`, se configura `SwaggerModule.setup('docs', app, doc
 
 **Subtareas**
 1. `yarn add @nestjs/swagger`.
-2. En `main.ts`, construir `DocumentBuilder` con `.setTitle('Delivery System API').setVersion('1.0').addBearerAuth()`.
+2. En `main.ts`, construir `DocumentBuilder` con `.setTitle('Rapix API').setVersion('1.0').addBearerAuth()`.
 3. Anotar controladores con `@ApiTags('Autenticacion')`, `@ApiTags('Usuarios')`, etc.
 4. Anotar DTOs con `@ApiProperty({ description, example })`.
 5. En endpoints protegidos, añadir `@ApiBearerAuth()`.

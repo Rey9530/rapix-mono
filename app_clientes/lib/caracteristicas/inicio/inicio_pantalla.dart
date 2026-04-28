@@ -20,18 +20,6 @@ class InicioPantalla extends ConsumerWidget {
               usuario?.nombreCompleto ??
               'Inicio',
         ),
-        actions: [
-          IconButton(
-            tooltip: 'Cerrar sesion',
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await ref
-                  .read(autenticacionControladorProvider.notifier)
-                  .cerrarSesion();
-              if (context.mounted) context.go('/iniciar-sesion');
-            },
-          ),
-        ],
       ),
       body: SafeArea(
         child: ListView(
@@ -51,22 +39,10 @@ class InicioPantalla extends ConsumerWidget {
               alTocar: () => context.push('/pedidos/nuevo'),
             ),
             _Tile(
-              icono: Icons.list_alt_outlined,
-              titulo: 'Mis pedidos',
-              subtitulo: 'Listado y seguimiento',
-              alTocar: () => context.push('/pedidos'),
-            ),
-            _Tile(
               icono: Icons.shopping_bag_outlined,
               titulo: 'Comprar paquetes',
               subtitulo: 'Recarga envios prepagados',
               alTocar: () => context.push('/paquetes/tienda'),
-            ),
-            _Tile(
-              icono: Icons.inventory_2_outlined,
-              titulo: 'Mis paquetes',
-              subtitulo: 'Saldo y consumos',
-              alTocar: () => context.push('/paquetes'),
             ),
           ],
         ),

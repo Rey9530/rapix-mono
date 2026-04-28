@@ -3,4 +3,5 @@
 export const environment = {
   produccion: true,
   urlApi: "/api/v1",
+  tokenMapboxPublico: "",
 };

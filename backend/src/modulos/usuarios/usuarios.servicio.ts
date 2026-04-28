@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -9,13 +10,16 @@ import { RespuestaPaginada } from '../../comun/dto/respuesta-paginada.js';
 import { hashearContrasena } from '../../comun/utiles/contrasena.js';
 import type { EstadoUsuario, Prisma, Usuario } from '../../generated/prisma/client.js';
 import { PrismaServicio } from '../../prisma/prisma.servicio.js';
+import { ArchivosServicio } from '../archivos/archivos.servicio.js';
 import { UsuarioPublicoDto } from '../autenticacion/dto/usuario-publico.dto.js';
 import { RepartidoresServicio } from '../repartidores/repartidores.servicio.js';
 import { ActualizarEstadoUsuarioDto } from './dto/actualizar-estado-usuario.dto.js';
 import { ActualizarPerfilPropioDto } from './dto/actualizar-perfil-propio.dto.js';
+import { ActualizarPerfilVendedorDto } from './dto/actualizar-perfil-vendedor.dto.js';
 import { ActualizarUsuarioDto } from './dto/actualizar-usuario.dto.js';
 import { CrearUsuarioDto } from './dto/crear-usuario.dto.js';
 import { ListarUsuariosDto } from './dto/listar-usuarios.dto.js';
+import { UsuarioDetalleDto } from './dto/usuario-detalle.dto.js';
 
 const TRANSICIONES: Record<EstadoUsuario, EstadoUsuario[]> = {
   PENDIENTE_VERIFICACION: ['ACTIVO', 'INACTIVO'],
@@ -31,6 +35,7 @@ export class UsuariosServicio {
   constructor(
     private readonly prisma: PrismaServicio,
     private readonly repartidores: RepartidoresServicio,
+    private readonly archivos: ArchivosServicio,
   ) {}
 
   async listar(filtros: ListarUsuariosDto): Promise<RespuestaPaginada<UsuarioPublicoDto>> {
@@ -64,10 +69,21 @@ export class UsuariosServicio {
     );
   }
 
-  async obtenerPorId(id: string): Promise<UsuarioPublicoDto> {
-    const usuario = await this.prisma.usuario.findUnique({ where: { id } });
+  async obtenerPorId(id: string): Promise<UsuarioDetalleDto> {
+    const usuario = await this.prisma.usuario.findUnique({
+      where: { id },
+      include: {
+        perfilAdmin: true,
+        perfilVendedor: true,
+        perfilRepartidor: {
+          include: {
+            zonas: { include: { zona: true } },
+          },
+        },
+      },
+    });
     if (!usuario) throw new NotFoundException('Usuario no encontrado');
-    return UsuarioPublicoDto.desde(usuario);
+    return UsuarioDetalleDto.desdeDetalle(usuario);
   }
 
   obtenerYo(usuario: Usuario): UsuarioPublicoDto {
@@ -250,5 +266,52 @@ export class UsuariosServicio {
     }
 
     return UsuarioPublicoDto.desde(u);
+  }
+
+  async actualizarPerfilVendedor(
+    usuario: Usuario,
+    dto: ActualizarPerfilVendedorDto,
+    logo?: { buffer: Buffer; mimetype: string; originalname: string },
+  ): Promise<UsuarioDetalleDto> {
+    if (usuario.rol !== 'VENDEDOR') {
+      throw new ForbiddenException(
+        'Solo usuarios con rol VENDEDOR pueden actualizar el perfil de negocio',
+      );
+    }
+
+    const perfil = await this.prisma.perfilVendedor.findUnique({
+      where: { usuarioId: usuario.id },
+    });
+    if (!perfil) {
+      throw new NotFoundException(
+        'No existe perfil de vendedor para este usuario',
+      );
+    }
+
+    const data: Prisma.PerfilVendedorUpdateInput = {};
+    if (dto.nombreNegocio !== undefined) data.nombreNegocio = dto.nombreNegocio;
+    if (dto.rfc !== undefined) data.rfc = dto.rfc;
+    if (dto.direccion !== undefined) data.direccion = dto.direccion;
+    if (dto.latitud !== undefined) data.latitud = dto.latitud;
+    if (dto.longitud !== undefined) data.longitud = dto.longitud;
+
+    if (logo) {
+      const ext = logo.originalname.split('.').pop()?.toLowerCase() || 'jpg';
+      const key = ArchivosServicio.armarKeyLogoVendedor(usuario.id, ext);
+      const subido = await this.archivos.subir(logo.buffer, key, logo.mimetype);
+      data.urlLogo = subido.url;
+    }
+
+    if (Object.keys(data).length === 0) {
+      // Sin cambios — devolvemos el detalle actual.
+      return this.obtenerPorId(usuario.id);
+    }
+
+    await this.prisma.perfilVendedor.update({
+      where: { usuarioId: usuario.id },
+      data,
+    });
+
+    return this.obtenerPorId(usuario.id);
   }
 }

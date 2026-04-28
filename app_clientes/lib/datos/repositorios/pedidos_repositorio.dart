@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../nucleo/red/dio_cliente.dart';
 import '../modelos/pedido.dart';
@@ -12,13 +13,13 @@ class CrearPedidoEntrada {
     required this.latitudOrigen,
     required this.longitudOrigen,
     required this.direccionDestino,
-    required this.latitudDestino,
-    required this.longitudDestino,
+    required this.urlMapasDestino,
     required this.metodoPago,
     this.descripcionPaquete,
     this.montoContraEntrega,
     this.notasOrigen,
     this.notasDestino,
+    this.foto,
   });
 
   final String nombreCliente;
@@ -27,27 +28,26 @@ class CrearPedidoEntrada {
   final double latitudOrigen;
   final double longitudOrigen;
   final String direccionDestino;
-  final double latitudDestino;
-  final double longitudDestino;
+  final String urlMapasDestino;
   final String metodoPago;
   final String? descripcionPaquete;
   final double? montoContraEntrega;
   final String? notasOrigen;
   final String? notasDestino;
+  final XFile? foto;
 
-  Map<String, dynamic> aJson() => {
+  Map<String, dynamic> aCamposMultipart() => {
         'nombreCliente': nombreCliente,
         'telefonoCliente': telefonoCliente,
         'direccionOrigen': direccionOrigen,
-        'latitudOrigen': latitudOrigen,
-        'longitudOrigen': longitudOrigen,
+        'latitudOrigen': latitudOrigen.toString(),
+        'longitudOrigen': longitudOrigen.toString(),
         'direccionDestino': direccionDestino,
-        'latitudDestino': latitudDestino,
-        'longitudDestino': longitudDestino,
+        'urlMapasDestino': urlMapasDestino,
         'metodoPago': metodoPago,
         if (descripcionPaquete != null) 'descripcionPaquete': descripcionPaquete,
         if (montoContraEntrega != null)
-          'montoContraEntrega': montoContraEntrega,
+          'montoContraEntrega': montoContraEntrega.toString(),
         if (notasOrigen != null) 'notasOrigen': notasOrigen,
         if (notasDestino != null) 'notasDestino': notasDestino,
       };
@@ -73,9 +73,17 @@ class PedidosRepositorio {
   final Dio _dio;
 
   Future<Pedido> crear(CrearPedidoEntrada entrada) async {
+    final campos = entrada.aCamposMultipart();
+    if (entrada.foto != null) {
+      final foto = entrada.foto!;
+      campos['foto'] = await MultipartFile.fromFile(
+        foto.path,
+        filename: foto.name,
+      );
+    }
     final respuesta = await _dio.post<Map<String, dynamic>>(
       '/pedidos',
-      data: entrada.aJson(),
+      data: FormData.fromMap(campos),
     );
     return Pedido.desdeJson(respuesta.data!);
   }

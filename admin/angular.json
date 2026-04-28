@@ -28,7 +28,11 @@
               "leaflet",
               "dropzone",
               "masonry-layout",
-              "apexcharts"
+              "apexcharts",
+              "mapbox-gl",
+              "fast-deep-equal",
+              "@mapbox/geojson-normalize",
+              "@mapbox/geojson-area"
             ],
             "stylePreprocessorOptions": {
               "sass": {
@@ -67,7 +71,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
+                  "maximumWarning": "4mb",
                   "maximumError": "8mb"
                 },
                 {

@@ -71,6 +71,7 @@ class _SelectorUbicacionPantallaEstado extends State<SelectorUbicacionPantalla> 
             Entorno.latitudInicial,
           ),
         );
+    final paddingInferior = MediaQuery.viewPaddingOf(context).bottom;
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -96,7 +97,7 @@ class _SelectorUbicacionPantallaEstado extends State<SelectorUbicacionPantalla> 
         Positioned(
           left: 16,
           right: 16,
-          bottom: 24,
+          bottom: 24 + paddingInferior,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -135,50 +136,52 @@ class _SelectorUbicacionPantallaEstado extends State<SelectorUbicacionPantalla> 
     final lngCtrl = TextEditingController(
       text: _centroActual?.coordinates.lng.toString() ?? '',
     );
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Card(
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: Text(
-                'Mapbox no esta configurado. Ingresa las coordenadas manualmente '
-                'o establece MAPBOX_TOKEN al compilar.',
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Card(
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Text(
+                  'Mapbox no esta configurado. Ingresa las coordenadas manualmente '
+                  'o establece MAPBOX_TOKEN al compilar.',
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: latCtrl,
-            decoration: const InputDecoration(labelText: 'Latitud'),
-            keyboardType: const TextInputType.numberWithOptions(
-              signed: true,
-              decimal: true,
+            const SizedBox(height: 16),
+            TextField(
+              controller: latCtrl,
+              decoration: const InputDecoration(labelText: 'Latitud'),
+              keyboardType: const TextInputType.numberWithOptions(
+                signed: true,
+                decimal: true,
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: lngCtrl,
-            decoration: const InputDecoration(labelText: 'Longitud'),
-            keyboardType: const TextInputType.numberWithOptions(
-              signed: true,
-              decimal: true,
+            const SizedBox(height: 12),
+            TextField(
+              controller: lngCtrl,
+              decoration: const InputDecoration(labelText: 'Longitud'),
+              keyboardType: const TextInputType.numberWithOptions(
+                signed: true,
+                decimal: true,
+              ),
             ),
-          ),
-          const Spacer(),
-          FilledButton(
-            onPressed: () {
-              final lat = double.tryParse(latCtrl.text);
-              final lng = double.tryParse(lngCtrl.text);
-              if (lat != null && lng != null) {
-                context.pop(mb.Point(coordinates: mb.Position(lng, lat)));
-              }
-            },
-            child: const Text('Confirmar ubicacion'),
-          ),
-        ],
+            const Spacer(),
+            FilledButton(
+              onPressed: () {
+                final lat = double.tryParse(latCtrl.text);
+                final lng = double.tryParse(lngCtrl.text);
+                if (lat != null && lng != null) {
+                  context.pop(mb.Point(coordinates: mb.Position(lng, lat)));
+                }
+              },
+              child: const Text('Confirmar ubicacion'),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -269,7 +269,7 @@ Configurar ESLint + Prettier en backend y admin con la misma base (`@typescript-
 Tener un tablero donde cargar todas las tareas de este plan detallado, con columnas estándar y ownership claro.
 
 **Descripción detallada**
-Se elige una herramienta (GitHub Projects por defecto si no hay preferencia) y se crean: un proyecto `Delivery System MVP`, columnas (`Backlog`, `Ready`, `In Progress`, `In Review`, `Done`), etiquetas por prioridad (🔴P0, 🟠P1, 🟡P2) y por fase (`fase-0` … `fase-10`). Se cargan las tareas de este documento una-a-una con link al ID (ej. `Tarea 3.6`).
+Se elige una herramienta (GitHub Projects por defecto si no hay preferencia) y se crean: un proyecto `Rapix MVP`, columnas (`Backlog`, `Ready`, `In Progress`, `In Review`, `Done`), etiquetas por prioridad (🔴P0, 🟠P1, 🟡P2) y por fase (`fase-0` … `fase-10`). Se cargan las tareas de este documento una-a-una con link al ID (ej. `Tarea 3.6`).
 
 **Alcance**
 - **Incluye:**

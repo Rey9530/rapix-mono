@@ -5,6 +5,7 @@ import request from 'supertest';
 import { AppModule } from '../../src/app.module.js';
 import { PrismaServicio } from '../../src/prisma/prisma.servicio.js';
 import { ZonasServicio } from '../../src/modulos/zonas/zonas.servicio.js';
+import { GoogleMapsServicio } from '../../src/modulos/pedidos/google-maps.servicio.js';
 import { hashearContrasena } from '../../src/comun/utiles/contrasena.js';
 
 /**
@@ -101,7 +102,11 @@ async function login(app: INestApplication, email: string, contrasena = 'Secret1
   return r.body.tokenAcceso as string;
 }
 
+const coordenadasDestinoMock = { lat: 20.5, lng: 20.5 };
+
 async function crearPedidoValido(app: INestApplication, token: string, origen = [10.5, 10.5], destino = [20.5, 20.5]) {
+  coordenadasDestinoMock.lat = destino[0];
+  coordenadasDestinoMock.lng = destino[1];
   return request(app.getHttpServer())
     .post('/api/v1/pedidos')
     .set('Authorization', `Bearer ${token}`)
@@ -112,8 +117,7 @@ async function crearPedidoValido(app: INestApplication, token: string, origen = 
       latitudOrigen: origen[0],
       longitudOrigen: origen[1],
       direccionDestino: 'Destino',
-      latitudDestino: destino[0],
-      longitudDestino: destino[1],
+      urlMapasDestino: 'https://maps.app.goo.gl/test',
       metodoPago: 'PREPAGADO',
     });
 }
@@ -131,7 +135,15 @@ describe('Pedido (flujo completo, e2e)', () => {
   let rider2PerfilId: string;
 
   beforeAll(async () => {
-    const modulo = await Test.createTestingModule({ imports: [AppModule] }).compile();
+    const modulo = await Test.createTestingModule({ imports: [AppModule] })
+      .overrideProvider(GoogleMapsServicio)
+      .useValue({
+        resolverCoordenadas: async () => ({
+          lat: coordenadasDestinoMock.lat,
+          lng: coordenadasDestinoMock.lng,
+        }),
+      })
+      .compile();
     app = modulo.createNestApplication();
     app.setGlobalPrefix('api/v1');
     app.useGlobalPipes(

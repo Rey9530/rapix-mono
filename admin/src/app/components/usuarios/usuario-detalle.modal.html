@@ -1,0 +1,263 @@
+<div class="modal-header">
+  <h5 class="modal-title">Detalle del usuario</h5>
+  <button
+    type="button"
+    class="btn-close"
+    (click)="modal.dismiss()"
+    aria-label="Cerrar"
+  ></button>
+</div>
+
+<div class="modal-body">
+  @if (cargando()) {
+    <div class="text-center p-4">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  } @else if (mensajeError(); as err) {
+    <div class="alert alert-danger m-0">{{ err }}</div>
+  } @else if (detalle(); as u) {
+    <!-- Cabecera con avatar + nombre + badges -->
+    <div class="d-flex align-items-center mb-4 gap-3">
+      @if (u.urlAvatar) {
+        <img
+          [src]="u.urlAvatar"
+          [alt]="u.nombreCompleto"
+          class="rounded-circle border"
+          style="width: 96px; height: 96px; object-fit: cover"
+        />
+      } @else {
+        <div
+          class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold"
+          style="width: 96px; height: 96px; font-size: 2rem"
+          [title]="'Sin foto'"
+        >
+          {{ iniciales(u.nombreCompleto) }}
+        </div>
+      }
+      <div>
+        <h4 class="mb-1">{{ u.nombreCompleto }}</h4>
+        <div class="d-flex flex-wrap gap-1">
+          <span class="badge bg-info">{{ u.rol }}</span>
+          <span class="badge bg-{{ estadoColor(u.estado) }}">
+            {{ u.estado }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Datos comunes -->
+    <div class="card mb-3">
+      <div class="card-header fw-semibold">Datos de la cuenta</div>
+      <div class="card-body">
+        <dl class="row mb-0">
+          <dt class="col-sm-4">Correo</dt>
+          <dd class="col-sm-8">{{ u.email }}</dd>
+
+          <dt class="col-sm-4">Teléfono</dt>
+          <dd class="col-sm-8">{{ u.telefono }}</dd>
+
+          <dt class="col-sm-4">Último ingreso</dt>
+          <dd class="col-sm-8">
+            @if (u.ultimoIngresoEn) {
+              {{ u.ultimoIngresoEn | date: "dd/MM/yyyy HH:mm" }}
+            } @else {
+              <span class="text-muted">Nunca</span>
+            }
+          </dd>
+
+          <dt class="col-sm-4">Creado</dt>
+          <dd class="col-sm-8">
+            {{ u.creadoEn | date: "dd/MM/yyyy HH:mm" }}
+          </dd>
+
+          <dt class="col-sm-4">Actualizado</dt>
+          <dd class="col-sm-8 mb-0">
+            {{ u.actualizadoEn | date: "dd/MM/yyyy HH:mm" }}
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    @if (u.rol === "ADMIN" && u.perfilAdmin) {
+      <div class="card mb-3">
+        <div class="card-header fw-semibold">Perfil de administrador</div>
+        <div class="card-body">
+          <dt class="mb-2">Permisos</dt>
+          @if (u.perfilAdmin.permisos.length === 0) {
+            <div class="text-muted">Sin permisos asignados.</div>
+          } @else {
+            <div class="d-flex flex-wrap gap-1">
+              @for (p of u.perfilAdmin.permisos; track p) {
+                <span class="badge bg-secondary">{{ p }}</span>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- VENDEDOR -->
+    @if (u.rol === "VENDEDOR") {
+      @if (u.perfilVendedor; as v) {
+        <div class="card mb-3">
+          <div class="card-header fw-semibold">Perfil de vendedor</div>
+          <div class="card-body">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              @if (v.urlLogo) {
+                <img
+                  [src]="v.urlLogo"
+                  [alt]="v.nombreNegocio"
+                  class="border rounded"
+                  style="width: 80px; height: 80px; object-fit: cover"
+                />
+              } @else {
+                <div
+                  class="border rounded bg-light text-muted d-flex align-items-center justify-content-center"
+                  style="width: 80px; height: 80px; font-size: 0.8rem"
+                  title="Sin logo"
+                >
+                  Sin logo
+                </div>
+              }
+              <div>
+                <div class="fw-bold">{{ v.nombreNegocio }}</div>
+                @if (v.rfc) {
+                  <small class="text-muted">RFC: {{ v.rfc }}</small>
+                }
+              </div>
+            </div>
+            <dl class="row mb-0">
+              <dt class="col-sm-4">Dirección</dt>
+              <dd class="col-sm-8">{{ v.direccion }}</dd>
+
+              <dt class="col-sm-4">Coordenadas</dt>
+              <dd class="col-sm-8">
+                {{ v.latitud }}, {{ v.longitud }}
+              </dd>
+
+              <dt class="col-sm-4">Saldo recargado</dt>
+              <dd class="col-sm-8">{{ v.saldoRecargado }}</dd>
+
+              <dt class="col-sm-4">Límite de crédito</dt>
+              <dd class="col-sm-8 mb-0">{{ v.limiteCredito }}</dd>
+            </dl>
+          </div>
+        </div>
+      } @else {
+        <div class="alert alert-warning">
+          El usuario tiene rol VENDEDOR pero no tiene perfil de vendedor cargado.
+        </div>
+      }
+    }
+
+    <!-- REPARTIDOR -->
+    @if (u.rol === "REPARTIDOR") {
+      @if (u.perfilRepartidor; as r) {
+        <div class="card mb-3">
+          <div class="card-header fw-semibold">Perfil de repartidor</div>
+          <div class="card-body">
+            <dl class="row mb-3">
+              <dt class="col-sm-4">Tipo de vehículo</dt>
+              <dd class="col-sm-8">{{ r.tipoVehiculo }}</dd>
+
+              <dt class="col-sm-4">Placa</dt>
+              <dd class="col-sm-8">
+                @if (r.placa) {
+                  {{ r.placa }}
+                } @else {
+                  <span class="text-muted">Sin registrar</span>
+                }
+              </dd>
+
+              <dt class="col-sm-4">Documento</dt>
+              <dd class="col-sm-8">{{ r.documentoIdentidad }}</dd>
+
+              <dt class="col-sm-4">Teléfono emergencia</dt>
+              <dd class="col-sm-8">
+                @if (r.telefonoEmergencia) {
+                  {{ r.telefonoEmergencia }}
+                } @else {
+                  <span class="text-muted">No registrado</span>
+                }
+              </dd>
+
+              <dt class="col-sm-4">Disponibilidad</dt>
+              <dd class="col-sm-8">
+                <span
+                  class="badge bg-{{ r.disponible ? 'success' : 'secondary' }}"
+                >
+                  {{ r.disponible ? "Disponible" : "No disponible" }}
+                </span>
+              </dd>
+
+              <dt class="col-sm-4">Calificación</dt>
+              <dd class="col-sm-8">
+                {{ r.calificacion | number: "1.1-2" }} ★
+              </dd>
+
+              <dt class="col-sm-4">Entregas totales</dt>
+              <dd class="col-sm-8">{{ r.totalEntregas }}</dd>
+
+              <dt class="col-sm-4">Última ubicación</dt>
+              <dd class="col-sm-8 mb-0">
+                @if (
+                  r.latitudActual !== null &&
+                  r.latitudActual !== undefined &&
+                  r.longitudActual !== null &&
+                  r.longitudActual !== undefined
+                ) {
+                  {{ r.latitudActual }}, {{ r.longitudActual }}
+                  @if (r.ultimaUbicacionEn) {
+                    <small class="text-muted ms-1">
+                      ({{ r.ultimaUbicacionEn | date: "dd/MM/yyyy HH:mm" }})
+                    </small>
+                  }
+                } @else {
+                  <span class="text-muted">Sin ubicación</span>
+                }
+              </dd>
+            </dl>
+
+            <dt class="mb-2">Zonas asignadas</dt>
+            @if (r.zonas.length === 0) {
+              <div class="text-muted">Sin zonas asignadas.</div>
+            } @else {
+              <div class="d-flex flex-wrap gap-1">
+                @for (z of r.zonas; track z.zonaId) {
+                  <span
+                    class="badge bg-{{ z.esPrimaria ? 'primary' : 'secondary' }}"
+                    [title]="z.esPrimaria ? 'Zona primaria' : 'Zona secundaria'"
+                  >
+                    {{ z.codigo }} — {{ z.nombre }}
+                    @if (z.esPrimaria) {
+                      ★
+                    }
+                  </span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      } @else {
+        <div class="alert alert-warning">
+          El usuario tiene rol REPARTIDOR pero no tiene perfil de repartidor
+          cargado.
+        </div>
+      }
+    }
+
+    <!-- CLIENTE — sin perfil específico -->
+    @if (u.rol === "CLIENTE") {
+      <div class="alert alert-info mb-0">
+        Este usuario es cliente y no tiene un perfil especializado.
+      </div>
+    }
+  }
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="modal.close()">
+    Cerrar
+  </button>
+</div>

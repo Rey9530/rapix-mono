@@ -1,8 +1,8 @@
-# Sistema de Delivery - Documentación Técnica
+# Rapix - Documentación Técnica
 
 ## 📋 Descripción General
 
-Sistema integral de gestión de delivery (entrega a domicilio) diseñado para operar bajo un modelo de **recolección y redistribución por zonas geográficas**. El sistema coordina vendedores, riders (repartidores), administradores y clientes, optimizando rutas mediante Mapbox y gestionando pedidos, pagos y cierres financieros diarios.
+Rapix es una plataforma integral de gestión de delivery (entrega a domicilio) diseñada para operar bajo un modelo de **recolección y redistribución por zonas geográficas**. Coordina vendedores, riders (repartidores), administradores y clientes, optimizando rutas mediante Mapbox y gestionando pedidos, pagos y cierres financieros diarios.
 
 ## 🎯 Objetivo del Proyecto
 

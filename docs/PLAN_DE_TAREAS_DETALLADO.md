@@ -1,4 +1,4 @@
-# Plan de Tareas Detallado — Sistema de Delivery
+# Plan de Tareas Detallado — Rapix
 
 > Documento complementario de [`PLAN_DE_TAREAS.md`](./PLAN_DE_TAREAS.md). Mientras ese documento funciona como índice calendario (fase → tarea → prioridad → estimación), **este índice apunta a un archivo por fase** con el manual de ejecución detallado: cada tarea trae objetivo, alcance, subtareas, entregables, criterios de aceptación, dependencias y referencias cruzadas.
 

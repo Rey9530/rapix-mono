@@ -1,0 +1,118 @@
+<div class="modal-header">
+  <h5 class="modal-title">
+    {{ esEdicion ? "Editar zona" : "Nueva zona" }}
+  </h5>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Cerrar"
+    (click)="modal.dismiss()"
+  ></button>
+</div>
+
+<div class="modal-body">
+  @if (cargando) {
+    <div class="text-center p-4">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="guardar()">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Código *</label>
+          <input
+            class="form-control"
+            type="text"
+            formControlName="codigo"
+            maxlength="10"
+            placeholder="Ej: A, NORTE"
+          />
+          <small class="text-muted">Único, máx. 10 caracteres.</small>
+        </div>
+
+        <div class="col-md-9">
+          <label class="form-label">Nombre *</label>
+          <input
+            class="form-control"
+            type="text"
+            formControlName="nombre"
+            maxlength="80"
+            placeholder="Ej: Zona Norte"
+          />
+        </div>
+
+        <div class="col-12">
+          <label class="form-label">Descripción</label>
+          <textarea
+            class="form-control"
+            rows="2"
+            formControlName="descripcion"
+            maxlength="240"
+            placeholder="Descripción opcional"
+          ></textarea>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Latitud del centro *</label>
+          <input
+            class="form-control"
+            type="number"
+            step="0.000001"
+            formControlName="latitudCentro"
+          />
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Longitud del centro *</label>
+          <input
+            class="form-control"
+            type="number"
+            step="0.000001"
+            formControlName="longitudCentro"
+          />
+        </div>
+
+        <div class="col-12">
+          <label class="form-label">Polígono *</label>
+          <p class="text-muted small mb-2">
+            Usa los controles del mapa para dibujar el polígono (mínimo 3
+            puntos). El centro se autocompleta al dibujar.
+          </p>
+          <app-editor-poligono
+            modo="edicion"
+            [puntos]="puntos"
+            (puntosCambiaron)="alPoligonoCambiar($event)"
+          ></app-editor-poligono>
+          @if (!poligonoValido) {
+            <small class="text-warning">
+              Dibuja un polígono con al menos 3 puntos.
+            </small>
+          } @else {
+            <small class="text-success">
+              Polígono con {{ puntos.length }} vértices.
+            </small>
+          }
+        </div>
+      </div>
+    </form>
+  }
+</div>
+
+<div class="modal-footer">
+  <button
+    type="button"
+    class="btn btn-secondary"
+    [disabled]="enviando"
+    (click)="modal.dismiss()"
+  >
+    Cancelar
+  </button>
+  <button
+    type="button"
+    class="btn btn-primary"
+    [disabled]="enviando || form.invalid || !poligonoValido"
+    (click)="guardar()"
+  >
+    {{ enviando ? "Guardando..." : esEdicion ? "Actualizar" : "Crear" }}
+  </button>
+</div>

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   Logger,
@@ -50,26 +51,47 @@ export class AutenticacionServicio {
     });
     if (telefonoExiste) throw new ConflictException('El teléfono ya está registrado');
 
+    if (dto.rol === RolRegistrable.VENDEDOR) {
+      if (
+        !dto.nombreNegocio ||
+        !dto.direccion ||
+        dto.latitud === undefined ||
+        dto.longitud === undefined
+      ) {
+        throw new BadRequestException(
+          'Para rol VENDEDOR se requieren nombreNegocio, direccion, latitud y longitud',
+        );
+      }
+    }
+
     const hash = await hashearContrasena(dto.contrasena);
 
-    const usuario = await this.prisma.usuario.create({
-      data: {
-        email: dto.email,
-        telefono: dto.telefono,
-        hashContrasena: hash,
-        nombreCompleto: dto.nombreCompleto,
-        rol: dto.rol,
-        estado: 'PENDIENTE_VERIFICACION',
-      },
-    });
+    const usuario = await this.prisma.$transaction(async (tx) => {
+      const creado = await tx.usuario.create({
+        data: {
+          email: dto.email,
+          telefono: dto.telefono,
+          hashContrasena: hash,
+          nombreCompleto: dto.nombreCompleto,
+          rol: dto.rol,
+          estado: 'PENDIENTE_VERIFICACION',
+        },
+      });
 
-    if (dto.rol === RolRegistrable.VENDEDOR) {
-      // PerfilVendedor se implementa en Tarea 2.1; aceptamos los campos
-      // (nombreNegocio, direccion, latitud, longitud) sin persistirlos todavía.
-      this.logger.log(
-        `Usuario VENDEDOR ${usuario.id} creado; PerfilVendedor pendiente de Tarea 2.1`,
-      );
-    }
+      if (dto.rol === RolRegistrable.VENDEDOR) {
+        await tx.perfilVendedor.create({
+          data: {
+            usuarioId: creado.id,
+            nombreNegocio: dto.nombreNegocio!,
+            direccion: dto.direccion!,
+            latitud: dto.latitud!,
+            longitud: dto.longitud!,
+          },
+        });
+      }
+
+      return creado;
+    });
 
     return this.emitirPar(usuario, contexto);
   }
@@ -91,6 +113,7 @@ export class AutenticacionServicio {
     const actualizado = await this.prisma.usuario.update({
       where: { id: usuario.id },
       data: { ultimoIngresoEn: new Date() },
+      include: { perfilAdmin: true, perfilVendedor: true, perfilRepartidor: true },
     });
 
     return this.emitirPar(actualizado, contexto);
@@ -149,7 +172,7 @@ export class AutenticacionServicio {
   }
 
   private async emitirPar(
-    usuario: Usuario,
+    usuario: any,
     contexto: ContextoPeticion,
   ): Promise<RespuestaAutenticacionDto> {
     const tokenAcceso = await this.jwtService.signAsync(

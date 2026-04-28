@@ -13,7 +13,7 @@ export class UsuarioPublicoDto {
   telefono!: string;
 
   @ApiProperty()
-  nombreCompleto!: string;
+  nombreCompleto!: string; 
 
   @ApiProperty({ enum: ['ADMIN', 'VENDEDOR', 'REPARTIDOR', 'CLIENTE'] })
   rol!: RolUsuario;
@@ -33,7 +33,10 @@ export class UsuarioPublicoDto {
   @ApiProperty({ type: Date })
   actualizadoEn!: Date;
 
-  static desde(usuario: Usuario): UsuarioPublicoDto {
+  @ApiProperty({ nullable: true })
+  perfilVendedor?: any; // Se incluye para conveniencia, aunque idealmente habría un DTO específico para vendedores.
+
+  static desde(usuario: any): UsuarioPublicoDto {
     const dto = new UsuarioPublicoDto();
     dto.id = usuario.id;
     dto.email = usuario.email;
@@ -45,6 +48,7 @@ export class UsuarioPublicoDto {
     dto.ultimoIngresoEn = usuario.ultimoIngresoEn;
     dto.creadoEn = usuario.creadoEn;
     dto.actualizadoEn = usuario.actualizadoEn;
+    dto.perfilVendedor = usuario.perfilVendedor; 
     return dto;
   }
 }

@@ -61,17 +61,15 @@ export class CrearPedidoDto {
   @MaxLength(240)
   direccionDestino!: string;
 
-  @ApiProperty()
-  @Type(() => Number)
-  @IsNumber()
-  @IsLatitude()
-  latitudDestino!: number;
-
-  @ApiProperty()
-  @Type(() => Number)
-  @IsNumber()
-  @IsLongitude()
-  longitudDestino!: number;
+  @ApiProperty({
+    example: 'https://maps.app.goo.gl/r2UeA6ByeVdYvfH89',
+    description: 'URL corta de Google Maps del destino. El backend la expande y extrae lat/lng.',
+  })
+  @IsString()
+  @Matches(/^https:\/\/maps\.app\.goo\.gl\/[A-Za-z0-9_-]+\/?$/, {
+    message: 'urlMapasDestino debe ser una URL corta de Google Maps (maps.app.goo.gl)',
+  })
+  urlMapasDestino!: string;
 
   @ApiProperty({ required: false })
   @IsOptional()

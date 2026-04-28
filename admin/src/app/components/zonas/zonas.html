@@ -1,0 +1,124 @@
+<div class="container-fluid">
+  <div
+    class="page-title d-flex justify-content-between align-items-center mb-3"
+  >
+    <h3 class="m-0">Zonas</h3>
+    <button class="btn btn-primary" (click)="abrirCrear()">+ Nueva zona</button>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row g-3 align-items-center">
+        <div class="col-md-6">
+          <input
+            class="form-control"
+            type="search"
+            placeholder="Buscar por código, nombre o descripción..."
+            (input)="alBuscar($any($event.target).value)"
+          />
+        </div>
+        <div class="col-md-6 d-flex justify-content-md-end">
+          <div class="form-check form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="incluirInactivas"
+              [checked]="incluirInactivas()"
+              (change)="alAlternarInactivas($any($event.target).checked)"
+            />
+            <label class="form-check-label" for="incluirInactivas">
+              Incluir inactivas
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (mensajeError(); as err) {
+    <div class="alert alert-danger">{{ err }}</div>
+  }
+
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Centro (lat, lng)</th>
+            <th>Estado</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (cargando()) {
+            <tr>
+              <td colspan="6" class="text-center p-4">
+                <div class="spinner-border text-primary"></div>
+              </td>
+            </tr>
+          } @else if (datosFiltrados().length === 0) {
+            <tr>
+              <td colspan="6" class="text-center p-4 text-muted">
+                Sin resultados.
+              </td>
+            </tr>
+          } @else {
+            @for (z of datosFiltrados(); track z.id) {
+              <tr>
+                <td>
+                  <span class="badge bg-info">{{ z.codigo }}</span>
+                </td>
+                <td>{{ z.nombre }}</td>
+                <td class="text-muted text-truncate descripcion-celda">
+                  {{ z.descripcion || "—" }}
+                </td>
+                <td>{{ formatearCentro(z) }}</td>
+                <td>
+                  @if (z.activa) {
+                    <span class="badge bg-success">Activa</span>
+                  } @else {
+                    <span class="badge bg-secondary">Inactiva</span>
+                  }
+                </td>
+                <td class="text-end">
+                  <button
+                    class="btn btn-sm btn-outline-info me-1"
+                    (click)="abrirDetalle(z)"
+                    title="Ver detalle"
+                  >
+                    Ver
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-secondary me-1"
+                    (click)="abrirEditar(z)"
+                    title="Editar"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-primary me-1"
+                    (click)="abrirAsignarRepartidores(z)"
+                    title="Asignar repartidores"
+                  >
+                    Repartidores
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-danger"
+                    (click)="eliminar(z)"
+                    [disabled]="!z.activa"
+                    title="Desactivar"
+                  >
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

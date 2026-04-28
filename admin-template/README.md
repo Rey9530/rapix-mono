@@ -2,7 +2,7 @@
 
 > **Propósito de este documento**: servir como mapa del proyecto para agentes de IA (Claude Code) y desarrolladores. Cuando se necesite un componente reutilizable (modales, tablas, tarjetas, formularios, gráficos, etc.), este archivo indica la ruta exacta donde está implementado en la plantilla, para copiarlo/reutilizarlo en el proyecto `admin/` hermano.
 >
-> **Relación con `admin/`**: Este directorio contiene la plantilla Cuba Angular original con todos los componentes de ejemplo. El proyecto `F:\delivery-system-docs\admin/` es la aplicación real del sistema de delivery y hereda la misma estructura. Cuando se deba implementar una funcionalidad nueva en `admin/` (por ejemplo, un listado con modales), se debe:
+> **Relación con `admin/`**: Este directorio contiene la plantilla Cuba Angular original con todos los componentes de ejemplo. El proyecto `F:\delivery-system-docs\admin/` es la aplicación real de Rapix y hereda la misma estructura. Cuando se deba implementar una funcionalidad nueva en `admin/` (por ejemplo, un listado con modales), se debe:
 > 1. Localizar el componente en `admin-template/` usando este mapa.
 > 2. Copiar o adaptar la implementación al proyecto `admin/`.
 > 3. Traducir identificadores, textos y rutas al español siguiendo el glosario maestro del `CLAUDE.md` raíz.
@@ -280,7 +280,7 @@ Ruta base: `/dashboard/*` (ver `dashboard.routes.ts`).
 | `/dashboard/analytics` | `analytics/` | `Analytics` |
 | `/dashboard/hr` | `hr/` | `Hr` |
 | `/dashboard/projects` | `projects/` | `Projects` |
-| `/dashboard/logistics` | `logistics/` | `Logistics` **← referencia para el dashboard del sistema de delivery**. |
+| `/dashboard/logistics` | `logistics/` | `Logistics` **← referencia para el dashboard de Rapix**. |
 
 ### 5.2. Autenticación (demos) — `components/authentication/`
 
@@ -305,7 +305,7 @@ Variantes: `login-simple`, `login-bg-image`, `login-bg-image-two`, `login-bg-ima
 | `/order/list` | (raíz) | `Orders` |
 | `/order/:id` | `order-details/` | `OrderDetails` |
 
-Widgets: `widgets/billing-details/`, `widgets/customer-details/`, `widgets/order-filter/`. **Plantilla natural para la feature de Pedidos del sistema de delivery** (`PedidoControlador` del backend).
+Widgets: `widgets/billing-details/`, `widgets/customer-details/`, `widgets/order-filter/`. **Plantilla natural para la feature de Pedidos de Rapix** (`PedidoControlador` del backend).
 
 ### 5.5. Productos — `components/product/`
 
@@ -334,7 +334,7 @@ Componente `Category` (`category.ts`) es el mejor ejemplo del **patrón completo
 ### 5.10. Mapas — `components/maps/`
 
 - `google-map/` (Google Maps Angular).
-- `leaflet-map/` (Leaflet + bluehalo). **Plantilla para las vistas geográficas de zonas/rutas del sistema de delivery** (integración con Mapbox).
+- `leaflet-map/` (Leaflet + bluehalo). **Plantilla para las vistas geográficas de zonas/rutas de Rapix** (integración con Mapbox).
 
 ### 5.11. Mensajería y comunicación
 
@@ -457,7 +457,7 @@ Cuando necesites implementar una feature nueva (ejemplo: "Gestión de Zonas" con
 
 ## 8. Notas importantes
 
-- **No modificar `admin-template/` desde trabajos del sistema de delivery**: este directorio debe quedar como plantilla de referencia intacta. Todo cambio real va a `admin/`.
+- **No modificar `admin-template/` desde trabajos de Rapix**: este directorio debe quedar como plantilla de referencia intacta. Todo cambio real va a `admin/`.
 - **Versiones críticas**: Angular 21 + `@ng-bootstrap/ng-bootstrap` 20 + `bootstrap` 5.3. Respetar estas versiones al copiar snippets.
 - **Assets (`public/assets/`)**: incluye SCSS maestro, imágenes, i18n y SVG del tema. Si un componente copiado se ve roto, probablemente falte copiar el asset correspondiente.
 - **Standalone components**: al copiar un componente al proyecto `admin/`, recordar revisar y completar los `imports:` del `@Component` — son explícitos (no hay NgModule que los provea).

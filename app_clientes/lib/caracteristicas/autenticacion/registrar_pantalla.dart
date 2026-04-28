@@ -38,7 +38,7 @@ class _RegistrarPantallaEstado extends ConsumerState<RegistrarPantalla> {
     final resultado = await context.push<mb.Point>(
       '/seleccionar-ubicacion',
       extra: {
-        'titulo': 'Ubicacion de la tienda',
+        'titulo': 'Ubicacion de la tienda --',
         'inicial': _ubicacionTienda,
       },
     );
@@ -69,12 +69,13 @@ class _RegistrarPantallaEstado extends ConsumerState<RegistrarPantalla> {
         );
     if (!mounted) return;
     if (ok) {
-      context.go('/');
+      context.go('/inicio');
     } else {
       final error = ref.read(autenticacionControladorProvider).error;
       if (error != null) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(error)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(error)));
       }
     }
   }

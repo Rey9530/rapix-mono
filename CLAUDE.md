@@ -1,4 +1,4 @@
-# Sistema de Delivery
+# Rapix
 
 Plataforma de delivery con recolección y redistribución por zonas. Coordina vendedores, repartidores, administradores y clientes.
 

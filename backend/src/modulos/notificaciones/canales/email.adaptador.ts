@@ -42,7 +42,7 @@ export class EmailAdaptador implements CanalAdaptador, OnModuleInit {
     if (!destino) throw new Error('EMAIL_SIN_DESTINO');
 
     const fromEmail = process.env.SMTP_FROM_EMAIL ?? 'no-reply@delivery.com';
-    const fromName = process.env.SMTP_FROM_NAME ?? 'Delivery System';
+    const fromName = process.env.SMTP_FROM_NAME ?? 'Rapix';
 
     await this.transportador.sendMail({
       from: `"${fromName}" <${fromEmail}>`,
@@ -62,7 +62,7 @@ export class EmailAdaptador implements CanalAdaptador, OnModuleInit {
       <h1 style="font-size:20px;margin:0 0 16px;color:#222;">${escaparHtml(titulo)}</h1>
       <p style="font-size:15px;line-height:1.5;color:#333;margin:0;">${cuerpoHtml}</p>
       <hr style="border:none;border-top:1px solid #eee;margin:24px 0;"/>
-      <p style="font-size:12px;color:#999;margin:0;">Delivery System — notificación automática</p>
+      <p style="font-size:12px;color:#999;margin:0;">Rapix — notificación automática</p>
     </div>
   </body>
 </html>`;

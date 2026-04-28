@@ -37,7 +37,7 @@ export const esquemaValidacionEnv = Joi.object({
   SMTP_USER: Joi.string().optional().allow(''),
   SMTP_PASSWORD: Joi.string().optional().allow(''),
   SMTP_FROM_EMAIL: Joi.string().email().default('no-reply@delivery.com'),
-  SMTP_FROM_NAME: Joi.string().default('Delivery System'),
+  SMTP_FROM_NAME: Joi.string().default('Rapix'),
   FIREBASE_PROJECT_ID: Joi.string().optional().allow(''),
   FIREBASE_PRIVATE_KEY: Joi.string().optional().allow(''),
   FIREBASE_CLIENT_EMAIL: Joi.string().optional().allow(''),

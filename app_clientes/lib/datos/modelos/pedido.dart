@@ -1,3 +1,5 @@
+import '../../nucleo/util/parseo_json.dart';
+
 class Pedido {
   Pedido({
     required this.id,
@@ -14,6 +16,7 @@ class Pedido {
     required this.metodoPago,
     required this.creadoEn,
     this.descripcionPaquete,
+    this.urlFotoPaquete,
     this.montoContraEntrega,
     this.tarifaTotal,
     this.repartidorRecogida,
@@ -36,6 +39,7 @@ class Pedido {
   final String metodoPago;
   final DateTime creadoEn;
   final String? descripcionPaquete;
+  final String? urlFotoPaquete;
   final double? montoContraEntrega;
   final double? tarifaTotal;
   final RepartidorAsignado? repartidorRecogida;
@@ -51,17 +55,18 @@ class Pedido {
       nombreCliente: json['nombreCliente'] as String? ?? '',
       telefonoCliente: json['telefonoCliente'] as String? ?? '',
       direccionOrigen: json['direccionOrigen'] as String? ?? '',
-      latitudOrigen: (json['latitudOrigen'] as num?)?.toDouble() ?? 0,
-      longitudOrigen: (json['longitudOrigen'] as num?)?.toDouble() ?? 0,
+      latitudOrigen: parseDoubleSeguroODefault(json['latitudOrigen']),
+      longitudOrigen: parseDoubleSeguroODefault(json['longitudOrigen']),
       direccionDestino: json['direccionDestino'] as String? ?? '',
-      latitudDestino: (json['latitudDestino'] as num?)?.toDouble() ?? 0,
-      longitudDestino: (json['longitudDestino'] as num?)?.toDouble() ?? 0,
+      latitudDestino: parseDoubleSeguroODefault(json['latitudDestino']),
+      longitudDestino: parseDoubleSeguroODefault(json['longitudDestino']),
       metodoPago: json['metodoPago'] as String? ?? 'CONTRA_ENTREGA',
       creadoEn: DateTime.tryParse(json['creadoEn'] as String? ?? '') ??
           DateTime.now(),
       descripcionPaquete: json['descripcionPaquete'] as String?,
-      montoContraEntrega: (json['montoContraEntrega'] as num?)?.toDouble(),
-      tarifaTotal: (json['tarifaTotal'] as num?)?.toDouble(),
+      urlFotoPaquete: json['urlFotoPaquete'] as String?,
+      montoContraEntrega: parseDoubleSeguro(json['montoContraEntrega']),
+      tarifaTotal: parseDoubleSeguro(json['tarifaTotal'] ?? json['costoEnvio']),
       repartidorRecogida: _repartidor(json['repartidorRecogida']),
       repartidorEntrega: _repartidor(json['repartidorEntrega']),
       eventos: (json['eventos'] as List?)
@@ -104,8 +109,8 @@ class RepartidorAsignado {
       id: (json['id'] ?? usuario['id']) as String,
       nombreCompleto: usuario['nombreCompleto'] as String? ?? '',
       telefono: usuario['telefono'] as String?,
-      latitud: (ubicacion?['latitud'] as num?)?.toDouble(),
-      longitud: (ubicacion?['longitud'] as num?)?.toDouble(),
+      latitud: parseDoubleSeguro(ubicacion?['latitud']),
+      longitud: parseDoubleSeguro(ubicacion?['longitud']),
     );
   }
 }
@@ -126,12 +131,13 @@ class EventoPedido {
   final String? notas;
 
   factory EventoPedido.desdeJson(Map<String, dynamic> json) {
+    final estado = json['estado'] as String?;
     return EventoPedido(
       id: json['id'] as String,
-      tipo: json['tipo'] as String,
+      tipo: (json['tipo'] as String?) ?? estado ?? '',
       creadoEn: DateTime.tryParse(json['creadoEn'] as String? ?? '') ??
           DateTime.now(),
-      estadoNuevo: json['estadoNuevo'] as String?,
+      estadoNuevo: (json['estadoNuevo'] as String?) ?? estado,
       notas: json['notas'] as String?,
     );
   }

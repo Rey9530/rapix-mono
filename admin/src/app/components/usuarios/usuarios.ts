@@ -1,11 +1,12 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit, inject, signal } from "@angular/core";
+import { Component, OnInit, computed, inject, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { ToastrService } from "ngx-toastr";
 import { Subject, debounceTime } from "rxjs";
 
+import { UsuarioDetalleModal } from "./usuario-detalle.modal";
 import { UsuarioFormularioModal } from "./usuario-formulario.modal";
 import {
   FiltrosUsuario,
@@ -33,6 +34,9 @@ export class Usuarios implements OnInit {
   readonly total = signal(0);
   readonly totalPaginas = signal(0);
   readonly mensajeError = signal<string | null>(null);
+  readonly cantidadPendientes = computed(
+    () => this.datos().filter((u) => u.estado === "PENDIENTE_VERIFICACION").length,
+  );
 
   readonly roles: RolUsuario[] = ["ADMIN", "VENDEDOR", "REPARTIDOR", "CLIENTE"];
   readonly estados: EstadoUsuario[] = [
@@ -125,15 +129,21 @@ export class Usuarios implements OnInit {
     });
   }
 
-  cambiarEstado(usuario: Usuario, estado: EstadoUsuario): void {
-    if (
-      !confirm(
-        `¿Cambiar a ${usuario.nombreCompleto} de ${usuario.estado} → ${estado}?`,
-      )
-    ) {
-      return;
-    }
-    this.servicio.cambiarEstado(usuario.id, estado).subscribe({
+  abrirDetalle(usuario: Usuario): void {
+    const ref = this.modal.open(UsuarioDetalleModal, {
+      size: "lg",
+      centered: true,
+      scrollable: true,
+    });
+    ref.componentInstance.usuarioId = usuario.id;
+  }
+
+  cambiarEstado(
+    usuario: Usuario,
+    estado: EstadoUsuario,
+    motivo?: string,
+  ): void {
+    this.servicio.cambiarEstado(usuario.id, estado, motivo).subscribe({
       next: () => {
         this.toast.success(`Estado actualizado a ${estado}`);
         this.recargar();
@@ -141,6 +151,45 @@ export class Usuarios implements OnInit {
       error: (e) =>
         this.toast.error(e?.error?.mensaje ?? "No se pudo cambiar el estado"),
     });
+  }
+
+  verificar(usuario: Usuario): void {
+    if (!confirm(`¿Verificar a ${usuario.nombreCompleto} y activar su cuenta?`)) {
+      return;
+    }
+    this.cambiarEstado(usuario, "ACTIVO");
+  }
+
+  rechazar(usuario: Usuario): void {
+    const motivo = prompt(
+      `Rechazar a ${usuario.nombreCompleto}. Motivo (opcional, máx. 240 caracteres):`,
+      "",
+    );
+    if (motivo === null) return;
+    this.cambiarEstado(usuario, "INACTIVO", motivo);
+  }
+
+  suspender(usuario: Usuario): void {
+    const motivo = prompt(
+      `Suspender a ${usuario.nombreCompleto}. Motivo (opcional, máx. 240 caracteres):`,
+      "",
+    );
+    if (motivo === null) return;
+    this.cambiarEstado(usuario, "SUSPENDIDO", motivo);
+  }
+
+  reactivar(usuario: Usuario): void {
+    if (!confirm(`¿Reactivar a ${usuario.nombreCompleto}?`)) return;
+    this.cambiarEstado(usuario, "ACTIVO");
+  }
+
+  filtrarPendientes(): void {
+    this.filtros = {
+      ...this.filtros,
+      estado: "PENDIENTE_VERIFICACION",
+      pagina: 1,
+    };
+    this.recargar();
   }
 
   estadoColor(estado: EstadoUsuario): string {

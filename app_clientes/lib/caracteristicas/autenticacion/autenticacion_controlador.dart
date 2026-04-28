@@ -119,6 +119,11 @@ class AutenticacionControlador extends StateNotifier<AutenticacionEstado> {
     }
   }
 
+  Future<void> actualizarUsuario(Usuario usuario) async {
+    await almacen.guardarUsuario(usuario.aJsonString());
+    state = state.copia(usuario: usuario);
+  }
+
   Future<void> cerrarSesion() async {
     final tokenRefresco = await almacen.tokenRefresco();
     if (tokenRefresco != null) {

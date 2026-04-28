@@ -3,13 +3,13 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 export function configurarSwagger(app: INestApplication): void {
   const config = new DocumentBuilder()
-    .setTitle('Delivery System API')
+    .setTitle('Rapix API')
     .setDescription(
-      'API REST del sistema de delivery — autenticación JWT, gestión de pedidos, ' +
+      'API REST de Rapix — autenticación JWT, gestión de pedidos, ' +
         'zonas (PostGIS), repartidores, paquetes recargados, cierres financieros y notificaciones.',
     )
     .setVersion('1.0.0')
-    .setContact('Equipo Delivery', '', 'soporte@delivery.com')
+    .setContact('Equipo Rapix', '', 'soporte@delivery.com')
     .addServer(`http://localhost:${process.env.PORT ?? 3000}`, 'Desarrollo local')
     .addBearerAuth(
       {
@@ -40,6 +40,6 @@ export function configurarSwagger(app: INestApplication): void {
       tagsSorter: 'alpha',
       operationsSorter: 'alpha',
     },
-    customSiteTitle: 'Delivery System API — Docs',
+    customSiteTitle: 'Rapix API — Docs',
   });
 }

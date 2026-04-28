@@ -18,6 +18,12 @@ export const content: Routes = [
       ),
   },
   {
+    path: "zonas",
+    data: { title: "Zonas", breadcrumb: "Zonas" },
+    loadChildren: () =>
+      import("../../components/zonas/zonas.routes").then((r) => r.zonasRoutes),
+  },
+  {
     path: "pedidos",
     data: { title: "Pedidos", breadcrumb: "Pedidos" },
     loadChildren: () =>

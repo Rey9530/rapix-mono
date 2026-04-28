@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import '../../nucleo/util/parseo_json.dart';
+
 class Usuario {
   Usuario({
     required this.id,
@@ -54,27 +56,35 @@ class Usuario {
 class PerfilVendedor {
   PerfilVendedor({
     this.nombreNegocio,
+    this.rfc,
     this.direccion,
     this.latitud,
     this.longitud,
+    this.urlLogo,
   });
 
   final String? nombreNegocio;
+  final String? rfc;
   final String? direccion;
   final double? latitud;
   final double? longitud;
+  final String? urlLogo;
 
   factory PerfilVendedor.desdeJson(Map<String, dynamic> json) => PerfilVendedor(
         nombreNegocio: json['nombreNegocio'] as String?,
+        rfc: json['rfc'] as String?,
         direccion: json['direccion'] as String?,
-        latitud: (json['latitud'] as num?)?.toDouble(),
-        longitud: (json['longitud'] as num?)?.toDouble(),
+        latitud: parseDoubleSeguro(json['latitud']),
+        longitud: parseDoubleSeguro(json['longitud']),
+        urlLogo: json['urlLogo'] as String?,
       );
 
   Map<String, dynamic> aJson() => {
         'nombreNegocio': nombreNegocio,
+        'rfc': rfc,
         'direccion': direccion,
         'latitud': latitud,
         'longitud': longitud,
+        'urlLogo': urlLogo,
       };
 }

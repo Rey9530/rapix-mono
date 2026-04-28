@@ -110,4 +110,12 @@ export class ArchivosServicio implements OnModuleInit {
   static armarKeyCierre(repartidorId: string, fechaIso: string, ext = 'jpg'): string {
     return `cierres/${repartidorId}/${fechaIso}/comprobante-${Date.now()}.${ext}`;
   }
+
+  static armarKeyPaquete(pedidoId: string, ext = 'jpg'): string {
+    return `pedidos/${pedidoId}/paquete/${Date.now()}.${ext}`;
+  }
+
+  static armarKeyLogoVendedor(usuarioId: string, ext = 'jpg'): string {
+    return `vendedores/${usuarioId}/logo-${Date.now()}.${ext}`;
+  }
 }

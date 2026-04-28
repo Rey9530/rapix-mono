@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,6 +7,24 @@ import 'package:intl/intl.dart';
 import '../../datos/modelos/paquete_recargado.dart';
 import 'paquetes_controlador.dart';
 import 'saldo_widget.dart';
+
+String _mensajeError(Object error) {
+  if (error is DioException) {
+    final datos = error.response?.data;
+    if (datos is Map) {
+      final mensaje = datos['mensaje'] ?? datos['message'];
+      final codigo = datos['codigo'] ?? datos['code'];
+      if (mensaje is String && mensaje.isNotEmpty) {
+        return codigo is String ? '$mensaje ($codigo)' : mensaje;
+      }
+      if (codigo is String) return codigo;
+    }
+    final estado = error.response?.statusCode;
+    if (estado != null) return 'Error $estado al cargar tus paquetes';
+    return 'No se pudo conectar con el servidor';
+  }
+  return error.toString();
+}
 
 class MisPaquetesPantalla extends ConsumerWidget {
   const MisPaquetesPantalla({super.key});
@@ -30,7 +49,22 @@ class MisPaquetesPantalla extends ConsumerWidget {
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => ListView(
             padding: const EdgeInsets.all(24),
-            children: [Text('Error: $e')],
+            children: [
+              const Icon(Icons.error_outline, color: Colors.red, size: 48),
+              const SizedBox(height: 12),
+              Text(
+                _mensajeError(e),
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.red),
+              ),
+              const SizedBox(height: 12),
+              Center(
+                child: TextButton(
+                  onPressed: () => ref.invalidate(misPaquetesProvider),
+                  child: const Text('Reintentar'),
+                ),
+              ),
+            ],
           ),
           data: (lista) => ListView(
             padding: const EdgeInsets.all(16),
@@ -85,7 +119,7 @@ class _PaqueteTarjeta extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    paquete.reglaTarifa?.nombre ?? 'Paquete',
+                    paquete.nombre,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
@@ -124,7 +158,7 @@ class _PaqueteTarjeta extends StatelessWidget {
               spacing: 12,
               runSpacing: 4,
               children: [
-                Text('Pagado: ${formatoMoneda.format(paquete.precioPagado)}'),
+                Text('Pagado: ${formatoMoneda.format(paquete.precio)}'),
                 Text('Comprado: ${formatoFecha.format(paquete.compradoEn)}'),
                 if (paquete.expiraEn != null)
                   Text('Expira: ${formatoFecha.format(paquete.expiraEn!)}'),

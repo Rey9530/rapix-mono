@@ -10,10 +10,11 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiConsumes,
@@ -85,9 +86,23 @@ export class PedidosControlador {
   @Roles('VENDEDOR')
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Crear pedido (VENDEDOR)' })
-  crear(@UsuarioActual() usuario: Usuario, @Body() dto: CrearPedidoDto) {
-    return this.servicio.crear(usuario, dto);
+  @ApiConsumes('multipart/form-data', 'application/json')
+  @ApiOperation({
+    summary: 'Crear pedido (VENDEDOR) — multipart con campo opcional "foto"',
+  })
+  @UseInterceptors(FileInterceptor('foto'))
+  crear(
+    @UsuarioActual() usuario: Usuario,
+    @Body() dto: CrearPedidoDto,
+    @UploadedFile() foto?: ArchivoMultipart,
+  ) {
+    return this.servicio.crear(
+      usuario,
+      dto,
+      foto
+        ? { buffer: foto.buffer, mimetype: foto.mimetype, originalname: foto.originalname }
+        : undefined,
+    );
   }
 
   @ApiBearerAuth('autenticacion-jwt')

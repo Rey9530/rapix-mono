@@ -1,0 +1,10 @@
+@if (tokenAusente) {
+  <div class="alert alert-warning mb-0">
+    <strong>Mapbox no configurado.</strong>
+    Agrega un token público <code>pk.xxx</code> en
+    <code>environment.development.ts</code> (campo
+    <code>tokenMapboxPublico</code>) para habilitar el editor de zonas.
+  </div>
+} @else {
+  <div #contenedor class="mapa-zona"></div>
+}

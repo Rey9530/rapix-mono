@@ -1,3 +1,8 @@
+// NOTA: tras el cambio a `urlMapasDestino`, el backend resuelve coordenadas
+// del destino expandiendo una URL corta de Google Maps. Para que este smoke
+// funcione contra un backend real, hay que mockear `GoogleMapsServicio` para
+// que devuelva coordenadas dentro de las zonas de prueba (lat/lng ~32.5,32.5).
+//
 // Smoke manual de los endpoints/flujos de Fase 6 (Notificaciones).
 //
 // Cubre:
@@ -165,7 +170,7 @@ const crearPed = await call('POST', '/pedidos', {
   direccionOrigen: 'Origen F6',
   latitudOrigen: 27.5, longitudOrigen: 27.5,
   direccionDestino: 'Destino F6',
-  latitudDestino: 32.5, longitudDestino: 32.5,
+  urlMapasDestino: 'https://maps.app.goo.gl/MOCK',
   metodoPago: 'PREPAGADO',
 }, auth(tokenVend));
 check('POST /pedidos → 201', crearPed.status === 201);
@@ -318,7 +323,7 @@ for (let i = 0; i < 25; i++) {
     nombreCliente: `C${i}`,
     telefonoCliente: '+50377778888',
     direccionOrigen: 'X', latitudOrigen: 27.5, longitudOrigen: 27.5,
-    direccionDestino: 'X', latitudDestino: 32.5, longitudDestino: 32.5,
+    direccionDestino: 'X', urlMapasDestino: 'https://maps.app.goo.gl/MOCK',
     metodoPago: 'PREPAGADO',
   }, auth(tokenLim)));
 }

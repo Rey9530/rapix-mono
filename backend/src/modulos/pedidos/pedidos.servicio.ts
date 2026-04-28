@@ -3,6 +3,7 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -23,6 +24,7 @@ import { PaqueteAgotadoException } from '../paquetes-recargados/excepciones/paqu
 import { FacturacionServicio } from '../paquetes-recargados/facturacion.servicio.js';
 import { GeoServicio } from '../zonas/geo.servicio.js';
 import { CodigoSeguimientoServicio } from './codigo-seguimiento.servicio.js';
+import { GoogleMapsServicio } from './google-maps.servicio.js';
 import { ActualizarPedidoDto } from './dto/actualizar-pedido.dto.js';
 import { CancelarPedidoDto } from './dto/cancelar-pedido.dto.js';
 import { CrearPedidoDto } from './dto/crear-pedido.dto.js';
@@ -45,6 +47,8 @@ export const EVENTO_PEDIDO_ESTADO_CAMBIADO = EventosDominio.PedidoEstadoCambiado
 
 @Injectable()
 export class PedidosServicio {
+  private readonly logger = new Logger(PedidosServicio.name);
+
   constructor(
     private readonly prisma: PrismaServicio,
     private readonly geo: GeoServicio,
@@ -52,13 +56,18 @@ export class PedidosServicio {
     private readonly archivos: ArchivosServicio,
     private readonly facturacion: FacturacionServicio,
     private readonly eventos: EventEmitter2,
+    private readonly googleMaps: GoogleMapsServicio,
   ) {}
 
   // ──────────────────────────────────────────────────
   // Creación / CRUD ligero
   // ──────────────────────────────────────────────────
 
-  async crear(usuario: Usuario, dto: CrearPedidoDto): Promise<Pedido> {
+  async crear(
+    usuario: Usuario,
+    dto: CrearPedidoDto,
+    foto?: { buffer: Buffer; mimetype: string; originalname: string },
+  ): Promise<Pedido> {
     const perfilVendedor = await this.prisma.perfilVendedor.findUnique({
       where: { usuarioId: usuario.id },
     });
@@ -76,7 +85,9 @@ export class PedidosServicio {
         mensaje: 'El origen no está dentro de ninguna zona activa',
       });
     }
-    const zonaDestino = await this.geo.resolverZona(dto.latitudDestino, dto.longitudDestino);
+    const { lat: latitudDestino, lng: longitudDestino } =
+      await this.googleMaps.resolverCoordenadas(dto.urlMapasDestino);
+    const zonaDestino = await this.geo.resolverZona(latitudDestino, longitudDestino);
     if (!zonaDestino) {
       throw new BadRequestException({
         codigo: 'PEDIDO_ZONA_INVALIDA_DESTINO',
@@ -88,6 +99,11 @@ export class PedidosServicio {
       throw new BadRequestException(
         'montoContraEntrega es requerido cuando metodoPago=CONTRA_ENTREGA',
       );
+    }
+
+    // Validar la foto ANTES de crear el pedido para no dejar registros huérfanos.
+    if (foto) {
+      this.archivos.validar(foto.buffer, foto.mimetype);
     }
 
     const codigoSeguimiento = await this.codigoSvc.generar();
@@ -135,8 +151,8 @@ export class PedidosServicio {
           zonaOrigenId: zonaOrigen.id,
           notasOrigen: dto.notasOrigen ?? null,
           direccionDestino: dto.direccionDestino,
-          latitudDestino: dto.latitudDestino,
-          longitudDestino: dto.longitudDestino,
+          latitudDestino: latitudDestino,
+          longitudDestino: longitudDestino,
           zonaDestinoId: zonaDestino.id,
           notasDestino: dto.notasDestino ?? null,
           descripcionPaquete: dto.descripcionPaquete ?? null,
@@ -177,6 +193,27 @@ export class PedidosServicio {
         EventosDominio.PaqueteAgotado,
         new PaqueteAgotadoEvento(resultado.paqueteAgotadoId, resultado.pedido.vendedorId),
       );
+    }
+
+    // Subir foto del paquete a MinIO (si fue enviada). Hacemos esto FUERA de la
+    // transacción porque la subida puede tomar tiempo y MinIO está fuera del
+    // contexto transaccional. Si la subida falla, el pedido ya está creado;
+    // logueamos el error y devolvemos el pedido sin URL — la foto es opcional.
+    if (foto) {
+      try {
+        const ext = mimeExt(foto.mimetype);
+        const key = ArchivosServicio.armarKeyPaquete(resultado.pedido.id, ext);
+        const { url } = await this.archivos.subir(foto.buffer, key, foto.mimetype);
+        const actualizado = await this.prisma.pedido.update({
+          where: { id: resultado.pedido.id },
+          data: { urlFotoPaquete: url },
+        });
+        return actualizado;
+      } catch (error) {
+        this.logger.warn(
+          `Pedido ${resultado.pedido.id} creado pero la foto no pudo subirse: ${(error as Error).message}`,
+        );
+      }
     }
 
     return resultado.pedido;

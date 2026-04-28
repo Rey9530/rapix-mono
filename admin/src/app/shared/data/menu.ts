@@ -37,6 +37,13 @@ export const menuItems: IMenu[] = [
     path: "/usuarios",
     level: 1,
   },
+  {
+    title: "Zonas",
+    icon: "maps",
+    type: "link",
+    path: "/zonas",
+    level: 1,
+  },
 ];
 
 // Array

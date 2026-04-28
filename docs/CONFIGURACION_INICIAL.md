@@ -1,4 +1,4 @@
-# Configuración Inicial del Proyecto
+# Configuración Inicial de Rapix
 
 ## 🎯 Objetivo
 

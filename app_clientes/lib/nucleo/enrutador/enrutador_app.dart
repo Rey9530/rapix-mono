@@ -13,11 +13,14 @@ import '../../caracteristicas/paquetes/paquetes_tienda_pantalla.dart';
 import '../../caracteristicas/pedidos/crear_pedido_pantalla.dart';
 import '../../caracteristicas/pedidos/pedido_detalle_pantalla.dart';
 import '../../caracteristicas/pedidos/pedidos_listado_pantalla.dart';
+import '../../caracteristicas/perfil/editar_negocio_pantalla.dart';
+import '../../caracteristicas/perfil/perfil_pantalla.dart';
 import '../../caracteristicas/seguimiento/seguimiento_pantalla.dart';
+import '../../widgets/esqueleto_navegacion.dart';
 
 final enrutadorAppProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: '/inicio',
     refreshListenable: _NotifierAuth(ref),
     redirect: (context, state) {
       final auth = ref.read(autenticacionControladorProvider);
@@ -26,6 +29,7 @@ final enrutadorAppProvider = Provider<GoRouter>((ref) {
       final ruta = state.matchedLocation;
       final esPublica = ruta.startsWith('/iniciar-sesion') ||
           ruta.startsWith('/registrar') ||
+          ruta.startsWith('/seleccionar-ubicacion') ||
           ruta.startsWith('/seguimiento/');
 
       if (!auth.autenticado && !esPublica) {
@@ -33,7 +37,7 @@ final enrutadorAppProvider = Provider<GoRouter>((ref) {
       }
       if (auth.autenticado &&
           (ruta == '/iniciar-sesion' || ruta == '/registrar')) {
-        return '/';
+        return '/inicio';
       }
       return null;
     },
@@ -61,33 +65,62 @@ final enrutadorAppProvider = Provider<GoRouter>((ref) {
         builder: (_, state) =>
             SeguimientoPantalla(codigo: state.pathParameters['codigo']!),
       ),
-      GoRoute(
-        path: '/',
-        builder: (_, _) => const InicioPantalla(),
-        routes: [
-          GoRoute(
-            path: 'pedidos',
-            builder: (_, _) => const PedidosListadoPantalla(),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, shell) => EsqueletoNavegacion(shell: shell),
+        branches: [
+          StatefulShellBranch(
             routes: [
               GoRoute(
-                path: 'nuevo',
-                builder: (_, _) => const CrearPedidoPantalla(),
-              ),
-              GoRoute(
-                path: ':id',
-                builder: (_, state) => PedidoDetallePantalla(
-                  pedidoId: state.pathParameters['id']!,
-                ),
+                path: '/inicio',
+                builder: (_, _) => const InicioPantalla(),
               ),
             ],
           ),
-          GoRoute(
-            path: 'paquetes',
-            builder: (_, _) => const MisPaquetesPantalla(),
+          StatefulShellBranch(
             routes: [
               GoRoute(
-                path: 'tienda',
-                builder: (_, _) => const PaquetesTiendaPantalla(),
+                path: '/pedidos',
+                builder: (_, _) => const PedidosListadoPantalla(),
+                routes: [
+                  GoRoute(
+                    path: 'nuevo',
+                    builder: (_, _) => const CrearPedidoPantalla(),
+                  ),
+                  GoRoute(
+                    path: ':id',
+                    builder: (_, state) => PedidoDetallePantalla(
+                      pedidoId: state.pathParameters['id']!,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/paquetes',
+                builder: (_, _) => const MisPaquetesPantalla(),
+                routes: [
+                  GoRoute(
+                    path: 'tienda',
+                    builder: (_, _) => const PaquetesTiendaPantalla(),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/perfil',
+                builder: (_, _) => const PerfilPantalla(),
+                routes: [
+                  GoRoute(
+                    path: 'editar-negocio',
+                    builder: (_, _) => const EditarNegocioPantalla(),
+                  ),
+                ],
               ),
             ],
           ),

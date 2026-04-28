@@ -1,3 +1,8 @@
+// NOTA: tras el cambio a `urlMapasDestino`, el backend resuelve coordenadas
+// del destino expandiendo una URL corta de Google Maps. Para que este smoke
+// funcione contra un backend real, hay que mockear `GoogleMapsServicio` para
+// que devuelva coordenadas dentro de las zonas de prueba (lat/lng ~30.5,30.5).
+//
 // Smoke manual de los endpoints nuevos de Fase 3.
 //   Pedidos: POST, GET, GET /:id, GET /:id/eventos, PATCH /:id, /:id/cancelar,
 //            /:id/asignar, /asignar-automatico, /seguimiento/:codigo,
@@ -127,8 +132,7 @@ const crearPed = await call('POST', '/pedidos', {
   latitudOrigen: 25.5,
   longitudOrigen: 25.5,
   direccionDestino: 'Destino F3',
-  latitudDestino: 30.5,
-  longitudDestino: 30.5,
+  urlMapasDestino: 'https://maps.app.goo.gl/MOCK',
   metodoPago: 'CONTRA_ENTREGA',
   montoContraEntrega: 50,
   descripcionPaquete: 'Caja',
@@ -145,7 +149,7 @@ const codigo = crearPed.body.codigoSeguimiento;
 const fueraZona = await call('POST', '/pedidos', {
   nombreCliente: 'X', telefonoCliente: '+50399999999',
   direccionOrigen: 'X', latitudOrigen: 0, longitudOrigen: 0,
-  direccionDestino: 'X', latitudDestino: 30.5, longitudDestino: 30.5,
+  direccionDestino: 'X', urlMapasDestino: 'https://maps.app.goo.gl/MOCK',
   metodoPago: 'PREPAGADO',
 }, auth(tokenVend));
 check('POST /pedidos origen fuera → 400 PEDIDO_ZONA_INVALIDA_ORIGEN',
@@ -155,7 +159,7 @@ check('POST /pedidos origen fuera → 400 PEDIDO_ZONA_INVALIDA_ORIGEN',
 const sinMonto = await call('POST', '/pedidos', {
   nombreCliente: 'X', telefonoCliente: '+50399999998',
   direccionOrigen: 'X', latitudOrigen: 25.5, longitudOrigen: 25.5,
-  direccionDestino: 'X', latitudDestino: 30.5, longitudDestino: 30.5,
+  direccionDestino: 'X', urlMapasDestino: 'https://maps.app.goo.gl/MOCK',
   metodoPago: 'CONTRA_ENTREGA',
 }, auth(tokenVend));
 check('POST /pedidos CONTRA_ENTREGA sin monto → 400', sinMonto.status === 400);
@@ -223,7 +227,7 @@ check('POST /:id/cancelar desde RECOGIDO → 409',
 const ped2 = await call('POST', '/pedidos', {
   nombreCliente: 'C2', telefonoCliente: '+50377002222',
   direccionOrigen: 'X', latitudOrigen: 25.5, longitudOrigen: 25.5,
-  direccionDestino: 'X', latitudDestino: 30.5, longitudDestino: 30.5,
+  direccionDestino: 'X', urlMapasDestino: 'https://maps.app.goo.gl/MOCK',
   metodoPago: 'PREPAGADO',
 }, auth(tokenVend));
 await call('POST', '/pedidos/asignar-automatico', null, auth(tokenAdmin));
@@ -294,7 +298,7 @@ seccion('Pedidos — asignar manual, fallar + reintentar, fallar + devolver');
 const pedRe = await call('POST', '/pedidos', {
   nombreCliente: 'Cli Re', telefonoCliente: '+50377003333',
   direccionOrigen: 'X', latitudOrigen: 25.5, longitudOrigen: 25.5,
-  direccionDestino: 'X', latitudDestino: 30.5, longitudDestino: 30.5,
+  direccionDestino: 'X', urlMapasDestino: 'https://maps.app.goo.gl/MOCK',
   metodoPago: 'PREPAGADO',
 }, auth(tokenVend));
 const pedReId = pedRe.body.id;
@@ -348,7 +352,7 @@ seccion('Pedidos — cancelar permitido desde PENDIENTE_ASIGNACION');
 const pedC = await call('POST', '/pedidos', {
   nombreCliente: 'Cli C', telefonoCliente: '+50377004444',
   direccionOrigen: 'X', latitudOrigen: 25.5, longitudOrigen: 25.5,
-  direccionDestino: 'X', latitudDestino: 30.5, longitudDestino: 30.5,
+  direccionDestino: 'X', urlMapasDestino: 'https://maps.app.goo.gl/MOCK',
   metodoPago: 'PREPAGADO',
 }, auth(tokenVend));
 const cancel = await call('POST', `/pedidos/${pedC.body.id}/cancelar`,

@@ -1,12 +1,17 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mb;
+import 'package:image_picker/image_picker.dart';
 
 import '../../datos/repositorios/pedidos_repositorio.dart';
 import '../autenticacion/autenticacion_controlador.dart';
 import 'pedidos_listado_controlador.dart';
+
+final _regexUrlMapsCorta =
+    RegExp(r'^https://maps\.app\.goo\.gl/[A-Za-z0-9_-]+/?$');
 
 class CrearPedidoPantalla extends ConsumerStatefulWidget {
   const CrearPedidoPantalla({super.key});
@@ -21,55 +26,69 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
   final _nombreCliente = TextEditingController();
   final _telefonoCliente = TextEditingController();
   final _direccionDestino = TextEditingController();
+  final _urlMapsDestino = TextEditingController();
   final _descripcion = TextEditingController();
   final _montoContraEntrega = TextEditingController();
   final _notasDestino = TextEditingController();
 
   String _metodoPago = 'CONTRA_ENTREGA';
-  mb.Point? _ubicacionDestino;
+  XFile? _foto;
   bool _enviando = false;
+  final _selectorImagen = ImagePicker();
 
   @override
   void dispose() {
     _nombreCliente.dispose();
     _telefonoCliente.dispose();
     _direccionDestino.dispose();
+    _urlMapsDestino.dispose();
     _descripcion.dispose();
     _montoContraEntrega.dispose();
     _notasDestino.dispose();
     super.dispose();
   }
 
-  Future<void> _elegirDestino() async {
-    final auth = ref.read(autenticacionControladorProvider);
-    final perfil = auth.usuario?.perfilVendedor;
-    final inicial = perfil?.latitud != null && perfil?.longitud != null
-        ? mb.Point(
-            coordinates: mb.Position(perfil!.longitud!, perfil.latitud!),
-          )
-        : _ubicacionDestino;
-    final resultado = await context.push<mb.Point>(
-      '/seleccionar-ubicacion',
-      extra: {
-        'titulo': 'Destino del paquete',
-        'inicial': inicial,
-      },
+  Future<void> _elegirFoto() async {
+    final origen = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_camera_outlined),
+              title: const Text('Tomar foto'),
+              onTap: () => Navigator.pop(ctx, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Elegir de galería'),
+              onTap: () => Navigator.pop(ctx, ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
     );
-    if (resultado != null) {
-      setState(() => _ubicacionDestino = resultado);
+    if (origen == null) return;
+    try {
+      final imagen = await _selectorImagen.pickImage(
+        source: origen,
+        maxWidth: 1600,
+        imageQuality: 80,
+      );
+      if (imagen != null) {
+        setState(() => _foto = imagen);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No se pudo abrir el selector: $e')),
+      );
     }
   }
 
   Future<void> _enviar() async {
     if (!_formulario.currentState!.validate()) return;
-    if (_ubicacionDestino == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Selecciona la ubicacion del destino en el mapa'),
-        ),
-      );
-      return;
-    }
     final auth = ref.read(autenticacionControladorProvider);
     final perfil = auth.usuario?.perfilVendedor;
     if (perfil?.latitud == null || perfil?.longitud == null) {
@@ -93,10 +112,7 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
           latitudOrigen: perfil.latitud!,
           longitudOrigen: perfil.longitud!,
           direccionDestino: _direccionDestino.text.trim(),
-          latitudDestino:
-              _ubicacionDestino!.coordinates.lat.toDouble(),
-          longitudDestino:
-              _ubicacionDestino!.coordinates.lng.toDouble(),
+          urlMapasDestino: _urlMapsDestino.text.trim(),
           metodoPago: _metodoPago,
           descripcionPaquete: _descripcion.text.trim().isEmpty
               ? null
@@ -107,6 +123,7 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
           notasDestino: _notasDestino.text.trim().isEmpty
               ? null
               : _notasDestino.text.trim(),
+          foto: _foto,
         ),
       );
       if (!mounted) return;
@@ -127,8 +144,13 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
     if (datos is Map<String, dynamic>) {
       final codigo = datos['codigo'] as String?;
       final mensaje = datos['mensaje'] ?? datos['message'];
-      if (codigo == 'PEDIDO_ZONA_INVALIDA') {
+      if (codigo == 'PEDIDO_ZONA_INVALIDA' ||
+          codigo == 'PEDIDO_ZONA_INVALIDA_DESTINO') {
         return 'La direccion de destino esta fuera de la zona de cobertura';
+      }
+      if (codigo == 'PEDIDO_URL_MAPAS_INVALIDA') {
+        return 'No se pudo leer la ubicacion desde la URL de Google Maps. '
+            'Verifica el enlace.';
       }
       if (mensaje is String && mensaje.isNotEmpty) return mensaje;
       if (mensaje is List && mensaje.isNotEmpty) return mensaje.first.toString();
@@ -196,23 +218,26 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
                       (v == null || v.trim().isEmpty) ? 'Requerido' : null,
                 ),
                 const SizedBox(height: 12),
-                Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.map_outlined),
-                    title: Text(
-                      _ubicacionDestino == null
-                          ? 'Marcar destino en el mapa'
-                          : 'Destino seleccionado',
-                    ),
-                    subtitle: _ubicacionDestino != null
-                        ? Text(
-                            '(${_ubicacionDestino!.coordinates.lat.toStringAsFixed(5)}, '
-                            '${_ubicacionDestino!.coordinates.lng.toStringAsFixed(5)})',
-                          )
-                        : null,
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: _elegirDestino,
+                TextFormField(
+                  controller: _urlMapsDestino,
+                  decoration: const InputDecoration(
+                    labelText: 'URL de Google Maps del destino',
+                    prefixIcon: Icon(Icons.map_outlined),
+                    hintText: 'https://maps.app.goo.gl/...',
+                    helperText: 'En Google Maps: Compartir → Copiar enlace',
                   ),
+                  keyboardType: TextInputType.url,
+                  validator: (v) {
+                    final t = v?.trim() ?? '';
+                    if (t.isEmpty) {
+                      return 'Pega la URL de Google Maps del destino';
+                    }
+                    if (!_regexUrlMapsCorta.hasMatch(t)) {
+                      return 'URL invalida. Comparte el sitio desde Google Maps '
+                          'y pega el enlace corto';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
@@ -235,6 +260,12 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
                     labelText: 'Descripcion (opcional)',
                     prefixIcon: Icon(Icons.inventory_2_outlined),
                   ),
+                ),
+                const SizedBox(height: 12),
+                _SelectorFoto(
+                  foto: _foto,
+                  alElegir: _elegirFoto,
+                  alQuitar: () => setState(() => _foto = null),
                 ),
                 const SizedBox(height: 16),
                 SegmentedButton<String>(
@@ -288,6 +319,63 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _SelectorFoto extends StatelessWidget {
+  const _SelectorFoto({
+    required this.foto,
+    required this.alElegir,
+    required this.alQuitar,
+  });
+
+  final XFile? foto;
+  final VoidCallback alElegir;
+  final VoidCallback alQuitar;
+
+  @override
+  Widget build(BuildContext context) {
+    if (foto == null) {
+      return Card(
+        child: ListTile(
+          leading: const Icon(Icons.camera_alt_outlined),
+          title: const Text('Foto del paquete (opcional)'),
+          subtitle: const Text('Tomar foto o elegir de galería'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: alElegir,
+        ),
+      );
+    }
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          AspectRatio(
+            aspectRatio: 4 / 3,
+            child: Image.file(File(foto!.path), fit: BoxFit.cover),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: OverflowBar(
+              alignment: MainAxisAlignment.end,
+              spacing: 4,
+              children: [
+                TextButton.icon(
+                  onPressed: alQuitar,
+                  icon: const Icon(Icons.delete_outline),
+                  label: const Text('Quitar'),
+                ),
+                TextButton.icon(
+                  onPressed: alElegir,
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Cambiar'),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
