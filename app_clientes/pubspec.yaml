@@ -1,0 +1,57 @@
+name: app_clientes
+description: "App movil para vendedores y clientes del sistema de delivery."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # Estado y navegacion
+  flutter_riverpod: ^2.6.1
+  go_router: ^14.6.2
+
+  # Red y almacenamiento
+  dio: ^5.7.0
+  flutter_secure_storage: ^9.2.2
+
+  # Mapas y geolocalizacion
+  mapbox_maps_flutter: ^2.4.0
+  geolocator: ^13.0.2
+
+  # Multimedia
+  image_picker: ^1.1.2
+
+  # Notificaciones push
+  firebase_core: ^3.8.0
+  firebase_messaging: ^15.1.5
+  flutter_local_notifications: ^18.0.1
+
+  # Utilidades
+  intl: ^0.19.0
+  permission_handler: ^11.3.1
+  connectivity_plus: ^6.1.0
+  url_launcher: ^6.3.1
+
+  # Modelos
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+
+  build_runner: ^2.4.13
+  freezed: ^2.5.7
+  json_serializable: ^6.8.0
+
+flutter:
+  uses-material-design: true

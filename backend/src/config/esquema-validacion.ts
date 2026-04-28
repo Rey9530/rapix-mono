@@ -22,6 +22,10 @@ export const esquemaValidacionEnv = Joi.object({
   THROTTLE_TTL: Joi.number().default(60),
   THROTTLE_LIMIT: Joi.number().default(100),
 
+  // Fase 8 — Mapas (proxy Mapbox Optimization). Opcional al arranque:
+  // si falta o queda como placeholder, el endpoint responde 500 con mensaje claro.
+  MAPBOX_TOKEN: Joi.string().optional().allow(''),
+
   // Fase 6 — Notificaciones (todas opcionales: el adapter degrada
   // a FALLIDO con `mensajeError = CANAL_NO_CONFIGURADO` si faltan).
   WHATSAPP_API_VERSION: Joi.string().default('v20.0'),

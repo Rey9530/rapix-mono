@@ -21,6 +21,7 @@ import { ReportesModulo } from './modulos/reportes/reportes.modulo.js';
 import { AuditoriaModulo } from './modulos/auditoria/auditoria.modulo.js';
 import { CierresFinancierosModulo } from './modulos/cierres-financieros/cierres-financieros.modulo.js';
 import { NotificacionesModulo } from './modulos/notificaciones/notificaciones.modulo.js';
+import { MapasModulo } from './modulos/mapas/mapas.modulo.js';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { NotificacionesModulo } from './modulos/notificaciones/notificaciones.mo
     PedidosModulo,
     CierresFinancierosModulo,
     NotificacionesModulo,
+    MapasModulo,
     ReportesModulo,
   ],
   providers: [
