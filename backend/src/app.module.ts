@@ -17,6 +17,7 @@ import { RepartidoresModulo } from './modulos/repartidores/repartidores.modulo.j
 import { ArchivosModulo } from './modulos/archivos/archivos.modulo.js';
 import { PedidosModulo } from './modulos/pedidos/pedidos.modulo.js';
 import { PaquetesRecargadosModulo } from './modulos/paquetes-recargados/paquetes-recargados.modulo.js';
+import { ReglasTarifaModulo } from './modulos/reglas-tarifa/reglas-tarifa.modulo.js';
 import { ReportesModulo } from './modulos/reportes/reportes.modulo.js';
 import { AuditoriaModulo } from './modulos/auditoria/auditoria.modulo.js';
 import { CierresFinancierosModulo } from './modulos/cierres-financieros/cierres-financieros.modulo.js';
@@ -48,6 +49,7 @@ import { MapasModulo } from './modulos/mapas/mapas.modulo.js';
     UsuariosModulo,
     ZonasModulo,
     PaquetesRecargadosModulo,
+    ReglasTarifaModulo,
     PedidosModulo,
     CierresFinancierosModulo,
     NotificacionesModulo,

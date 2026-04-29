@@ -1,9 +1,14 @@
 <div class="container-fluid">
   <div class="page-title d-flex justify-content-between align-items-center mb-3">
     <h3 class="m-0">Pedidos</h3>
-    <button class="btn btn-primary" (click)="asignarAutomatico()">
-      Asignar automáticamente
-    </button>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-primary" (click)="abrirAsignarRetirosZona()">
+        Asignar retiros por zona
+      </button>
+      <button class="btn btn-primary" (click)="asignarAutomatico()">
+        Asignar automáticamente
+      </button>
+    </div>
   </div>
 
   <div class="card mb-3">
@@ -25,6 +30,17 @@
             <option value="">Todos los estados</option>
             @for (e of estados; track e) {
               <option [value]="e">{{ e }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-md-4">
+          <select
+            class="form-select"
+            (change)="alCambiarZona($any($event.target).value)"
+          >
+            <option value="">Todas las zonas</option>
+            @for (z of zonas(); track z.id) {
+              <option [value]="z.id">{{ z.codigo }} — {{ z.nombre }}</option>
             }
           </select>
         </div>

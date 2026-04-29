@@ -4,6 +4,11 @@ import { Injectable, inject } from "@angular/core";
 import { Observable } from "rxjs";
 
 import { environment } from "../../../environments/environment";
+import {
+  ActualizarPaqueteAsignadoPayload,
+  AsignarPaquetePayload,
+  PaqueteRecargado,
+} from "../modelos/paquete-recargado.modelo";
 import { RespuestaPaginada } from "../modelos/respuesta-paginada.modelo";
 import {
   EstadoUsuario,
@@ -84,5 +89,40 @@ export class UsuariosServicio {
 
   eliminar(id: string): Observable<void> {
     return this.http.delete<void>(`${this.base}/${id}`);
+  }
+
+  listarPaquetesAsignados(
+    usuarioId: string,
+    pagina = 1,
+    limite = 50,
+  ): Observable<RespuestaPaginada<PaqueteRecargado>> {
+    const params = new HttpParams()
+      .set("pagina", pagina)
+      .set("limite", limite);
+    return this.http.get<RespuestaPaginada<PaqueteRecargado>>(
+      `${this.base}/${usuarioId}/paquetes`,
+      { params },
+    );
+  }
+
+  asignarPaquete(
+    usuarioId: string,
+    payload: AsignarPaquetePayload,
+  ): Observable<PaqueteRecargado> {
+    return this.http.post<PaqueteRecargado>(
+      `${this.base}/${usuarioId}/paquetes`,
+      payload,
+    );
+  }
+
+  actualizarPaqueteAsignado(
+    usuarioId: string,
+    paqueteId: string,
+    payload: ActualizarPaqueteAsignadoPayload,
+  ): Observable<PaqueteRecargado> {
+    return this.http.patch<PaqueteRecargado>(
+      `${this.base}/${usuarioId}/paquetes/${paqueteId}`,
+      payload,
+    );
   }
 }

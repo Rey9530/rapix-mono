@@ -4,6 +4,7 @@ import { Injectable, inject } from "@angular/core";
 import { Observable } from "rxjs";
 
 import { environment } from "../../../environments/environment";
+import { RepartidorDeZona } from "../modelos/repartidor.modelo";
 import {
   ActualizarZonaPayload,
   AsignarRepartidoresPayload,
@@ -49,5 +50,9 @@ export class ZonasServicio {
       `${this.base}/${id}/repartidores`,
       payload,
     );
+  }
+
+  repartidoresPorZona(id: string): Observable<RepartidorDeZona[]> {
+    return this.http.get<RepartidorDeZona[]>(`${this.base}/${id}/repartidores`);
   }
 }

@@ -2,8 +2,12 @@ import { CommonModule } from "@angular/common";
 import { Component, OnInit, inject, signal } from "@angular/core";
 import { ActivatedRoute, RouterModule } from "@angular/router";
 
+import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
+
 import { PedidosServicio } from "../../../nucleo/datos/pedidos.servicio";
 import { PedidoDetalle } from "../../../nucleo/modelos/pedido.modelo";
+import { ImagenPedidoModal } from "./imagen-pedido.modal";
+import { MapaPedidoModal } from "./mapa-pedido.modal";
 
 @Component({
   selector: "app-detalle-pedido",
@@ -14,6 +18,7 @@ import { PedidoDetalle } from "../../../nucleo/modelos/pedido.modelo";
 export class DetallePedido implements OnInit {
   private readonly ruta = inject(ActivatedRoute);
   private readonly servicio = inject(PedidosServicio);
+  private readonly modalServicio = inject(NgbModal);
 
   readonly cargando = signal(true);
   readonly pedido = signal<PedidoDetalle | null>(null);
@@ -36,5 +41,24 @@ export class DetallePedido implements OnInit {
         this.cargando.set(false);
       },
     });
+  }
+
+  abrirMapa(): void {
+    const p = this.pedido();
+    if (!p) return;
+    const ref = this.modalServicio.open(MapaPedidoModal, {
+      size: "lg",
+      centered: true,
+    });
+    ref.componentInstance.pedido = p;
+  }
+
+  abrirImagen(url: string, titulo = "Imagen"): void {
+    const ref = this.modalServicio.open(ImagenPedidoModal, {
+      size: "lg",
+      centered: true,
+    });
+    ref.componentInstance.urlImagen = url;
+    ref.componentInstance.titulo = titulo;
   }
 }

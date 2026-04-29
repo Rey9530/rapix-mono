@@ -11,15 +11,17 @@ class PantallaInicio extends ConsumerWidget {
 
   static const _rutas = <String>[
     '/inicio/recogidas',
+    '/inicio/en-curso',
     '/inicio/entregas',
     '/inicio/mapa',
     '/inicio/cierre',
   ];
 
   int _indiceActual(String location) {
-    if (location.startsWith('/inicio/entregas')) return 1;
-    if (location.startsWith('/inicio/mapa')) return 2;
-    if (location.startsWith('/inicio/cierre')) return 3;
+    if (location.startsWith('/inicio/en-curso')) return 1;
+    if (location.startsWith('/inicio/entregas')) return 2;
+    if (location.startsWith('/inicio/mapa')) return 3;
+    if (location.startsWith('/inicio/cierre')) return 4;
     return 0;
   }
 
@@ -47,6 +49,7 @@ class PantallaInicio extends ConsumerWidget {
         onDestinationSelected: (i) => context.go(_rutas[i]),
         destinations: const [
           NavigationDestination(icon: Icon(Icons.archive_outlined), label: 'Recoger'),
+          NavigationDestination(icon: Icon(Icons.directions_bike_outlined), label: 'En curso'),
           NavigationDestination(icon: Icon(Icons.local_shipping_outlined), label: 'Entregar'),
           NavigationDestination(icon: Icon(Icons.map_outlined), label: 'Mapa'),
           NavigationDestination(icon: Icon(Icons.point_of_sale_outlined), label: 'Cierre'),

@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import '../../core/network/excepciones_api.dart';
 import '../../core/proveedores_globales.dart';
 import '../../data/modelos/pedido.dart';
+import '../../widgets/secciones_detalle_pedido.dart';
+import '../en_curso/proveedor_en_curso.dart';
 import '../entregas/proveedor_entregas.dart';
 import 'proveedor_recogidas.dart';
 
@@ -17,13 +19,17 @@ class PantallaDetalleRecogida extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final asincrono = ref.watch(pedidoPorIdProveedor(pedidoId));
+    final ubicacion = GoRouterState.of(context).matchedLocation;
+    final esEnCurso = ubicacion.startsWith('/inicio/en-curso');
+    final rutaLista = esEnCurso ? '/inicio/en-curso' : '/inicio/recogidas';
+    final titulo = esEnCurso ? 'Pedido en curso' : 'Detalle recogida';
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detalle recogida'),
+        title: Text(titulo),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/inicio/recogidas'),
+          onPressed: () => context.go(rutaLista),
         ),
       ),
       body: asincrono.when(
@@ -44,22 +50,46 @@ class _Cuerpo extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        _Seccion(
-          titulo: 'Código de seguimiento',
-          contenido: pedido.codigoSeguimiento,
-        ),
-        _Seccion(
-          titulo: 'Estado',
-          contenido: pedido.estado.name,
-        ),
-        if (pedido.direccionRecogida != null)
-          _Seccion(
-            titulo: 'Dirección de recogida',
-            contenido: pedido.direccionRecogida!,
+        if (pedido.urlFotoPaquete != null) ...[
+          FotoPaquete(url: pedido.urlFotoPaquete!),
+          const SizedBox(height: 12),
+        ],
+        CabeceraPedido(pedido: pedido, icono: Icons.archive),
+        const SizedBox(height: 12),
+        if (pedido.nombreCliente != null) TarjetaCliente(pedido: pedido),
+        TarjetaUbicacion(
+          titulo: 'Recogida',
+          icono: Icons.my_location,
+          color: Colors.orange,
+          direccion: pedido.direccionOrigen,
+          notas: pedido.notasOrigen,
+          latitud: pedido.latitudOrigen,
+          longitud: pedido.longitudOrigen,
+          etiquetaBoton: 'Recoger en',
+          botonPrincipal: true,
+          onAbrirMapa: () => context.push(
+            '/inicio/recogidas/${pedido.id}/mapa?tipo=origen',
           ),
-        if (pedido.notas != null && pedido.notas!.isNotEmpty)
-          _Seccion(titulo: 'Notas', contenido: pedido.notas!),
-        const SizedBox(height: 24),
+        ),
+        TarjetaUbicacion(
+          titulo: 'Entrega',
+          icono: Icons.location_on_outlined,
+          color: Colors.blue,
+          direccion: pedido.direccionDestino,
+          notas: pedido.notasDestino,
+          latitud: pedido.latitudDestino,
+          longitud: pedido.longitudDestino,
+          etiquetaBoton: 'Ver destino en mapa',
+          botonPrincipal: false,
+          onAbrirMapa: () => context.push(
+            '/inicio/recogidas/${pedido.id}/mapa?tipo=destino',
+          ),
+        ),
+        if (TarjetaPaquete.aplicaPara(pedido)) TarjetaPaquete(pedido: pedido),
+        TarjetaCobro(pedido: pedido),
+        if (TarjetaLineaTiempo.aplicaPara(pedido))
+          TarjetaLineaTiempo(pedido: pedido),
+        const SizedBox(height: 16),
         ..._botonesAccion(context, ref),
       ],
     );
@@ -76,6 +106,7 @@ class _Cuerpo extends ConsumerWidget {
               titulo: '¿Recoger paquete?',
               accion: 'recoger',
             ),
+            style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
             icon: const Icon(Icons.archive),
             label: const Text('Recoger paquete'),
           ),
@@ -89,6 +120,7 @@ class _Cuerpo extends ConsumerWidget {
               titulo: '¿Marcar en tránsito?',
               accion: 'enTransito',
             ),
+            style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
             icon: const Icon(Icons.local_shipping),
             label: const Text('Iniciar tránsito'),
           ),
@@ -102,6 +134,7 @@ class _Cuerpo extends ConsumerWidget {
               titulo: '¿Llegaste al punto de intercambio?',
               accion: 'llegarIntercambio',
             ),
+            style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
             icon: const Icon(Icons.flag),
             label: const Text('Llegué al punto'),
           ),
@@ -115,6 +148,7 @@ class _Cuerpo extends ConsumerWidget {
               titulo: '¿Tomar este pedido para entregar?',
               accion: 'tomarEntrega',
             ),
+            style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
             icon: const Icon(Icons.assignment_turned_in),
             label: const Text('Tomar para entregar'),
           ),
@@ -200,6 +234,7 @@ class _Cuerpo extends ConsumerWidget {
           break;
       }
       ref.invalidate(recogidasPendientesProveedor);
+      ref.invalidate(pedidosEnCursoProveedor);
       ref.invalidate(entregasPendientesProveedor);
       ref.invalidate(pedidoPorIdProveedor(pedido.id));
       if (!context.mounted) return;
@@ -208,9 +243,11 @@ class _Cuerpo extends ConsumerWidget {
       );
       if (accion == 'tomarEntrega') {
         context.go('/inicio/entregas/${pedido.id}');
-      } else {
-        context.go('/inicio/recogidas');
+      } else if (accion == 'recoger') {
+        context.go('/inicio/en-curso/${pedido.id}');
       }
+      // Para enTransito y llegarIntercambio: el detalle se refresca solo
+      // (pedidoPorIdProveedor invalidado) y el rider continúa el flujo.
     } on ExcepcionApi catch (e) {
       messenger.showSnackBar(
         SnackBar(content: Text(e.mensaje), backgroundColor: Colors.red),
@@ -229,31 +266,6 @@ class _Cuerpo extends ConsumerWidget {
     if (permiso == LocationPermission.deniedForever) return null;
     return Geolocator.getCurrentPosition(
       locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
-    );
-  }
-}
-
-class _Seccion extends StatelessWidget {
-  final String titulo;
-  final String contenido;
-  const _Seccion({required this.titulo, required this.contenido});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(titulo,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelMedium
-                  ?.copyWith(color: Colors.grey)),
-          const SizedBox(height: 4),
-          Text(contenido, style: Theme.of(context).textTheme.bodyLarge),
-        ],
-      ),
     );
   }
 }

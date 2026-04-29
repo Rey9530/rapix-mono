@@ -1,0 +1,175 @@
+<div class="container-fluid">
+  <div class="page-title d-flex justify-content-between align-items-center mb-3">
+    <h3 class="m-0">Paquetes de envíos</h3>
+    <button class="btn btn-primary" (click)="abrirCrear()">+ Nueva regla</button>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <input
+            class="form-control"
+            type="search"
+            placeholder="Buscar por nombre..."
+            (input)="alBuscar($any($event.target).value)"
+          />
+        </div>
+        <div class="col-md-3">
+          <select
+            class="form-select"
+            (change)="alCambiarModo($any($event.target).value)"
+          >
+            <option value="">Todos los modos</option>
+            @for (m of modos; track m) {
+              <option [value]="m">{{ m }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select
+            class="form-select"
+            (change)="alCambiarActiva($any($event.target).value)"
+          >
+            <option value="">Todos los estados</option>
+            <option value="true">Activas</option>
+            <option value="false">Inactivas</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (mensajeError(); as err) {
+    <div class="alert alert-danger">{{ err }}</div>
+  }
+
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Modo</th>
+            <th>Precio</th>
+            <th>Vigencia</th>
+            <th>Estado</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (cargando()) {
+            <tr>
+              <td colspan="6" class="text-center p-4">
+                <div class="spinner-border text-primary"></div>
+              </td>
+            </tr>
+          } @else if (datos().length === 0) {
+            <tr>
+              <td colspan="6" class="text-center p-4 text-muted">
+                Sin resultados.
+              </td>
+            </tr>
+          } @else {
+            @for (r of datos(); track r.id) {
+              <tr>
+                <td>{{ r.nombre }}</td>
+                <td>
+                  <span
+                    class="badge"
+                    [class.bg-info]="r.modoFacturacion === 'POR_ENVIO'"
+                    [class.bg-primary]="r.modoFacturacion === 'PAQUETE'"
+                  >
+                    {{ r.modoFacturacion }}
+                  </span>
+                </td>
+                <td>{{ formatearPrecio(r) }}</td>
+                <td class="small text-muted">
+                  Desde {{ r.validaDesde | date: "dd/MM/yyyy" }}
+                  @if (r.validaHasta) {
+                    <br />Hasta {{ r.validaHasta | date: "dd/MM/yyyy" }}
+                  } @else {
+                    <br />Sin vencimiento
+                  }
+                </td>
+                <td>
+                  <span
+                    class="badge"
+                    [class.bg-success]="r.activa"
+                    [class.bg-secondary]="!r.activa"
+                  >
+                    {{ r.activa ? "Activa" : "Inactiva" }}
+                  </span>
+                </td>
+                <td class="text-end">
+                  <button
+                    class="btn btn-sm btn-outline-info me-1"
+                    (click)="abrirDetalle(r)"
+                    title="Ver detalle"
+                  >
+                    Ver
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-secondary me-1"
+                    (click)="abrirEditar(r)"
+                    title="Editar"
+                  >
+                    Editar
+                  </button>
+                  @if (r.activa) {
+                    <button
+                      class="btn btn-sm btn-outline-warning"
+                      (click)="desactivar(r)"
+                      title="Desactivar"
+                    >
+                      Desactivar
+                    </button>
+                  } @else {
+                    <button
+                      class="btn btn-sm btn-outline-success"
+                      (click)="activar(r)"
+                      title="Activar"
+                    >
+                      Activar
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  @if (totalPaginas() > 1) {
+    <nav class="mt-3">
+      <ul class="pagination">
+        <li class="page-item" [class.disabled]="filtros.pagina === 1">
+          <button
+            class="page-link"
+            (click)="irPagina((filtros.pagina ?? 1) - 1)"
+          >
+            ‹
+          </button>
+        </li>
+        <li class="page-item active">
+          <span class="page-link"
+            >{{ filtros.pagina }} / {{ totalPaginas() }}</span
+          >
+        </li>
+        <li
+          class="page-item"
+          [class.disabled]="filtros.pagina === totalPaginas()"
+        >
+          <button
+            class="page-link"
+            (click)="irPagina((filtros.pagina ?? 1) + 1)"
+          >
+            ›
+          </button>
+        </li>
+      </ul>
+    </nav>
+  }
+</div>

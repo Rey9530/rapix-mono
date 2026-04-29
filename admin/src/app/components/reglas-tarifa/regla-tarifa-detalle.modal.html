@@ -1,0 +1,88 @@
+<div class="modal-header">
+  <h5 class="modal-title">Detalle de regla de tarifa</h5>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Cerrar"
+    (click)="modal.dismiss()"
+  ></button>
+</div>
+
+<div class="modal-body">
+  @if (cargando()) {
+    <div class="text-center p-4">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  } @else if (mensajeError(); as err) {
+    <div class="alert alert-danger">{{ err }}</div>
+  } @else if (regla(); as r) {
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <h4 class="m-0">{{ r.nombre }}</h4>
+      <span
+        class="badge"
+        [class.bg-info]="r.modoFacturacion === 'POR_ENVIO'"
+        [class.bg-primary]="r.modoFacturacion === 'PAQUETE'"
+      >
+        {{ r.modoFacturacion }}
+      </span>
+      @if (r.activa) {
+        <span class="badge bg-success">Activa</span>
+      } @else {
+        <span class="badge bg-secondary">Inactiva</span>
+      }
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="row g-3">
+          @if (r.modoFacturacion === "POR_ENVIO") {
+            <div class="col-md-6">
+              <small class="text-muted d-block">Precio por envío</small>
+              <strong>${{ +(r.precioPorEnvio ?? 0) | number: "1.2-2" }}</strong>
+            </div>
+          } @else {
+            <div class="col-md-6">
+              <small class="text-muted d-block">Tamaño del paquete</small>
+              <strong>{{ r.tamanoPaquete }} envíos</strong>
+            </div>
+            <div class="col-md-6">
+              <small class="text-muted d-block">Precio del paquete</small>
+              <strong>${{ +(r.precioPaquete ?? 0) | number: "1.2-2" }}</strong>
+            </div>
+          }
+
+          <div class="col-md-6">
+            <small class="text-muted d-block">Válida desde</small>
+            <strong>{{ r.validaDesde | date: "medium" }}</strong>
+          </div>
+          <div class="col-md-6">
+            <small class="text-muted d-block">Válida hasta</small>
+            <strong>{{
+              r.validaHasta ? (r.validaHasta | date: "medium") : "Sin vencimiento"
+            }}</strong>
+          </div>
+
+          <div class="col-md-6">
+            <small class="text-muted d-block">Creada</small>
+            <span>{{ r.creadoEn | date: "medium" }}</span>
+          </div>
+          <div class="col-md-6">
+            <small class="text-muted d-block">Última actualización</small>
+            <span>{{ r.actualizadoEn | date: "medium" }}</span>
+          </div>
+
+          <div class="col-12">
+            <small class="text-muted d-block">ID</small>
+            <code class="small">{{ r.id }}</code>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">
+    Cerrar
+  </button>
+</div>

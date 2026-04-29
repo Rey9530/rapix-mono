@@ -77,6 +77,16 @@ export class RepartidoresControlador {
     return this.servicio.pedidosDeRepartidor(usuario.id, 'entregas-pendientes');
   }
 
+  @Roles('REPARTIDOR')
+  @Get('yo/activos-en-curso')
+  @ApiOperation({
+    summary:
+      'Pedidos en curso del repartidor (RECOGIDO, EN_TRANSITO, EN_PUNTO_INTERCAMBIO)',
+  })
+  activosEnCurso(@UsuarioActual() usuario: Usuario) {
+    return this.servicio.pedidosDeRepartidor(usuario.id, 'activos-en-curso');
+  }
+
   // ─── Admin ────────────────────────────────────────────────────────
 
   @Roles('ADMIN')

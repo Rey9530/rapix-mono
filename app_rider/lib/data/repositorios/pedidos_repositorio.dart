@@ -18,6 +18,11 @@ class PedidosRepositorio {
     return r.data!.map((e) => Pedido.fromJson(e as Map<String, dynamic>)).toList();
   }
 
+  Future<List<Pedido>> activosEnCurso() async {
+    final r = await _dio.get<List<dynamic>>('/repartidores/yo/activos-en-curso');
+    return r.data!.map((e) => Pedido.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
   Future<Pedido> pedidoPorId(String id) async {
     final r = await _dio.get<Map<String, dynamic>>('/pedidos/$id');
     return Pedido.fromJson(r.data!);

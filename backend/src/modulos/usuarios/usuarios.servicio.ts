@@ -6,17 +6,26 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { PaginacionDto } from '../../comun/dto/paginacion.dto.js';
 import { RespuestaPaginada } from '../../comun/dto/respuesta-paginada.js';
 import { hashearContrasena } from '../../comun/utiles/contrasena.js';
-import type { EstadoUsuario, Prisma, Usuario } from '../../generated/prisma/client.js';
+import type {
+  EstadoUsuario,
+  PaqueteRecargado,
+  Prisma,
+  Usuario,
+} from '../../generated/prisma/client.js';
 import { PrismaServicio } from '../../prisma/prisma.servicio.js';
 import { ArchivosServicio } from '../archivos/archivos.servicio.js';
+import { AuditoriaServicio } from '../auditoria/auditoria.servicio.js';
 import { UsuarioPublicoDto } from '../autenticacion/dto/usuario-publico.dto.js';
 import { RepartidoresServicio } from '../repartidores/repartidores.servicio.js';
 import { ActualizarEstadoUsuarioDto } from './dto/actualizar-estado-usuario.dto.js';
+import { ActualizarPaqueteAsignadoDto } from './dto/actualizar-paquete-asignado.dto.js';
 import { ActualizarPerfilPropioDto } from './dto/actualizar-perfil-propio.dto.js';
 import { ActualizarPerfilVendedorDto } from './dto/actualizar-perfil-vendedor.dto.js';
 import { ActualizarUsuarioDto } from './dto/actualizar-usuario.dto.js';
+import { AsignarPaqueteDto } from './dto/asignar-paquete.dto.js';
 import { CrearUsuarioDto } from './dto/crear-usuario.dto.js';
 import { ListarUsuariosDto } from './dto/listar-usuarios.dto.js';
 import { UsuarioDetalleDto } from './dto/usuario-detalle.dto.js';
@@ -36,6 +45,7 @@ export class UsuariosServicio {
     private readonly prisma: PrismaServicio,
     private readonly repartidores: RepartidoresServicio,
     private readonly archivos: ArchivosServicio,
+    private readonly auditoria: AuditoriaServicio,
   ) {}
 
   async listar(filtros: ListarUsuariosDto): Promise<RespuestaPaginada<UsuarioPublicoDto>> {
@@ -313,5 +323,182 @@ export class UsuariosServicio {
     });
 
     return this.obtenerPorId(usuario.id);
+  }
+
+  // ──────────────────────────────────────────────────
+  // Paquetes recargados asignados a un VENDEDOR (ADMIN)
+  // ──────────────────────────────────────────────────
+
+  async listarPaquetesDeVendedor(
+    usuarioId: string,
+    filtros: PaginacionDto,
+  ): Promise<RespuestaPaginada<PaqueteRecargado>> {
+    const perfil = await this.requerirPerfilVendedor(usuarioId);
+
+    const where: Prisma.PaqueteRecargadoWhereInput = { vendedorId: perfil.id };
+    const skip = (filtros.pagina - 1) * filtros.limite;
+    const [filas, total] = await Promise.all([
+      this.prisma.paqueteRecargado.findMany({
+        where,
+        skip,
+        take: filtros.limite,
+        orderBy: { compradoEn: 'desc' },
+      }),
+      this.prisma.paqueteRecargado.count({ where }),
+    ]);
+
+    return RespuestaPaginada.de(filas, total, filtros.pagina, filtros.limite);
+  }
+
+  async asignarPaquete(
+    usuarioId: string,
+    dto: AsignarPaqueteDto,
+    adminId: string,
+  ): Promise<PaqueteRecargado> {
+    const perfil = await this.requerirPerfilVendedor(usuarioId);
+
+    const regla = await this.prisma.reglaTarifa.findUnique({
+      where: { id: dto.reglaTarifaId },
+    });
+    if (!regla) {
+      throw new NotFoundException({
+        codigo: 'REGLA_TARIFA_NO_ENCONTRADA',
+        mensaje: 'Regla de tarifa no encontrada',
+      });
+    }
+    if (regla.modoFacturacion !== 'PAQUETE' || !regla.activa) {
+      throw new BadRequestException({
+        codigo: 'REGLA_TARIFA_NO_ASIGNABLE',
+        mensaje: 'La regla seleccionada no es un paquete activo',
+      });
+    }
+    if (regla.tamanoPaquete == null || regla.precioPaquete == null) {
+      throw new BadRequestException({
+        codigo: 'REGLA_TARIFA_INVALIDA',
+        mensaje: 'La regla no tiene tamaño o precio de paquete configurados',
+      });
+    }
+
+    const enviosTotales = dto.enviosTotales ?? regla.tamanoPaquete;
+    const enviosRestantes = dto.enviosRestantes ?? enviosTotales;
+    if (enviosRestantes > enviosTotales) {
+      throw new BadRequestException({
+        codigo: 'ENVIOS_RESTANTES_EXCEDE_TOTAL',
+        mensaje: 'enviosRestantes no puede ser mayor que enviosTotales',
+      });
+    }
+
+    const precio =
+      dto.precio !== undefined
+        ? dto.precio.toFixed(2)
+        : regla.precioPaquete.toFixed(2);
+    const estado = enviosRestantes === 0 ? 'AGOTADO' : 'ACTIVO';
+
+    const paquete = await this.prisma.paqueteRecargado.create({
+      data: {
+        vendedorId: perfil.id,
+        reglaTarifaId: regla.id,
+        nombre: regla.nombre,
+        enviosTotales,
+        enviosRestantes,
+        precio,
+        estado,
+        expiraEn: dto.expiraEn ?? null,
+      },
+    });
+
+    await this.auditoria.registrar({
+      usuarioId: adminId,
+      accion: 'PAQUETE_ASIGNADO_MANUAL',
+      tipoEntidad: 'PaqueteRecargado',
+      entidadId: paquete.id,
+      metadatos: {
+        vendedorId: perfil.id,
+        reglaTarifaId: regla.id,
+        enviosTotales,
+        enviosRestantes,
+        ...(dto.notas ? { notas: dto.notas } : {}),
+      },
+    });
+
+    return paquete;
+  }
+
+  async actualizarPaqueteAsignado(
+    usuarioId: string,
+    paqueteId: string,
+    dto: ActualizarPaqueteAsignadoDto,
+    adminId: string,
+  ): Promise<PaqueteRecargado> {
+    const perfil = await this.requerirPerfilVendedor(usuarioId);
+
+    const paquete = await this.prisma.paqueteRecargado.findUnique({
+      where: { id: paqueteId },
+    });
+    if (!paquete) {
+      throw new NotFoundException({
+        codigo: 'PAQUETE_NO_ENCONTRADO',
+        mensaje: 'Paquete no encontrado',
+      });
+    }
+    if (paquete.vendedorId !== perfil.id) {
+      throw new NotFoundException({
+        codigo: 'PAQUETE_NO_PERTENECE_AL_VENDEDOR',
+        mensaje: 'El paquete no pertenece al vendedor indicado',
+      });
+    }
+
+    const data: Prisma.PaqueteRecargadoUpdateInput = {};
+    if (dto.enviosRestantes !== undefined) {
+      if (dto.enviosRestantes > paquete.enviosTotales) {
+        throw new BadRequestException({
+          codigo: 'ENVIOS_RESTANTES_EXCEDE_TOTAL',
+          mensaje: `enviosRestantes (${dto.enviosRestantes}) no puede ser mayor que enviosTotales (${paquete.enviosTotales})`,
+        });
+      }
+      data.enviosRestantes = dto.enviosRestantes;
+      // Auto-cierre si llega a 0 y aún sigue ACTIVO.
+      if (dto.enviosRestantes === 0 && !dto.estado && paquete.estado === 'ACTIVO') {
+        data.estado = 'AGOTADO';
+      }
+    }
+    if (dto.estado !== undefined) data.estado = dto.estado;
+    if (dto.expiraEn !== undefined) data.expiraEn = dto.expiraEn;
+
+    if (Object.keys(data).length === 0) return paquete;
+
+    const actualizado = await this.prisma.paqueteRecargado.update({
+      where: { id: paqueteId },
+      data,
+    });
+
+    await this.auditoria.registrar({
+      usuarioId: adminId,
+      accion: 'PAQUETE_AJUSTADO_MANUAL',
+      tipoEntidad: 'PaqueteRecargado',
+      entidadId: paqueteId,
+      metadatos: {
+        vendedorId: perfil.id,
+        camposCambiados: Object.keys(data),
+        ...(dto.notas ? { notas: dto.notas } : {}),
+      },
+    });
+
+    return actualizado;
+  }
+
+  private async requerirPerfilVendedor(usuarioId: string) {
+    const usuario = await this.prisma.usuario.findUnique({
+      where: { id: usuarioId },
+      include: { perfilVendedor: true },
+    });
+    if (!usuario) throw new NotFoundException('Usuario no encontrado');
+    if (usuario.rol !== 'VENDEDOR' || !usuario.perfilVendedor) {
+      throw new BadRequestException({
+        codigo: 'USUARIO_NO_ES_VENDEDOR',
+        mensaje: 'El usuario no tiene perfil de vendedor',
+      });
+    }
+    return usuario.perfilVendedor;
   }
 }

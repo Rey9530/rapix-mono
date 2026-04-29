@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/modelos/pedido.dart';
+import 'utiles_estado_pedido.dart';
 
 class TarjetaPedido extends StatelessWidget {
   final Pedido pedido;
@@ -10,21 +11,17 @@ class TarjetaPedido extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final esRecogida = pedido.estado == EstadoPedido.ASIGNADO;
-    final direccion = esRecogida
-        ? (pedido.direccionRecogida ?? 'Sin dirección de recogida')
-        : (pedido.direccionEntrega ?? 'Sin dirección de entrega');
+    final color = colorEstadoPedido(pedido.estado);
+    final direccion = _direccionPrincipal();
+    final icono = _icono();
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: ListTile(
         onTap: onTap,
         leading: CircleAvatar(
-          backgroundColor: _colorEstado(pedido.estado, context),
-          child: Icon(
-            esRecogida ? Icons.archive : Icons.local_shipping,
-            color: Colors.white,
-          ),
+          backgroundColor: color,
+          child: Icon(icono, color: Colors.white),
         ),
         title: Text(
           pedido.codigoSeguimiento,
@@ -37,9 +34,9 @@ class TarjetaPedido extends StatelessWidget {
             Text(direccion, maxLines: 2, overflow: TextOverflow.ellipsis),
             const SizedBox(height: 4),
             Text(
-              _etiquetaEstado(pedido.estado),
+              etiquetaEstadoPedido(pedido.estado),
               style: TextStyle(
-                color: _colorEstado(pedido.estado, context),
+                color: color,
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
               ),
@@ -66,50 +63,34 @@ class TarjetaPedido extends StatelessWidget {
     );
   }
 
-  String _etiquetaEstado(EstadoPedido estado) {
-    switch (estado) {
+  String _direccionPrincipal() {
+    switch (pedido.estado) {
       case EstadoPedido.ASIGNADO:
-        return 'ASIGNADO · pendiente recoger';
+        return pedido.direccionOrigen ?? 'Sin dirección de recogida';
       case EstadoPedido.RECOGIDO:
-        return 'RECOGIDO';
       case EstadoPedido.EN_TRANSITO:
-        return 'EN TRÁNSITO';
       case EstadoPedido.EN_PUNTO_INTERCAMBIO:
-        return 'EN PUNTO INTERCAMBIO';
       case EstadoPedido.EN_REPARTO:
-        return 'EN REPARTO';
-      case EstadoPedido.ENTREGADO:
-        return 'ENTREGADO';
-      case EstadoPedido.FALLIDO:
-        return 'FALLIDO';
-      case EstadoPedido.DEVUELTO:
-        return 'DEVUELTO';
-      case EstadoPedido.CANCELADO:
-        return 'CANCELADO';
-      case EstadoPedido.PENDIENTE_ASIGNACION:
-        return 'PENDIENTE';
+        return pedido.direccionDestino ?? 'Sin dirección de entrega';
+      default:
+        return pedido.direccionDestino ??
+            pedido.direccionOrigen ??
+            'Sin dirección';
     }
   }
 
-  Color _colorEstado(EstadoPedido estado, BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    switch (estado) {
+  IconData _icono() {
+    switch (pedido.estado) {
       case EstadoPedido.ASIGNADO:
-        return Colors.orange;
+        return Icons.archive;
       case EstadoPedido.RECOGIDO:
       case EstadoPedido.EN_TRANSITO:
       case EstadoPedido.EN_PUNTO_INTERCAMBIO:
-        return Colors.blue;
+        return Icons.directions_bike;
       case EstadoPedido.EN_REPARTO:
-        return scheme.primary;
-      case EstadoPedido.ENTREGADO:
-        return Colors.green;
-      case EstadoPedido.FALLIDO:
-      case EstadoPedido.DEVUELTO:
-      case EstadoPedido.CANCELADO:
-        return Colors.red;
-      case EstadoPedido.PENDIENTE_ASIGNACION:
-        return Colors.grey;
+        return Icons.local_shipping;
+      default:
+        return Icons.assignment;
     }
   }
 }

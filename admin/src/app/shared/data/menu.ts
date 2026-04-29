@@ -44,6 +44,13 @@ export const menuItems: IMenu[] = [
     path: "/zonas",
     level: 1,
   },
+  {
+    title: "Paquetes de envíos",
+    icon: "price",
+    type: "link",
+    path: "/reglas-tarifa",
+    level: 1,
+  },
 ];
 
 // Array

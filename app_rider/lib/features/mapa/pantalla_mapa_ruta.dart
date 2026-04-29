@@ -1,5 +1,6 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart' as geo;
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
@@ -18,8 +19,8 @@ class PantallaMapaRuta extends ConsumerStatefulWidget {
 
 class _PantallaMapaRutaEstado extends ConsumerState<PantallaMapaRuta> {
   MapboxMap? _mapa;
-  PolylineAnnotationManager? _gestorPolylines;
-  PointAnnotationManager? _gestorPuntos;
+  CircleAnnotationManager? _gestorCirculos;
+  PointAnnotationManager? _gestorEtiquetas;
 
   bool get _tokenConfigurado => Entorno.tokenMapbox.isNotEmpty;
 
@@ -51,9 +52,10 @@ class _PantallaMapaRutaEstado extends ConsumerState<PantallaMapaRuta> {
           ),
           onMapCreated: (mapa) async {
             _mapa = mapa;
-            _gestorPuntos = await mapa.annotations.createPointAnnotationManager();
-            _gestorPolylines =
-                await mapa.annotations.createPolylineAnnotationManager();
+            _gestorCirculos =
+                await mapa.annotations.createCircleAnnotationManager();
+            _gestorEtiquetas =
+                await mapa.annotations.createPointAnnotationManager();
             await _dibujarRutaSiHayDatos();
           },
         ),
@@ -97,98 +99,161 @@ class _PantallaMapaRutaEstado extends ConsumerState<PantallaMapaRuta> {
   }
 
   Future<void> _dibujarRutaSiHayDatos() async {
-    if (_mapa == null || _gestorPolylines == null || _gestorPuntos == null) return;
+    if (_mapa == null || _gestorCirculos == null || _gestorEtiquetas == null) {
+      return;
+    }
 
     final recogidas = await ref.read(recogidasPendientesProveedor.future);
     final entregas = await ref.read(entregasPendientesProveedor.future);
 
-    final puntos = <_PuntoMapa>[];
-    Position? posActual;
+    double? riderLat;
+    double? riderLng;
     try {
       final p = await geo.Geolocator.getCurrentPosition(
         locationSettings: const geo.LocationSettings(
           accuracy: geo.LocationAccuracy.high,
         ),
       );
-      posActual = Position(p.longitude, p.latitude);
-      puntos.add(_PuntoMapa(p.latitude, p.longitude, 'Tú', 'Posición actual'));
+      riderLat = p.latitude;
+      riderLng = p.longitude;
     } catch (_) {/* sin geo */}
 
+    final paradas = <_ParadaMapa>[];
     for (final p in recogidas) {
-      if (p.latitudRecogida != null && p.longitudRecogida != null) {
-        puntos.add(_PuntoMapa(
-          p.latitudRecogida!,
-          p.longitudRecogida!,
-          'R',
-          p.codigoSeguimiento,
-        ));
+      if (p.latitudOrigen != null && p.longitudOrigen != null) {
+        paradas.add(_ParadaMapa(p.latitudOrigen!, p.longitudOrigen!));
       }
     }
     for (final p in entregas) {
-      if (p.latitudEntrega != null && p.longitudEntrega != null) {
-        puntos.add(_PuntoMapa(
-          p.latitudEntrega!,
-          p.longitudEntrega!,
-          'E',
-          p.codigoSeguimiento,
-        ));
+      if (p.latitudDestino != null && p.longitudDestino != null) {
+        paradas.add(_ParadaMapa(p.latitudDestino!, p.longitudDestino!));
       }
     }
 
-    await _gestorPuntos!.deleteAll();
-    await _gestorPolylines!.deleteAll();
+    await _gestorCirculos!.deleteAll();
+    await _gestorEtiquetas!.deleteAll();
 
-    if (puntos.length < 2) return;
-
-    for (final p in puntos) {
-      await _gestorPuntos!.create(
-        PointAnnotationOptions(
-          geometry: Point(coordinates: Position(p.lng, p.lat)),
-          textField: '${p.codigo} ${p.titulo}',
-          textOffset: [0, -2],
+    if (riderLat != null && riderLng != null) {
+      await _gestorCirculos!.create(
+        CircleAnnotationOptions(
+          geometry: Point(coordinates: Position(riderLng, riderLat)),
+          circleColor: 0xFF1E88E5,
+          circleRadius: 10,
+          circleStrokeColor: 0xFFFFFFFF,
+          circleStrokeWidth: 3,
         ),
       );
     }
 
-    try {
-      final mapasRepo = ref.read(mapasRepositorioProveedor);
-      final ruta = await mapasRepo.optimizarRuta(
-        puntos
-            .map((p) => (latitud: p.lat, longitud: p.lng))
-            .toList(),
-      );
+    if (paradas.isNotEmpty) {
+      final ordenadas = await _ordenarParadas(riderLat, riderLng, paradas);
 
-      final decodificados = PolylinePoints()
-          .decodePolyline(ruta.geometriaPolyline)
-          .map((p) => Position(p.longitude, p.latitude))
-          .toList();
+      for (var i = 0; i < ordenadas.length; i++) {
+        final parada = ordenadas[i];
+        final numero = i + 1;
+        final geometria = Point(coordinates: Position(parada.lng, parada.lat));
 
-      if (decodificados.isNotEmpty) {
-        await _gestorPolylines!.create(
-          PolylineAnnotationOptions(
-            geometry: LineString(coordinates: decodificados),
-            lineColor: 0xFF1E88E5,
-            lineWidth: 4,
+        await _gestorCirculos!.create(
+          CircleAnnotationOptions(
+            geometry: geometria,
+            circleColor: 0xFFFFFFFF,
+            circleRadius: 14,
+            circleStrokeColor: 0xFF1E88E5,
+            circleStrokeWidth: 3,
+          ),
+        );
+        await _gestorEtiquetas!.create(
+          PointAnnotationOptions(
+            geometry: geometria,
+            textField: '$numero',
+            textColor: 0xFF1E88E5,
+            textSize: 14.0,
+            textHaloColor: 0xFFFFFFFF,
+            textHaloWidth: 1.0,
           ),
         );
       }
-    } catch (_) {
-      // no rompemos el mapa si falla la optimización; los puntos siguen visibles
     }
 
-    if (posActual != null) {
+    if (riderLat != null && riderLng != null) {
       await _mapa!.flyTo(
-        CameraOptions(center: Point(coordinates: posActual), zoom: 13),
+        CameraOptions(
+          center: Point(coordinates: Position(riderLng, riderLat)),
+          zoom: 13,
+        ),
         MapAnimationOptions(duration: 800),
       );
     }
   }
+
+  /// Devuelve las paradas en orden de visita (índice 0 = primera en visitarse).
+  /// Pide a Mapbox la ruta óptima vía `optimizarRuta`; si falla, cae a
+  /// distancia haversine desde el rider, y si tampoco hay rider conserva el
+  /// orden original.
+  Future<List<_ParadaMapa>> _ordenarParadas(
+    double? riderLat,
+    double? riderLng,
+    List<_ParadaMapa> paradas,
+  ) async {
+    if (paradas.length <= 1) return paradas;
+
+    final hayRider = riderLat != null && riderLng != null;
+
+    try {
+      final mapasRepo = ref.read(mapasRepositorioProveedor);
+      final entrada = <({double latitud, double longitud})>[
+        if (hayRider) (latitud: riderLat, longitud: riderLng),
+        ...paradas.map((p) => (latitud: p.lat, longitud: p.lng)),
+      ];
+      final ruta = await mapasRepo.optimizarRuta(entrada);
+
+      // `ordenWaypoints` es una permutación de los índices de entrada.
+      // Cuando hay rider, su índice 0 va siempre primero (backend usa
+      // `source: 'first'`), así que las paradas en orden son los índices >= 1.
+      final desplazamiento = hayRider ? 1 : 0;
+      final ordenadas = <_ParadaMapa>[];
+      for (final inputIdx in ruta.ordenWaypoints) {
+        if (inputIdx < desplazamiento) continue;
+        final paradaIdx = inputIdx - desplazamiento;
+        if (paradaIdx >= 0 && paradaIdx < paradas.length) {
+          ordenadas.add(paradas[paradaIdx]);
+        }
+      }
+      if (ordenadas.length == paradas.length) {
+        return ordenadas;
+      }
+    } catch (_) {/* fallback abajo */}
+
+    if (hayRider) {
+      final lista = [...paradas];
+      lista.sort((a, b) {
+        final da = _distanciaMetros(riderLat, riderLng, a.lat, a.lng);
+        final db = _distanciaMetros(riderLat, riderLng, b.lat, b.lng);
+        return da.compareTo(db);
+      });
+      return lista;
+    }
+    return paradas;
+  }
 }
 
-class _PuntoMapa {
+class _ParadaMapa {
   final double lat;
   final double lng;
-  final String codigo;
-  final String titulo;
-  _PuntoMapa(this.lat, this.lng, this.codigo, this.titulo);
+  _ParadaMapa(this.lat, this.lng);
 }
+
+double _distanciaMetros(double lat1, double lng1, double lat2, double lng2) {
+  const radioTierraMetros = 6371000.0;
+  final dLat = _gradosARadianes(lat2 - lat1);
+  final dLng = _gradosARadianes(lng2 - lng1);
+  final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+      math.cos(_gradosARadianes(lat1)) *
+          math.cos(_gradosARadianes(lat2)) *
+          math.sin(dLng / 2) *
+          math.sin(dLng / 2);
+  final c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+  return radioTierraMetros * c;
+}
+
+double _gradosARadianes(double grados) => grados * math.pi / 180;

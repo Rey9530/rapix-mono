@@ -1,0 +1,16 @@
+.contenedor-imagen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  min-height: 320px;
+  max-height: 80vh;
+  overflow: auto;
+}
+
+.imagen-completa {
+  display: block;
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+}

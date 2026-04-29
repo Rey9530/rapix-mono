@@ -27,6 +27,7 @@ dependencies:
   intl: ^0.20.2
   permission_handler: ^11.3.1
   connectivity_plus: ^6.1.0
+  url_launcher: ^6.3.1
 
   # Geolocalización (8.5 / 8.6)
   geolocator: ^13.0.2

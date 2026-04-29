@@ -1,0 +1,142 @@
+<div class="modal-header">
+  <h5 class="modal-title">Asignar retiros por zona</h5>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Cerrar"
+    (click)="modal.dismiss()"
+  ></button>
+</div>
+<div class="modal-body">
+  <div class="row g-3 mb-3">
+    <div class="col-md-6">
+      <label class="form-label small text-muted mb-1">Zona</label>
+      <select
+        class="form-select"
+        [disabled]="cargandoZonas() || enviando()"
+        [(ngModel)]="zonaSeleccionadaId"
+        (change)="alCambiarZona(zonaSeleccionadaId)"
+      >
+        <option value="">Selecciona una zona…</option>
+        @for (z of zonas(); track z.id) {
+          <option [value]="z.id">{{ z.codigo }} — {{ z.nombre }}</option>
+        }
+      </select>
+    </div>
+    <div class="col-md-6 d-flex align-items-end">
+      @if (zonaSeleccionada()) {
+        <div class="text-muted small">
+          {{ pedidos().length }} pendientes ·
+          {{ repartidores().length }} repartidor(es) asignado(s) ·
+          {{ seleccionados().size }} seleccionados
+        </div>
+      }
+    </div>
+  </div>
+
+  @if (tokenAusente) {
+    <div class="alert alert-warning">
+      Token de Mapbox no configurado. No se puede mostrar el mapa.
+    </div>
+  }
+
+  <div class="row g-3">
+    <div class="col-lg-8">
+      <div class="contenedor-mapa-wrapper position-relative">
+        <div #contenedor class="contenedor-mapa"></div>
+        @if (cargandoZona()) {
+          <div class="overlay-cargando">
+            <div class="spinner-border text-primary"></div>
+          </div>
+        }
+        @if (!zonaSeleccionada() && !cargandoZona()) {
+          <div class="overlay-vacio text-muted">
+            Selecciona una zona para ver el mapa.
+          </div>
+        }
+      </div>
+      <p class="small text-muted mt-2 mb-0">
+        <span class="punto-leyenda"></span> Pedido pendiente ·
+        <span class="punto-leyenda seleccionado"></span> Seleccionado · clic en
+        un punto para seleccionarlo
+      </p>
+    </div>
+
+    <div class="col-lg-4">
+      <h6 class="mb-2">Repartidores de la zona</h6>
+      @if (cargandoZona()) {
+        <p class="text-muted small">Cargando…</p>
+      } @else if (!zonaSeleccionada()) {
+        <p class="text-muted small">Sin zona seleccionada.</p>
+      } @else if (repartidores().length === 0) {
+        <div class="alert alert-warning small mb-0">
+          La zona no tiene repartidores asignados.
+        </div>
+      } @else {
+        <ul class="list-group">
+          @for (r of repartidores(); track r.id) {
+            <li
+              class="list-group-item list-group-item-action d-flex align-items-center gap-2"
+              [class.active]="repartidorElegidoId() === r.id"
+              (click)="alSeleccionarRepartidor(r.id)"
+              role="button"
+            >
+              <input
+                type="radio"
+                class="form-check-input m-0"
+                name="rider"
+                [checked]="repartidorElegidoId() === r.id"
+              />
+              <div class="flex-grow-1">
+                <div class="fw-semibold small">
+                  {{ r.nombreCompleto }}
+                  @if (r.esPrimaria) {
+                    <span class="badge bg-primary ms-1">primario</span>
+                  }
+                </div>
+                <div class="small text-muted">
+                  {{ r.tipoVehiculo }} · ⭐ {{ r.calificacion }} ·
+                  {{ r.totalEntregas }} entregas
+                  @if (!r.disponible) {
+                    <span class="text-danger">· no disponible</span>
+                  }
+                </div>
+              </div>
+            </li>
+          }
+        </ul>
+
+        @if (repartidores().length === 1 && pedidos().length > 0) {
+          <button
+            type="button"
+            class="btn btn-outline-primary btn-sm mt-3 w-100"
+            [disabled]="enviando()"
+            (click)="asignarTodosAlUnicoRider()"
+          >
+            Asignar todos los pendientes a
+            {{ repartidores()[0].nombreCompleto }}
+          </button>
+        }
+      }
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <span class="me-auto small text-muted">
+    {{ seleccionados().size }} pedido(s) seleccionado(s)
+  </span>
+  <button type="button" class="btn btn-secondary" (click)="cerrar()">
+    Cerrar
+  </button>
+  <button
+    type="button"
+    class="btn btn-primary"
+    [disabled]="!puedeAsignarSeleccionados()"
+    (click)="asignarSeleccionados()"
+  >
+    @if (enviando()) {
+      <span class="spinner-border spinner-border-sm me-1"></span>
+    }
+    Asignar seleccionados
+  </button>
+</div>

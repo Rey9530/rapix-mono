@@ -24,6 +24,17 @@ export const content: Routes = [
       import("../../components/zonas/zonas.routes").then((r) => r.zonasRoutes),
   },
   {
+    path: "reglas-tarifa",
+    data: {
+      title: "Paquetes de envíos",
+      breadcrumb: "Paquetes de envíos",
+    },
+    loadChildren: () =>
+      import("../../components/reglas-tarifa/reglas-tarifa.routes").then(
+        (r) => r.reglasTarifaRoutes,
+      ),
+  },
+  {
     path: "pedidos",
     data: { title: "Pedidos", breadcrumb: "Pedidos" },
     loadChildren: () =>

@@ -112,6 +112,15 @@
                   >
                     Editar
                   </button>
+                  @if (u.rol === "VENDEDOR") {
+                    <button
+                      class="btn btn-sm btn-outline-primary me-1"
+                      (click)="abrirPaquetes(u)"
+                      title="Gestionar paquetes asignados"
+                    >
+                      Paquetes
+                    </button>
+                  }
                   @if (u.estado === "PENDIENTE_VERIFICACION") {
                     <button
                       class="btn btn-sm btn-outline-success me-1"

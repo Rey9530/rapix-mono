@@ -16,6 +16,8 @@ export type MetodoPago =
   | "TARJETA"
   | "TRANSFERENCIA";
 
+export type ModoFacturacion = "POR_ENVIO" | "PAQUETE";
+
 export interface Pedido {
   id: string;
   codigoSeguimiento: string;
@@ -28,18 +30,26 @@ export interface Pedido {
   latitudOrigen: number;
   longitudOrigen: number;
   zonaOrigenId?: string | null;
+  notasOrigen?: string | null;
   direccionDestino: string;
   latitudDestino: number;
   longitudDestino: number;
   zonaDestinoId?: string | null;
+  notasDestino?: string | null;
   descripcionPaquete?: string | null;
+  pesoPaqueteKg?: string | null;
+  valorDeclarado?: string | null;
+  urlFotoPaquete?: string | null;
   metodoPago: MetodoPago;
+  modoFacturacion?: ModoFacturacion | null;
   costoEnvio: string;
   montoContraEntrega?: string | null;
+  paqueteRecargadoId?: string | null;
   repartidorRecogidaId?: string | null;
   repartidorEntregaId?: string | null;
   programadoPara?: string | null;
   recogidoEn?: string | null;
+  enIntercambioEn?: string | null;
   entregadoEn?: string | null;
   canceladoEn?: string | null;
   motivoCancelado?: string | null;

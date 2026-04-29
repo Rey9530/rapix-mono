@@ -12,6 +12,17 @@ export interface AsignarManualPayload {
   repartidorEntregaId?: string;
 }
 
+export interface AsignarMultiplePayload {
+  pedidoIds: string[];
+  repartidorRecogidaId: string;
+  repartidorEntregaId?: string;
+}
+
+export interface RespuestaAsignarMultiple {
+  asignados: number;
+  fallidos: Array<{ pedidoId: string; motivo: string }>;
+}
+
 @Injectable({ providedIn: "root" })
 export class PedidosServicio {
   private readonly http = inject(HttpClient);
@@ -45,6 +56,15 @@ export class PedidosServicio {
 
   asignarManual(id: string, payload: AsignarManualPayload): Observable<Pedido> {
     return this.http.post<Pedido>(`${this.base}/${id}/asignar`, payload);
+  }
+
+  asignarMultiple(
+    payload: AsignarMultiplePayload,
+  ): Observable<RespuestaAsignarMultiple> {
+    return this.http.post<RespuestaAsignarMultiple>(
+      `${this.base}/asignar-multiple`,
+      payload,
+    );
   }
 
   cancelar(id: string, motivo: string): Observable<Pedido> {

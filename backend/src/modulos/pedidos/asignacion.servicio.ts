@@ -8,6 +8,7 @@ import { EventosDominio } from '../../eventos/eventos-dominio.js';
 import { PedidoEstadoCambiadoEvento } from '../../eventos/pedido-estado-cambiado.evento.js';
 import type { Usuario } from '../../generated/prisma/client.js';
 import { PrismaServicio } from '../../prisma/prisma.servicio.js';
+import { AsignarMultiplePedidosDto } from './dto/asignar-multiple-pedidos.dto.js';
 import { AsignarPedidoDto } from './dto/asignar-pedido.dto.js';
 import { PedidoMaquinaEstados } from './maquina-estados/pedido-maquina-estados.js';
 
@@ -160,6 +161,25 @@ export class AsignacionServicio {
       );
     }
     return actualizado;
+  }
+
+  async asignarMultiple(usuario: Usuario, dto: AsignarMultiplePedidosDto) {
+    let asignados = 0;
+    const fallidos: Array<{ pedidoId: string; motivo: string }> = [];
+    for (const pedidoId of dto.pedidoIds) {
+      try {
+        await this.asignarManual(usuario, pedidoId, {
+          repartidorRecogidaId: dto.repartidorRecogidaId,
+          repartidorEntregaId: dto.repartidorEntregaId,
+        });
+        asignados++;
+      } catch (e) {
+        const motivo =
+          e instanceof Error ? e.message : 'Error desconocido al asignar';
+        fallidos.push({ pedidoId, motivo });
+      }
+    }
+    return { asignados, fallidos };
   }
 
   async asignarAutomaticoBatch(actorId: string) {

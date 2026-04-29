@@ -178,6 +178,31 @@ export class ZonasServicio {
     return this.obtenerPorId(id);
   }
 
+  async listarRepartidoresDeZona(zonaId: string) {
+    const zona = await this.prisma.zona.findUnique({ where: { id: zonaId } });
+    if (!zona) throw new NotFoundException('Zona no encontrada');
+
+    const filas = await this.prisma.zonaRepartidor.findMany({
+      where: { zonaId },
+      include: { repartidor: { include: { usuario: true } } },
+      orderBy: [{ esPrimaria: 'desc' }],
+    });
+
+    return filas.map((f) => ({
+      id: f.repartidor.id,
+      usuarioId: f.repartidor.usuarioId,
+      nombreCompleto: f.repartidor.usuario.nombreCompleto,
+      email: f.repartidor.usuario.email,
+      estado: f.repartidor.usuario.estado,
+      tipoVehiculo: f.repartidor.tipoVehiculo,
+      placa: f.repartidor.placa,
+      disponible: f.repartidor.disponible,
+      calificacion: f.repartidor.calificacion,
+      totalEntregas: f.repartidor.totalEntregas,
+      esPrimaria: f.esPrimaria,
+    }));
+  }
+
   async asignarRepartidores(
     zonaId: string,
     dto: AsignarRepartidoresAZonaDto,

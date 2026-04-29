@@ -20,3 +20,18 @@ export interface PerfilRepartidor {
     esPrimaria: boolean;
   }>;
 }
+
+// Forma que devuelve `GET /zonas/:id/repartidores` (admin).
+export interface RepartidorDeZona {
+  id: string;
+  usuarioId: string;
+  nombreCompleto: string;
+  email: string;
+  estado: string;
+  tipoVehiculo: string;
+  placa?: string | null;
+  disponible: boolean;
+  calificacion: number;
+  totalEntregas: number;
+  esPrimaria: boolean;
+}

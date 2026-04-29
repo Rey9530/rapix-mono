@@ -1,0 +1,30 @@
+<div class="modal-header">
+  <h5 class="modal-title">Ruta del pedido {{ pedido.codigoSeguimiento }}</h5>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Cerrar"
+    (click)="modal.dismiss()"
+  ></button>
+</div>
+<div class="modal-body p-0">
+  @if (tokenAusente) {
+    <div class="alert alert-warning m-3 mb-0">
+      Token de Mapbox no configurado. No se puede mostrar el mapa.
+    </div>
+  } @else {
+    <div #contenedor class="contenedor-mapa"></div>
+  }
+</div>
+<div class="modal-footer flex-wrap">
+  <small class="text-muted me-auto">
+    <span class="badge bg-success me-1">Origen</span>
+    {{ pedido.latitudOrigen }}, {{ pedido.longitudOrigen }}
+    <br />
+    <span class="badge bg-danger me-1">Destino</span>
+    {{ pedido.latitudDestino }}, {{ pedido.longitudDestino }}
+  </small>
+  <button type="button" class="btn btn-secondary" (click)="modal.close()">
+    Cerrar
+  </button>
+</div>

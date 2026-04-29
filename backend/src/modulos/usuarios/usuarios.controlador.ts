@@ -15,13 +15,16 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../../comun/decoradores/roles.decorador.js';
 import { UsuarioActual } from '../../comun/decoradores/usuario-actual.decorador.js';
+import { PaginacionDto } from '../../comun/dto/paginacion.dto.js';
 import { RespuestaPaginada } from '../../comun/dto/respuesta-paginada.js';
 import type { Usuario } from '../../generated/prisma/client.js';
 import { UsuarioPublicoDto } from '../autenticacion/dto/usuario-publico.dto.js';
 import { ActualizarEstadoUsuarioDto } from './dto/actualizar-estado-usuario.dto.js';
+import { ActualizarPaqueteAsignadoDto } from './dto/actualizar-paquete-asignado.dto.js';
 import { ActualizarPerfilPropioDto } from './dto/actualizar-perfil-propio.dto.js';
 import { ActualizarPerfilVendedorDto } from './dto/actualizar-perfil-vendedor.dto.js';
 import { ActualizarUsuarioDto } from './dto/actualizar-usuario.dto.js';
+import { AsignarPaqueteDto } from './dto/asignar-paquete.dto.js';
 import { CrearUsuarioDto } from './dto/crear-usuario.dto.js';
 import { ListarUsuariosDto } from './dto/listar-usuarios.dto.js';
 import { UsuarioDetalleDto } from './dto/usuario-detalle.dto.js';
@@ -130,5 +133,50 @@ export class UsuariosControlador {
   @Delete(':id')
   eliminar(@Param('id', ParseUUIDPipe) id: string): Promise<UsuarioPublicoDto> {
     return this.servicio.eliminar(id);
+  }
+
+  // ──────────────────────────────────────────────────
+  // Paquetes recargados asignados a un VENDEDOR (ADMIN)
+  // ──────────────────────────────────────────────────
+
+  @Roles('ADMIN')
+  @Get(':id/paquetes')
+  @ApiOperation({
+    summary: 'Listado paginado de paquetes recargados del vendedor (ADMIN)',
+  })
+  listarPaquetes(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query() filtros: PaginacionDto,
+  ) {
+    return this.servicio.listarPaquetesDeVendedor(id, filtros);
+  }
+
+  @Roles('ADMIN')
+  @Post(':id/paquetes')
+  @ApiOperation({
+    summary:
+      'Asigna manualmente un paquete recargado al vendedor (ADMIN). Permite definir enviosTotales y enviosRestantes.',
+  })
+  asignarPaquete(
+    @UsuarioActual() admin: Usuario,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: AsignarPaqueteDto,
+  ) {
+    return this.servicio.asignarPaquete(id, dto, admin.id);
+  }
+
+  @Roles('ADMIN')
+  @Patch(':id/paquetes/:paqueteId')
+  @ApiOperation({
+    summary:
+      'Ajusta manualmente un paquete asignado (envíosRestantes, estado, expiraEn). ADMIN.',
+  })
+  actualizarPaquete(
+    @UsuarioActual() admin: Usuario,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('paqueteId', ParseUUIDPipe) paqueteId: string,
+    @Body() dto: ActualizarPaqueteAsignadoDto,
+  ) {
+    return this.servicio.actualizarPaqueteAsignado(id, paqueteId, dto, admin.id);
   }
 }

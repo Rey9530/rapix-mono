@@ -32,31 +32,98 @@
               <div class="col-md-6">
                 <h6>Pago</h6>
                 <p class="mb-1">{{ p.metodoPago }}</p>
+                @if (p.modoFacturacion) {
+                  <p class="mb-1 text-muted small">
+                    Facturación: {{ p.modoFacturacion }}
+                  </p>
+                }
                 <p class="mb-1">Costo envío: ${{ p.costoEnvio }}</p>
                 @if (p.montoContraEntrega) {
                   <p class="mb-1">Contra entrega: ${{ p.montoContraEntrega }}</p>
                 }
+                @if (p.paqueteRecargadoId) {
+                  <p class="mb-1 text-muted small">
+                    Paquete recargado: {{ p.paqueteRecargadoId }}
+                  </p>
+                }
               </div>
             </div>
             <hr />
+
             <div class="row">
               <div class="col-md-6">
                 <h6>Origen</h6>
                 <p class="mb-1">{{ p.direccionOrigen }}</p>
-                <p class="text-muted small mb-0">
+                <p class="text-muted small mb-1">
                   Zona: {{ p.zonaOrigen?.nombre ?? "—" }}
                 </p>
+                <p class="text-muted small mb-1">
+                  Coords: {{ p.latitudOrigen }}, {{ p.longitudOrigen }}
+                </p>
+                @if (p.notasOrigen) {
+                  <p class="small mb-0">
+                    <span class="text-muted">Notas:</span> {{ p.notasOrigen }}
+                  </p>
+                }
               </div>
               <div class="col-md-6">
                 <h6>Destino</h6>
                 <p class="mb-1">{{ p.direccionDestino }}</p>
-                <p class="text-muted small mb-0">
+                <p class="text-muted small mb-1">
                   Zona: {{ p.zonaDestino?.nombre ?? "—" }}
                 </p>
+                <p class="text-muted small mb-1">
+                  Coords: {{ p.latitudDestino }}, {{ p.longitudDestino }}
+                </p>
+                @if (p.notasDestino) {
+                  <p class="small mb-0">
+                    <span class="text-muted">Notas:</span> {{ p.notasDestino }}
+                  </p>
+                }
               </div>
             </div>
+            <div class="mt-3">
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-primary"
+                (click)="abrirMapa()"
+              >
+                Ver en mapa
+              </button>
+            </div>
             <hr />
+
             <div class="row">
+              <div class="col-md-6">
+                <h6>Paquete</h6>
+                @if (p.descripcionPaquete) {
+                  <p class="mb-1">{{ p.descripcionPaquete }}</p>
+                } @else {
+                  <p class="mb-1 text-muted">Sin descripción</p>
+                }
+                @if (p.pesoPaqueteKg) {
+                  <p class="mb-1 text-muted small">Peso: {{ p.pesoPaqueteKg }} kg</p>
+                }
+                @if (p.valorDeclarado) {
+                  <p class="mb-1 text-muted small">
+                    Valor declarado: ${{ p.valorDeclarado }}
+                  </p>
+                }
+                @if (p.urlFotoPaquete) {
+                  <button
+                    type="button"
+                    class="btn btn-link p-0 d-inline-block mt-2 border-0"
+                    (click)="abrirImagen(p.urlFotoPaquete, 'Foto del paquete')"
+                  >
+                    <img
+                      [src]="p.urlFotoPaquete"
+                      class="img-fluid rounded"
+                      alt="Foto del paquete"
+                      style="max-height: 180px; cursor: zoom-in"
+                    />
+                  </button>
+                }
+              </div>
               <div class="col-md-6">
                 <h6>Repartidores</h6>
                 <p class="mb-1">
@@ -72,9 +139,31 @@
                   }}
                 </p>
               </div>
-              <div class="col-md-6">
+            </div>
+            <hr />
+
+            <div class="row">
+              <div class="col-md-12">
                 <h6>Tiempos</h6>
                 <p class="mb-1">Creado: {{ p.creadoEn | date: "short" }}</p>
+                <p class="mb-1 text-muted small">
+                  Actualizado: {{ p.actualizadoEn | date: "short" }}
+                </p>
+                @if (p.programadoPara) {
+                  <p class="mb-1">
+                    Programado para: {{ p.programadoPara | date: "short" }}
+                  </p>
+                }
+                @if (p.recogidoEn) {
+                  <p class="mb-1 text-info">
+                    Recogido: {{ p.recogidoEn | date: "short" }}
+                  </p>
+                }
+                @if (p.enIntercambioEn) {
+                  <p class="mb-1 text-warning">
+                    En intercambio: {{ p.enIntercambioEn | date: "short" }}
+                  </p>
+                }
                 @if (p.entregadoEn) {
                   <p class="mb-1 text-success">
                     Entregado: {{ p.entregadoEn | date: "short" }}
@@ -84,6 +173,11 @@
                   <p class="mb-1 text-danger">
                     Cancelado: {{ p.canceladoEn | date: "short" }} —
                     {{ p.motivoCancelado }}
+                  </p>
+                }
+                @if (p.motivoFallo) {
+                  <p class="mb-1 text-danger">
+                    Motivo de fallo: {{ p.motivoFallo }}
                   </p>
                 }
               </div>
@@ -98,17 +192,34 @@
               <div class="row g-3">
                 @for (c of p.comprobantes; track c.id) {
                   <div class="col-md-4">
-                    <a [href]="c.urlFoto" target="_blank">
+                    <button
+                      type="button"
+                      class="btn btn-link p-0 border-0 w-100"
+                      (click)="abrirImagen(c.urlFoto, 'Comprobante')"
+                    >
                       <img
                         [src]="c.urlFoto"
                         class="img-fluid rounded"
                         alt="Comprobante"
+                        style="cursor: zoom-in"
                       />
-                    </a>
+                    </button>
                     @if (c.recibidoPor) {
                       <p class="mt-2 small text-muted mb-0">
                         Recibido por: {{ c.recibidoPor }}
                       </p>
+                    }
+                    @if (c.urlFirma) {
+                      <button
+                        type="button"
+                        class="btn btn-link p-0 small d-block"
+                        (click)="abrirImagen(c.urlFirma, 'Firma')"
+                      >
+                        Ver firma
+                      </button>
+                    }
+                    @if (c.notas) {
+                      <p class="small mb-0">{{ c.notas }}</p>
                     }
                   </div>
                 }
@@ -134,6 +245,11 @@
                     </div>
                     @if (ev.notas) {
                       <div class="small">{{ ev.notas }}</div>
+                    }
+                    @if (ev.latitud && ev.longitud) {
+                      <div class="small text-muted">
+                        📍 {{ ev.latitud }}, {{ ev.longitud }}
+                      </div>
                     }
                   </li>
                 }

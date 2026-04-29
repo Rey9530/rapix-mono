@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/network/excepciones_api.dart';
 import '../../core/proveedores_globales.dart';
 import '../../data/modelos/pedido.dart';
+import '../../widgets/secciones_detalle_pedido.dart';
 import '../recogidas/proveedor_recogidas.dart';
 import 'proveedor_entregas.dart';
 
@@ -44,49 +45,82 @@ class _Cuerpo extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        _Seccion(titulo: 'Código', contenido: pedido.codigoSeguimiento),
-        _Seccion(titulo: 'Estado', contenido: pedido.estado.name),
-        if (pedido.nombreDestinatario != null)
-          _Seccion(titulo: 'Destinatario', contenido: pedido.nombreDestinatario!),
-        if (pedido.telefonoDestinatario != null)
-          _Seccion(titulo: 'Teléfono', contenido: pedido.telefonoDestinatario!),
-        if (pedido.direccionEntrega != null)
-          _Seccion(titulo: 'Dirección de entrega', contenido: pedido.direccionEntrega!),
-        if (pedido.montoContraEntrega != null)
-          _Seccion(
-            titulo: 'Monto a cobrar',
-            contenido: '\$${pedido.montoContraEntrega}',
-          ),
-        if (pedido.notas != null && pedido.notas!.isNotEmpty)
-          _Seccion(titulo: 'Notas', contenido: pedido.notas!),
-        const SizedBox(height: 24),
-        if (pedido.estado == EstadoPedido.EN_REPARTO) ...[
-          FilledButton.icon(
-            onPressed: () =>
-                context.go('/inicio/entregas/${pedido.id}/comprobante'),
-            icon: const Icon(Icons.check_circle),
-            label: const Text('Confirmar entrega'),
-          ),
+        if (pedido.urlFotoPaquete != null) ...[
+          FotoPaquete(url: pedido.urlFotoPaquete!),
           const SizedBox(height: 12),
-          OutlinedButton.icon(
-            onPressed: () => _fallar(context, ref),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.red,
-              minimumSize: const Size.fromHeight(48),
-            ),
-            icon: const Icon(Icons.cancel_outlined),
-            label: const Text('Marcar como fallida'),
+        ],
+        CabeceraPedido(pedido: pedido, icono: Icons.local_shipping),
+        const SizedBox(height: 12),
+        if (pedido.nombreCliente != null) TarjetaCliente(pedido: pedido),
+        TarjetaUbicacion(
+          titulo: 'Entrega',
+          icono: Icons.location_on_outlined,
+          color: Colors.blue,
+          direccion: pedido.direccionDestino,
+          notas: pedido.notasDestino,
+          latitud: pedido.latitudDestino,
+          longitud: pedido.longitudDestino,
+          etiquetaBoton: 'Entregar en',
+          botonPrincipal: true,
+          onAbrirMapa: () => context.push(
+            '/inicio/entregas/${pedido.id}/mapa?tipo=destino',
           ),
-        ] else
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              'Sin acciones disponibles en estado ${pedido.estado.name}',
-              textAlign: TextAlign.center,
-            ),
+        ),
+        TarjetaUbicacion(
+          titulo: 'Origen',
+          icono: Icons.my_location,
+          color: Colors.orange,
+          direccion: pedido.direccionOrigen,
+          notas: pedido.notasOrigen,
+          latitud: pedido.latitudOrigen,
+          longitud: pedido.longitudOrigen,
+          etiquetaBoton: 'Ver origen en mapa',
+          botonPrincipal: false,
+          onAbrirMapa: () => context.push(
+            '/inicio/entregas/${pedido.id}/mapa?tipo=origen',
           ),
+        ),
+        if (TarjetaPaquete.aplicaPara(pedido)) TarjetaPaquete(pedido: pedido),
+        TarjetaCobro(pedido: pedido),
+        if (TarjetaLineaTiempo.aplicaPara(pedido))
+          TarjetaLineaTiempo(pedido: pedido),
+        const SizedBox(height: 16),
+        ..._botonesAccion(context, ref),
       ],
     );
+  }
+
+  List<Widget> _botonesAccion(BuildContext context, WidgetRef ref) {
+    if (pedido.estado == EstadoPedido.EN_REPARTO) {
+      return [
+        FilledButton.icon(
+          onPressed: () =>
+              context.go('/inicio/entregas/${pedido.id}/comprobante'),
+          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+          icon: const Icon(Icons.check_circle),
+          label: const Text('Confirmar entrega'),
+        ),
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          onPressed: () => _fallar(context, ref),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.red,
+            minimumSize: const Size.fromHeight(48),
+          ),
+          icon: const Icon(Icons.cancel_outlined),
+          label: const Text('Marcar como fallida'),
+        ),
+      ];
+    }
+    return [
+      Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text(
+          'Sin acciones disponibles en estado ${pedido.estado.name}',
+          textAlign: TextAlign.center,
+        ),
+      ),
+    ];
   }
 
   Future<void> _fallar(BuildContext context, WidgetRef ref) async {
@@ -140,30 +174,5 @@ class _Cuerpo extends ConsumerWidget {
     } on ExcepcionApi catch (e) {
       messenger.showSnackBar(SnackBar(content: Text(e.mensaje), backgroundColor: Colors.red));
     }
-  }
-}
-
-class _Seccion extends StatelessWidget {
-  final String titulo;
-  final String contenido;
-  const _Seccion({required this.titulo, required this.contenido});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(titulo,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelMedium
-                  ?.copyWith(color: Colors.grey)),
-          const SizedBox(height: 4),
-          Text(contenido, style: Theme.of(context).textTheme.bodyLarge),
-        ],
-      ),
-    );
   }
 }

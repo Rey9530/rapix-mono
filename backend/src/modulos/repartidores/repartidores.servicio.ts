@@ -196,7 +196,7 @@ export class RepartidoresServicio {
 
   async pedidosDeRepartidor(
     usuarioId: string,
-    tipo: 'todos' | 'recogidas-pendientes' | 'entregas-pendientes',
+    tipo: 'todos' | 'recogidas-pendientes' | 'entregas-pendientes' | 'activos-en-curso',
   ) {
     const perfil = await this.perfilDeUsuario(usuarioId);
     if (tipo === 'recogidas-pendientes') {
@@ -209,6 +209,15 @@ export class RepartidoresServicio {
       return this.prisma.pedido.findMany({
         where: { repartidorEntregaId: perfil.id, estado: 'EN_REPARTO' },
         orderBy: { creadoEn: 'asc' },
+      });
+    }
+    if (tipo === 'activos-en-curso') {
+      return this.prisma.pedido.findMany({
+        where: {
+          repartidorRecogidaId: perfil.id,
+          estado: { in: ['RECOGIDO', 'EN_TRANSITO', 'EN_PUNTO_INTERCAMBIO'] },
+        },
+        orderBy: { recogidoEn: 'asc' },
       });
     }
     return this.prisma.pedido.findMany({

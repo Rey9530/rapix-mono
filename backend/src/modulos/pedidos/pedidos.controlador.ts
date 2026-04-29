@@ -28,6 +28,7 @@ import { UsuarioActual } from '../../comun/decoradores/usuario-actual.decorador.
 import type { Usuario } from '../../generated/prisma/client.js';
 import { AsignacionServicio } from './asignacion.servicio.js';
 import { ActualizarPedidoDto } from './dto/actualizar-pedido.dto.js';
+import { AsignarMultiplePedidosDto } from './dto/asignar-multiple-pedidos.dto.js';
 import { AsignarPedidoDto } from './dto/asignar-pedido.dto.js';
 import { CancelarPedidoDto } from './dto/cancelar-pedido.dto.js';
 import { CrearPedidoDto } from './dto/crear-pedido.dto.js';
@@ -78,6 +79,21 @@ export class PedidosControlador {
   @ApiOperation({ summary: 'Asignar todos los pedidos pendientes (batch)' })
   asignarAutomatico(@UsuarioActual() usuario: Usuario) {
     return this.asignacion.asignarAutomaticoBatch(usuario.id);
+  }
+
+  // ─── Asignación múltiple manual — ADMIN ───────────
+  @ApiBearerAuth('autenticacion-jwt')
+  @Roles('ADMIN')
+  @Post('asignar-multiple')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Asignar varios pedidos al mismo repartidor en un solo llamado',
+  })
+  asignarMultiple(
+    @UsuarioActual() usuario: Usuario,
+    @Body() dto: AsignarMultiplePedidosDto,
+  ) {
+    return this.asignacion.asignarMultiple(usuario, dto);
   }
 
   // ─── Crear / listar / detalle ─────────────────────

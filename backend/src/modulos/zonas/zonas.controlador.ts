@@ -86,6 +86,14 @@ export class ZonasControlador {
 
   @ApiBearerAuth('autenticacion-jwt')
   @Roles('ADMIN')
+  @Get(':id/repartidores')
+  @ApiOperation({ summary: 'Listar repartidores asignados a la zona' })
+  listarRepartidores(@Param('id', ParseUUIDPipe) id: string) {
+    return this.servicio.listarRepartidoresDeZona(id);
+  }
+
+  @ApiBearerAuth('autenticacion-jwt')
+  @Roles('ADMIN')
   @Post(':id/repartidores')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Asignar repartidores a la zona (reemplaza/actualiza)' })

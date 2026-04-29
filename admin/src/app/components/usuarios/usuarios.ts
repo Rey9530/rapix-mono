@@ -8,6 +8,7 @@ import { Subject, debounceTime } from "rxjs";
 
 import { UsuarioDetalleModal } from "./usuario-detalle.modal";
 import { UsuarioFormularioModal } from "./usuario-formulario.modal";
+import { VendedorPaquetesModal } from "./vendedor-paquetes.modal";
 import {
   FiltrosUsuario,
   UsuariosServicio,
@@ -136,6 +137,16 @@ export class Usuarios implements OnInit {
       scrollable: true,
     });
     ref.componentInstance.usuarioId = usuario.id;
+  }
+
+  abrirPaquetes(usuario: Usuario): void {
+    const ref = this.modal.open(VendedorPaquetesModal, {
+      size: "xl",
+      centered: true,
+      scrollable: true,
+    });
+    ref.componentInstance.usuarioId = usuario.id;
+    ref.componentInstance.nombreVendedor = usuario.nombreCompleto;
   }
 
   cambiarEstado(

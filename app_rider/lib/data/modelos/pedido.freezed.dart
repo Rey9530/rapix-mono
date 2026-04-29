@@ -24,17 +24,28 @@ mixin _$Pedido {
   String get id => throw _privateConstructorUsedError;
   String get codigoSeguimiento => throw _privateConstructorUsedError;
   EstadoPedido get estado => throw _privateConstructorUsedError;
+  String? get nombreCliente => throw _privateConstructorUsedError;
+  String? get telefonoCliente => throw _privateConstructorUsedError;
+  String? get emailCliente => throw _privateConstructorUsedError;
+  String? get direccionOrigen => throw _privateConstructorUsedError;
+  double? get latitudOrigen => throw _privateConstructorUsedError;
+  double? get longitudOrigen => throw _privateConstructorUsedError;
+  String? get notasOrigen => throw _privateConstructorUsedError;
+  String? get direccionDestino => throw _privateConstructorUsedError;
+  double? get latitudDestino => throw _privateConstructorUsedError;
+  double? get longitudDestino => throw _privateConstructorUsedError;
+  String? get notasDestino => throw _privateConstructorUsedError;
+  String? get descripcionPaquete => throw _privateConstructorUsedError;
+  String? get pesoPaqueteKg => throw _privateConstructorUsedError;
+  String? get valorDeclarado => throw _privateConstructorUsedError;
+  String? get urlFotoPaquete => throw _privateConstructorUsedError;
   String? get metodoPago => throw _privateConstructorUsedError;
-  String? get direccionRecogida => throw _privateConstructorUsedError;
-  String? get direccionEntrega => throw _privateConstructorUsedError;
-  String? get nombreDestinatario => throw _privateConstructorUsedError;
-  String? get telefonoDestinatario => throw _privateConstructorUsedError;
-  double? get latitudRecogida => throw _privateConstructorUsedError;
-  double? get longitudRecogida => throw _privateConstructorUsedError;
-  double? get latitudEntrega => throw _privateConstructorUsedError;
-  double? get longitudEntrega => throw _privateConstructorUsedError;
+  String? get modoFacturacion => throw _privateConstructorUsedError;
+  String? get costoEnvio => throw _privateConstructorUsedError;
   String? get montoContraEntrega => throw _privateConstructorUsedError;
-  String? get notas => throw _privateConstructorUsedError;
+  DateTime? get recogidoEn => throw _privateConstructorUsedError;
+  DateTime? get enIntercambioEn => throw _privateConstructorUsedError;
+  DateTime? get entregadoEn => throw _privateConstructorUsedError;
   DateTime? get creadoEn => throw _privateConstructorUsedError;
   DateTime? get actualizadoEn => throw _privateConstructorUsedError;
 
@@ -56,17 +67,28 @@ abstract class $PedidoCopyWith<$Res> {
     String id,
     String codigoSeguimiento,
     EstadoPedido estado,
+    String? nombreCliente,
+    String? telefonoCliente,
+    String? emailCliente,
+    String? direccionOrigen,
+    double? latitudOrigen,
+    double? longitudOrigen,
+    String? notasOrigen,
+    String? direccionDestino,
+    double? latitudDestino,
+    double? longitudDestino,
+    String? notasDestino,
+    String? descripcionPaquete,
+    String? pesoPaqueteKg,
+    String? valorDeclarado,
+    String? urlFotoPaquete,
     String? metodoPago,
-    String? direccionRecogida,
-    String? direccionEntrega,
-    String? nombreDestinatario,
-    String? telefonoDestinatario,
-    double? latitudRecogida,
-    double? longitudRecogida,
-    double? latitudEntrega,
-    double? longitudEntrega,
+    String? modoFacturacion,
+    String? costoEnvio,
     String? montoContraEntrega,
-    String? notas,
+    DateTime? recogidoEn,
+    DateTime? enIntercambioEn,
+    DateTime? entregadoEn,
     DateTime? creadoEn,
     DateTime? actualizadoEn,
   });
@@ -90,17 +112,28 @@ class _$PedidoCopyWithImpl<$Res, $Val extends Pedido>
     Object? id = null,
     Object? codigoSeguimiento = null,
     Object? estado = null,
+    Object? nombreCliente = freezed,
+    Object? telefonoCliente = freezed,
+    Object? emailCliente = freezed,
+    Object? direccionOrigen = freezed,
+    Object? latitudOrigen = freezed,
+    Object? longitudOrigen = freezed,
+    Object? notasOrigen = freezed,
+    Object? direccionDestino = freezed,
+    Object? latitudDestino = freezed,
+    Object? longitudDestino = freezed,
+    Object? notasDestino = freezed,
+    Object? descripcionPaquete = freezed,
+    Object? pesoPaqueteKg = freezed,
+    Object? valorDeclarado = freezed,
+    Object? urlFotoPaquete = freezed,
     Object? metodoPago = freezed,
-    Object? direccionRecogida = freezed,
-    Object? direccionEntrega = freezed,
-    Object? nombreDestinatario = freezed,
-    Object? telefonoDestinatario = freezed,
-    Object? latitudRecogida = freezed,
-    Object? longitudRecogida = freezed,
-    Object? latitudEntrega = freezed,
-    Object? longitudEntrega = freezed,
+    Object? modoFacturacion = freezed,
+    Object? costoEnvio = freezed,
     Object? montoContraEntrega = freezed,
-    Object? notas = freezed,
+    Object? recogidoEn = freezed,
+    Object? enIntercambioEn = freezed,
+    Object? entregadoEn = freezed,
     Object? creadoEn = freezed,
     Object? actualizadoEn = freezed,
   }) {
@@ -118,50 +151,94 @@ class _$PedidoCopyWithImpl<$Res, $Val extends Pedido>
                 ? _value.estado
                 : estado // ignore: cast_nullable_to_non_nullable
                       as EstadoPedido,
+            nombreCliente: freezed == nombreCliente
+                ? _value.nombreCliente
+                : nombreCliente // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            telefonoCliente: freezed == telefonoCliente
+                ? _value.telefonoCliente
+                : telefonoCliente // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            emailCliente: freezed == emailCliente
+                ? _value.emailCliente
+                : emailCliente // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            direccionOrigen: freezed == direccionOrigen
+                ? _value.direccionOrigen
+                : direccionOrigen // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            latitudOrigen: freezed == latitudOrigen
+                ? _value.latitudOrigen
+                : latitudOrigen // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            longitudOrigen: freezed == longitudOrigen
+                ? _value.longitudOrigen
+                : longitudOrigen // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            notasOrigen: freezed == notasOrigen
+                ? _value.notasOrigen
+                : notasOrigen // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            direccionDestino: freezed == direccionDestino
+                ? _value.direccionDestino
+                : direccionDestino // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            latitudDestino: freezed == latitudDestino
+                ? _value.latitudDestino
+                : latitudDestino // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            longitudDestino: freezed == longitudDestino
+                ? _value.longitudDestino
+                : longitudDestino // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            notasDestino: freezed == notasDestino
+                ? _value.notasDestino
+                : notasDestino // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            descripcionPaquete: freezed == descripcionPaquete
+                ? _value.descripcionPaquete
+                : descripcionPaquete // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            pesoPaqueteKg: freezed == pesoPaqueteKg
+                ? _value.pesoPaqueteKg
+                : pesoPaqueteKg // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            valorDeclarado: freezed == valorDeclarado
+                ? _value.valorDeclarado
+                : valorDeclarado // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            urlFotoPaquete: freezed == urlFotoPaquete
+                ? _value.urlFotoPaquete
+                : urlFotoPaquete // ignore: cast_nullable_to_non_nullable
+                      as String?,
             metodoPago: freezed == metodoPago
                 ? _value.metodoPago
                 : metodoPago // ignore: cast_nullable_to_non_nullable
                       as String?,
-            direccionRecogida: freezed == direccionRecogida
-                ? _value.direccionRecogida
-                : direccionRecogida // ignore: cast_nullable_to_non_nullable
+            modoFacturacion: freezed == modoFacturacion
+                ? _value.modoFacturacion
+                : modoFacturacion // ignore: cast_nullable_to_non_nullable
                       as String?,
-            direccionEntrega: freezed == direccionEntrega
-                ? _value.direccionEntrega
-                : direccionEntrega // ignore: cast_nullable_to_non_nullable
+            costoEnvio: freezed == costoEnvio
+                ? _value.costoEnvio
+                : costoEnvio // ignore: cast_nullable_to_non_nullable
                       as String?,
-            nombreDestinatario: freezed == nombreDestinatario
-                ? _value.nombreDestinatario
-                : nombreDestinatario // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            telefonoDestinatario: freezed == telefonoDestinatario
-                ? _value.telefonoDestinatario
-                : telefonoDestinatario // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            latitudRecogida: freezed == latitudRecogida
-                ? _value.latitudRecogida
-                : latitudRecogida // ignore: cast_nullable_to_non_nullable
-                      as double?,
-            longitudRecogida: freezed == longitudRecogida
-                ? _value.longitudRecogida
-                : longitudRecogida // ignore: cast_nullable_to_non_nullable
-                      as double?,
-            latitudEntrega: freezed == latitudEntrega
-                ? _value.latitudEntrega
-                : latitudEntrega // ignore: cast_nullable_to_non_nullable
-                      as double?,
-            longitudEntrega: freezed == longitudEntrega
-                ? _value.longitudEntrega
-                : longitudEntrega // ignore: cast_nullable_to_non_nullable
-                      as double?,
             montoContraEntrega: freezed == montoContraEntrega
                 ? _value.montoContraEntrega
                 : montoContraEntrega // ignore: cast_nullable_to_non_nullable
                       as String?,
-            notas: freezed == notas
-                ? _value.notas
-                : notas // ignore: cast_nullable_to_non_nullable
-                      as String?,
+            recogidoEn: freezed == recogidoEn
+                ? _value.recogidoEn
+                : recogidoEn // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            enIntercambioEn: freezed == enIntercambioEn
+                ? _value.enIntercambioEn
+                : enIntercambioEn // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            entregadoEn: freezed == entregadoEn
+                ? _value.entregadoEn
+                : entregadoEn // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
             creadoEn: freezed == creadoEn
                 ? _value.creadoEn
                 : creadoEn // ignore: cast_nullable_to_non_nullable
@@ -188,17 +265,28 @@ abstract class _$$PedidoImplCopyWith<$Res> implements $PedidoCopyWith<$Res> {
     String id,
     String codigoSeguimiento,
     EstadoPedido estado,
+    String? nombreCliente,
+    String? telefonoCliente,
+    String? emailCliente,
+    String? direccionOrigen,
+    double? latitudOrigen,
+    double? longitudOrigen,
+    String? notasOrigen,
+    String? direccionDestino,
+    double? latitudDestino,
+    double? longitudDestino,
+    String? notasDestino,
+    String? descripcionPaquete,
+    String? pesoPaqueteKg,
+    String? valorDeclarado,
+    String? urlFotoPaquete,
     String? metodoPago,
-    String? direccionRecogida,
-    String? direccionEntrega,
-    String? nombreDestinatario,
-    String? telefonoDestinatario,
-    double? latitudRecogida,
-    double? longitudRecogida,
-    double? latitudEntrega,
-    double? longitudEntrega,
+    String? modoFacturacion,
+    String? costoEnvio,
     String? montoContraEntrega,
-    String? notas,
+    DateTime? recogidoEn,
+    DateTime? enIntercambioEn,
+    DateTime? entregadoEn,
     DateTime? creadoEn,
     DateTime? actualizadoEn,
   });
@@ -221,17 +309,28 @@ class __$$PedidoImplCopyWithImpl<$Res>
     Object? id = null,
     Object? codigoSeguimiento = null,
     Object? estado = null,
+    Object? nombreCliente = freezed,
+    Object? telefonoCliente = freezed,
+    Object? emailCliente = freezed,
+    Object? direccionOrigen = freezed,
+    Object? latitudOrigen = freezed,
+    Object? longitudOrigen = freezed,
+    Object? notasOrigen = freezed,
+    Object? direccionDestino = freezed,
+    Object? latitudDestino = freezed,
+    Object? longitudDestino = freezed,
+    Object? notasDestino = freezed,
+    Object? descripcionPaquete = freezed,
+    Object? pesoPaqueteKg = freezed,
+    Object? valorDeclarado = freezed,
+    Object? urlFotoPaquete = freezed,
     Object? metodoPago = freezed,
-    Object? direccionRecogida = freezed,
-    Object? direccionEntrega = freezed,
-    Object? nombreDestinatario = freezed,
-    Object? telefonoDestinatario = freezed,
-    Object? latitudRecogida = freezed,
-    Object? longitudRecogida = freezed,
-    Object? latitudEntrega = freezed,
-    Object? longitudEntrega = freezed,
+    Object? modoFacturacion = freezed,
+    Object? costoEnvio = freezed,
     Object? montoContraEntrega = freezed,
-    Object? notas = freezed,
+    Object? recogidoEn = freezed,
+    Object? enIntercambioEn = freezed,
+    Object? entregadoEn = freezed,
     Object? creadoEn = freezed,
     Object? actualizadoEn = freezed,
   }) {
@@ -249,50 +348,94 @@ class __$$PedidoImplCopyWithImpl<$Res>
             ? _value.estado
             : estado // ignore: cast_nullable_to_non_nullable
                   as EstadoPedido,
+        nombreCliente: freezed == nombreCliente
+            ? _value.nombreCliente
+            : nombreCliente // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        telefonoCliente: freezed == telefonoCliente
+            ? _value.telefonoCliente
+            : telefonoCliente // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        emailCliente: freezed == emailCliente
+            ? _value.emailCliente
+            : emailCliente // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        direccionOrigen: freezed == direccionOrigen
+            ? _value.direccionOrigen
+            : direccionOrigen // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        latitudOrigen: freezed == latitudOrigen
+            ? _value.latitudOrigen
+            : latitudOrigen // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        longitudOrigen: freezed == longitudOrigen
+            ? _value.longitudOrigen
+            : longitudOrigen // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        notasOrigen: freezed == notasOrigen
+            ? _value.notasOrigen
+            : notasOrigen // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        direccionDestino: freezed == direccionDestino
+            ? _value.direccionDestino
+            : direccionDestino // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        latitudDestino: freezed == latitudDestino
+            ? _value.latitudDestino
+            : latitudDestino // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        longitudDestino: freezed == longitudDestino
+            ? _value.longitudDestino
+            : longitudDestino // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        notasDestino: freezed == notasDestino
+            ? _value.notasDestino
+            : notasDestino // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        descripcionPaquete: freezed == descripcionPaquete
+            ? _value.descripcionPaquete
+            : descripcionPaquete // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        pesoPaqueteKg: freezed == pesoPaqueteKg
+            ? _value.pesoPaqueteKg
+            : pesoPaqueteKg // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        valorDeclarado: freezed == valorDeclarado
+            ? _value.valorDeclarado
+            : valorDeclarado // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        urlFotoPaquete: freezed == urlFotoPaquete
+            ? _value.urlFotoPaquete
+            : urlFotoPaquete // ignore: cast_nullable_to_non_nullable
+                  as String?,
         metodoPago: freezed == metodoPago
             ? _value.metodoPago
             : metodoPago // ignore: cast_nullable_to_non_nullable
                   as String?,
-        direccionRecogida: freezed == direccionRecogida
-            ? _value.direccionRecogida
-            : direccionRecogida // ignore: cast_nullable_to_non_nullable
+        modoFacturacion: freezed == modoFacturacion
+            ? _value.modoFacturacion
+            : modoFacturacion // ignore: cast_nullable_to_non_nullable
                   as String?,
-        direccionEntrega: freezed == direccionEntrega
-            ? _value.direccionEntrega
-            : direccionEntrega // ignore: cast_nullable_to_non_nullable
+        costoEnvio: freezed == costoEnvio
+            ? _value.costoEnvio
+            : costoEnvio // ignore: cast_nullable_to_non_nullable
                   as String?,
-        nombreDestinatario: freezed == nombreDestinatario
-            ? _value.nombreDestinatario
-            : nombreDestinatario // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        telefonoDestinatario: freezed == telefonoDestinatario
-            ? _value.telefonoDestinatario
-            : telefonoDestinatario // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        latitudRecogida: freezed == latitudRecogida
-            ? _value.latitudRecogida
-            : latitudRecogida // ignore: cast_nullable_to_non_nullable
-                  as double?,
-        longitudRecogida: freezed == longitudRecogida
-            ? _value.longitudRecogida
-            : longitudRecogida // ignore: cast_nullable_to_non_nullable
-                  as double?,
-        latitudEntrega: freezed == latitudEntrega
-            ? _value.latitudEntrega
-            : latitudEntrega // ignore: cast_nullable_to_non_nullable
-                  as double?,
-        longitudEntrega: freezed == longitudEntrega
-            ? _value.longitudEntrega
-            : longitudEntrega // ignore: cast_nullable_to_non_nullable
-                  as double?,
         montoContraEntrega: freezed == montoContraEntrega
             ? _value.montoContraEntrega
             : montoContraEntrega // ignore: cast_nullable_to_non_nullable
                   as String?,
-        notas: freezed == notas
-            ? _value.notas
-            : notas // ignore: cast_nullable_to_non_nullable
-                  as String?,
+        recogidoEn: freezed == recogidoEn
+            ? _value.recogidoEn
+            : recogidoEn // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        enIntercambioEn: freezed == enIntercambioEn
+            ? _value.enIntercambioEn
+            : enIntercambioEn // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        entregadoEn: freezed == entregadoEn
+            ? _value.entregadoEn
+            : entregadoEn // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
         creadoEn: freezed == creadoEn
             ? _value.creadoEn
             : creadoEn // ignore: cast_nullable_to_non_nullable
@@ -313,17 +456,28 @@ class _$PedidoImpl implements _Pedido {
     required this.id,
     required this.codigoSeguimiento,
     required this.estado,
+    this.nombreCliente,
+    this.telefonoCliente,
+    this.emailCliente,
+    this.direccionOrigen,
+    this.latitudOrigen,
+    this.longitudOrigen,
+    this.notasOrigen,
+    this.direccionDestino,
+    this.latitudDestino,
+    this.longitudDestino,
+    this.notasDestino,
+    this.descripcionPaquete,
+    this.pesoPaqueteKg,
+    this.valorDeclarado,
+    this.urlFotoPaquete,
     this.metodoPago,
-    this.direccionRecogida,
-    this.direccionEntrega,
-    this.nombreDestinatario,
-    this.telefonoDestinatario,
-    this.latitudRecogida,
-    this.longitudRecogida,
-    this.latitudEntrega,
-    this.longitudEntrega,
+    this.modoFacturacion,
+    this.costoEnvio,
     this.montoContraEntrega,
-    this.notas,
+    this.recogidoEn,
+    this.enIntercambioEn,
+    this.entregadoEn,
     this.creadoEn,
     this.actualizadoEn,
   });
@@ -338,27 +492,49 @@ class _$PedidoImpl implements _Pedido {
   @override
   final EstadoPedido estado;
   @override
+  final String? nombreCliente;
+  @override
+  final String? telefonoCliente;
+  @override
+  final String? emailCliente;
+  @override
+  final String? direccionOrigen;
+  @override
+  final double? latitudOrigen;
+  @override
+  final double? longitudOrigen;
+  @override
+  final String? notasOrigen;
+  @override
+  final String? direccionDestino;
+  @override
+  final double? latitudDestino;
+  @override
+  final double? longitudDestino;
+  @override
+  final String? notasDestino;
+  @override
+  final String? descripcionPaquete;
+  @override
+  final String? pesoPaqueteKg;
+  @override
+  final String? valorDeclarado;
+  @override
+  final String? urlFotoPaquete;
+  @override
   final String? metodoPago;
   @override
-  final String? direccionRecogida;
+  final String? modoFacturacion;
   @override
-  final String? direccionEntrega;
-  @override
-  final String? nombreDestinatario;
-  @override
-  final String? telefonoDestinatario;
-  @override
-  final double? latitudRecogida;
-  @override
-  final double? longitudRecogida;
-  @override
-  final double? latitudEntrega;
-  @override
-  final double? longitudEntrega;
+  final String? costoEnvio;
   @override
   final String? montoContraEntrega;
   @override
-  final String? notas;
+  final DateTime? recogidoEn;
+  @override
+  final DateTime? enIntercambioEn;
+  @override
+  final DateTime? entregadoEn;
   @override
   final DateTime? creadoEn;
   @override
@@ -366,7 +542,7 @@ class _$PedidoImpl implements _Pedido {
 
   @override
   String toString() {
-    return 'Pedido(id: $id, codigoSeguimiento: $codigoSeguimiento, estado: $estado, metodoPago: $metodoPago, direccionRecogida: $direccionRecogida, direccionEntrega: $direccionEntrega, nombreDestinatario: $nombreDestinatario, telefonoDestinatario: $telefonoDestinatario, latitudRecogida: $latitudRecogida, longitudRecogida: $longitudRecogida, latitudEntrega: $latitudEntrega, longitudEntrega: $longitudEntrega, montoContraEntrega: $montoContraEntrega, notas: $notas, creadoEn: $creadoEn, actualizadoEn: $actualizadoEn)';
+    return 'Pedido(id: $id, codigoSeguimiento: $codigoSeguimiento, estado: $estado, nombreCliente: $nombreCliente, telefonoCliente: $telefonoCliente, emailCliente: $emailCliente, direccionOrigen: $direccionOrigen, latitudOrigen: $latitudOrigen, longitudOrigen: $longitudOrigen, notasOrigen: $notasOrigen, direccionDestino: $direccionDestino, latitudDestino: $latitudDestino, longitudDestino: $longitudDestino, notasDestino: $notasDestino, descripcionPaquete: $descripcionPaquete, pesoPaqueteKg: $pesoPaqueteKg, valorDeclarado: $valorDeclarado, urlFotoPaquete: $urlFotoPaquete, metodoPago: $metodoPago, modoFacturacion: $modoFacturacion, costoEnvio: $costoEnvio, montoContraEntrega: $montoContraEntrega, recogidoEn: $recogidoEn, enIntercambioEn: $enIntercambioEn, entregadoEn: $entregadoEn, creadoEn: $creadoEn, actualizadoEn: $actualizadoEn)';
   }
 
   @override
@@ -378,27 +554,50 @@ class _$PedidoImpl implements _Pedido {
             (identical(other.codigoSeguimiento, codigoSeguimiento) ||
                 other.codigoSeguimiento == codigoSeguimiento) &&
             (identical(other.estado, estado) || other.estado == estado) &&
+            (identical(other.nombreCliente, nombreCliente) ||
+                other.nombreCliente == nombreCliente) &&
+            (identical(other.telefonoCliente, telefonoCliente) ||
+                other.telefonoCliente == telefonoCliente) &&
+            (identical(other.emailCliente, emailCliente) ||
+                other.emailCliente == emailCliente) &&
+            (identical(other.direccionOrigen, direccionOrigen) ||
+                other.direccionOrigen == direccionOrigen) &&
+            (identical(other.latitudOrigen, latitudOrigen) ||
+                other.latitudOrigen == latitudOrigen) &&
+            (identical(other.longitudOrigen, longitudOrigen) ||
+                other.longitudOrigen == longitudOrigen) &&
+            (identical(other.notasOrigen, notasOrigen) ||
+                other.notasOrigen == notasOrigen) &&
+            (identical(other.direccionDestino, direccionDestino) ||
+                other.direccionDestino == direccionDestino) &&
+            (identical(other.latitudDestino, latitudDestino) ||
+                other.latitudDestino == latitudDestino) &&
+            (identical(other.longitudDestino, longitudDestino) ||
+                other.longitudDestino == longitudDestino) &&
+            (identical(other.notasDestino, notasDestino) ||
+                other.notasDestino == notasDestino) &&
+            (identical(other.descripcionPaquete, descripcionPaquete) ||
+                other.descripcionPaquete == descripcionPaquete) &&
+            (identical(other.pesoPaqueteKg, pesoPaqueteKg) ||
+                other.pesoPaqueteKg == pesoPaqueteKg) &&
+            (identical(other.valorDeclarado, valorDeclarado) ||
+                other.valorDeclarado == valorDeclarado) &&
+            (identical(other.urlFotoPaquete, urlFotoPaquete) ||
+                other.urlFotoPaquete == urlFotoPaquete) &&
             (identical(other.metodoPago, metodoPago) ||
                 other.metodoPago == metodoPago) &&
-            (identical(other.direccionRecogida, direccionRecogida) ||
-                other.direccionRecogida == direccionRecogida) &&
-            (identical(other.direccionEntrega, direccionEntrega) ||
-                other.direccionEntrega == direccionEntrega) &&
-            (identical(other.nombreDestinatario, nombreDestinatario) ||
-                other.nombreDestinatario == nombreDestinatario) &&
-            (identical(other.telefonoDestinatario, telefonoDestinatario) ||
-                other.telefonoDestinatario == telefonoDestinatario) &&
-            (identical(other.latitudRecogida, latitudRecogida) ||
-                other.latitudRecogida == latitudRecogida) &&
-            (identical(other.longitudRecogida, longitudRecogida) ||
-                other.longitudRecogida == longitudRecogida) &&
-            (identical(other.latitudEntrega, latitudEntrega) ||
-                other.latitudEntrega == latitudEntrega) &&
-            (identical(other.longitudEntrega, longitudEntrega) ||
-                other.longitudEntrega == longitudEntrega) &&
+            (identical(other.modoFacturacion, modoFacturacion) ||
+                other.modoFacturacion == modoFacturacion) &&
+            (identical(other.costoEnvio, costoEnvio) ||
+                other.costoEnvio == costoEnvio) &&
             (identical(other.montoContraEntrega, montoContraEntrega) ||
                 other.montoContraEntrega == montoContraEntrega) &&
-            (identical(other.notas, notas) || other.notas == notas) &&
+            (identical(other.recogidoEn, recogidoEn) ||
+                other.recogidoEn == recogidoEn) &&
+            (identical(other.enIntercambioEn, enIntercambioEn) ||
+                other.enIntercambioEn == enIntercambioEn) &&
+            (identical(other.entregadoEn, entregadoEn) ||
+                other.entregadoEn == entregadoEn) &&
             (identical(other.creadoEn, creadoEn) ||
                 other.creadoEn == creadoEn) &&
             (identical(other.actualizadoEn, actualizadoEn) ||
@@ -407,25 +606,36 @@ class _$PedidoImpl implements _Pedido {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     id,
     codigoSeguimiento,
     estado,
+    nombreCliente,
+    telefonoCliente,
+    emailCliente,
+    direccionOrigen,
+    latitudOrigen,
+    longitudOrigen,
+    notasOrigen,
+    direccionDestino,
+    latitudDestino,
+    longitudDestino,
+    notasDestino,
+    descripcionPaquete,
+    pesoPaqueteKg,
+    valorDeclarado,
+    urlFotoPaquete,
     metodoPago,
-    direccionRecogida,
-    direccionEntrega,
-    nombreDestinatario,
-    telefonoDestinatario,
-    latitudRecogida,
-    longitudRecogida,
-    latitudEntrega,
-    longitudEntrega,
+    modoFacturacion,
+    costoEnvio,
     montoContraEntrega,
-    notas,
+    recogidoEn,
+    enIntercambioEn,
+    entregadoEn,
     creadoEn,
     actualizadoEn,
-  );
+  ]);
 
   /// Create a copy of Pedido
   /// with the given fields replaced by the non-null parameter values.
@@ -446,17 +656,28 @@ abstract class _Pedido implements Pedido {
     required final String id,
     required final String codigoSeguimiento,
     required final EstadoPedido estado,
+    final String? nombreCliente,
+    final String? telefonoCliente,
+    final String? emailCliente,
+    final String? direccionOrigen,
+    final double? latitudOrigen,
+    final double? longitudOrigen,
+    final String? notasOrigen,
+    final String? direccionDestino,
+    final double? latitudDestino,
+    final double? longitudDestino,
+    final String? notasDestino,
+    final String? descripcionPaquete,
+    final String? pesoPaqueteKg,
+    final String? valorDeclarado,
+    final String? urlFotoPaquete,
     final String? metodoPago,
-    final String? direccionRecogida,
-    final String? direccionEntrega,
-    final String? nombreDestinatario,
-    final String? telefonoDestinatario,
-    final double? latitudRecogida,
-    final double? longitudRecogida,
-    final double? latitudEntrega,
-    final double? longitudEntrega,
+    final String? modoFacturacion,
+    final String? costoEnvio,
     final String? montoContraEntrega,
-    final String? notas,
+    final DateTime? recogidoEn,
+    final DateTime? enIntercambioEn,
+    final DateTime? entregadoEn,
     final DateTime? creadoEn,
     final DateTime? actualizadoEn,
   }) = _$PedidoImpl;
@@ -470,27 +691,49 @@ abstract class _Pedido implements Pedido {
   @override
   EstadoPedido get estado;
   @override
+  String? get nombreCliente;
+  @override
+  String? get telefonoCliente;
+  @override
+  String? get emailCliente;
+  @override
+  String? get direccionOrigen;
+  @override
+  double? get latitudOrigen;
+  @override
+  double? get longitudOrigen;
+  @override
+  String? get notasOrigen;
+  @override
+  String? get direccionDestino;
+  @override
+  double? get latitudDestino;
+  @override
+  double? get longitudDestino;
+  @override
+  String? get notasDestino;
+  @override
+  String? get descripcionPaquete;
+  @override
+  String? get pesoPaqueteKg;
+  @override
+  String? get valorDeclarado;
+  @override
+  String? get urlFotoPaquete;
+  @override
   String? get metodoPago;
   @override
-  String? get direccionRecogida;
+  String? get modoFacturacion;
   @override
-  String? get direccionEntrega;
-  @override
-  String? get nombreDestinatario;
-  @override
-  String? get telefonoDestinatario;
-  @override
-  double? get latitudRecogida;
-  @override
-  double? get longitudRecogida;
-  @override
-  double? get latitudEntrega;
-  @override
-  double? get longitudEntrega;
+  String? get costoEnvio;
   @override
   String? get montoContraEntrega;
   @override
-  String? get notas;
+  DateTime? get recogidoEn;
+  @override
+  DateTime? get enIntercambioEn;
+  @override
+  DateTime? get entregadoEn;
   @override
   DateTime? get creadoEn;
   @override

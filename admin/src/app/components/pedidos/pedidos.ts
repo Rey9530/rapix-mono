@@ -8,12 +8,15 @@ import { ToastrService } from "ngx-toastr";
 import { Subject, debounceTime } from "rxjs";
 
 import { AsignarPedidoModal } from "./asignar-pedido.modal";
+import { AsignarRetirosZonaModal } from "./asignar-retiros-zona.modal";
 import { PedidosServicio } from "../../nucleo/datos/pedidos.servicio";
+import { ZonasServicio } from "../../nucleo/datos/zonas.servicio";
 import {
   EstadoPedido,
   FiltrosPedido,
   Pedido,
 } from "../../nucleo/modelos/pedido.modelo";
+import { Zona } from "../../nucleo/modelos/zona.modelo";
 
 @Component({
   selector: "app-pedidos",
@@ -23,6 +26,7 @@ import {
 })
 export class Pedidos implements OnInit {
   private readonly servicio = inject(PedidosServicio);
+  private readonly zonasServicio = inject(ZonasServicio);
   private readonly modal = inject(NgbModal);
   private readonly toast = inject(ToastrService);
 
@@ -31,6 +35,7 @@ export class Pedidos implements OnInit {
   readonly total = signal(0);
   readonly totalPaginas = signal(0);
   readonly mensajeError = signal<string | null>(null);
+  readonly zonas = signal<Zona[]>([]);
 
   readonly estados: EstadoPedido[] = [
     "PENDIENTE_ASIGNACION",
@@ -56,6 +61,10 @@ export class Pedidos implements OnInit {
         pagina: 1,
       };
       this.recargar();
+    });
+    this.zonasServicio.listar().subscribe({
+      next: (zs) => this.zonas.set(zs),
+      error: () => this.zonas.set([]),
     });
     this.recargar();
   }
@@ -92,6 +101,15 @@ export class Pedidos implements OnInit {
     this.recargar();
   }
 
+  alCambiarZona(zonaId: string): void {
+    this.filtros = {
+      ...this.filtros,
+      zonaId: zonaId || undefined,
+      pagina: 1,
+    };
+    this.recargar();
+  }
+
   irPagina(p: number): void {
     if (p < 1 || (this.totalPaginas() && p > this.totalPaginas())) return;
     this.filtros = { ...this.filtros, pagina: p };
@@ -120,6 +138,17 @@ export class Pedidos implements OnInit {
     });
     ref.componentInstance.pedidoId = p.id;
     ref.componentInstance.codigoSeguimiento = p.codigoSeguimiento;
+    ref.closed.subscribe((res) => {
+      if (res === "asignado") this.recargar();
+    });
+  }
+
+  abrirAsignarRetirosZona(): void {
+    const ref = this.modal.open(AsignarRetirosZonaModal, {
+      size: "xl",
+      centered: true,
+      backdrop: "static",
+    });
     ref.closed.subscribe((res) => {
       if (res === "asignado") this.recargar();
     });
