@@ -6,8 +6,9 @@ const TIMEOUT_MS = 6000;
 const PATRONES_COORDENADAS: ReadonlyArray<RegExp> = [
   /@(-?\d+\.\d+),(-?\d+\.\d+)/,
   /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/,
-  /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,
-  /[?&]ll=(-?\d+\.\d+),(-?\d+\.\d+)/,
+  /[?&]q=(-?\d+\.\d+),[+\s]*(-?\d+\.\d+)/,
+  /[?&]ll=(-?\d+\.\d+),[+\s]*(-?\d+\.\d+)/,
+  /\/(?:search|place|dir)\/(-?\d+\.\d+),[+\s]*(-?\d+\.\d+)/,
 ];
 
 @Injectable()

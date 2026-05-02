@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/proveedores_globales.dart';
@@ -13,9 +15,16 @@ class ControladorAutenticacion extends AsyncNotifier<Usuario?> {
   @override
   Future<Usuario?> build() async {
     final repo = ref.read(autenticacionRepositorioProveedor);
+    final cacheado = await repo.usuarioCacheado();
+
+    if (cacheado != null) {
+      unawaited(_iniciarPush());
+      unawaited(_refrescarPerfilEnSegundoPlano());
+      return cacheado;
+    }
+
     final usuario = await repo.obtenerPerfil();
     if (usuario != null) {
-      // Inicializa push de forma silenciosa.
       unawaited(_iniciarPush());
     }
     return usuario;
@@ -40,6 +49,22 @@ class ControladorAutenticacion extends AsyncNotifier<Usuario?> {
     state = const AsyncValue.data(null);
   }
 
+  Future<void> _refrescarPerfilEnSegundoPlano() async {
+    final repo = ref.read(autenticacionRepositorioProveedor);
+    try {
+      final fresco = await repo.obtenerPerfil();
+      if (fresco == null) {
+        // El backend respondió 401: el token ya no es válido.
+        await repo.cerrarSesion();
+        state = const AsyncValue.data(null);
+        return;
+      }
+      state = AsyncValue.data(fresco);
+    } catch (_) {
+      // Errores de red: mantener la sesión cacheada.
+    }
+  }
+
   Future<void> _iniciarPush() async {
     try {
       final servicio = ServicioPush(
@@ -51,5 +76,3 @@ class ControladorAutenticacion extends AsyncNotifier<Usuario?> {
     }
   }
 }
-
-void unawaited(Future<void> _) {}

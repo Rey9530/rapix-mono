@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class AlmacenamientoSeguro {
   static const _claveAcceso = 'token_acceso';
   static const _claveRefresco = 'token_refresco';
+  static const _claveUsuario = 'usuario_json';
 
   final FlutterSecureStorage _almacen;
 
@@ -21,8 +22,14 @@ class AlmacenamientoSeguro {
 
   Future<String?> tokenRefresco() => _almacen.read(key: _claveRefresco);
 
+  Future<void> guardarUsuario(String usuarioJson) =>
+      _almacen.write(key: _claveUsuario, value: usuarioJson);
+
+  Future<String?> usuario() => _almacen.read(key: _claveUsuario);
+
   Future<void> limpiar() async {
     await _almacen.delete(key: _claveAcceso);
     await _almacen.delete(key: _claveRefresco);
+    await _almacen.delete(key: _claveUsuario);
   }
 }

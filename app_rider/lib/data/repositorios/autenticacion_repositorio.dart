@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import '../../core/network/excepciones_api.dart';
 import '../../core/storage/almacenamiento_seguro.dart';
@@ -29,6 +31,7 @@ class AutenticacionRepositorio {
         tokenAcceso: datos.tokenAcceso,
         tokenRefresco: datos.tokenRefresco,
       );
+      await _almacenamiento.guardarUsuario(jsonEncode(datos.usuario.toJson()));
       return datos;
     } on DioException catch (e) {
       throw _mapearError(e, 'No se pudo iniciar sesión');
@@ -59,16 +62,29 @@ class AutenticacionRepositorio {
       final datos = respuesta.data!;
       // Backend devuelve PerfilRepartidor con `usuario` adentro en /yo (admin) pero no aquí;
       // Por tanto, primero intento decodificar como Usuario directo, si falla fallback al campo `usuario`.
+      Usuario? usuario;
       if (datos.containsKey('email') && datos.containsKey('rol')) {
-        return Usuario.fromJson(datos);
+        usuario = Usuario.fromJson(datos);
+      } else if (datos['usuario'] is Map<String, dynamic>) {
+        usuario = Usuario.fromJson(datos['usuario'] as Map<String, dynamic>);
       }
-      if (datos['usuario'] is Map<String, dynamic>) {
-        return Usuario.fromJson(datos['usuario'] as Map<String, dynamic>);
+      if (usuario != null) {
+        await _almacenamiento.guardarUsuario(jsonEncode(usuario.toJson()));
       }
-      return null;
+      return usuario;
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) return null;
       throw _mapearError(e, 'No se pudo obtener perfil');
+    }
+  }
+
+  Future<Usuario?> usuarioCacheado() async {
+    final raw = await _almacenamiento.usuario();
+    if (raw == null || raw.isEmpty) return null;
+    try {
+      return Usuario.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    } catch (_) {
+      return null;
     }
   }
 

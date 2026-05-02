@@ -21,6 +21,9 @@ final enrutadorAppProveedor = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/inicio/recogidas',
     redirect: (context, state) {
+      // Mientras la sesión se restaura del storage no decidimos nada.
+      if (auth.isLoading) return null;
+
       final autenticando = state.matchedLocation == '/login';
       final estaAutenticado = auth.maybeWhen(
         data: (usuario) => usuario != null,

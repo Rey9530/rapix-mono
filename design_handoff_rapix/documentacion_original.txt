@@ -1,0 +1,837 @@
+DOCUMENTACION DE PANTALLAS - APP_CLIENTES (RAPIX)
+==================================================
+
+Audiencia: insumo para un modelo de diseno UI/UX (Claude Design).
+Strings de UI reportados tal cual aparecen en el codigo (sin tildes en
+muchos casos, segun convencion del proyecto). Las observaciones inferidas
+se marcan como "(supuesto)".
+
+
+INDICE DE PANTALLAS
+
+  1. Iniciar sesion              /iniciar-sesion           publica
+  2. Registrar (vendedor)        /registrar                publica
+  3. Selector de ubicacion       /seleccionar-ubicacion    publica (modal)
+  4. Inicio (dashboard)          /inicio                   autenticada
+  5. Listado de pedidos          /pedidos                  autenticada
+  6. Crear pedido                /pedidos/nuevo            autenticada
+  7. Detalle de pedido           /pedidos/:id              autenticada
+  8. Mis paquetes                /paquetes                 autenticada
+  9. Tienda de paquetes          /paquetes/tienda          autenticada
+ 10. Mi perfil                   /perfil                   autenticada
+ 11. Editar negocio              /perfil/editar-negocio    autenticada
+ 12. Seguimiento publico         /seguimiento/:codigo      publica (deep link)
+
+
+CONVENCIONES GENERALES
+
+  Stack: Flutter + Dart, Material 3, Riverpod, go_router (StatefulShellRoute),
+  Mapbox, Dio, image_picker.
+
+  Guard de auth (lib/nucleo/enrutador/enrutador_app.dart):
+    - Publicas: /iniciar-sesion, /registrar, /seleccionar-ubicacion,
+      /seguimiento/:codigo
+    - No autenticado en ruta privada -> redirige a /iniciar-sesion
+    - Autenticado en /iniciar-sesion o /registrar -> redirige a /inicio
+    - initialLocation: /inicio
+    - 4 ramas (tabs): /inicio, /pedidos, /paquetes, /perfil
+
+  Patrones globales:
+    - Pull-to-refresh en listados y detalles
+    - SnackBar para errores (mensaje extraido de DioException o fallback)
+    - CircularProgressIndicator centrado al cargar; spinner 20x20 en botones
+    - Form + GlobalKey<FormState> con validators por campo
+    - Bloqueo de doble envio con bandera local _enviando o estado.cargando
+
+
+==================================================================
+1. INICIAR SESION
+==================================================================
+
+  Clase: IniciarSesionPantalla (ConsumerStatefulWidget)
+  Ruta:  /iniciar-sesion
+  Archivo: lib/caracteristicas/autenticacion/iniciar_sesion_pantalla.dart
+
+  Proposito: pantalla de entrada principal. Login con email + contrasena
+  o acceso al flujo de registro.
+
+  Layout: icono local_shipping_outlined (64px), titulo "Bienvenido",
+  subtitulo "Inicia sesion para gestionar tus pedidos", formulario centrado
+  (max 420px), padding 24, scroll para pantallas pequenas.
+
+  Campos:
+    - Email (requerido):
+        label "Correo electronico", icon email_outlined, autofill email
+        Vacio        -> "Ingresa tu correo"
+        Sin "@"      -> "Correo invalido"
+        Trim antes de enviar
+    - Contrasena (requerida):
+        label "Contrasena", icon lock_outline, suffixIcon dinamico
+        (visibility/visibility_off, toggle local _verContrasena)
+        Vacia        -> "Ingresa tu contrasena"
+
+  Acciones:
+    - Toggle ojo: alterna obscureText
+    - Boton "Iniciar sesion" (FilledButton): valida + llama
+      autenticacionControlador.iniciarSesion(email.trim(), contrasena).
+      Mientras carga: spinner; deshabilitado.
+      Exito -> go('/inicio')
+    - Boton "Crear cuenta de vendedor" (TextButton): push('/registrar')
+
+  Navegacion:
+    Llega: ruta inicial sin sesion; tras cerrar sesion en /perfil.
+    Sale a: /inicio (login OK), /registrar.
+
+  Estados:
+    - Inicial / Cargando / Error validacion / Error servidor / Exito
+    - Errores servidor (controlador): 401 -> "Credenciales invalidas";
+      generico -> "No fue posible completar la operacion. Intenta de nuevo."
+
+  Notas UX:
+    (supuesto) Falta enlace "Olvidaste tu contrasena?".
+    (supuesto) Validacion de email demasiado laxa: solo exige "@".
+    SafeArea + ConstrainedBox(maxWidth: 420) para tablets.
+
+
+==================================================================
+2. REGISTRAR (CREAR CUENTA DE VENDEDOR)
+==================================================================
+
+  Clase: RegistrarPantalla (ConsumerStatefulWidget)
+  Ruta:  /registrar
+  Archivo: lib/caracteristicas/autenticacion/registrar_pantalla.dart
+
+  Proposito: alta de nuevo vendedor. Datos personales, credenciales,
+  datos del negocio y ubicacion geografica del local.
+
+  Layout: AppBar "Crear cuenta de vendedor", scroll vertical, dos
+  secciones separadas por Divider(32) con encabezado "Datos de la tienda".
+
+  Campos:
+    - Nombre completo (requerido, TextCapitalization.words):
+        label "Nombre completo", icon person_outline
+        length<2 -> "Requerido"
+    - Correo electronico (requerido):
+        label "Correo electronico", icon email_outlined
+        Sin "@" -> "Correo invalido"
+    - Telefono (requerido):
+        label "Telefono", hint "+50370001234", icon phone_outlined
+        Regex ^\+?[0-9]{8,15}$ -> "8-15 digitos, opcional con +"
+    - Contrasena (requerida):
+        label "Contrasena", icon lock_outline,
+        helper "8+ chars, mayuscula, numero y simbolo"
+        length<8                  -> "Minimo 8 caracteres"
+        sin [A-Z]                 -> "Debe incluir una mayuscula"
+        sin [0-9]                 -> "Debe incluir un numero"
+        sin [^A-Za-z0-9]          -> "Debe incluir un simbolo"
+    - Nombre del negocio (requerido, words):
+        label "Nombre del negocio", icon storefront_outlined
+        Vacio -> "Requerido"
+    - Direccion (requerida):
+        label "Direccion", icon place_outlined
+        Vacio -> "Requerido"
+    - Ubicacion (requerida, Card+ListTile):
+        Sin: "Seleccionar ubicacion en mapa"
+        Con: "Ubicacion seleccionada" + "(lat:.5, lng:.5)"
+        Trailing chevron_right
+        Validacion manual al enviar -> SnackBar
+        "Selecciona la ubicacion de la tienda"
+
+  Acciones:
+    - Tap card ubicacion: push<mb.Point>('/seleccionar-ubicacion',
+      extra: {titulo: "Ubicacion de la tienda --", inicial: <Point?>})
+    - Boton "Crear cuenta" (FilledButton): valida -> verifica ubicacion ->
+      autenticacionControlador.registrar(...) con lat/lng.
+      Spinner durante envio. Exito -> go('/inicio').
+    - Volver (AppBar): pop a /iniciar-sesion.
+
+  Estados: Inicial / Cargando / Error ubicacion (SnackBar) /
+    Error validacion / Error servidor (401, 409, PEDIDO_ZONA_INVALIDA,
+    generico) / Exito.
+
+  Notas UX:
+    (supuesto) Sin medidor visual de fortaleza de contrasena.
+    (supuesto) Sin confirmar contrasena.
+    (supuesto) Titulo del selector con artefacto " --" al final.
+    Coordenadas mostradas con 5 decimales.
+
+
+==================================================================
+3. SELECTOR DE UBICACION
+==================================================================
+
+  Clase: SelectorUbicacionPantalla (StatefulWidget)
+  Ruta:  /seleccionar-ubicacion
+  Archivo: lib/caracteristicas/autenticacion/selector_ubicacion_pantalla.dart
+
+  Proposito: modal reutilizable para elegir ubicacion en mapa Mapbox
+  (pin fijo en el centro mientras el usuario mueve el mapa). Fallback
+  manual si Mapbox no esta configurado. Retorna mb.Point via context.pop().
+
+  Parametros:
+    - titulo (default "Seleccionar ubicacion")
+    - inicial (mb.Point?) - si es null usa Entorno.latitudInicial / longitudInicial
+
+  Layout modo mapa (token disponible):
+    - AppBar con widget.titulo
+    - MapWidget pantalla completa (zoom inicial 15)
+    - Pin central fijo: location_pin rojo 56px (IgnorePointer, padding inf 32)
+    - Bottom card con coords "(lat:.5, lng:.5)" y boton
+
+  Layout modo fallback (sin token):
+    - Card aviso: "Mapbox no esta configurado. Ingresa las coordenadas
+      manualmente o establece MAPBOX_TOKEN al compilar."
+    - 2 TextField numericos signed/decimal: "Latitud" y "Longitud"
+    - Boton "Confirmar ubicacion"
+
+  Acciones:
+    - Mover mapa: onCameraChangeListener actualiza _centroActual
+    - Boton "Confirmar ubicacion" (mapa) -> context.pop(_centroActual)
+    - Boton "Confirmar ubicacion" (fallback): tryParse lat/lng;
+      si validos -> context.pop(Point(Position(lng, lat)))
+
+  Navegacion:
+    Llega: desde /registrar y /perfil/editar-negocio.
+    Sale: pop con mb.Point.
+
+  Notas UX:
+    Patron pin fijo + mapa movil convencional y funcional.
+    (supuesto) Sin buscador por direccion (geocoding).
+    (supuesto) Sin "usar mi ubicacion actual" (GPS).
+    (supuesto) Controllers locales del fallback no se disponen (leak menor).
+
+
+==================================================================
+4. INICIO (DASHBOARD)
+==================================================================
+
+  Clase: InicioPantalla (ConsumerWidget)
+  Ruta:  /inicio (rama 1 del shell)
+  Archivo: lib/caracteristicas/inicio/inicio_pantalla.dart
+
+  Proposito: pantalla principal post-login. Saldo de envios y dos
+  accesos rapidos (crear pedido, comprar paquetes).
+
+  Layout: AppBar con titulo dinamico (perfilVendedor.nombreNegocio ->
+  usuario.nombreCompleto -> "Inicio"). SafeArea + ListView (padding 16)
+  con: SaldoWidget, "Acciones rapidas" (titleMedium), dos tiles.
+
+  Campos: solo lectura.
+
+  Acciones:
+    - Tile "Nuevo pedido" (icon add_box_outlined,
+      subtitulo "Crea un envio para tus clientes")
+      -> push('/pedidos/nuevo')
+    - Tile "Comprar paquetes" (icon shopping_bag_outlined,
+      subtitulo "Recarga envios prepagados")
+      -> push('/paquetes/tienda')
+    - SaldoWidget interno: boton "Recargar" -> push('/paquetes/tienda')
+
+  Estados: usuario con perfil vendedor (caso normal); sin perfil (raro).
+
+  Notas UX:
+    (supuesto) Densidad muy baja: agregar resumenes (pedidos activos,
+    entregados hoy) volveria el dashboard util.
+    (supuesto) Sin notificaciones / alertas.
+
+
+==================================================================
+5. LISTADO DE PEDIDOS
+==================================================================
+
+  Clase: PedidosListadoPantalla (ConsumerWidget)
+  Ruta:  /pedidos
+  Archivo: lib/caracteristicas/pedidos/pedidos_listado_pantalla.dart
+
+  Proposito: listado de pedidos con filtro por estado, acceso al detalle
+  y FAB para crear. Pull-to-refresh.
+
+  Layout: AppBar "Mis pedidos" + accion filtro (icon filter_list,
+  tooltip "Filtrar por estado"). InputChip removible si hay filtro:
+  "Estado: {ESTADO}" con X. RefreshIndicator + ListView.builder con
+  PedidoTarjeta. FAB extendido "Nuevo" con icono +.
+
+  Filtro:
+    Tipo: select (PopupMenu)
+    Valores: null (Todos), PENDIENTE_ASIGNACION, ASIGNADO, EN_TRANSITO,
+             EN_REPARTO, ENTREGADO, FALLIDO, CANCELADO
+
+  Acciones:
+    - Filtrar (icon filter_list): abre PopupMenu, selecciona estado
+    - Limpiar filtro: X del InputChip
+    - Tap tarjeta: push('/pedidos/{id}')
+    - FAB "Nuevo": push('/pedidos/nuevo')
+    - Pull-to-refresh: invalida pedidosListadoProvider
+    - "Reintentar" (FilledButton.tonal) en estado error
+
+  Estados:
+    - Loading: spinner centrado
+    - Datos: ListView de PedidoTarjeta
+    - Vacio: icon inbox_outlined (64px) + "No hay pedidos para mostrar"
+    - Error: icon error_outline (48px) + "Error: {mensaje}" + "Reintentar"
+
+  Notas UX:
+    Padding inferior 96px en lista para no ocluir FAB.
+    (supuesto) Sin paginacion: riesgo a escala.
+    (supuesto) Sin busqueda por codigo/cliente.
+    (supuesto) Filtros limitados a estado.
+
+
+==================================================================
+6. CREAR PEDIDO
+==================================================================
+
+  Clase: CrearPedidoPantalla (ConsumerStatefulWidget)
+  Ruta:  /pedidos/nuevo
+  Archivo: lib/caracteristicas/pedidos/crear_pedido_pantalla.dart
+
+  Proposito: formulario para registrar nuevo pedido. Datos del cliente,
+  destino con URL Google Maps validada, foto opcional, metodo de pago
+  y monto si aplica. La ubicacion de origen se toma del perfil vendedor.
+
+  Layout: AppBar "Nuevo pedido". Form con tres secciones separadas
+  por Divider(32): "Datos del cliente", "Destino", "Paquete".
+
+  Campos:
+    Datos del cliente:
+      - Nombre completo (req, words):
+          label "Nombre completo", icon person
+          Trim vacio -> "Requerido"
+      - Telefono (req):
+          label "Telefono", hint "+50370001234", icon phone
+          Regex ^\+?[0-9]{8,15}$ -> "8-15 digitos, opcional con +"
+
+    Destino:
+      - Direccion (req):
+          label "Direccion", icon place
+          Trim vacio -> "Requerido"
+      - URL de Google Maps (req):
+          label "URL de Google Maps del destino"
+          hint "https://maps.app.goo.gl/..."
+          helper "En Google Maps: Compartir -> Copiar enlace"
+          icon map
+          Vacio -> "Pega la URL de Google Maps del destino"
+          Regex https://maps\.app\.goo\.gl/[A-Za-z0-9_-]+/?$
+              -> "URL invalida. Comparte el sitio desde Google Maps
+                  y pega el enlace corto"
+      - Notas (opcional):
+          label "Notas para el repartidor (opcional)", icon note
+
+    Paquete:
+      - Descripcion (opcional):
+          label "Descripcion (opcional)", icon inventory
+      - Foto (opcional):
+          Card "Foto del paquete (opcional)" /
+          "Tomar foto o elegir de galeria"
+          maxWidth 1600, calidad 80
+      - Metodo de pago (req, default CONTRA_ENTREGA):
+          SegmentedButton: "Contra entrega" (icon payments) /
+          "Prepagado" (icon credit_card)
+      - Monto a cobrar (condicional, solo si CONTRA_ENTREGA):
+          label "Monto a cobrar", numerico decimal
+          tryParse <=0 -> "Monto invalido"
+
+  Acciones:
+    - Tap card foto -> ModalBottomSheet:
+        "Tomar foto" (icon camera) -> ImagePicker.camera
+        "Elegir de galeria" (icon photo_library) -> ImagePicker.gallery
+    - "Quitar" / "Cambiar" foto
+    - Boton "Crear pedido" (FilledButton):
+        valida form ->
+        verifica perfilVendedor.lat/lng != null
+          (si null: SnackBar "Tu cuenta no tiene ubicacion de tienda.
+                              Actualiza tu perfil.") ->
+        POST /pedidos (multipart) ->
+        invalida pedidosListadoProvider ->
+        go('/pedidos/{id}')
+
+  Mapeo de errores backend (_mensajeError):
+    PEDIDO_ZONA_INVALIDA / PEDIDO_ZONA_INVALIDA_DESTINO ->
+        "La direccion de destino esta fuera de la zona de cobertura"
+    PEDIDO_URL_MAPAS_INVALIDA ->
+        "No se pudo leer la ubicacion desde la URL de Google Maps.
+         Verifica el enlace."
+    Otros -> "No se pudo crear el pedido. Intenta de nuevo."
+    Error image picker -> "No se pudo abrir el selector: {error}"
+
+  Notas UX:
+    (supuesto) Friccion ALTA del campo URL Google Maps: obliga a
+    salir de la app. El regex es estricto (solo maps.app.goo.gl).
+    Considerar selector embebido / geocoding por direccion / tap-and-hold
+    en mapa.
+    (supuesto) Sin recorte de foto.
+    (supuesto) Boton siempre habilitado: deshabilitar hasta requeridos
+    completos.
+    Selector de foto duplicado con el de Editar negocio.
+
+
+==================================================================
+7. DETALLE DE PEDIDO
+==================================================================
+
+  Clase: PedidoDetallePantalla (ConsumerWidget)
+  Ruta:  /pedidos/:id  (param pedidoId String)
+  Archivo: lib/caracteristicas/pedidos/pedido_detalle_pantalla.dart
+
+  Proposito: vista completa de un pedido con seguimiento en vivo y
+  comprobante de entrega cuando aplica. Polling cada 10s en estados
+  activos.
+
+  Layout: AppBar "Detalle del pedido" + accion "Refrescar" (icon refresh).
+  RefreshIndicator + ListView (padding 16). Bloques:
+    1. Encabezado: codigo seguimiento (headlineSmall) + EstadoChip
+    2. Card Cliente: nombre, telefono
+    3. Card Destino: direccion
+    4. Card Pago: "Metodo: ...", "Cobro contra entrega: $..." (si aplica),
+       "Tarifa: $..." (si disponible)
+    5. Seguimiento en vivo (condicional)
+    6. Comprobante de entrega (condicional)
+    7. Linea de tiempo
+
+  Secciones condicionales:
+    Seguimiento en vivo (estado in {ASIGNADO, RECOGIDO, EN_TRANSITO,
+                                    EN_PUNTO_INTERCAMBIO, EN_REPARTO}):
+      MapaSeguimientoVivo (220px alto, radius 16). Polling 10s.
+      Marcadores "Destino" + "Repartidor" (si tiene posicion).
+      Camara animada (zoom 14, 800ms).
+      Fallback sin token: Card "Mapa no disponible (configura
+      MAPBOX_TOKEN para verlo)."
+      Tarjeta repartidor (si repartidorEntrega != null):
+        avatar delivery_dining, nombreCompleto, telefono.
+
+    Comprobante (estado == 'ENTREGADO' y comprobantes no vacio):
+      Image.network (220px, radius 12).
+      Fallback de carga: container gris + image_not_supported_outlined.
+
+  Linea de tiempo (LineaTiempoEstado):
+    Vacia -> "Aun no hay eventos registrados."
+    Con eventos -> hitos verticales con (estadoNuevo ?? tipo)
+                   replaceAll('_', ' ') + fecha dd/MM/yyyy HH:mm + notas.
+
+  Acciones:
+    - Boton refresh (AppBar, tooltip "Refrescar"): invalida
+      pedidoDetalleProvider(pedidoId)
+    - Pull-to-refresh: idem
+
+  Estados: Loading / Error (icon + mensaje) / Datos.
+
+  Notas UX:
+    (supuesto) Polling 10s podria reemplazarse con push/WebSocket.
+    (supuesto) Timeline larga sin opcion de colapsar.
+    (supuesto) Sin acciones del cliente (cancelar, reportar incidente).
+    Formato moneda: NumberFormat.currency(symbol: '$').
+
+
+==================================================================
+8. MIS PAQUETES
+==================================================================
+
+  Clase: MisPaquetesPantalla
+  Ruta:  /paquetes
+  Archivo: lib/caracteristicas/paquetes/mis_paquetes_pantalla.dart
+
+  Proposito: lista de paquetes prepagados comprados con saldo
+  agregado y CTA para comprar mas.
+
+  Layout: AppBar "Mis paquetes". RefreshIndicator + ListView con
+  SaldoWidget arriba y una Card por paquete. FAB extendido "Comprar"
+  con icono +.
+
+  Tarjeta de paquete:
+    - Titulo: paquete.nombre
+    - Badge estado:
+        ACTIVO         -> verde
+        PENDIENTE_PAGO -> naranja
+        AGOTADO        -> gris
+        EXPIRADO       -> rojo
+        otros          -> azul-grisaceo
+        Texto: estado con _ -> espacios
+    - "{enviosRestantes} de {enviosTotales} envios disponibles"
+    - Barra de progreso (clamp 0-1)
+    - "Pagado: $...", "Comprado: dd/MM/yyyy",
+      "Expira: dd/MM/yyyy" (si expiraEn != null)
+
+  Acciones:
+    - FAB "Comprar" -> push('/paquetes/tienda')
+    - Pull-to-refresh: invalida saldoProvider y misPaquetesProvider
+    - "Reintentar" en error
+    - SaldoWidget "Recargar" -> push('/paquetes/tienda')
+
+  Estados: Loading / Error / Vacio ("Aun no tienes paquetes
+  comprados.") / Datos.
+
+  Mensajes de error:
+    DioException con mensaje JSON -> "{mensaje} ({codigo})"
+    Con statusCode -> "Error {N} al cargar tus paquetes"
+    Sin conexion   -> "No se pudo conectar con el servidor"
+
+  Notas UX:
+    Doble CTA hacia tienda (FAB + "Recargar"): refuerzo correcto.
+    (supuesto) Sin filtro/orden de paquetes.
+    (supuesto) Sin diferenciacion visual de paquetes inactivos
+    (oportunidad: opacidad).
+
+
+==================================================================
+9. TIENDA DE PAQUETES
+==================================================================
+
+  Clase: PaquetesTiendaPantalla
+  Ruta:  /paquetes/tienda
+  Archivo: lib/caracteristicas/paquetes/paquetes_tienda_pantalla.dart
+
+  Proposito: catalogo de reglas de tarifa comprables. Compra con
+  confirmacion y queda pendiente de aprobacion del admin.
+
+  Layout: AppBar "Comprar paquetes". RefreshIndicator + ListView.builder.
+  Tarjetas con avatar inventory_2_outlined, nombre, descripcion opcional,
+  "{tamanoPaquete} envios", precio total a la derecha,
+  "Costo por envio: $..." + " - Validez {dias} dias" (si aplica),
+  boton "Comprar" (icon shopping_cart_checkout).
+
+  Acciones:
+    - "Comprar" en tarjeta -> AlertDialog
+    - AlertDialog:
+        Titulo: "Confirmar compra"
+        Cuerpo: 'Comprar "{nombre}" por ${precio}?
+                 \n\nEl admin confirmara el pago para activarlo.'
+        Botones: "Cancelar" / "Comprar"
+        Confirmar -> POST /paquetes-recargados/comprar
+          Exito -> invalida misPaquetesProvider + saldoProvider +
+                   SnackBar "Compra registrada. Esta pendiente de
+                   confirmacion del admin."
+          Error -> SnackBar (mensaje extraido o
+                   "No se pudo procesar la compra")
+    - Pull-to-refresh: refresh de paquetesDisponiblesProvider
+
+  Estados: Loading / Error ("Error: {e}") /
+    Vacio ("No hay paquetes disponibles en este momento.") / Datos.
+
+  Notas UX:
+    (supuesto) Estado intermedio confuso post-compra: el SnackBar es
+    el unico feedback. Falta pantalla con instrucciones de pago
+    (numero de cuenta, monto, referencia).
+    (supuesto) Sin destacado "mas vendido" ni resaltado de mejor oferta.
+    Costo unitario: precioPaquete / tamanoPaquete (si > 0).
+
+
+==================================================================
+10. MI PERFIL
+==================================================================
+
+  Clase: PerfilPantalla
+  Ruta:  /perfil
+  Archivo: lib/caracteristicas/perfil/perfil_pantalla.dart
+
+  Proposito: vista de datos del usuario (email, telefono, nombre, rol)
+  y datos del negocio si tiene perfilVendedor. Permite editar negocio
+  y cerrar sesion.
+
+  Layout:
+    - AppBar "Mi perfil"
+    - Encabezado: avatar circular (radius 44) con inicial del nombre
+      o "?", nombre completo (titleLarge), rol (bodyMedium)
+    - Card Contacto: ListTile "Email" + "Telefono"
+    - Seccion "Negocio" (si perfilVendedor != null):
+        Encabezado "Negocio" + boton "Editar" (icon edit, size 18)
+        Card con avatar logo (radius 32, NetworkImage si urlLogo,
+        si no inicial), nombreNegocio (titleMedium), "RFC: ..." (si
+        existe), Divider + ListTile "Direccion" (icon location_on),
+        Divider + ListTile "Coordenadas" -> "{lat:.5}, {lng:.5}"
+    - Boton inferior "Cerrar sesion" (FilledButton.tonalIcon, icon logout)
+
+  Acciones:
+    - "Editar" -> push('/perfil/editar-negocio')
+    - "Cerrar sesion" -> logout + go('/iniciar-sesion')
+
+  Estados: Loading (mientras carga usuario) / Datos.
+
+  Notas UX:
+    (supuesto) "Cerrar sesion" sin confirmacion: agregar dialogo evita
+    logouts accidentales.
+    (supuesto) Estilo no destructivo del boton logout: considerar
+    estilo mas distintivo.
+    (supuesto) Sin opcion para editar email/telefono/contrasena.
+    (supuesto) Sin configuracion de notificaciones / privacidad.
+
+
+==================================================================
+11. EDITAR NEGOCIO
+==================================================================
+
+  Clase: EditarNegocioPantalla
+  Ruta:  /perfil/editar-negocio
+  Archivo: lib/caracteristicas/perfil/editar_negocio_pantalla.dart
+
+  Proposito: actualizar datos del perfil de vendedor: nombre,
+  RFC, direccion, ubicacion en mapa y logo. Soporta upload de imagen
+  desde camara o galeria. Campos pre-poblados con valores actuales.
+
+  Pre-poblacion al abrir:
+    _nombreNegocio = perfilVendedor.nombreNegocio ?? ''
+    _rfc           = perfilVendedor.rfc ?? ''
+    _direccion     = perfilVendedor.direccion ?? ''
+    _latitud/_longitud = perfilVendedor.latitud/longitud
+    Logo preview: _logoNuevo (FileImage) ->
+                  urlLogo (NetworkImage) -> inicial
+
+  Campos:
+    - Nombre del negocio (req):
+        label "Nombre del negocio", icon storefront
+        Trim<2  -> "Ingresa al menos 2 caracteres"
+        >120    -> "Máximo 120 caracteres"
+    - RFC (opcional):
+        label "RFC (opcional)", icon badge
+        >20 -> "Máximo 20 caracteres"
+    - Direccion (req, maxLines 2):
+        label "Dirección", icon location_on
+        Trim<3  -> "Ingresa una dirección"
+        >240    -> "Máximo 240 caracteres"
+    - Logo (opcional):
+        boton "Agregar logo" / "Cambiar logo" (icon image)
+        maxWidth 1024, calidad 85
+    - Ubicacion (req, Card):
+        title "Ubicación en mapa"
+        subtitle "{lat:.5}, {lng:.5}" o "Sin coordenadas"
+        trailing chevron
+        Validacion: si lat o lng null al guardar -> SnackBar
+        "Selecciona la ubicación del negocio en el mapa."
+
+  Acciones:
+    - Logo tap -> ModalBottomSheet:
+        "Tomar foto" / "Elegir de galería"
+    - Card ubicacion -> push<mb.Point>('/seleccionar-ubicacion',
+      extra: {titulo: 'Ubicación del negocio', inicial: Point(...)})
+    - Boton "Guardar cambios" (icon save_outlined) /
+      "Guardando…" (con spinner durante envio):
+        valida -> verifica coords -> PATCH /usuarios/yo/perfil-vendedor
+        (multipart con logo si nuevo) -> actualiza usuario en estado.
+        Exito -> SnackBar "Negocio actualizado." + pop a /perfil
+
+  Estados:
+    Inicial pre-poblada / Editando logo / Sin coordenadas /
+    Enviando (todo deshabilitado) /
+    Error coords / Error imagen ("No se pudo abrir el selector: {error}") /
+    Error API ("No se pudo guardar el negocio. Intenta de nuevo."
+    o mensaje extraido) / Exito.
+
+  Notas UX:
+    Buena accesibilidad del estado deshabilitado durante envio.
+    (supuesto) Validaciones de longitud explicitas distintas vs otros
+    formularios: alinear estandares.
+    (supuesto) Sin opcion de eliminar logo (solo reemplazar).
+    Repeticion de selector de foto con Crear pedido: oportunidad DRY.
+
+
+==================================================================
+12. SEGUIMIENTO PUBLICO
+==================================================================
+
+  Clase: SeguimientoPantalla
+  Ruta:  /seguimiento/:codigo  (codigo: String)
+  Archivo: lib/caracteristicas/seguimiento/seguimiento_pantalla.dart
+  Acceso: PUBLICA (deep link sin auth)
+
+  Proposito: pantalla publica para que el destinatario consulte el
+  estado del envio con un codigo de seguimiento. Pensada para ser
+  abierta desde un link compartido por SMS / WhatsApp / email.
+
+  Layout: AppBar "Seguimiento {codigo}". RefreshIndicator + ListView
+  (padding 16):
+    - Codigo de seguimiento (headlineSmall, centrado)
+    - EstadoChip con estado actual (centrado)
+    - LineaTiempoEstado con eventos
+
+  Acciones:
+    - Pull-to-refresh: refresh de seguimientoPublicoProvider(codigo)
+
+  Estados: Loading / Error ("No se encontro el pedido: {error}") / Datos.
+
+  Notas UX:
+    (supuesto) GRAN OPORTUNIDAD: la version publica NO incluye mapa
+    de seguimiento en vivo. El destinatario tipicamente quiere "donde
+    esta mi paquete ahora". Agregar mapa publico (sin info sensible
+    del repartidor) seria un quick win enorme.
+    (supuesto) Sin branding corporativo destacado: pantalla publica
+    es la principal exposicion de marca a destinatarios.
+    (supuesto) Sin boton compartir / sin reintentar explicito /
+    sin input para reintroducir codigo si error.
+
+
+==================================================================
+COMPONENTES GLOBALES
+==================================================================
+
+ESQUELETO DE NAVEGACION (TAB BAR)
+  Archivo: lib/widgets/esqueleto_navegacion.dart
+  StatefulShellRoute.indexedStack (cada tab con stack independiente).
+
+  Tabs (label, icon no seleccionado, icon seleccionado, ruta):
+    0  Inicio    home_outlined          home          /inicio
+    1  Pedidos   list_alt_outlined      list_alt      /pedidos
+    2  Paquetes  inventory_2_outlined   inventory_2   /paquetes
+    3  Perfil    person_outline         person        /perfil
+
+  Visible solo en rutas autenticadas. Tap en mismo tab -> vuelve al
+  inicio del stack; tap en otro tab -> mantiene estado interno.
+  (supuesto) Agregar badge de notificaciones sobre "Pedidos".
+
+SALDOWIDGET
+  Archivo: lib/caracteristicas/paquetes/saldo_widget.dart
+  Estados:
+    Cargando: Card + spinner + "Cargando saldo..."
+    Error:    icon error + "No se pudo cargar el saldo" + "Reintentar"
+    Exito:    color dinamico segun saldo:
+                >10 -> verde (saludable)
+                >0  -> naranja (bajo)
+                ==0 -> rojo (sin saldo)
+              Card con avatar account_balance_wallet,
+              titulo "{saldoRecargado} envios disponibles",
+              subtitulo "{paquetesActivos} paquete(s) activos",
+              trailing "Recargar" -> push('/paquetes/tienda')
+  (supuesto) Cuando saldo == 0, usar mensaje mas imperativo
+  ("Sin envios. Recarga ahora") y FilledButton en lugar de TextButton.
+
+ESTADOCHIP
+  Archivo: lib/widgets/estado_chip.dart
+  Chip border-radius 999, fondo color * 0.12, borde color * 0.4,
+  texto bold tamano 12.
+  Mapeo estado -> etiqueta -> color:
+    PENDIENTE_ASIGNACION    "Pendiente"               Naranja
+    ASIGNADO                "Asignado"                Azul
+    RECOGIDO                "Recogido"                Purpura
+    EN_TRANSITO             "En transito"             Purpura oscuro
+    EN_PUNTO_INTERCAMBIO    "En punto de intercambio" Indigo
+    EN_REPARTO              "En reparto"              Azul oscuro
+    ENTREGADO               "Entregado"               Verde
+    FALLIDO                 "Fallido"                 Rojo
+    DEVUELTO                "Devuelto"                Marron
+    CANCELADO               "Cancelado"               Gris
+    otros                   _ -> espacio              Gris
+
+PEDIDOTARJETA
+  Card con margen (h:16, v:6) + ListTile:
+    Title:    codigo seguimiento (o #primeros6 si vacio) + EstadoChip
+    Subtitle: nombre cliente, direccion destino (1 linea, ellipsis),
+              fecha dd/MM/yyyy HH:mm
+    Trailing: chevron_right
+
+LINEATIEMPOESTADO
+  Eventos vacios -> "Aun no hay eventos registrados."
+  Con eventos -> hitos verticales con linea conectora gris (alpha 0.4),
+  circulo 14x14, texto principal (estadoNuevo ?? tipo) replaceAll('_',' ')
+  + fecha dd/MM/yyyy HH:mm + notas opcionales.
+
+MAPASEGUIMIENTOVIVO
+  Archivo: lib/caracteristicas/pedidos/mapa_seguimiento_vivo.dart
+  Timer.periodic(10s) que invalida pedidoDetalleProvider.
+  PointAnnotationManager con marcadores "Destino" y "Repartidor"
+  (si aplica). Camara animada (zoom 14, 800ms). Fallback sin token:
+  Card "Mapa no disponible (configura MAPBOX_TOKEN para verlo)."
+
+
+==================================================================
+FLUJOS INTEGRADOS
+==================================================================
+
+A. AUTENTICACION
+  /iniciar-sesion --"Crear cuenta de vendedor"--> /registrar
+  /registrar --tap card ubicacion--> /seleccionar-ubicacion
+                                           |
+                                           v context.pop(Point)
+  /registrar --"Crear cuenta"--> /inicio
+  /iniciar-sesion --"Iniciar sesion"--> /inicio
+
+B. CREACION DE PEDIDO
+  /pedidos --FAB "Nuevo"--> /pedidos/nuevo
+  /pedidos/nuevo --"Crear pedido"--> POST /pedidos
+                                     |
+                                     +-- error PEDIDO_ZONA_INVALIDA -> SnackBar
+                                     +-- error PEDIDO_URL_MAPAS_INVALIDA -> SnackBar
+                                     +-- exito --> /pedidos/{id}
+  /pedidos/{id}: estado activo -> MapaSeguimientoVivo polling 10s
+                ENTREGADO -> seccion comprobante
+
+C. COMPRA DE PAQUETES
+  /paquetes --FAB "Comprar"--> /paquetes/tienda
+  tap "Comprar" en regla --> AlertDialog "Confirmar compra"
+  Confirmar --> POST /paquetes-recargados/comprar
+                 +-- error -> SnackBar
+                 +-- exito -> SnackBar pendiente de admin +
+                              invalida saldoProvider y misPaquetesProvider
+
+D. EDICION DE NEGOCIO
+  /perfil --"Editar"--> /perfil/editar-negocio
+  /perfil/editar-negocio --tap ubicacion--> /seleccionar-ubicacion
+                                                  |
+                                                  v context.pop(Point)
+  /perfil/editar-negocio --"Guardar cambios"--> PATCH /usuarios/yo/perfil-vendedor
+                                                  |
+                                                  +-- error -> SnackBar
+                                                  +-- exito -> SnackBar
+                                                              "Negocio actualizado."
+                                                              + pop a /perfil
+
+E. SEGUIMIENTO PUBLICO (DESTINATARIO)
+  link externo /seguimiento/{codigo} -> SeguimientoPantalla (sin login)
+    codigo + EstadoChip + LineaTiempoEstado + pull-to-refresh
+
+
+==================================================================
+RESUMEN DE OPORTUNIDADES UX (todas marcadas como (supuesto))
+==================================================================
+
+AUTENTICACION
+  - Falta enlace "Olvidaste tu contrasena?" en /iniciar-sesion
+  - Validacion email demasiado laxa (solo "@")
+  - Sin medidor visual de fortaleza de contrasena ni confirmar contrasena
+  - Titulo del selector con artefacto " --"
+
+SELECTOR DE UBICACION
+  - Sin buscador por direccion (geocoding)
+  - Sin "Usar mi ubicacion actual" (GPS)
+  - Controllers del fallback no se disponen (leak menor)
+
+INICIO
+  - Densidad informativa baja: agregar resumenes (activos, entregados hoy)
+  - Sin notificaciones / alertas
+
+LISTADO DE PEDIDOS
+  - Sin paginacion visible
+  - Sin busqueda por codigo / cliente
+  - Filtros limitados a estado
+
+CREAR PEDIDO
+  - Friccion ALTA del campo URL Google Maps (obliga a salir de la app)
+  - Regex muy estricto (solo maps.app.goo.gl)
+  - Sin recorte de foto
+  - Boton siempre habilitado: deshabilitar hasta requeridos completos
+  - Selector de foto duplicado con Editar negocio
+
+DETALLE DE PEDIDO
+  - Polling 10s podria reemplazarse con push / WebSocket
+  - Timeline larga sin colapso
+  - Sin acciones del cliente (cancelar, reportar incidente)
+
+PAQUETES
+  - Sin filtro / orden
+  - Sin diferenciacion visual de inactivos
+  - Estado intermedio post-compra confuso (sin instrucciones de pago)
+  - Sin destacado "mas vendido" en catalogo
+
+PERFIL / EDITAR NEGOCIO
+  - "Cerrar sesion" sin confirmacion
+  - Estilo del boton logout poco distintivo
+  - Sin editar email / telefono / contrasena
+  - Sin notificaciones / privacidad
+  - Sin opcion de eliminar logo
+  - Inconsistencia de limites entre formularios
+
+SEGUIMIENTO PUBLICO
+  - GRAN OPORTUNIDAD: agregar mapa de seguimiento vivo
+  - Sin branding corporativo destacado
+  - Sin boton compartir
+  - Sin reintentar explicito ni input para reintroducir codigo
+
+ESQUELETO DE NAVEGACION
+  - Sin badge de notificaciones (especialmente util sobre "Pedidos")

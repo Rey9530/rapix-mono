@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1600"/>
+<title>Rapix — Rediseño</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet"/>
+<style>
+  html, body { margin: 0; padding: 0; background: #efece6; font-family: 'Inter', system-ui, sans-serif; color: #13140f; }
+  * { box-sizing: border-box; }
+  #root { min-height: 100vh; }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="screens/tokens.js"></script>
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="screens/icons.jsx"></script>
+<script type="text/babel" src="screens/ui.jsx"></script>
+<script type="text/babel" src="screens/inicio.jsx"></script>
+<script type="text/babel" src="screens/pedidos.jsx"></script>
+<script type="text/babel" src="screens/crear.jsx"></script>
+<script type="text/babel" src="screens/detalle.jsx"></script>
+<script type="text/babel" src="screens/seguimiento.jsx"></script>
+<script type="text/babel" src="screens/tienda.jsx"></script>
+<script type="text/babel" src="screens/perfil.jsx"></script>
+<script type="text/babel" src="screens/auth.jsx"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const Intro = () => (
+  <div style={{
+    background: '#13140f', color: '#fff', padding: '32px 36px', borderRadius: 24,
+    width: 720, fontFamily: "'Inter', sans-serif",
+  }}>
+    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#25b276', textTransform: 'uppercase', marginBottom: 10 }}>Propuesta de rediseño</div>
+    <div style={{ fontSize: 44, fontWeight: 800, letterSpacing: -1.6, lineHeight: 1.05, marginBottom: 14 }}>
+      <span style={{ color: '#fff' }}>rapix</span><span style={{ color: '#25b276' }}>.</span> <span style={{ opacity: 0.5 }}>—</span> Material 3, refinado.
+    </div>
+    <div style={{ fontSize: 15, lineHeight: 1.6, opacity: 0.85, marginBottom: 18, maxWidth: 560 }}>
+      6 pantallas clave × 2 variantes cada una. Misma arquitectura, mismo Material 3, pero con mayor densidad informativa, marca propia y resolución de los problemas UX detectados en el documento.
+    </div>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
+      {[
+        { l: 'Refinada', d: 'Cercana al original. Refina jerarquía, añade densidad y arregla fricciones puntuales.' },
+        { l: 'Atrevida', d: 'Más expresiva. Hero verdes, tipografía grande, layouts asimétricos, identidad fuerte.' },
+      ].map((v, i) => (
+        <div key={i} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14, padding: 14 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#25b276', marginBottom: 4 }}>{v.l}</div>
+          <div style={{ fontSize: 12, opacity: 0.75, lineHeight: 1.5 }}>{v.d}</div>
+        </div>
+      ))}
+    </div>
+    <div style={{ marginTop: 22, fontSize: 12, opacity: 0.5, lineHeight: 1.6 }}>
+      Color marca <span style={{ color: '#25b276', fontWeight: 600 }}>#25b276</span> · Inter + JetBrains Mono · Frame Android 380×780 · Mockups estáticos para evaluar dirección visual.
+    </div>
+  </div>
+);
+
+const Hallazgos = () => {
+  const items = [
+    { l: 'Dashboard sin métricas', s: 'Solo accesos. Añadimos saldo, hoy/semana, alertas.' },
+    { l: 'Fricción del URL Google Maps', s: 'Mapa embebido + buscar + pegar link + GPS. Sin salir.' },
+    { l: 'Listado plano', s: 'Búsqueda, agrupado por día, ETA visible, contadores.' },
+    { l: 'Detalle sin presencia del repartidor', s: 'Card prominente con llamar/mensaje y avance horizontal.' },
+    { l: 'Seguimiento público sin marca ni mapa', s: 'Hero branded, ETA grande, mapa, footer rapix.' },
+    { l: 'Tienda sin destacado', s: 'Más vendido + comparador + ahorro por envío + cómo pagar.' },
+  ];
+  return (
+    <div style={{
+      background: '#fbfaf7', borderRadius: 20, padding: '24px 28px', width: 540,
+      border: '1px solid #e2dfd8', fontFamily: "'Inter', sans-serif",
+    }}>
+      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#5a5b54', textTransform: 'uppercase', marginBottom: 14 }}>Qué cambia</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {items.map((it, i) => (
+          <div key={i} style={{ display: 'flex', gap: 12, padding: '8px 0', borderBottom: i < items.length - 1 ? '1px solid #eeebe4' : 'none' }}>
+            <div style={{ width: 22, height: 22, borderRadius: 11, background: '#e6f6ee', color: '#1a8f5d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#13140f', marginBottom: 2 }}>{it.l}</div>
+              <div style={{ fontSize: 12, color: '#5a5b54', lineHeight: 1.5 }}>{it.s}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const App = () => (
+  <DesignCanvas title="Rapix — Rediseño" subtitle="Propuestas Material 3 refinado · 2 variantes por pantalla">
+    <DCSection id="intro" title="Resumen" subtitle="Dirección y oportunidades del rediseño">
+      <DCArtboard id="intro" label="Propuesta" width={720} height={420}><Intro/></DCArtboard>
+      <DCArtboard id="hallazgos" label="Hallazgos UX" width={540} height={420}><Hallazgos/></DCArtboard>
+    </DCSection>
+
+    <DCSection id="auth" title="Autenticación" subtitle="Iniciar sesión y crear cuenta · primera impresión de la marca">
+      <DCArtboard id="login-a" label="Login · Refinada" width={420} height={820}><LoginRefinada/></DCArtboard>
+      <DCArtboard id="login-b" label="Login · Atrevida" width={420} height={820}><LoginAtrevida/></DCArtboard>
+      <DCArtboard id="reg-a" label="Registro · Refinada" width={420} height={820}><RegistroRefinada/></DCArtboard>
+      <DCArtboard id="reg-b" label="Registro · Atrevida" width={420} height={820}><RegistroAtrevida/></DCArtboard>
+    </DCSection>
+
+    <DCSection id="inicio" title="Inicio · Dashboard" subtitle="Mayor densidad informativa, métricas del día, saldo prominente">
+      <DCArtboard id="inicio-a" label="Refinada" width={420} height={820}><InicioRefinada/></DCArtboard>
+      <DCArtboard id="inicio-b" label="Atrevida" width={420} height={820}><InicioAtrevida/></DCArtboard>
+    </DCSection>
+
+    <DCSection id="pedidos" title="Listado de pedidos" subtitle="Búsqueda, filtros pill, agrupación temporal, ETA visible">
+      <DCArtboard id="pedidos-a" label="Refinada" width={420} height={820}><PedidosRefinada/></DCArtboard>
+      <DCArtboard id="pedidos-b" label="Atrevida" width={420} height={820}><PedidosAtrevida/></DCArtboard>
+    </DCSection>
+
+    <DCSection id="crear" title="Crear pedido" subtitle="Resuelve la fricción del URL Google Maps con mapa embebido, búsqueda y GPS">
+      <DCArtboard id="crear-a" label="Refinada · single page" width={420} height={820}><CrearRefinada/></DCArtboard>
+      <DCArtboard id="crear-b" label="Atrevida · wizard 3 pasos" width={420} height={820}><CrearAtrevida/></DCArtboard>
+    </DCSection>
+
+    <DCSection id="detalle" title="Detalle de pedido" subtitle="Estado prominente, mapa, repartidor con acciones rápidas">
+      <DCArtboard id="detalle-a" label="Refinada" width={420} height={820}><DetalleRefinada/></DCArtboard>
+      <DCArtboard id="detalle-b" label="Atrevida · mapa fullbleed" width={420} height={820}><DetalleAtrevida/></DCArtboard>
+    </DCSection>
+
+    <DCSection id="seguimiento" title="Seguimiento público" subtitle="La pantalla pública es exposición de marca. Branding fuerte + mapa en vivo + ETA">
+      <DCArtboard id="seg-a" label="Refinada" width={420} height={820}><SeguimientoRefinada/></DCArtboard>
+      <DCArtboard id="seg-b" label="Atrevida" width={420} height={820}><SeguimientoAtrevida/></DCArtboard>
+    </DCSection>
+
+    <DCSection id="tienda" title="Tienda de paquetes" subtitle="Destacado «más vendido», ahorro por envío visible, instrucciones de pago">
+      <DCArtboard id="tienda-a" label="Refinada" width={420} height={820}><TiendaRefinada/></DCArtboard>
+      <DCArtboard id="tienda-b" label="Atrevida" width={420} height={820}><TiendaAtrevida/></DCArtboard>
+    </DCSection>
+
+    <DCSection id="perfil" title="Mi perfil" subtitle="Datos del vendedor, negocio, preferencias y cierre de sesión">
+      <DCArtboard id="perfil-a" label="Refinada" width={420} height={820}><PerfilRefinada/></DCArtboard>
+      <DCArtboard id="perfil-b" label="Atrevida" width={420} height={820}><PerfilAtrevida/></DCArtboard>
+    </DCSection>
+  </DesignCanvas>
+);
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
