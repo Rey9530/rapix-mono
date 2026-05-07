@@ -17,6 +17,15 @@ export const EventosDominio = {
 
   // Usuarios
   UsuarioRegistrado: 'usuario.registrado',
+
+  // WhatsApp Baileys (Fase 8)
+  WhatsappEstadoCambiado: 'whatsapp.estado_cambiado',
+  WhatsappQrDisponible: 'whatsapp.qr_disponible',
+  WhatsappSocketCreado: 'whatsapp.socket_creado',
+  WhatsappMensajeEntrante: 'whatsapp.mensaje_entrante',
+  WhatsappMensajeEstado: 'whatsapp.mensaje_estado_actualizado',
+  WhatsappMensajeReaccion: 'whatsapp.mensaje_reaccion',
+  WhatsappChatActualizado: 'whatsapp.chat_actualizado',
 } as const;
 
 export type NombreEvento = (typeof EventosDominio)[keyof typeof EventosDominio];

@@ -1,0 +1,19 @@
+<div class="d-flex align-items-center gap-2 flex-wrap">
+  <span class="badge px-3 py-2" [ngClass]="clase()">
+    <span
+      class="me-2"
+      style="display: inline-block; width: 8px; height: 8px; border-radius: 50%;"
+      [style.background-color]="conectadoWs() ? '#fff' : '#bbb'"
+    ></span>
+    {{ etiqueta() }}
+  </span>
+  @if (sesion()?.estado === "CONECTADA") {
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-danger"
+      (click)="emitirDesvincular()"
+    >
+      Desvincular
+    </button>
+  }
+</div>

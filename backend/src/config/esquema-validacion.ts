@@ -28,6 +28,10 @@ export const esquemaValidacionEnv = Joi.object({
 
   // Fase 6 — Notificaciones (todas opcionales: el adapter degrada
   // a FALLIDO con `mensajeError = CANAL_NO_CONFIGURADO` si faltan).
+  // DEPRECADO (Fase 8 — WhatsApp Baileys): WHATSAPP_API_VERSION,
+  // WHATSAPP_PHONE_NUMBER_ID y WHATSAPP_ACCESS_TOKEN ya no se usan; el canal
+  // WHATSAPP envia via Baileys. Se mantienen como `optional` para no romper
+  // despliegues existentes y se eliminaran cuando todos los entornos migren.
   WHATSAPP_API_VERSION: Joi.string().default('v20.0'),
   WHATSAPP_PHONE_NUMBER_ID: Joi.string().optional().allow(''),
   WHATSAPP_ACCESS_TOKEN: Joi.string().optional().allow(''),
@@ -42,4 +46,13 @@ export const esquemaValidacionEnv = Joi.object({
   FIREBASE_PRIVATE_KEY: Joi.string().optional().allow(''),
   FIREBASE_CLIENT_EMAIL: Joi.string().optional().allow(''),
   NOTIFICACIONES_LIMITE_HORA: Joi.number().default(20),
+
+  // Fase 8 — WhatsApp Baileys.
+  WHATSAPP_BAILEYS_HABILITADO: Joi.boolean().truthy('true').falsy('false').default(true),
+  WHATSAPP_BAILEYS_NAVEGADOR_NOMBRE: Joi.string().default('Rapix'),
+  WHATSAPP_BAILEYS_TASA_MAX_POR_SEG: Joi.number().default(1),
+  WHATSAPP_BAILEYS_RAFAGA_MAX: Joi.number().default(5),
+  WHATSAPP_BAILEYS_LOG_LEVEL: Joi.string()
+    .valid('trace', 'debug', 'info', 'warn', 'error', 'fatal', 'silent')
+    .default('warn'),
 });

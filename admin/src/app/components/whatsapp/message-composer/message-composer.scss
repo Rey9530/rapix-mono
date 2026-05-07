@@ -1,0 +1,12 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.message-composer {
+  textarea {
+    resize: none;
+    max-height: 120px;
+    overflow-y: auto;
+  }
+}

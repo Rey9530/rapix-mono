@@ -1,0 +1,68 @@
+<div
+  class="message-bubble-wrap d-flex "
+  [class.justify-content-end]="esSaliente()"
+>
+  <div class="position-relative ">
+    <div
+      class="message-bubble shadow-sm"
+      [class.entrante]="!esSaliente()"
+      [class.saliente]="esSaliente()"
+    >
+      @if (mostrarRemitente() && !esSaliente()) {
+        <div class="remitente small fw-semibold mb-1">
+          {{ mensaje().remitenteId ? "Otro participante" : "Sistema" }}
+        </div>
+      }
+      @if (etiquetaTipo()) {
+        <div class="tipo-tag small text-muted mb-1">
+          {{ etiquetaTipo() }}
+          @if (mensaje().nombreArchivo) {
+            <span> · {{ mensaje().nombreArchivo }}</span>
+          }
+        </div>
+      }
+      @if (textoCuerpo()) {
+        <div class="cuerpo">{{ textoCuerpo() }}</div>
+      }
+      <div class="meta d-flex align-items-center gap-1 mt-1">
+        <button
+          type="button"
+          class="btn btn-sm p-0 reaccionar-toggle"
+          title="Reaccionar"
+          (click)="togglePicker()"
+        >
+          😊
+        </button>
+        <small class="text-muted ms-auto">{{ hora() }}</small>
+        @if (indicadorEstado()) {
+          <small
+            [class.text-info]="leido()"
+            [class.text-muted]="!leido()"
+            >{{ indicadorEstado() }}</small
+          >
+        }
+      </div>
+    </div>
+    @if (mostrarPicker()) {
+      <div class="emoji-picker shadow rounded bg-white p-2 d-flex gap-1">
+        @for (emoji of emojis; track emoji) {
+          <button
+            type="button"
+            class="btn btn-light btn-sm"
+            (click)="reaccionar(emoji)"
+          >
+            {{ emoji }}
+          </button>
+        }
+        <button
+          type="button"
+          class="btn btn-link btn-sm text-danger"
+          title="Quitar reaccion"
+          (click)="quitarReaccion()"
+        >
+          ✕
+        </button>
+      </div>
+    }
+  </div>
+</div>

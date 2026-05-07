@@ -1,0 +1,57 @@
+<div class="message-composer p-2 border-top bg-white">
+  @if (adjunto()) {
+    <div class="adjunto-preview d-flex align-items-center gap-2 p-2 bg-light rounded mb-2">
+      <span class="badge bg-secondary">{{ adjunto()!.tipo }}</span>
+      <div class="flex-grow-1 text-truncate">
+        <div class="text-truncate fw-semibold">{{ adjunto()!.archivo.name }}</div>
+        <small class="text-muted">{{ formatearTamano(adjunto()!.archivo.size) }}</small>
+      </div>
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-secondary"
+        (click)="quitarAdjunto()"
+        [disabled]="enviando()"
+      >
+        Quitar
+      </button>
+    </div>
+  }
+  <div class="d-flex align-items-end gap-2">
+    <button
+      type="button"
+      class="btn btn-light"
+      title="Adjuntar archivo"
+      (click)="abrirSelectorArchivo()"
+      [disabled]="enviando() || deshabilitado()"
+    >
+      📎
+    </button>
+    <input
+      #inputArchivo
+      type="file"
+      class="d-none"
+      (change)="alSeleccionarArchivo($event)"
+    />
+    <textarea
+      class="form-control"
+      rows="1"
+      placeholder="Escribe un mensaje..."
+      [ngModel]="texto()"
+      (ngModelChange)="texto.set($event)"
+      (keydown)="manejarTeclaTextarea($event)"
+      [disabled]="enviando() || deshabilitado()"
+    ></textarea>
+    <button
+      type="button"
+      class="btn btn-success"
+      (click)="enviar()"
+      [disabled]="!puedeEnviar()"
+    >
+      @if (enviando()) {
+        <span class="spinner-border spinner-border-sm"></span>
+      } @else {
+        Enviar
+      }
+    </button>
+  </div>
+</div>

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
+import { WhatsappModulo } from '../whatsapp/whatsapp.modulo.js';
 import { EmailAdaptador } from './canales/email.adaptador.js';
 import { PushAdaptador } from './canales/push.adaptador.js';
-import { WhatsAppAdaptador } from './canales/whatsapp.adaptador.js';
 import { CierreEventosManejador } from './manejadores/cierre-eventos.manejador.js';
 import { PaqueteEventosManejador } from './manejadores/paquete-eventos.manejador.js';
 import { PedidoEventosManejador } from './manejadores/pedido-eventos.manejador.js';
@@ -11,12 +11,12 @@ import { TokensDispositivoControlador } from './tokens-dispositivo.controlador.j
 import { TokensDispositivoServicio } from './tokens-dispositivo.servicio.js';
 
 @Module({
+  imports: [WhatsappModulo],
   controllers: [NotificacionesControlador, TokensDispositivoControlador],
   providers: [
     NotificacionesServicio,
     TokensDispositivoServicio,
     PushAdaptador,
-    WhatsAppAdaptador,
     EmailAdaptador,
     PedidoEventosManejador,
     CierreEventosManejador,

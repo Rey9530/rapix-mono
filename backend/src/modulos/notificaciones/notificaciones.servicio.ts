@@ -13,10 +13,10 @@ import {
 } from '../../generated/prisma/client.js';
 import { PrismaServicio } from '../../prisma/prisma.servicio.js';
 import { RedisServicio } from '../../redis/redis.servicio.js';
+import { WhatsappBaileysAdaptador } from '../whatsapp/adaptadores/whatsapp-baileys.adaptador.js';
 import { CanalAdaptador } from './canales/canal.adaptador.js';
 import { EmailAdaptador } from './canales/email.adaptador.js';
 import { PushAdaptador } from './canales/push.adaptador.js';
-import { WhatsAppAdaptador } from './canales/whatsapp.adaptador.js';
 import { FiltrosNotificacionDto } from './dto/filtros-notificacion.dto.js';
 
 export interface ParamsEnviarNotificacion {
@@ -37,7 +37,7 @@ export class NotificacionesServicio {
     private readonly prisma: PrismaServicio,
     private readonly redis: RedisServicio,
     private readonly push: PushAdaptador,
-    private readonly whatsapp: WhatsAppAdaptador,
+    private readonly whatsapp: WhatsappBaileysAdaptador,
     private readonly email: EmailAdaptador,
   ) {}
 

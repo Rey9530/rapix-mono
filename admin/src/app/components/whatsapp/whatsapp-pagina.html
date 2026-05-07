@@ -1,0 +1,27 @@
+<div class="container-fluid p-3 d-flex flex-column whatsapp-page-shell">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2 flex-shrink-0">
+    <h2 class="mb-0">WhatsApp</h2>
+    <app-session-status-badge
+      [sesion]="sesion()"
+      [conectadoWs]="conectadoWs()"
+      (desvincular)="abrirConfirmarLogout()"
+    ></app-session-status-badge>
+  </div>
+
+  @if (mostrarQrPanel()) {
+    <app-qr-login-panel [sesion]="sesion()"></app-qr-login-panel>
+  } @else {
+    <div class="chat-shell flex-grow-1">
+      <div class="chat-shell-panel chat-list-panel">
+        <app-chat-list
+          [chats]="chats()"
+          [chatActivoId]="chatActivoId()"
+          (seleccionar)="seleccionarChat($event)"
+        ></app-chat-list>
+      </div>
+      <div class="chat-shell-panel chat-window-panel">
+        <app-chat-window [chat]="chatActivo()"></app-chat-window>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,56 @@
+@if (!chat()) {
+  <div class="chat-window-vacio d-flex align-items-center justify-content-center h-100 text-muted">
+    Selecciona un chat para ver los mensajes.
+  </div>
+} @else {
+  <div class="chat-window d-flex flex-column h-100">
+    <div class="chat-header p-3 border-bottom bg-white d-flex align-items-center gap-3 w-100">
+      <div class="avatar bg-light text-secondary fw-bold d-flex align-items-center justify-content-center rounded-circle">
+        @if (chat()!.urlAvatar) {
+          <img [src]="chat()!.urlAvatar" alt="" />
+        } @else {
+          <span>{{ (chat()!.nombre ?? chat()!.numero ?? chat()!.jid).slice(0, 2).toUpperCase() }}</span>
+        }
+      </div>
+      <div>
+        <div class="fw-semibold">{{ chat()!.nombre ?? chat()!.numero ?? chat()!.jid }}</div>
+        <small class="text-muted">
+          {{ chat()!.tipo === "GRUPO" ? "Grupo" : (chat()!.numero ?? chat()!.jid) }}
+        </small>
+      </div>
+    </div>
+
+    <div #scroll class="chat-mensajes flex-grow-1 p-3 w-100">
+      @if (cargandoHistorial && mensajes().length === 0) {
+        <div class="text-center text-muted py-3">Cargando mensajes...</div>
+      }
+      @if (mensajes().length === 0 && !cargandoHistorial) {
+        <div class="text-center text-muted py-3">Sin mensajes en este chat.</div>
+      }
+      @if (mensajes().length > 0) {
+        <div class="text-center mb-3">
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary"
+            (click)="cargarMas()"
+            [disabled]="cargandoHistorial"
+          >
+            @if (cargandoHistorial) {
+              Cargando...
+            } @else {
+              Cargar mensajes anteriores
+            }
+          </button>
+        </div>
+      }
+      @for (mensaje of mensajes(); track mensaje.id) {
+        <app-message-bubble
+          [mensaje]="mensaje"
+          [mostrarRemitente]="chat()!.tipo === 'GRUPO'"
+        ></app-message-bubble>
+      }
+    </div>
+
+    <app-message-composer [chat]="chat()!"></app-message-composer>
+  </div>
+}

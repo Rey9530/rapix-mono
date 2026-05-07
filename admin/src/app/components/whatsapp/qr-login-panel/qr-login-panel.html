@@ -1,0 +1,36 @@
+<div class="qr-login-panel">
+  <div class="card text-center shadow-sm">
+    <div class="card-body p-5">
+      <i class="iconly-Chat icli text-success mb-3" style="font-size: 3rem"></i>
+      <h3 class="card-title mb-2">Vincula WhatsApp</h3>
+      <p class="text-muted mb-4">{{ mensaje() }}</p>
+
+      @if (sesion()?.qrActual) {
+        <div class="qr-canvas-wrapper">
+          <canvas #canvasQr></canvas>
+        </div>
+        <p class="small text-muted mt-3 mb-0">
+          El codigo QR se actualiza automaticamente cada minuto si no lo escaneas.
+        </p>
+      } @else {
+        <button
+          type="button"
+          class="btn btn-success px-4"
+          [disabled]="vinculando || sesion()?.estado === 'BANEADA'"
+          (click)="vincular()"
+        >
+          @if (vinculando) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+          }
+          Vincular WhatsApp
+        </button>
+      }
+
+      @if (sesion()?.ultimoError) {
+        <div class="alert alert-warning mt-4 text-start">
+          <strong>Ultimo error:</strong> {{ sesion()?.ultimoError }}
+        </div>
+      }
+    </div>
+  </div>
+</div>

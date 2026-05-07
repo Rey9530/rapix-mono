@@ -23,6 +23,22 @@ const MIME_PERMITIDOS = new Set([
   'application/pdf',
 ]);
 
+// Para mensajes de WhatsApp aceptamos un set mas amplio: imagenes,
+// videos, audios, documentos comunes y archivos genericos. Se bloquean
+// ejecutables y tipos potencialmente peligrosos.
+const MIME_BLOQUEADOS_WHATSAPP = new Set([
+  'application/x-msdownload',
+  'application/x-msdos-program',
+  'application/x-executable',
+  'application/x-sh',
+  'application/x-shellscript',
+  'application/javascript',
+  'text/javascript',
+  'application/x-bat',
+  'application/x-bash',
+]);
+const TAMANO_MAXIMO_WHATSAPP = 16 * 1024 * 1024; // 16 MB (limite practico de WA)
+
 export interface ResultadoSubida {
   key: string;
   url: string;
@@ -117,5 +133,47 @@ export class ArchivosServicio implements OnModuleInit {
 
   static armarKeyLogoVendedor(usuarioId: string, ext = 'jpg'): string {
     return `vendedores/${usuarioId}/logo-${Date.now()}.${ext}`;
+  }
+
+  static armarKeyWhatsapp(chatId: string, ext = 'bin'): string {
+    return `whatsapp/${chatId}/${Date.now()}.${ext}`;
+  }
+
+  /**
+   * Variante de `subir` con validacion mas permisiva (necesaria para mensajes
+   * de WhatsApp, que pueden incluir video/audio/documentos diversos). Bloquea
+   * solo ejecutables y limita el tamano.
+   */
+  async subirParaWhatsapp(
+    buffer: Buffer,
+    key: string,
+    contentType: string,
+  ): Promise<ResultadoSubida> {
+    if (buffer.length > TAMANO_MAXIMO_WHATSAPP) {
+      throw new PayloadTooLargeException(
+        `Archivo excede el limite de ${TAMANO_MAXIMO_WHATSAPP / (1024 * 1024)} MB`,
+      );
+    }
+    if (MIME_BLOQUEADOS_WHATSAPP.has(contentType)) {
+      throw new UnsupportedMediaTypeException(
+        `Tipo ${contentType} no permitido para WhatsApp`,
+      );
+    }
+    try {
+      await this.cliente.send(
+        new PutObjectCommand({
+          Bucket: this.bucket,
+          Key: key,
+          Body: buffer,
+          ContentType: contentType,
+        }),
+      );
+    } catch (error) {
+      throw new HttpException(
+        `Error subiendo archivo: ${(error as Error).message}`,
+        HttpStatus.BAD_GATEWAY,
+      );
+    }
+    return { key, url: `${this.urlPublica}/${key}` };
   }
 }

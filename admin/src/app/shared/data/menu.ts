@@ -28,6 +28,13 @@ export const menuItems: IMenu[] = [
     level: 1,
   },
   {
+    title: "WhatsApp",
+    icon: "chat",
+    type: "link",
+    path: "/whatsapp",
+    level: 1,
+  },
+  {
     main_title: "Administración",
   },
   {

@@ -1,0 +1,56 @@
+<div class="chat-list-wrapper">
+  <div class="chat-list-busqueda p-3 border-bottom">
+    <input
+      type="search"
+      class="form-control form-control-sm"
+      placeholder="Buscar chat o numero..."
+      [ngModel]="busqueda()"
+      (ngModelChange)="busqueda.set($event)"
+    />
+  </div>
+  <div class="chat-list-items">
+    @if (chatsFiltrados().length === 0) {
+      <div class="text-center text-muted p-4 small">
+        @if (busqueda()) {
+          Sin resultados.
+        } @else {
+          Sin chats todavia. En cuanto llegue un mensaje aparecera aqui.
+        }
+      </div>
+    }
+    @for (chat of chatsFiltrados(); track chat.id) {
+      <button
+        type="button"
+        class="chat-list-item d-flex align-items-center gap-3 p-3 border-bottom w-100 text-start"
+        [class.activo]="chat.id === chatActivoId()"
+        (click)="abrirChat(chat)"
+      >
+        <div class="avatar bg-light text-secondary fw-bold d-flex align-items-center justify-content-center rounded-circle">
+          @if (chat.urlAvatar) {
+            <img [src]="chat.urlAvatar" alt="" />
+          } @else {
+            <span>{{ iniciales(chat) }}</span>
+          }
+        </div>
+        <div class="flex-grow-1 min-width-0">
+          <div class="d-flex justify-content-between align-items-baseline">
+            <span class="chat-nombre text-truncate fw-semibold">
+              {{ chat.nombre ?? chat.numero ?? chat.jid }}
+            </span>
+            <small class="text-muted ms-2">{{
+              formatearHora(chat.ultimoMensajeEn)
+            }}</small>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mt-1">
+            <small class="text-muted text-truncate">
+              {{ chat.tipo === "GRUPO" ? "Grupo" : (chat.numero ?? "") }}
+            </small>
+            @if (chat.noLeidos > 0) {
+              <span class="badge bg-success rounded-pill">{{ chat.noLeidos }}</span>
+            }
+          </div>
+        </div>
+      </button>
+    }
+  </div>
+</div>

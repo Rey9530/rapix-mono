@@ -23,6 +23,7 @@ import { AuditoriaModulo } from './modulos/auditoria/auditoria.modulo.js';
 import { CierresFinancierosModulo } from './modulos/cierres-financieros/cierres-financieros.modulo.js';
 import { NotificacionesModulo } from './modulos/notificaciones/notificaciones.modulo.js';
 import { MapasModulo } from './modulos/mapas/mapas.modulo.js';
+import { WhatsappModulo } from './modulos/whatsapp/whatsapp.modulo.js';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { MapasModulo } from './modulos/mapas/mapas.modulo.js';
     NotificacionesModulo,
     MapasModulo,
     ReportesModulo,
+    WhatsappModulo,
   ],
   providers: [
     // Orden: Throttler primero, JWT, luego Roles.

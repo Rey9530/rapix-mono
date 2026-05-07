@@ -50,6 +50,14 @@ export const content: Routes = [
         (r) => r.cierresRoutes,
       ),
   },
+  {
+    path: "whatsapp",
+    data: { title: "WhatsApp", breadcrumb: "WhatsApp" },
+    loadChildren: () =>
+      import("../../components/whatsapp/whatsapp.routes").then(
+        (r) => r.whatsappRoutes,
+      ),
+  },
   // Sample pages legacy — se mantienen mientras se migran las features.
   {
     path: "pages",

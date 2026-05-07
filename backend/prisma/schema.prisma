@@ -106,6 +106,48 @@ enum PlataformaDispositivo {
 }
 
 // ============================================================
+// ENUMS — WhatsApp Baileys (Fase 8)
+// ============================================================
+
+enum EstadoSesionWhatsapp {
+  DESCONECTADA
+  ESPERANDO_QR
+  CONECTADA
+  EXPIRADA
+  BANEADA
+}
+
+enum TipoChatWhatsapp {
+  INDIVIDUAL
+  GRUPO
+}
+
+enum DireccionMensajeWhatsapp {
+  ENTRANTE
+  SALIENTE
+}
+
+enum TipoMensajeWhatsapp {
+  TEXTO
+  IMAGEN
+  VIDEO
+  AUDIO
+  DOCUMENTO
+  STICKER
+  UBICACION
+  CONTACTO
+  SISTEMA
+}
+
+enum EstadoMensajeWhatsapp {
+  PENDIENTE
+  ENVIADO
+  ENTREGADO
+  LEIDO
+  FALLIDO
+}
+
+// ============================================================
 // MODELOS — Usuarios y Autenticación
 // ============================================================
 
@@ -521,4 +563,171 @@ model TokenDispositivo {
 
   @@index([usuarioId, activo])
   @@map("tokens_dispositivo")
+}
+
+// ============================================================
+// WHATSAPP BAILEYS — Fase 8
+//
+// Sesion unica global (id = "global"). El auth state vive en una
+// tabla key-value que reemplaza a `useMultiFileAuthState`.
+// Los chats, mensajes, contactos, participantes de grupo y
+// reacciones se persisten al recibir eventos de baileys.
+// ============================================================
+
+/// Fila unica (id = "global") con el estado de la sesion Baileys.
+model SesionWhatsapp {
+  id             String               @id
+  estado         EstadoSesionWhatsapp @default(DESCONECTADA)
+  jidPropio      String?
+  numeroPropio   String?
+  nombrePropio   String?
+  qrActual       String?
+  qrExpiraEn     DateTime?
+  ultimoErrorEn  DateTime?
+  ultimoError    String?
+  conectadoEn    DateTime?
+  desconectadoEn DateTime?
+  creadoEn       DateTime             @default(now())
+  actualizadoEn  DateTime             @updatedAt
+
+  @@map("sesiones_whatsapp")
+}
+
+/// Tabla key-value para el AuthenticationState de baileys.
+/// `tipo` es el "kind" baileys (creds | pre-key | session | sender-key | app-state-sync-key | ...).
+model AuthStateWhatsapp {
+  id            String   @id @default(uuid())
+  sesionId      String
+  tipo          String
+  clave         String
+  valor         Json
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  @@unique([sesionId, tipo, clave])
+  @@index([sesionId, tipo])
+  @@map("auth_state_whatsapp")
+}
+
+/// Contacto sincronizado de WhatsApp.
+model ContactoWhatsapp {
+  id            String    @id @default(uuid())
+  jid           String    @unique
+  numero        String?
+  nombre        String?
+  urlAvatar     String?
+  bloqueado     Boolean   @default(false)
+  visto         DateTime?
+  creadoEn      DateTime  @default(now())
+  actualizadoEn DateTime  @updatedAt
+
+  participaciones ParticipanteGrupoWhatsapp[]
+  mensajes        MensajeWhatsapp[]           @relation("MensajesPorContacto")
+
+  @@index([numero])
+  @@map("contactos_whatsapp")
+}
+
+/// Chat (1:1 o grupo).
+model ChatWhatsapp {
+  id              String           @id @default(uuid())
+  jid             String           @unique
+  tipo            TipoChatWhatsapp
+  nombre          String?
+  urlAvatar       String?
+  ultimoMensajeEn DateTime?
+  ultimoMensajeId String?
+  noLeidos        Int              @default(0)
+  archivado       Boolean          @default(false)
+  silenciadoHasta DateTime?
+  creadoEn        DateTime         @default(now())
+  actualizadoEn   DateTime         @updatedAt
+
+  mensajes      MensajeWhatsapp[]
+  participantes ParticipanteGrupoWhatsapp[]
+
+  @@index([tipo, ultimoMensajeEn])
+  @@index([archivado, ultimoMensajeEn])
+  @@map("chats_whatsapp")
+}
+
+/// Participantes de un chat de grupo (snapshot derivado de baileys).
+model ParticipanteGrupoWhatsapp {
+  id           String   @id @default(uuid())
+  chatId       String
+  contactoId   String
+  esAdmin      Boolean  @default(false)
+  esSuperAdmin Boolean  @default(false)
+  creadoEn     DateTime @default(now())
+
+  chat     ChatWhatsapp     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  contacto ContactoWhatsapp @relation(fields: [contactoId], references: [id], onDelete: Cascade)
+
+  @@unique([chatId, contactoId])
+  @@index([chatId])
+  @@map("participantes_grupo_whatsapp")
+}
+
+/// Mensaje individual.
+model MensajeWhatsapp {
+  id            String                   @id @default(uuid())
+  /// `key.id` que asigna baileys; unico dentro del chat (idempotencia).
+  externoId     String
+  chatId        String
+  /// Contacto remitente (en grupos puede diferir del chat). En SALIENTE = null.
+  remitenteId   String?
+  direccion     DireccionMensajeWhatsapp
+  tipo          TipoMensajeWhatsapp
+  estado        EstadoMensajeWhatsapp    @default(PENDIENTE)
+
+  texto         String?
+  caption       String?
+  urlMedia      String?
+  mimeMedia     String?
+  bytesMedia    Int?
+  duracionSeg   Int?
+  nombreArchivo String?
+  miniatura     String?
+
+  /// Mensaje al que responde (replyTo). Self-relation opcional.
+  respondeAId String?
+  reenviado   Boolean @default(false)
+
+  enviadoEn   DateTime?
+  entregadoEn DateTime?
+  leidoEn     DateTime?
+  fallaError  String?
+
+  /// Payload original de baileys por si se necesita re-procesar.
+  payloadCrudo Json?
+
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  chat       ChatWhatsapp             @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  remitente  ContactoWhatsapp?        @relation("MensajesPorContacto", fields: [remitenteId], references: [id], onDelete: SetNull)
+  respondeA  MensajeWhatsapp?         @relation("RespuestaMensaje", fields: [respondeAId], references: [id], onDelete: SetNull)
+  respuestas MensajeWhatsapp[]        @relation("RespuestaMensaje")
+  reacciones ReaccionMensajeWhatsapp[]
+
+  @@unique([chatId, externoId])
+  @@index([chatId, creadoEn])
+  @@index([direccion, estado])
+  @@map("mensajes_whatsapp")
+}
+
+/// Reacciones a mensajes (un autor puede reaccionar a un mensaje con un emoji; ultima gana).
+model ReaccionMensajeWhatsapp {
+  id            String   @id @default(uuid())
+  mensajeId     String
+  /// jid de quien reacciona (puede ser nuestro propio jid).
+  jidAutor      String
+  emoji         String?
+  reaccionadoEn DateTime @default(now())
+
+  mensaje MensajeWhatsapp @relation(fields: [mensajeId], references: [id], onDelete: Cascade)
+
+  @@unique([mensajeId, jidAutor])
+  @@index([mensajeId])
+  @@map("reacciones_mensaje_whatsapp")
 }
