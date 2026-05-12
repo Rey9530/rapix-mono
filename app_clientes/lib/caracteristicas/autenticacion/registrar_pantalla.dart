@@ -104,9 +104,9 @@ class _RegistrarPantallaEstado extends ConsumerState<RegistrarPantalla> {
     final estado = ref.watch(autenticacionControladorProvider);
     final nivel = _nivelSeguridad(_contrasenaCtrl.text);
     return Scaffold(
-      backgroundColor: TokensRapix.fondo,
+      backgroundColor: tokens(context).fondo,
       appBar: AppBar(
-        backgroundColor: TokensRapix.fondo,
+        backgroundColor: tokens(context).fondo,
         toolbarHeight: 64,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,7 +117,7 @@ class _RegistrarPantallaEstado extends ConsumerState<RegistrarPantalla> {
               style: GoogleFonts.inter(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: TokensRapix.tinta,
+                color: tokens(context).tinta,
                 letterSpacing: -0.2,
               ),
             ),
@@ -126,7 +126,7 @@ class _RegistrarPantallaEstado extends ConsumerState<RegistrarPantalla> {
               style: GoogleFonts.inter(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
-                color: TokensRapix.tintaSilenciada,
+                color: tokens(context).tintaSilenciada,
               ),
             ),
           ],
@@ -290,7 +290,7 @@ class _Bienvenida extends StatelessWidget {
             fontSize: 26,
             fontWeight: FontWeight.w700,
             letterSpacing: -0.6,
-            color: TokensRapix.tinta,
+            color: tokens(context).tinta,
             height: 1.2,
           ),
         ),
@@ -299,7 +299,7 @@ class _Bienvenida extends StatelessWidget {
           'Crea tu cuenta de vendedor en menos de un minuto.',
           style: GoogleFonts.inter(
             fontSize: 13,
-            color: TokensRapix.tintaSilenciada,
+            color: tokens(context).tintaSilenciada,
             height: 1.5,
           ),
         ),
@@ -325,7 +325,7 @@ class _TituloSeccion extends StatelessWidget {
             fontSize: 16,
             fontWeight: FontWeight.w700,
             letterSpacing: -0.3,
-            color: TokensRapix.tinta,
+            color: tokens(context).tinta,
           ),
         ),
         const SizedBox(height: 4),
@@ -333,7 +333,7 @@ class _TituloSeccion extends StatelessWidget {
           descripcion,
           style: GoogleFonts.inter(
             fontSize: 12,
-            color: TokensRapix.tintaSilenciada,
+            color: tokens(context).tintaSilenciada,
             height: 1.4,
           ),
         ),
@@ -377,7 +377,7 @@ class _CampoEtiquetado extends StatelessWidget {
             style: GoogleFonts.inter(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: TokensRapix.tintaSilenciada,
+              color: tokens(context).tintaSilenciada,
             ),
           ),
         ),
@@ -391,7 +391,7 @@ class _CampoEtiquetado extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: TokensRapix.tinta,
+            color: tokens(context).tinta,
             letterSpacing: ofuscar ? 3 : null,
           ),
           decoration: InputDecoration(
@@ -461,7 +461,7 @@ class _MedidorSeguridad extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: TokensRapix.verdeSuave,
+        color: tokens(context).verdeSuave,
         borderRadius: BorderRadius.circular(TokensRapix.radioMd),
       ),
       child: Column(
@@ -473,7 +473,7 @@ class _MedidorSeguridad extends StatelessWidget {
               fontSize: 11,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.5,
-              color: TokensRapix.verdeTinta,
+              color: tokens(context).verdeTinta,
             ),
           ),
           const SizedBox(height: 8),
@@ -487,7 +487,7 @@ class _MedidorSeguridad extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: activo
                         ? TokensRapix.verde
-                        : Colors.black.withValues(alpha: 0.1),
+                        : tokens(context).contorno,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -500,7 +500,7 @@ class _MedidorSeguridad extends StatelessWidget {
             style: GoogleFonts.inter(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: TokensRapix.verdeTinta,
+              color: tokens(context).verdeTinta,
             ),
           ),
         ],
@@ -526,11 +526,11 @@ class _TarjetaUbicacion extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: TokensRapix.superficie,
+            color: tokens(context).superficie,
             borderRadius: BorderRadius.circular(TokensRapix.radioLg),
             border: Border.all(
               color:
-                  seleccionada ? TokensRapix.verde : TokensRapix.contorno,
+                  seleccionada ? TokensRapix.verde : tokens(context).contorno,
               width: 1.5,
             ),
           ),
@@ -540,7 +540,7 @@ class _TarjetaUbicacion extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: TokensRapix.verdeSuave,
+                  color: tokens(context).verdeSuave,
                   borderRadius: BorderRadius.circular(TokensRapix.radioMd),
                 ),
                 child: const Icon(
@@ -561,7 +561,7 @@ class _TarjetaUbicacion extends StatelessWidget {
                       style: GoogleFonts.inter(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
-                        color: TokensRapix.tinta,
+                        color: tokens(context).tinta,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -572,15 +572,15 @@ class _TarjetaUbicacion extends StatelessWidget {
                           : 'Marca el punto exacto en el mapa',
                       style: GoogleFonts.inter(
                         fontSize: 11,
-                        color: TokensRapix.tintaSilenciada,
+                        color: tokens(context).tintaSilenciada,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.chevron_right,
-                color: TokensRapix.tintaSuave,
+                color: tokens(context).tintaSuave,
               ),
             ],
           ),
@@ -612,10 +612,10 @@ class _CheckboxTerminos extends StatelessWidget {
               height: 22,
               margin: const EdgeInsets.only(top: 1, right: 10),
               decoration: BoxDecoration(
-                color: valor ? TokensRapix.verde : TokensRapix.superficie,
+                color: valor ? TokensRapix.verde : tokens(context).superficie,
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
-                  color: valor ? TokensRapix.verde : TokensRapix.contorno,
+                  color: valor ? TokensRapix.verde : tokens(context).contorno,
                   width: 1.5,
                 ),
               ),
@@ -628,7 +628,7 @@ class _CheckboxTerminos extends StatelessWidget {
                 TextSpan(
                   style: GoogleFonts.inter(
                     fontSize: 12,
-                    color: TokensRapix.tintaSilenciada,
+                    color: tokens(context).tintaSilenciada,
                     height: 1.5,
                   ),
                   children: [
@@ -678,10 +678,10 @@ class _PieRegistro extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: TokensRapix.superficie,
+      decoration: BoxDecoration(
+        color: tokens(context).superficie,
         border: Border(
-          top: BorderSide(color: TokensRapix.contornoSuave),
+          top: BorderSide(color: tokens(context).contornoSuave),
         ),
       ),
       child: SafeArea(

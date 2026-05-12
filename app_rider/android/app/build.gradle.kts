@@ -1,12 +1,13 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    id("com.google.gms.google-services")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
-    namespace = "com.example.app_rider"
+    namespace = "com.rapix.rider"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -22,7 +23,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.app_rider"
+        applicationId = "com.rapix.rider"
         // Mapbox SDK + flutter_secure_storage requieren minSdk >= 21; FCM y geolocator también.
         minSdk = 24
         targetSdk = flutter.targetSdkVersion

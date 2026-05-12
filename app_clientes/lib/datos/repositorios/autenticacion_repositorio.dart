@@ -50,6 +50,15 @@ class AutenticacionRepositorio {
     return RespuestaAutenticacion.desdeJson(respuesta.data!);
   }
 
+  Future<RespuestaAutenticacion> refrescar(String tokenRefresco) async {
+    final respuesta = await _dio.post<Map<String, dynamic>>(
+      '/autenticacion/refrescar',
+      data: {'tokenRefresco': tokenRefresco},
+      options: Options(extra: {'omitirAuth': true}),
+    );
+    return RespuestaAutenticacion.desdeJson(respuesta.data!);
+  }
+
   Future<void> cerrarSesion(String tokenRefresco) async {
     await _dio.post<void>(
       '/autenticacion/cerrar-sesion',

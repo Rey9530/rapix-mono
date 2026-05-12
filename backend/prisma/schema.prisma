@@ -332,8 +332,8 @@ model Pedido {
   notasOrigen     String?
 
   direccionDestino String
-  latitudDestino   Float
-  longitudDestino  Float
+  latitudDestino   Float?
+  longitudDestino  Float?
   zonaDestinoId    String?
   notasDestino     String?
 

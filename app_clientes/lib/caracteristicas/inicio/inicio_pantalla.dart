@@ -72,7 +72,7 @@ class InicioPantalla extends ConsumerWidget {
     final iniciales = _iniciales(negocio ?? usuario?.nombreCompleto ?? '');
 
     return Scaffold(
-      backgroundColor: TokensRapix.fondo,
+      backgroundColor: tokens(context).fondo,
       appBar: _AppBarInicio(
         iniciales: iniciales,
         titulo: titulo,
@@ -107,7 +107,7 @@ class InicioPantalla extends ConsumerWidget {
                     icono: Icons.add_box_outlined,
                     titulo: 'Nuevo pedido',
                     subtitulo: 'Crea un envío para tus clientes',
-                    fondoIcono: TokensRapix.verdeSuave,
+                    fondoIcono: tokens(context).verdeSuave,
                     colorIcono: TokensRapix.verdeOscuro,
                     alTocar: () => context.push('/pedidos/nuevo'),
                   ),
@@ -166,7 +166,7 @@ class _AppBarInicio extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       toolbarHeight: 64,
-      backgroundColor: TokensRapix.fondo,
+      backgroundColor: tokens(context).fondo,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       leadingWidth: 60,
@@ -176,9 +176,9 @@ class _AppBarInicio extends StatelessWidget implements PreferredSizeWidget {
           child: Container(
             width: 36,
             height: 36,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: TokensRapix.verdeSuave,
+              color: tokens(context).verdeSuave,
             ),
             alignment: Alignment.center,
             child: Text(
@@ -186,7 +186,7 @@ class _AppBarInicio extends StatelessWidget implements PreferredSizeWidget {
               style: GoogleFonts.inter(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: TokensRapix.verdeTinta,
+                color: tokens(context).verdeTinta,
                 height: 1,
               ),
             ),
@@ -202,7 +202,7 @@ class _AppBarInicio extends StatelessWidget implements PreferredSizeWidget {
             style: GoogleFonts.inter(
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              color: TokensRapix.tinta,
+              color: tokens(context).tinta,
               letterSpacing: -0.2,
               height: 1.2,
             ),
@@ -212,7 +212,7 @@ class _AppBarInicio extends StatelessWidget implements PreferredSizeWidget {
             subtitulo,
             style: GoogleFonts.inter(
               fontSize: 12,
-              color: TokensRapix.tintaSilenciada,
+              color: tokens(context).tintaSilenciada,
               height: 1.3,
             ),
             overflow: TextOverflow.ellipsis,
@@ -224,10 +224,10 @@ class _AppBarInicio extends StatelessWidget implements PreferredSizeWidget {
           padding: const EdgeInsets.only(right: 8),
           child: IconButton(
             tooltip: 'Notificaciones',
-            icon: const Icon(
+            icon: Icon(
               Icons.notifications_outlined,
               size: 22,
-              color: TokensRapix.tinta,
+              color: tokens(context).tinta,
             ),
             onPressed: alPresionarCampana,
           ),
@@ -246,9 +246,9 @@ class _SaldoTarjeta extends ConsumerWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: TokensRapix.superficie,
+        color: tokens(context).superficie,
         borderRadius: BorderRadius.circular(TokensRapix.radioXl),
-        border: Border.all(color: TokensRapix.contorno),
+        border: Border.all(color: tokens(context).contorno),
         boxShadow: TokensRapix.sombraSm,
       ),
       padding: const EdgeInsets.all(18),
@@ -282,7 +282,7 @@ class _SaldoTarjeta extends ConsumerWidget {
                 'No se pudo cargar el saldo',
                 style: GoogleFonts.inter(
                   fontSize: 13,
-                  color: TokensRapix.tintaSilenciada,
+                  color: tokens(context).tintaSilenciada,
                 ),
               ),
             ),
@@ -321,7 +321,7 @@ class _SaldoContenido extends StatelessWidget {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: TokensRapix.verdeSuave,
+                color: tokens(context).verdeSuave,
                 borderRadius: BorderRadius.circular(TokensRapix.radioMd),
               ),
               alignment: Alignment.center,
@@ -342,7 +342,7 @@ class _SaldoContenido extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
-                      color: TokensRapix.tintaSilenciada,
+                      color: tokens(context).tintaSilenciada,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -350,7 +350,7 @@ class _SaldoContenido extends StatelessWidget {
                     '$paquetesActivos ${paquetesActivos == 1 ? 'paquete activo' : 'paquetes activos'}',
                     style: GoogleFonts.inter(
                       fontSize: 11,
-                      color: TokensRapix.tintaSuave,
+                      color: tokens(context).tintaSuave,
                     ),
                   ),
                 ],
@@ -369,7 +369,7 @@ class _SaldoContenido extends StatelessWidget {
                 fontSize: 38,
                 fontWeight: FontWeight.w700,
                 letterSpacing: -1.5,
-                color: TokensRapix.tinta,
+                color: tokens(context).tinta,
                 height: 1,
               ),
             ),
@@ -381,7 +381,7 @@ class _SaldoContenido extends StatelessWidget {
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: TokensRapix.tintaSilenciada,
+                  color: tokens(context).tintaSilenciada,
                 ),
               ),
             ),
@@ -402,8 +402,8 @@ class _SaldoContenido extends StatelessWidget {
             _BotonSaldo(
               etiqueta: 'Ver paquetes',
               icono: Icons.inventory_2_outlined,
-              fondo: TokensRapix.superficieAlt,
-              color: TokensRapix.tinta,
+              fondo: tokens(context).superficieAlt,
+              color: tokens(context).tinta,
               alPresionar: alVerPaquetes,
             ),
           ],
@@ -506,9 +506,9 @@ class _GridMetricas extends ConsumerWidget {
       error: (_, _) => Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: TokensRapix.superficie,
+          color: tokens(context).superficie,
           borderRadius: BorderRadius.circular(TokensRapix.radioLg),
-          border: Border.all(color: TokensRapix.contorno),
+          border: Border.all(color: tokens(context).contorno),
         ),
         child: Row(
           children: [
@@ -523,7 +523,7 @@ class _GridMetricas extends ConsumerWidget {
                 'No se pudieron cargar las métricas',
                 style: GoogleFonts.inter(
                   fontSize: 13,
-                  color: TokensRapix.tintaSilenciada,
+                  color: tokens(context).tintaSilenciada,
                 ),
               ),
             ),
@@ -592,9 +592,9 @@ class _TarjetaMetrica extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: TokensRapix.superficie,
+        color: tokens(context).superficie,
         borderRadius: BorderRadius.circular(TokensRapix.radioLg),
-        border: Border.all(color: TokensRapix.contorno),
+        border: Border.all(color: tokens(context).contorno),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -617,7 +617,7 @@ class _TarjetaMetrica extends StatelessWidget {
               fontSize: 24,
               fontWeight: FontWeight.w700,
               letterSpacing: -0.5,
-              color: TokensRapix.tinta,
+              color: tokens(context).tinta,
               height: 1,
             ),
           ),
@@ -626,7 +626,7 @@ class _TarjetaMetrica extends StatelessWidget {
             etiqueta,
             style: GoogleFonts.inter(
               fontSize: 12,
-              color: TokensRapix.tintaSilenciada,
+              color: tokens(context).tintaSilenciada,
             ),
           ),
         ],
@@ -643,9 +643,9 @@ class _TarjetaMetricaPlaceholder extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: TokensRapix.superficie,
+        color: tokens(context).superficie,
         borderRadius: BorderRadius.circular(TokensRapix.radioLg),
-        border: Border.all(color: TokensRapix.contorno),
+        border: Border.all(color: tokens(context).contorno),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -654,7 +654,7 @@ class _TarjetaMetricaPlaceholder extends StatelessWidget {
             width: 28,
             height: 28,
             decoration: BoxDecoration(
-              color: TokensRapix.superficieHundida,
+              color: tokens(context).superficieHundida,
               borderRadius: BorderRadius.circular(TokensRapix.radioSm),
             ),
           ),
@@ -663,7 +663,7 @@ class _TarjetaMetricaPlaceholder extends StatelessWidget {
             width: 36,
             height: 22,
             decoration: BoxDecoration(
-              color: TokensRapix.superficieHundida,
+              color: tokens(context).superficieHundida,
               borderRadius: BorderRadius.circular(4),
             ),
           ),
@@ -672,7 +672,7 @@ class _TarjetaMetricaPlaceholder extends StatelessWidget {
             width: 70,
             height: 12,
             decoration: BoxDecoration(
-              color: TokensRapix.superficieHundida,
+              color: tokens(context).superficieHundida,
               borderRadius: BorderRadius.circular(4),
             ),
           ),
@@ -696,7 +696,7 @@ class _EtiquetaSeccion extends StatelessWidget {
         style: GoogleFonts.inter(
           fontSize: 13,
           fontWeight: FontWeight.w600,
-          color: TokensRapix.tintaSilenciada,
+          color: tokens(context).tintaSilenciada,
           letterSpacing: 0.6,
         ),
       ),
@@ -731,9 +731,9 @@ class _AccionesRapidas extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: TokensRapix.superficie,
+        color: tokens(context).superficie,
         borderRadius: BorderRadius.circular(TokensRapix.radioLg),
-        border: Border.all(color: TokensRapix.contorno),
+        border: Border.all(color: tokens(context).contorno),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -763,8 +763,8 @@ class _FilaAccion extends StatelessWidget {
         decoration: BoxDecoration(
           border: ultima
               ? null
-              : const Border(
-                  bottom: BorderSide(color: TokensRapix.contornoSuave),
+              : Border(
+                  bottom: BorderSide(color: tokens(context).contornoSuave),
                 ),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
@@ -791,7 +791,7 @@ class _FilaAccion extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: TokensRapix.tinta,
+                      color: tokens(context).tinta,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -799,16 +799,16 @@ class _FilaAccion extends StatelessWidget {
                     accion.subtitulo,
                     style: GoogleFonts.inter(
                       fontSize: 12,
-                      color: TokensRapix.tintaSilenciada,
+                      color: tokens(context).tintaSilenciada,
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.chevron_right,
               size: 20,
-              color: TokensRapix.tintaSuave,
+              color: tokens(context).tintaSuave,
             ),
           ],
         ),

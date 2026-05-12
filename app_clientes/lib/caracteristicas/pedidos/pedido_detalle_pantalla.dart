@@ -1,10 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../../datos/modelos/pedido.dart';
+import '../../datos/repositorios/pedidos_repositorio.dart';
 import '../../nucleo/tema/tokens_rapix.dart';
 import '../../widgets/linea_tiempo_estado.dart';
 import 'mapa_seguimiento_vivo.dart';
@@ -28,7 +31,7 @@ class PedidoDetallePantalla extends ConsumerWidget {
     final pedido = ref.watch(pedidoDetalleProvider(pedidoId));
 
     return Scaffold(
-      backgroundColor: TokensRapix.fondo,
+      backgroundColor: tokens(context).fondo,
       appBar: _AppBarDetalle(
         codigo: pedido.maybeWhen(
           data: (p) => p.codigoSeguimiento,
@@ -112,7 +115,7 @@ class _AppBarDetalle extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: TokensRapix.fondo,
+      backgroundColor: tokens(context).fondo,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       leading: IconButton(
@@ -125,26 +128,26 @@ class _AppBarDetalle extends StatelessWidget implements PreferredSizeWidget {
         style: GoogleFonts.jetBrainsMono(
           fontSize: 15,
           fontWeight: FontWeight.w700,
-          color: TokensRapix.tinta,
+          color: tokens(context).tinta,
           letterSpacing: 0.3,
         ),
       ),
       actions: [
         IconButton(
           tooltip: 'Compartir',
-          icon: const Icon(
+          icon: Icon(
             Icons.share_outlined,
             size: 20,
-            color: TokensRapix.tinta,
+            color: tokens(context).tinta,
           ),
           onPressed: alCompartir,
         ),
         IconButton(
           tooltip: 'Refrescar',
-          icon: const Icon(
+          icon: Icon(
             Icons.refresh,
             size: 20,
-            color: TokensRapix.tinta,
+            color: tokens(context).tinta,
           ),
           onPressed: alRefrescar,
         ),
@@ -201,9 +204,9 @@ class _BannerEstado extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final estados = TokensRapix.estados[pedido.estado];
-    final fondo = estados?.fondo ?? TokensRapix.superficieAlt;
-    final colorTexto = estados?.texto ?? TokensRapix.tintaSilenciada;
-    final colorPunto = estados?.punto ?? TokensRapix.tintaSuave;
+    final fondo = estados?.fondo ?? tokens(context).superficieAlt;
+    final colorTexto = estados?.texto ?? tokens(context).tintaSilenciada;
+    final colorPunto = estados?.punto ?? tokens(context).tintaSuave;
     final icono = _iconos[pedido.estado] ?? Icons.info_outline;
     final etiqueta = _etiquetas[pedido.estado] ?? pedido.estado.replaceAll('_', ' ');
     final descripcion =
@@ -248,7 +251,7 @@ class _BannerEstado extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
-                    color: TokensRapix.tinta,
+                    color: tokens(context).tinta,
                   ),
                 ),
               ],
@@ -272,7 +275,7 @@ class _ContenedorMapa extends StatelessWidget {
       borderRadius: BorderRadius.circular(TokensRapix.radioLg),
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(color: TokensRapix.contorno),
+          border: Border.all(color: tokens(context).contorno),
           borderRadius: BorderRadius.circular(TokensRapix.radioLg),
         ),
         child: MapaSeguimientoVivo(pedidoId: pedidoId, pedido: pedido),
@@ -291,18 +294,18 @@ class _TarjetaRepartidor extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: TokensRapix.superficie,
+        color: tokens(context).superficie,
         borderRadius: BorderRadius.circular(TokensRapix.radioLg),
-        border: Border.all(color: TokensRapix.contorno),
+        border: Border.all(color: tokens(context).contorno),
       ),
       child: Row(
         children: [
           Container(
             width: 44,
             height: 44,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: TokensRapix.verdeSuave,
+              color: tokens(context).verdeSuave,
             ),
             alignment: Alignment.center,
             child: Text(
@@ -310,7 +313,7 @@ class _TarjetaRepartidor extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: TokensRapix.verdeTinta,
+                color: tokens(context).verdeTinta,
               ),
             ),
           ),
@@ -325,7 +328,7 @@ class _TarjetaRepartidor extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: TokensRapix.tinta,
+                    color: tokens(context).tinta,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -335,7 +338,7 @@ class _TarjetaRepartidor extends StatelessWidget {
                   repartidor.telefono ?? 'Sin teléfono',
                   style: GoogleFonts.inter(
                     fontSize: 12,
-                    color: TokensRapix.tintaSilenciada,
+                    color: tokens(context).tintaSilenciada,
                   ),
                 ),
               ],
@@ -379,9 +382,9 @@ class _BotonAccionRepartidor extends StatelessWidget {
       child: Container(
         width: 36,
         height: 36,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: TokensRapix.verdeSuave,
+          color: tokens(context).verdeSuave,
         ),
         alignment: Alignment.center,
         child: Icon(icono, size: 18, color: TokensRapix.verdeOscuro),
@@ -390,13 +393,13 @@ class _BotonAccionRepartidor extends StatelessWidget {
   }
 }
 
-class _TarjetaDatos extends StatelessWidget {
+class _TarjetaDatos extends ConsumerWidget {
   const _TarjetaDatos({required this.pedido});
 
   final Pedido pedido;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final formato = NumberFormat.currency(symbol: r'$', decimalDigits: 2);
     final esContraEntrega = pedido.metodoPago == 'CONTRA_ENTREGA';
     final montoPago = esContraEntrega
@@ -409,9 +412,9 @@ class _TarjetaDatos extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: TokensRapix.superficie,
+        color: tokens(context).superficie,
         borderRadius: BorderRadius.circular(TokensRapix.radioLg),
-        border: Border.all(color: TokensRapix.contorno),
+        border: Border.all(color: tokens(context).contorno),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -434,8 +437,284 @@ class _TarjetaDatos extends StatelessWidget {
             valor: esContraEntrega ? 'Contra entrega' : 'Prepagado',
             valorDerecho: montoPago,
             ultimo: true,
+            trailing: pedido.esEditable
+                ? IconButton(
+                    icon: const Icon(Icons.edit_outlined, size: 18),
+                    color: TokensRapix.verde,
+                    tooltip: 'Editar pago',
+                    onPressed: () => _abrirEditorPago(context, ref, pedido),
+                  )
+                : null,
           ),
         ],
+      ),
+    );
+  }
+}
+
+Future<void> _abrirEditorPago(
+  BuildContext context,
+  WidgetRef ref,
+  Pedido pedido,
+) async {
+  await showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: tokens(context).superficie,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (ctx) => Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(ctx).viewInsets.bottom,
+      ),
+      child: _EditorPago(pedido: pedido),
+    ),
+  );
+}
+
+class _EditorPago extends ConsumerStatefulWidget {
+  const _EditorPago({required this.pedido});
+
+  final Pedido pedido;
+
+  @override
+  ConsumerState<_EditorPago> createState() => _EditorPagoEstado();
+}
+
+class _EditorPagoEstado extends ConsumerState<_EditorPago> {
+  late String _metodoPago = widget.pedido.metodoPago;
+  late final TextEditingController _monto = TextEditingController(
+    text: widget.pedido.montoContraEntrega?.toStringAsFixed(2) ?? '',
+  );
+  bool _guardando = false;
+  String? _errorMonto;
+
+  @override
+  void dispose() {
+    _monto.dispose();
+    super.dispose();
+  }
+
+  Future<void> _guardar() async {
+    setState(() => _errorMonto = null);
+    double? monto;
+    if (_metodoPago == 'CONTRA_ENTREGA') {
+      monto = double.tryParse(_monto.text.trim());
+      if (monto == null || monto <= 0) {
+        setState(() => _errorMonto = 'Ingresa un monto válido');
+        return;
+      }
+    }
+    setState(() => _guardando = true);
+    try {
+      await ref.read(pedidosRepositorioProvider).actualizar(
+            widget.pedido.id,
+            ActualizarPedidoEntrada(
+              metodoPago: _metodoPago,
+              montoContraEntrega: monto,
+            ),
+          );
+      if (!mounted) return;
+      ref.invalidate(pedidoDetalleProvider(widget.pedido.id));
+      ref.invalidate(pedidosListadoProvider);
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Pago actualizado')),
+      );
+    } on DioException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_mensajeError(e))),
+      );
+    } finally {
+      if (mounted) setState(() => _guardando = false);
+    }
+  }
+
+  String _mensajeError(DioException e) {
+    final datos = e.response?.data;
+    if (datos is Map<String, dynamic>) {
+      final codigo = datos['codigo'] as String?;
+      if (codigo == 'PEDIDO_NO_EDITABLE') {
+        return 'Este pedido ya no se puede editar';
+      }
+      if (codigo == 'PEDIDO_MONTO_CONTRA_ENTREGA_REQUERIDO') {
+        return 'Debes ingresar el monto a cobrar';
+      }
+      final mensaje = datos['mensaje'] ?? datos['message'];
+      if (mensaje is String && mensaje.isNotEmpty) return mensaje;
+    }
+    return 'No se pudo actualizar. Intenta de nuevo.';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: tokens(context).contorno,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Editar pago',
+              style: GoogleFonts.inter(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: tokens(context).tinta,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: _OpcionMetodoPago(
+                    etiqueta: 'Contra entrega',
+                    icono: Icons.payments_outlined,
+                    seleccionado: _metodoPago == 'CONTRA_ENTREGA',
+                    alPresionar: () =>
+                        setState(() => _metodoPago = 'CONTRA_ENTREGA'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _OpcionMetodoPago(
+                    etiqueta: 'Prepagado',
+                    icono: Icons.credit_card,
+                    seleccionado: _metodoPago == 'PREPAGADO',
+                    alPresionar: () =>
+                        setState(() => _metodoPago = 'PREPAGADO'),
+                  ),
+                ),
+              ],
+            ),
+            if (_metodoPago == 'CONTRA_ENTREGA') ...[
+              const SizedBox(height: 16),
+              Text(
+                'MONTO A COBRAR',
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: tokens(context).tintaSilenciada,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _monto,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+                ],
+                decoration: InputDecoration(
+                  prefixText: r'$ ',
+                  errorText: _errorMonto,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(TokensRapix.radioMd),
+                  ),
+                  isDense: true,
+                ),
+              ),
+            ],
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: _guardando ? null : () => Navigator.pop(context),
+                    child: const Text('Cancelar'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: _guardando ? null : _guardar,
+                    child: _guardando
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text('Guardar'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OpcionMetodoPago extends StatelessWidget {
+  const _OpcionMetodoPago({
+    required this.etiqueta,
+    required this.icono,
+    required this.seleccionado,
+    required this.alPresionar,
+  });
+
+  final String etiqueta;
+  final IconData icono;
+  final bool seleccionado;
+  final VoidCallback alPresionar;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: alPresionar,
+      borderRadius: BorderRadius.circular(TokensRapix.radioMd),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+        decoration: BoxDecoration(
+          color: seleccionado
+              ? tokens(context).verdeSuave
+              : tokens(context).superficie,
+          borderRadius: BorderRadius.circular(TokensRapix.radioMd),
+          border: Border.all(
+            color: seleccionado
+                ? TokensRapix.verde
+                : tokens(context).contorno,
+            width: seleccionado ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icono,
+              size: 16,
+              color: seleccionado
+                  ? TokensRapix.verdeOscuro
+                  : tokens(context).tintaSilenciada,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              etiqueta,
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: seleccionado
+                    ? TokensRapix.verdeOscuro
+                    : tokens(context).tinta,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -449,6 +728,7 @@ class _FilaDato extends StatelessWidget {
     this.valorDerecho,
     this.ultimo = false,
     this.valorMultilinea = false,
+    this.trailing,
   });
 
   final IconData icono;
@@ -457,6 +737,7 @@ class _FilaDato extends StatelessWidget {
   final String? valorDerecho;
   final bool ultimo;
   final bool valorMultilinea;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -465,8 +746,8 @@ class _FilaDato extends StatelessWidget {
       decoration: BoxDecoration(
         border: ultimo
             ? null
-            : const Border(
-                bottom: BorderSide(color: TokensRapix.contornoSuave),
+            : Border(
+                bottom: BorderSide(color: tokens(context).contornoSuave),
               ),
       ),
       child: Row(
@@ -477,7 +758,7 @@ class _FilaDato extends StatelessWidget {
             child: Icon(
               icono,
               size: 18,
-              color: TokensRapix.tintaSilenciada,
+              color: tokens(context).tintaSilenciada,
             ),
           ),
           const SizedBox(width: 12),
@@ -491,7 +772,7 @@ class _FilaDato extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: TokensRapix.tintaSilenciada,
+                    color: tokens(context).tintaSilenciada,
                     letterSpacing: 0.4,
                   ),
                 ),
@@ -501,7 +782,7 @@ class _FilaDato extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: TokensRapix.tinta,
+                    color: tokens(context).tinta,
                     height: 1.3,
                   ),
                   maxLines: valorMultilinea ? 2 : 1,
@@ -519,10 +800,14 @@ class _FilaDato extends StatelessWidget {
                 style: GoogleFonts.inter(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: TokensRapix.tintaSilenciada,
+                  color: tokens(context).tintaSilenciada,
                 ),
               ),
             ),
+          ],
+          if (trailing != null) ...[
+            const SizedBox(width: 8),
+            trailing!,
           ],
         ],
       ),
@@ -547,7 +832,7 @@ class _ComprobanteEntrega extends StatelessWidget {
             style: GoogleFonts.inter(
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: TokensRapix.tinta,
+              color: tokens(context).tinta,
               letterSpacing: 0.5,
             ),
           ),
@@ -556,7 +841,7 @@ class _ComprobanteEntrega extends StatelessWidget {
           borderRadius: BorderRadius.circular(TokensRapix.radioLg),
           child: Container(
             decoration: BoxDecoration(
-              border: Border.all(color: TokensRapix.contorno),
+              border: Border.all(color: tokens(context).contorno),
               borderRadius: BorderRadius.circular(TokensRapix.radioLg),
             ),
             child: Image.network(
@@ -566,11 +851,11 @@ class _ComprobanteEntrega extends StatelessWidget {
               width: double.infinity,
               errorBuilder: (_, _, _) => Container(
                 height: 220,
-                color: TokensRapix.superficieHundida,
+                color: tokens(context).superficieHundida,
                 alignment: Alignment.center,
-                child: const Icon(
+                child: Icon(
                   Icons.image_not_supported_outlined,
-                  color: TokensRapix.tintaSilenciada,
+                  color: tokens(context).tintaSilenciada,
                 ),
               ),
             ),
@@ -598,7 +883,7 @@ class _SeccionLineaTiempo extends StatelessWidget {
             style: GoogleFonts.inter(
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: TokensRapix.tinta,
+              color: tokens(context).tinta,
               letterSpacing: 0.5,
             ),
           ),
@@ -606,9 +891,9 @@ class _SeccionLineaTiempo extends StatelessWidget {
         Container(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
           decoration: BoxDecoration(
-            color: TokensRapix.superficie,
+            color: tokens(context).superficie,
             borderRadius: BorderRadius.circular(TokensRapix.radioLg),
-            border: Border.all(color: TokensRapix.contorno),
+            border: Border.all(color: tokens(context).contorno),
           ),
           child: LineaTiempoEstado(eventos: eventos),
         ),
@@ -643,7 +928,7 @@ class _ErrorDetalle extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
-                color: TokensRapix.tinta,
+                color: tokens(context).tinta,
               ),
             ),
             const SizedBox(height: 4),
@@ -652,7 +937,7 @@ class _ErrorDetalle extends StatelessWidget {
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
                 fontSize: 12,
-                color: TokensRapix.tintaSilenciada,
+                color: tokens(context).tintaSilenciada,
               ),
             ),
             const SizedBox(height: 16),

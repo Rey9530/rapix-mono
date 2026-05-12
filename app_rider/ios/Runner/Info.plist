@@ -49,6 +49,10 @@
 	</dict>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Rapix necesita la cámara para capturar la foto del comprobante de entrega y del cierre diario.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

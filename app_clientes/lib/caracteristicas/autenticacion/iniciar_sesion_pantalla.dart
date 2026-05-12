@@ -61,7 +61,7 @@ class _IniciarSesionPantallaEstado
   Widget build(BuildContext context) {
     final estado = ref.watch(autenticacionControladorProvider);
     return Scaffold(
-      backgroundColor: TokensRapix.fondo,
+      backgroundColor: tokens(context).fondo,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -182,7 +182,7 @@ class _Encabezado extends StatelessWidget {
           'Logística simple para tu negocio',
           style: GoogleFonts.inter(
             fontSize: 13,
-            color: TokensRapix.tintaSilenciada,
+            color: tokens(context).tintaSilenciada,
             height: 1.5,
           ),
         ),
@@ -205,7 +205,7 @@ class _Bienvenida extends StatelessWidget {
             fontSize: 26,
             fontWeight: FontWeight.w700,
             letterSpacing: -0.6,
-            color: TokensRapix.tinta,
+            color: tokens(context).tinta,
             height: 1.2,
           ),
         ),
@@ -214,7 +214,7 @@ class _Bienvenida extends StatelessWidget {
           'Inicia sesión para gestionar tus envíos.',
           style: GoogleFonts.inter(
             fontSize: 13,
-            color: TokensRapix.tintaSilenciada,
+            color: tokens(context).tintaSilenciada,
             height: 1.5,
           ),
         ),
@@ -256,7 +256,7 @@ class _CampoEtiquetado extends StatelessWidget {
             style: GoogleFonts.inter(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: TokensRapix.tintaSilenciada,
+              color: tokens(context).tintaSilenciada,
             ),
           ),
         ),
@@ -269,7 +269,7 @@ class _CampoEtiquetado extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: TokensRapix.tinta,
+            color: tokens(context).tinta,
             letterSpacing: ofuscar ? 3 : null,
           ),
           decoration: InputDecoration(
@@ -374,7 +374,7 @@ class _DivisorOContinua extends StatelessWidget {
             style: GoogleFonts.inter(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: TokensRapix.tintaSuave,
+              color: tokens(context).tintaSuave,
               letterSpacing: 0.5,
             ),
           ),
@@ -418,7 +418,7 @@ class _PieRegistro extends StatelessWidget {
             '¿Aún no tienes cuenta? ',
             style: GoogleFonts.inter(
               fontSize: 13,
-              color: TokensRapix.tintaSilenciada,
+              color: tokens(context).tintaSilenciada,
             ),
           ),
           GestureDetector(

@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: #fff;
+  background-color: var(--white);
 
   .chat-list-busqueda {
     flex: 0 0 auto;
@@ -21,15 +21,15 @@
   .chat-list-item {
     background: transparent;
     border: 0;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--bs-border-color);
     cursor: pointer;
 
     &:hover {
-      background-color: #f8f9fa;
+      background-color: var(--light-slate);
     }
 
     &.activo {
-      background-color: #e9f7ef;
+      background-color: var(--light-shade-primary);
     }
 
     .avatar {

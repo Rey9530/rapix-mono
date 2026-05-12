@@ -4,6 +4,7 @@ class AlmacenamientoSeguro {
   static const _claveAcceso = 'token_acceso';
   static const _claveRefresco = 'token_refresco';
   static const _claveUsuario = 'usuario_json';
+  static const _claveTokenFcm = 'token_fcm';
 
   final FlutterSecureStorage _almacen;
 
@@ -27,9 +28,17 @@ class AlmacenamientoSeguro {
 
   Future<String?> usuario() => _almacen.read(key: _claveUsuario);
 
+  Future<void> guardarTokenFcm(String token) =>
+      _almacen.write(key: _claveTokenFcm, value: token);
+
+  Future<String?> tokenFcm() => _almacen.read(key: _claveTokenFcm);
+
+  Future<void> eliminarTokenFcm() => _almacen.delete(key: _claveTokenFcm);
+
   Future<void> limpiar() async {
     await _almacen.delete(key: _claveAcceso);
     await _almacen.delete(key: _claveRefresco);
     await _almacen.delete(key: _claveUsuario);
+    await _almacen.delete(key: _claveTokenFcm);
   }
 }

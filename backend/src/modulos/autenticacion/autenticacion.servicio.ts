@@ -188,11 +188,11 @@ export class AutenticacionServicio {
       { sub: usuario.id, jti },
       {
         secret: process.env.JWT_REFRESH_SECRET as string,
-        expiresIn: (process.env.JWT_REFRESH_EXPIRES ?? '7d') as unknown as number,
+        expiresIn: (process.env.JWT_REFRESH_EXPIRES ?? '30d') as unknown as number,
       },
     );
 
-    const expiraEn = this.calcularExpiracion(process.env.JWT_REFRESH_EXPIRES ?? '7d');
+    const expiraEn = this.calcularExpiracion(process.env.JWT_REFRESH_EXPIRES ?? '30d');
 
     await this.prisma.tokenRefresco.create({
       data: {
@@ -214,8 +214,8 @@ export class AutenticacionServicio {
   private calcularExpiracion(expresion: string): Date {
     const match = /^(\d+)([smhd])$/.exec(expresion);
     if (!match) {
-      // Si el formato no es reconocible, se asume 7 días.
-      return new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+      // Si el formato no es reconocible, se asume 30 días.
+      return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
     }
     const valor = Number(match[1]);
     const factores = { s: 1_000, m: 60_000, h: 3_600_000, d: 86_400_000 } as const;

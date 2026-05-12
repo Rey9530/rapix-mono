@@ -6,6 +6,7 @@ import '../data/repositorios/cierres_repositorio.dart';
 import '../data/repositorios/mapas_repositorio.dart';
 import '../data/repositorios/pedidos_repositorio.dart';
 import '../data/repositorios/tokens_dispositivo_repositorio.dart';
+import '../servicios/servicio_push.dart';
 import 'network/dio_cliente.dart';
 import 'storage/almacenamiento_seguro.dart';
 
@@ -47,4 +48,11 @@ final mapasRepositorioProveedor = Provider<MapasRepositorio>((ref) {
 
 final tokensDispositivoRepositorioProveedor = Provider<TokensDispositivoRepositorio>((ref) {
   return TokensDispositivoRepositorio(dio: ref.watch(dioProveedor));
+});
+
+final servicioPushProveedor = Provider<ServicioPush>((ref) {
+  return ServicioPush(
+    repositorio: ref.watch(tokensDispositivoRepositorioProveedor),
+    almacen: ref.watch(almacenamientoSeguroProveedor),
+  );
 });

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -7,7 +8,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
+import '../../datos/repositorios/geocoding_repositorio.dart';
 import '../../datos/repositorios/pedidos_repositorio.dart';
 import '../../nucleo/tema/tokens_rapix.dart';
 import '../autenticacion/autenticacion_controlador.dart';
@@ -39,8 +42,41 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
   bool _enviando = false;
   final _selectorImagen = ImagePicker();
 
+  DateTime? _fechaEntrega;
+  double? _latDestino;
+  double? _lngDestino;
+
+  @override
+  void initState() {
+    super.initState();
+    _direccionDestino.addListener(_invalidarCoordsSiDireccionEditada);
+  }
+
+  void _invalidarCoordsSiDireccionEditada() {
+    if (_direccionElegidaDelBuscador != null &&
+        _direccionDestino.text.trim() != _direccionElegidaDelBuscador) {
+      setState(() {
+        _latDestino = null;
+        _lngDestino = null;
+        _direccionElegidaDelBuscador = null;
+      });
+    }
+  }
+
+  String? _direccionElegidaDelBuscador;
+
+  void _aplicarResultadoGeocoding(ResultadoGeocoding resultado) {
+    setState(() {
+      _direccionDestino.text = resultado.direccion;
+      _direccionElegidaDelBuscador = resultado.direccion;
+      _latDestino = resultado.latitud;
+      _lngDestino = resultado.longitud;
+    });
+  }
+
   @override
   void dispose() {
+    _direccionDestino.removeListener(_invalidarCoordsSiDireccionEditada);
     _nombreCliente.dispose();
     _telefonoCliente.dispose();
     _direccionDestino.dispose();
@@ -54,7 +90,7 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
   Future<void> _elegirFoto() async {
     final origen = await showModalBottomSheet<ImageSource>(
       context: context,
-      backgroundColor: TokensRapix.superficie,
+      backgroundColor: tokens(context).superficie,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -67,7 +103,7 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
               width: 36,
               height: 4,
               decoration: BoxDecoration(
-                color: TokensRapix.contorno,
+                color: tokens(context).contorno,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -137,6 +173,7 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
     setState(() => _enviando = true);
     try {
       final repo = ref.read(pedidosRepositorioProvider);
+      final urlMaps = _urlMapsDestino.text.trim();
       final pedido = await repo.crear(
         CrearPedidoEntrada(
           nombreCliente: _nombreCliente.text.trim(),
@@ -145,7 +182,10 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
           latitudOrigen: perfil.latitud!,
           longitudOrigen: perfil.longitud!,
           direccionDestino: _direccionDestino.text.trim(),
-          urlMapasDestino: _urlMapsDestino.text.trim(),
+          urlMapasDestino: urlMaps.isEmpty ? null : urlMaps,
+          latitudDestino: _latDestino,
+          longitudDestino: _lngDestino,
+          programadoPara: _fechaEntrega,
           metodoPago: _metodoPago,
           descripcionPaquete: _descripcion.text.trim().isEmpty
               ? null
@@ -192,7 +232,7 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: TokensRapix.fondo,
+      backgroundColor: tokens(context).fondo,
       appBar: AppBar(
         title: const Text('Nuevo pedido'),
         leading: IconButton(
@@ -243,7 +283,9 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
                   numero: '2',
                   titulo: 'DESTINO',
                   hijos: [
-                    const _MapaPreview(),
+                    _BuscadorDireccion(
+                      alSeleccionar: _aplicarResultadoGeocoding,
+                    ),
                     _CampoFormulario(
                       etiqueta: 'DIRECCIÓN',
                       icono: Icons.place_outlined,
@@ -269,16 +311,14 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
                       ],
                     ),
                     _CampoFormulario(
-                      etiqueta: 'URL DE GOOGLE MAPS',
+                      etiqueta: 'URL DE GOOGLE MAPS (OPCIONAL)',
                       icono: Icons.link,
                       controlador: _urlMapsDestino,
                       teclado: TextInputType.url,
                       hint: 'https://maps.app.goo.gl/...',
                       validador: (v) {
                         final t = v?.trim() ?? '';
-                        if (t.isEmpty) {
-                          return 'Pega la URL de Google Maps del destino';
-                        }
+                        if (t.isEmpty) return null;
                         if (!_regexUrlMapsCorta.hasMatch(t)) {
                           return 'URL inválida. Comparte el sitio desde Google '
                               'Maps y pega el enlace corto';
@@ -293,6 +333,12 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
                       multilinea: true,
                       hint: 'Opcional · Portón verde, tocar timbre 2 veces…',
                       ultimo: true,
+                    ),
+                    _FilaFechaEntrega(
+                      fecha: _fechaEntrega,
+                      alElegir: (nueva) =>
+                          setState(() => _fechaEntrega = nueva),
+                      alLimpiar: () => setState(() => _fechaEntrega = null),
                     ),
                   ],
                 ),
@@ -405,9 +451,9 @@ class _SeccionNumerada extends StatelessWidget {
                 Container(
                   width: 22,
                   height: 22,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: TokensRapix.verdeSuave,
+                    color: tokens(context).verdeSuave,
                   ),
                   alignment: Alignment.center,
                   child: Text(
@@ -426,7 +472,7 @@ class _SeccionNumerada extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: TokensRapix.tinta,
+                    color: tokens(context).tinta,
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -435,9 +481,9 @@ class _SeccionNumerada extends StatelessWidget {
           ),
           Container(
             decoration: BoxDecoration(
-              color: TokensRapix.superficie,
+              color: tokens(context).superficie,
               borderRadius: BorderRadius.circular(TokensRapix.radioLg),
-              border: Border.all(color: TokensRapix.contorno),
+              border: Border.all(color: tokens(context).contorno),
             ),
             clipBehavior: Clip.antiAlias,
             child: Column(
@@ -480,8 +526,8 @@ class _CampoFormulario extends StatelessWidget {
       decoration: BoxDecoration(
         border: ultimo
             ? null
-            : const Border(
-                bottom: BorderSide(color: TokensRapix.contornoSuave),
+            : Border(
+                bottom: BorderSide(color: tokens(context).contornoSuave),
               ),
       ),
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
@@ -493,7 +539,7 @@ class _CampoFormulario extends StatelessWidget {
             child: Icon(
               icono,
               size: 18,
-              color: TokensRapix.tintaSilenciada,
+              color: tokens(context).tintaSilenciada,
             ),
           ),
           const SizedBox(width: 12),
@@ -506,7 +552,7 @@ class _CampoFormulario extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: TokensRapix.tintaSilenciada,
+                    color: tokens(context).tintaSilenciada,
                     letterSpacing: 0.4,
                   ),
                 ),
@@ -522,7 +568,7 @@ class _CampoFormulario extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
-                    color: TokensRapix.tinta,
+                    color: tokens(context).tinta,
                     height: 1.3,
                   ),
                   decoration: InputDecoration(
@@ -530,7 +576,7 @@ class _CampoFormulario extends StatelessWidget {
                     hintStyle: GoogleFonts.inter(
                       fontSize: 15,
                       fontWeight: FontWeight.w400,
-                      color: TokensRapix.tintaSuave,
+                      color: tokens(context).tintaSuave,
                     ),
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
@@ -555,149 +601,285 @@ class _CampoFormulario extends StatelessWidget {
   }
 }
 
-class _MapaPreview extends StatelessWidget {
-  const _MapaPreview();
+class _BuscadorDireccion extends ConsumerStatefulWidget {
+  const _BuscadorDireccion({required this.alSeleccionar});
+
+  final void Function(ResultadoGeocoding) alSeleccionar;
+
+  @override
+  ConsumerState<_BuscadorDireccion> createState() =>
+      _BuscadorDireccionEstado();
+}
+
+class _BuscadorDireccionEstado extends ConsumerState<_BuscadorDireccion> {
+  final _consulta = TextEditingController();
+  Timer? _debounce;
+  bool _cargando = false;
+  List<ResultadoGeocoding> _resultados = const [];
+  String? _error;
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _consulta.dispose();
+    super.dispose();
+  }
+
+  void _alCambiarTexto(String texto) {
+    _debounce?.cancel();
+    final consulta = texto.trim();
+    if (consulta.length < 3) {
+      setState(() {
+        _resultados = const [];
+        _error = null;
+        _cargando = false;
+      });
+      return;
+    }
+    _debounce = Timer(const Duration(milliseconds: 400), () => _buscar(consulta));
+  }
+
+  Future<void> _buscar(String consulta) async {
+    setState(() {
+      _cargando = true;
+      _error = null;
+    });
+    try {
+      final repo = ref.read(geocodingRepositorioProvider);
+      final lista = await repo.buscar(consulta);
+      if (!mounted) return;
+      setState(() {
+        _resultados = lista;
+        _cargando = false;
+        _error = lista.isEmpty ? 'Sin resultados' : null;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _resultados = const [];
+        _cargando = false;
+        _error = 'No se pudo buscar. Intenta de nuevo.';
+      });
+    }
+  }
+
+  void _seleccionar(ResultadoGeocoding resultado) {
+    widget.alSeleccionar(resultado);
+    setState(() {
+      _consulta.text = resultado.direccion;
+      _resultados = const [];
+    });
+    FocusScope.of(context).unfocus();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 160,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFE8F0E6), Color(0xFFD8E6DB)],
-        ),
+      decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: TokensRapix.contornoSuave),
+          bottom: BorderSide(color: tokens(context).contornoSuave),
         ),
       ),
-      child: Stack(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Positioned.fill(
-            child: CustomPaint(painter: _CallesPainter()),
+          TextField(
+            controller: _consulta,
+            onChanged: _alCambiarTexto,
+            textInputAction: TextInputAction.search,
+            decoration: InputDecoration(
+              prefixIcon: Icon(
+                Icons.search,
+                size: 18,
+                color: tokens(context).tintaSilenciada,
+              ),
+              suffixIcon: _cargando
+                  ? const Padding(
+                      padding: EdgeInsets.all(12),
+                      child: SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    )
+                  : (_consulta.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.close, size: 18),
+                          onPressed: () {
+                            _consulta.clear();
+                            _alCambiarTexto('');
+                          },
+                        )
+                      : null),
+              hintText: 'Buscar dirección…',
+              hintStyle: GoogleFonts.inter(
+                fontSize: 13,
+                color: tokens(context).tintaSilenciada,
+              ),
+              isDense: true,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(TokensRapix.radioMd),
+                borderSide: BorderSide(color: tokens(context).contorno),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(TokensRapix.radioMd),
+                borderSide: BorderSide(color: tokens(context).contorno),
+              ),
+            ),
           ),
-          Positioned(
-            top: 10,
-            left: 10,
-            right: 10,
-            child: GestureDetector(
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Búsqueda de direcciones — próximamente'),
-                  ),
-                );
-              },
+          if (_error != null && _resultados.isEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                _error!,
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: tokens(context).tintaSilenciada,
+                ),
+              ),
+            ),
+          if (_resultados.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
                 decoration: BoxDecoration(
-                  color: TokensRapix.superficie,
+                  color: tokens(context).superficie,
                   borderRadius: BorderRadius.circular(TokensRapix.radioMd),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0x1A000000),
-                      offset: Offset(0, 2),
-                      blurRadius: 8,
-                    ),
-                  ],
+                  border: Border.all(color: tokens(context).contorno),
                 ),
-                child: Row(
+                child: Column(
                   children: [
-                    const Icon(
-                      Icons.search,
-                      size: 16,
-                      color: TokensRapix.tintaSilenciada,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Buscar dirección…',
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          color: TokensRapix.tintaSilenciada,
+                    for (var i = 0; i < _resultados.length; i++)
+                      InkWell(
+                        onTap: () => _seleccionar(_resultados[i]),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            border: i < _resultados.length - 1
+                                ? Border(
+                                    bottom: BorderSide(
+                                      color: tokens(context).contornoSuave,
+                                    ),
+                                  )
+                                : null,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.place_outlined,
+                                size: 16,
+                                color: tokens(context).tintaSilenciada,
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  _resultados[i].direccion,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 13,
+                                    color: tokens(context).tinta,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    Container(
-                      width: 1,
-                      height: 16,
-                      color: TokensRapix.contorno,
-                    ),
-                    const SizedBox(width: 8),
-                    const Icon(
-                      Icons.map_outlined,
-                      size: 16,
-                      color: TokensRapix.verde,
-                    ),
                   ],
                 ),
               ),
             ),
-          ),
-          const Align(
-            alignment: Alignment(0, -0.1),
-            child: Icon(
-              Icons.location_on,
-              size: 36,
-              color: TokensRapix.verde,
-              shadows: [
-                Shadow(
-                  color: Color(0x4D000000),
-                  offset: Offset(0, 2),
-                  blurRadius: 4,
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
   }
 }
 
-class _CallesPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final pintura = Paint()
-      ..color = Colors.white.withValues(alpha: 0.7)
-      ..strokeWidth = 14;
-    canvas.drawLine(
-      const Offset(-20, 60),
-      Offset(size.width + 20, 90),
-      pintura,
-    );
-    pintura.strokeWidth = 10;
-    canvas.drawLine(
-      const Offset(40, -10),
-      Offset(100, size.height + 10),
-      pintura,
-    );
-    canvas.drawLine(
-      const Offset(200, -10),
-      Offset(260, size.height + 10),
-      pintura,
-    );
+class _FilaFechaEntrega extends StatelessWidget {
+  const _FilaFechaEntrega({
+    required this.fecha,
+    required this.alElegir,
+    required this.alLimpiar,
+  });
 
-    pintura.color = Colors.white.withValues(alpha: 0.5);
-    pintura.strokeWidth = 8;
-    canvas.drawLine(
-      const Offset(-20, 130),
-      Offset(size.width + 20, 110),
-      pintura,
-    );
-    canvas.drawLine(
-      const Offset(320, -10),
-      Offset(350, size.height + 10),
-      pintura,
+  final DateTime? fecha;
+  final void Function(DateTime) alElegir;
+  final VoidCallback alLimpiar;
+
+  @override
+  Widget build(BuildContext context) {
+    final etiqueta = fecha == null
+        ? 'Opcional · toca para elegir'
+        : DateFormat('EEEE d MMM y', 'es').format(fecha!);
+    return InkWell(
+      onTap: () async {
+        final ahora = DateTime.now();
+        final hoy = DateTime(ahora.year, ahora.month, ahora.day);
+        final seleccionada = await showDatePicker(
+          context: context,
+          initialDate: fecha ?? hoy,
+          firstDate: hoy,
+          lastDate: hoy.add(const Duration(days: 365)),
+          locale: const Locale('es'),
+        );
+        if (seleccionada != null) alElegir(seleccionada);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            top: BorderSide(color: tokens(context).contornoSuave),
+          ),
+        ),
+        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Icon(
+                Icons.event,
+                size: 18,
+                color: tokens(context).tintaSilenciada,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'FECHA DE ENTREGA',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: tokens(context).tintaSilenciada,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    etiqueta,
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      color: tokens(context).tinta,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (fecha != null)
+              IconButton(
+                icon: const Icon(Icons.close, size: 18),
+                onPressed: alLimpiar,
+              ),
+          ],
+        ),
+      ),
     );
   }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _BarraChipsAccion extends StatelessWidget {
@@ -708,9 +890,9 @@ class _BarraChipsAccion extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: TokensRapix.contornoSuave),
+          bottom: BorderSide(color: tokens(context).contornoSuave),
         ),
       ),
       padding: const EdgeInsets.fromLTRB(14, 8, 14, 12),
@@ -742,20 +924,20 @@ class _ChipAccion extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: TokensRapix.superficieAlt,
+          color: tokens(context).superficieAlt,
           borderRadius: BorderRadius.circular(TokensRapix.radioPill),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icono, size: 13, color: TokensRapix.tinta),
+            Icon(icono, size: 13, color: tokens(context).tinta),
             const SizedBox(width: 6),
             Text(
               etiqueta,
               style: GoogleFonts.inter(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: TokensRapix.tinta,
+                color: tokens(context).tinta,
               ),
             ),
           ],
@@ -781,9 +963,9 @@ class _FilaFoto extends StatelessWidget {
     return InkWell(
       onTap: alPresionar,
       child: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           border: Border(
-            bottom: BorderSide(color: TokensRapix.contornoSuave),
+            bottom: BorderSide(color: tokens(context).contornoSuave),
           ),
         ),
         padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
@@ -793,7 +975,7 @@ class _FilaFoto extends StatelessWidget {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: TokensRapix.superficieHundida,
+                color: tokens(context).superficieHundida,
                 borderRadius: BorderRadius.circular(TokensRapix.radioMd),
                 image: foto != null
                     ? DecorationImage(
@@ -803,10 +985,10 @@ class _FilaFoto extends StatelessWidget {
                     : null,
               ),
               child: foto == null
-                  ? const Icon(
+                  ? Icon(
                       Icons.photo_camera_outlined,
                       size: 20,
-                      color: TokensRapix.tintaSilenciada,
+                      color: tokens(context).tintaSilenciada,
                     )
                   : null,
             ),
@@ -821,7 +1003,7 @@ class _FilaFoto extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: TokensRapix.tinta,
+                      color: tokens(context).tinta,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -831,7 +1013,7 @@ class _FilaFoto extends StatelessWidget {
                         : 'Toca para reemplazar',
                     style: GoogleFonts.inter(
                       fontSize: 12,
-                      color: TokensRapix.tintaSilenciada,
+                      color: tokens(context).tintaSilenciada,
                     ),
                   ),
                 ],
@@ -842,7 +1024,7 @@ class _FilaFoto extends StatelessWidget {
                 tooltip: 'Quitar foto',
                 onPressed: alQuitar,
                 icon: const Icon(Icons.close, size: 18),
-                color: TokensRapix.tintaSilenciada,
+                color: tokens(context).tintaSilenciada,
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(
                   minWidth: 32,
@@ -850,10 +1032,10 @@ class _FilaFoto extends StatelessWidget {
                 ),
               )
             else
-              const Icon(
+              Icon(
                 Icons.chevron_right,
                 size: 18,
-                color: TokensRapix.tintaSuave,
+                color: tokens(context).tintaSuave,
               ),
           ],
         ),
@@ -874,7 +1056,7 @@ class _EtiquetaSeccion extends StatelessWidget {
       style: GoogleFonts.inter(
         fontSize: 11,
         fontWeight: FontWeight.w600,
-        color: TokensRapix.tintaSilenciada,
+        color: tokens(context).tintaSilenciada,
         letterSpacing: 0.4,
       ),
     );
@@ -904,11 +1086,11 @@ class _OpcionPago extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
         decoration: BoxDecoration(
           color: seleccionado
-              ? TokensRapix.verdeSuave
-              : TokensRapix.superficie,
+              ? tokens(context).verdeSuave
+              : tokens(context).superficie,
           borderRadius: BorderRadius.circular(TokensRapix.radioMd),
           border: Border.all(
-            color: seleccionado ? TokensRapix.verde : TokensRapix.contorno,
+            color: seleccionado ? TokensRapix.verde : tokens(context).contorno,
             width: seleccionado ? 1.5 : 1,
           ),
         ),
@@ -920,7 +1102,7 @@ class _OpcionPago extends StatelessWidget {
               size: 20,
               color: seleccionado
                   ? TokensRapix.verdeOscuro
-                  : TokensRapix.tintaSilenciada,
+                  : tokens(context).tintaSilenciada,
             ),
             const SizedBox(height: 4),
             Text(
@@ -931,7 +1113,7 @@ class _OpcionPago extends StatelessWidget {
                     seleccionado ? FontWeight.w700 : FontWeight.w600,
                 color: seleccionado
                     ? TokensRapix.verdeOscuro
-                    : TokensRapix.tintaSilenciada,
+                    : tokens(context).tintaSilenciada,
               ),
             ),
           ],
@@ -955,7 +1137,7 @@ class _CampoMonto extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: TokensRapix.superficieAlt,
+        color: tokens(context).superficieAlt,
         borderRadius: BorderRadius.circular(TokensRapix.radioMd),
       ),
       child: Row(
@@ -967,7 +1149,7 @@ class _CampoMonto extends StatelessWidget {
             style: GoogleFonts.inter(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: TokensRapix.tintaSilenciada,
+              color: tokens(context).tintaSilenciada,
             ),
           ),
           const SizedBox(width: 4),
@@ -981,7 +1163,7 @@ class _CampoMonto extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
-                color: TokensRapix.tinta,
+                color: tokens(context).tinta,
                 letterSpacing: -0.5,
                 height: 1.1,
               ),
@@ -990,7 +1172,7 @@ class _CampoMonto extends StatelessWidget {
                 hintStyle: GoogleFonts.inter(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
-                  color: TokensRapix.tintaSuave,
+                  color: tokens(context).tintaSuave,
                   letterSpacing: -0.5,
                 ),
                 border: InputBorder.none,
@@ -1026,10 +1208,10 @@ class _BarraInferiorCrear extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: TokensRapix.superficie,
+      decoration: BoxDecoration(
+        color: tokens(context).superficie,
         border: Border(
-          top: BorderSide(color: TokensRapix.contorno),
+          top: BorderSide(color: tokens(context).contorno),
         ),
       ),
       child: SafeArea(
@@ -1048,7 +1230,7 @@ class _BarraInferiorCrear extends StatelessWidget {
                       style: GoogleFonts.inter(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
-                        color: TokensRapix.tintaSilenciada,
+                        color: tokens(context).tintaSilenciada,
                       ),
                     ),
                     Text(
@@ -1056,7 +1238,7 @@ class _BarraInferiorCrear extends StatelessWidget {
                       style: GoogleFonts.inter(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        color: TokensRapix.tinta,
+                        color: tokens(context).tinta,
                         letterSpacing: -0.3,
                       ),
                     ),

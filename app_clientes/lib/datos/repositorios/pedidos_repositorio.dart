@@ -13,8 +13,11 @@ class CrearPedidoEntrada {
     required this.latitudOrigen,
     required this.longitudOrigen,
     required this.direccionDestino,
-    required this.urlMapasDestino,
     required this.metodoPago,
+    this.urlMapasDestino,
+    this.latitudDestino,
+    this.longitudDestino,
+    this.programadoPara,
     this.descripcionPaquete,
     this.montoContraEntrega,
     this.notasOrigen,
@@ -28,7 +31,10 @@ class CrearPedidoEntrada {
   final double latitudOrigen;
   final double longitudOrigen;
   final String direccionDestino;
-  final String urlMapasDestino;
+  final String? urlMapasDestino;
+  final double? latitudDestino;
+  final double? longitudDestino;
+  final DateTime? programadoPara;
   final String metodoPago;
   final String? descripcionPaquete;
   final double? montoContraEntrega;
@@ -43,13 +49,35 @@ class CrearPedidoEntrada {
         'latitudOrigen': latitudOrigen.toString(),
         'longitudOrigen': longitudOrigen.toString(),
         'direccionDestino': direccionDestino,
-        'urlMapasDestino': urlMapasDestino,
         'metodoPago': metodoPago,
+        if (urlMapasDestino != null && urlMapasDestino!.isNotEmpty)
+          'urlMapasDestino': urlMapasDestino,
+        if (latitudDestino != null) 'latitudDestino': latitudDestino.toString(),
+        if (longitudDestino != null)
+          'longitudDestino': longitudDestino.toString(),
+        if (programadoPara != null)
+          'programadoPara': programadoPara!.toIso8601String(),
         if (descripcionPaquete != null) 'descripcionPaquete': descripcionPaquete,
         if (montoContraEntrega != null)
           'montoContraEntrega': montoContraEntrega.toString(),
         if (notasOrigen != null) 'notasOrigen': notasOrigen,
         if (notasDestino != null) 'notasDestino': notasDestino,
+      };
+}
+
+class ActualizarPedidoEntrada {
+  ActualizarPedidoEntrada({
+    this.metodoPago,
+    this.montoContraEntrega,
+  });
+
+  final String? metodoPago;
+  final double? montoContraEntrega;
+
+  Map<String, dynamic> aJson() => {
+        if (metodoPago != null) 'metodoPago': metodoPago,
+        if (montoContraEntrega != null)
+          'montoContraEntrega': montoContraEntrega,
       };
 }
 
@@ -102,6 +130,14 @@ class PedidosRepositorio {
     return lista
         .map((e) => Pedido.desdeJson(e as Map<String, dynamic>))
         .toList();
+  }
+
+  Future<Pedido> actualizar(String id, ActualizarPedidoEntrada entrada) async {
+    final respuesta = await _dio.patch<Map<String, dynamic>>(
+      '/pedidos/$id',
+      data: entrada.aJson(),
+    );
+    return Pedido.desdeJson(respuesta.data!);
   }
 
   Future<Pedido> obtenerPorId(String id) async {

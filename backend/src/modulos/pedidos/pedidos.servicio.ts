@@ -85,14 +85,31 @@ export class PedidosServicio {
         mensaje: 'El origen no está dentro de ninguna zona activa',
       });
     }
-    const { lat: latitudDestino, lng: longitudDestino } =
-      await this.googleMaps.resolverCoordenadas(dto.urlMapasDestino);
-    const zonaDestino = await this.geo.resolverZona(latitudDestino, longitudDestino);
-    if (!zonaDestino) {
-      throw new BadRequestException({
-        codigo: 'PEDIDO_ZONA_INVALIDA_DESTINO',
-        mensaje: 'El destino no está dentro de ninguna zona activa',
-      });
+
+    // Coordenadas de destino: prioridad lat/lng directos > urlMapasDestino > null.
+    // Si el cliente solo tiene la dirección escrita, el pedido se crea sin
+    // coordenadas y el admin/repartidor las asigna después.
+    let latitudDestino: number | null = null;
+    let longitudDestino: number | null = null;
+    if (dto.latitudDestino != null && dto.longitudDestino != null) {
+      latitudDestino = dto.latitudDestino;
+      longitudDestino = dto.longitudDestino;
+    } else if (dto.urlMapasDestino) {
+      const coords = await this.googleMaps.resolverCoordenadas(dto.urlMapasDestino);
+      latitudDestino = coords.lat;
+      longitudDestino = coords.lng;
+    }
+
+    let zonaDestinoId: string | null = null;
+    if (latitudDestino != null && longitudDestino != null) {
+      const zonaDestino = await this.geo.resolverZona(latitudDestino, longitudDestino);
+      if (!zonaDestino) {
+        throw new BadRequestException({
+          codigo: 'PEDIDO_ZONA_INVALIDA_DESTINO',
+          mensaje: 'El destino no está dentro de ninguna zona activa',
+        });
+      }
+      zonaDestinoId = zonaDestino.id;
     }
 
     if (dto.metodoPago === 'CONTRA_ENTREGA' && dto.montoContraEntrega == null) {
@@ -151,9 +168,9 @@ export class PedidosServicio {
           zonaOrigenId: zonaOrigen.id,
           notasOrigen: dto.notasOrigen ?? null,
           direccionDestino: dto.direccionDestino,
-          latitudDestino: latitudDestino,
-          longitudDestino: longitudDestino,
-          zonaDestinoId: zonaDestino.id,
+          latitudDestino,
+          longitudDestino,
+          zonaDestinoId,
           notasDestino: dto.notasDestino ?? null,
           descripcionPaquete: dto.descripcionPaquete ?? null,
           pesoPaqueteKg: dto.pesoPaqueteKg ?? null,
@@ -313,13 +330,26 @@ export class PedidosServicio {
   async actualizar(usuario: Usuario, id: string, dto: ActualizarPedidoDto) {
     const pedido = await this.prisma.pedido.findUnique({ where: { id } });
     if (!pedido) throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
-    if (pedido.estado !== 'PENDIENTE_ASIGNACION') {
+    if (PedidoMaquinaEstados.esTerminal(pedido.estado)) {
       throw new ConflictException({
         codigo: 'PEDIDO_NO_EDITABLE',
-        mensaje: `Solo pedidos en PENDIENTE_ASIGNACION son editables (estado actual: ${pedido.estado})`,
+        mensaje: `Pedido en estado terminal no es editable (estado actual: ${pedido.estado})`,
       });
     }
     await this.garantizarEdicionVendedor(usuario, pedido);
+
+    // Validación cruzada metodoPago/montoContraEntrega — replica la regla de crear().
+    const metodoEfectivo = dto.metodoPago ?? pedido.metodoPago;
+    if (metodoEfectivo === 'CONTRA_ENTREGA') {
+      const montoEfectivo = dto.montoContraEntrega ?? pedido.montoContraEntrega;
+      if (montoEfectivo == null) {
+        throw new BadRequestException({
+          codigo: 'PEDIDO_MONTO_CONTRA_ENTREGA_REQUERIDO',
+          mensaje:
+            'montoContraEntrega es requerido cuando metodoPago=CONTRA_ENTREGA',
+        });
+      }
+    }
 
     const datos: Prisma.PedidoUpdateInput = { ...dto };
     // Si cambian coordenadas, re-resolver zonas.
@@ -334,6 +364,11 @@ export class PedidosServicio {
       datos.zonaDestino = { connect: { id: z.id } };
     }
     if (dto.programadoPara) datos.programadoPara = new Date(dto.programadoPara);
+
+    // Si el método pasa a no-CONTRA_ENTREGA, limpiar el monto para evitar inconsistencias.
+    if (dto.metodoPago != null && dto.metodoPago !== 'CONTRA_ENTREGA') {
+      datos.montoContraEntrega = null;
+    }
 
     return this.prisma.pedido.update({ where: { id }, data: datos });
   }

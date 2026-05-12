@@ -55,22 +55,24 @@ export class PedidoEventosManejador {
     const pedido = await this.cargarPedido(evento.pedidoId);
     if (!pedido) return;
     const cs = pedido.codigoSeguimiento;
+    const datosPedido = { pedidoId: pedido.id, codigoSeguimiento: cs };
 
     switch (evento.hacia) {
       case 'ASIGNADO':
-        await this.enviarPlantilla('PEDIDO_ASIGNADO_VENDEDOR', pedido.vendedor.usuario.id, ['PUSH'], [cs]);
+        await this.enviarPlantilla('PEDIDO_ASIGNADO_VENDEDOR', pedido.vendedor.usuario.id, ['PUSH'], [cs], datosPedido);
         if (pedido.repartidorRecogida) {
           await this.enviarPlantilla(
             'PEDIDO_ASIGNADO_REPARTIDOR',
             pedido.repartidorRecogida.usuario.id,
             ['PUSH'],
             [cs],
+            datosPedido,
           );
         }
         break;
 
       case 'RECOGIDO':
-        await this.enviarPlantilla('PEDIDO_RECOGIDO_VENDEDOR', pedido.vendedor.usuario.id, ['PUSH'], [cs]);
+        await this.enviarPlantilla('PEDIDO_RECOGIDO_VENDEDOR', pedido.vendedor.usuario.id, ['PUSH'], [cs], datosPedido);
         await this.enviarClienteWhatsapp(pedido, 'PEDIDO_RECOGIDO_CLIENTE', [cs]);
         // PUSH al cliente: solo aplica si tuviéramos Usuario; lo omitimos.
         break;
@@ -80,7 +82,7 @@ export class PedidoEventosManejador {
         break;
 
       case 'EN_REPARTO':
-        await this.enviarPlantilla('PEDIDO_EN_REPARTO_VENDEDOR', pedido.vendedor.usuario.id, ['PUSH'], [cs]);
+        await this.enviarPlantilla('PEDIDO_EN_REPARTO_VENDEDOR', pedido.vendedor.usuario.id, ['PUSH'], [cs], datosPedido);
         await this.enviarClienteWhatsapp(pedido, 'PEDIDO_EN_REPARTO_CLIENTE', [cs]);
         break;
 
@@ -90,6 +92,7 @@ export class PedidoEventosManejador {
           pedido.vendedor.usuario.id,
           ['PUSH', 'EMAIL'],
           [cs],
+          datosPedido,
         );
         if (pedido.emailCliente) {
           await this.enviarClienteEmail(pedido.emailCliente, 'PEDIDO_ENTREGADO_CLIENTE', [cs]);
@@ -102,19 +105,26 @@ export class PedidoEventosManejador {
           pedido.vendedor.usuario.id,
           ['PUSH'],
           [cs, pedido.motivoFallo ?? 'sin detalle'],
+          datosPedido,
         );
         await this.enviarClienteWhatsapp(pedido, 'PEDIDO_FALLIDO_CLIENTE', [cs]);
-        await this.enviarAdmins('PEDIDO_FALLIDO_ADMIN', ['PUSH'], [cs, pedido.motivoFallo ?? 'sin detalle']);
+        await this.enviarAdmins(
+          'PEDIDO_FALLIDO_ADMIN',
+          ['PUSH'],
+          [cs, pedido.motivoFallo ?? 'sin detalle'],
+          datosPedido,
+        );
         break;
 
       case 'CANCELADO':
-        await this.enviarPlantilla('PEDIDO_CANCELADO_VENDEDOR', pedido.vendedor.usuario.id, ['PUSH'], [cs]);
+        await this.enviarPlantilla('PEDIDO_CANCELADO_VENDEDOR', pedido.vendedor.usuario.id, ['PUSH'], [cs], datosPedido);
         if (pedido.repartidorRecogida) {
           await this.enviarPlantilla(
             'PEDIDO_CANCELADO_REPARTIDOR',
             pedido.repartidorRecogida.usuario.id,
             ['PUSH'],
             [cs],
+            datosPedido,
           );
         }
         await this.enviarClienteWhatsapp(pedido, 'PEDIDO_CANCELADO_CLIENTE', [cs]);
@@ -153,9 +163,13 @@ export class PedidoEventosManejador {
     usuarioId: string | null,
     canales: ('PUSH' | 'WHATSAPP' | 'EMAIL')[],
     params: Array<string | number>,
+    datosExtra: Record<string, unknown> = {},
   ): Promise<void> {
     const { titulo, cuerpo } = renderizarPlantilla(clave, params);
-    await this.notif.enviarMulticanal(usuarioId, canales, titulo, cuerpo, { plantillaClave: clave });
+    await this.notif.enviarMulticanal(usuarioId, canales, titulo, cuerpo, {
+      plantillaClave: clave,
+      ...datosExtra,
+    });
   }
 
   private async enviarClienteWhatsapp(
@@ -194,13 +208,14 @@ export class PedidoEventosManejador {
     clave: ClavePlantilla,
     canales: ('PUSH' | 'WHATSAPP' | 'EMAIL')[],
     params: Array<string | number>,
+    datosExtra: Record<string, unknown> = {},
   ): Promise<void> {
     const admins = await this.prisma.usuario.findMany({
       where: { rol: 'ADMIN', estado: 'ACTIVO' },
       select: { id: true },
     });
     for (const admin of admins) {
-      await this.enviarPlantilla(clave, admin.id, canales, params);
+      await this.enviarPlantilla(clave, admin.id, canales, params, datosExtra);
     }
   }
 }

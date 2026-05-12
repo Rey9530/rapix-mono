@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../datos/modelos/usuario.dart';
+import '../../nucleo/tema/proveedor_tema.dart';
 import '../../nucleo/tema/tokens_rapix.dart';
 import '../autenticacion/autenticacion_controlador.dart';
 
@@ -22,7 +23,7 @@ class PerfilPantalla extends ConsumerWidget {
     }
 
     return Scaffold(
-      backgroundColor: TokensRapix.fondo,
+      backgroundColor: tokens(context).fondo,
       body: Column(
         children: [
           _HeroOscuro(usuario: usuario),
@@ -33,6 +34,9 @@ class PerfilPantalla extends ConsumerWidget {
   }
 }
 
+// El hero superior es un bloque oscuro intencional del diseno (siempre se
+// muestra con paleta dark sobre cualquier tema), por eso usa colores
+// hardcoded de TokensRapix y `Colors.white` directamente.
 class _HeroOscuro extends StatelessWidget {
   const _HeroOscuro({required this.usuario});
 
@@ -278,12 +282,13 @@ class _SheetClara extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final perfilVendedor = usuario.perfilVendedor;
+    final t = tokens(context);
     return Transform.translate(
       offset: const Offset(0, -16),
       child: Container(
-        decoration: const BoxDecoration(
-          color: TokensRapix.fondo,
-          borderRadius: BorderRadius.only(
+        decoration: BoxDecoration(
+          color: t.fondo,
+          borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(28),
             topRight: Radius.circular(28),
           ),
@@ -299,6 +304,8 @@ class _SheetClara extends ConsumerWidget {
             const _GridAccesos(),
             const SizedBox(height: 12),
             _CardCuenta(usuario: usuario),
+            const SizedBox(height: 12),
+            const _CardPreferencias(),
             const SizedBox(height: 12),
             _BotonLogout(
               onTap: () => _confirmarCerrarSesion(context, ref),
@@ -317,12 +324,13 @@ class _CardNegocio extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = tokens(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: TokensRapix.superficie,
+        color: t.superficie,
         borderRadius: BorderRadius.circular(TokensRapix.radioXl),
-        border: Border.all(color: TokensRapix.contorno),
+        border: Border.all(color: t.contorno),
       ),
       child: Column(
         children: [
@@ -333,7 +341,7 @@ class _CardNegocio extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: TokensRapix.verdeSuave,
+                  color: t.verdeSuave,
                   borderRadius: BorderRadius.circular(TokensRapix.radioMd),
                 ),
                 alignment: Alignment.center,
@@ -354,7 +362,7 @@ class _CardNegocio extends StatelessWidget {
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.4,
-                        color: TokensRapix.tintaSilenciada,
+                        color: t.tintaSilenciada,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -364,7 +372,7 @@ class _CardNegocio extends StatelessWidget {
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         letterSpacing: -0.2,
-                        color: TokensRapix.tinta,
+                        color: t.tinta,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -400,15 +408,15 @@ class _CardNegocio extends StatelessWidget {
                 vertical: 10,
               ),
               decoration: BoxDecoration(
-                color: TokensRapix.superficieAlt,
+                color: t.superficieAlt,
                 borderRadius: BorderRadius.circular(TokensRapix.radioMd),
               ),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.location_on_outlined,
                     size: 14,
-                    color: TokensRapix.tintaSilenciada,
+                    color: t.tintaSilenciada,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -416,7 +424,7 @@ class _CardNegocio extends StatelessWidget {
                       perfil.direccion!,
                       style: GoogleFonts.inter(
                         fontSize: 12,
-                        color: TokensRapix.tinta,
+                        color: t.tinta,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -434,15 +442,15 @@ class _CardNegocio extends StatelessWidget {
                 vertical: 10,
               ),
               decoration: BoxDecoration(
-                color: TokensRapix.superficieAlt,
+                color: t.superficieAlt,
                 borderRadius: BorderRadius.circular(TokensRapix.radioMd),
               ),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.map_outlined,
                     size: 14,
-                    color: TokensRapix.tintaSilenciada,
+                    color: t.tintaSilenciada,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -450,7 +458,7 @@ class _CardNegocio extends StatelessWidget {
                       '${perfil.latitud!.toStringAsFixed(5)}, ${perfil.longitud!.toStringAsFixed(5)}',
                       style: GoogleFonts.inter(
                         fontSize: 12,
-                        color: TokensRapix.tinta,
+                        color: t.tinta,
                       ),
                     ),
                   ),
@@ -533,8 +541,9 @@ class _AccesoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = tokens(context);
     return Material(
-      color: TokensRapix.superficie,
+      color: t.superficie,
       borderRadius: BorderRadius.circular(TokensRapix.radioLg),
       child: InkWell(
         borderRadius: BorderRadius.circular(TokensRapix.radioLg),
@@ -543,7 +552,7 @@ class _AccesoTile extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(TokensRapix.radioLg),
-            border: Border.all(color: TokensRapix.contorno),
+            border: Border.all(color: t.contorno),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -552,11 +561,11 @@ class _AccesoTile extends StatelessWidget {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: TokensRapix.superficieAlt,
+                  color: t.superficieAlt,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 alignment: Alignment.center,
-                child: Icon(data.icono, size: 18, color: TokensRapix.tinta),
+                child: Icon(data.icono, size: 18, color: t.tinta),
               ),
               const SizedBox(height: 10),
               Text(
@@ -565,7 +574,7 @@ class _AccesoTile extends StatelessWidget {
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.2,
-                  color: TokensRapix.tinta,
+                  color: t.tinta,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -575,7 +584,7 @@ class _AccesoTile extends StatelessWidget {
                 data.subtitulo,
                 style: GoogleFonts.inter(
                   fontSize: 11,
-                  color: TokensRapix.tintaSilenciada,
+                  color: t.tintaSilenciada,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -595,6 +604,7 @@ class _CardCuenta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = tokens(context);
     final filas = <_CuentaFila>[
       _CuentaFila(etiqueta: 'Correo', valor: usuario.email),
       _CuentaFila(etiqueta: 'Teléfono', valor: usuario.telefono),
@@ -603,9 +613,9 @@ class _CardCuenta extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: TokensRapix.superficie,
+        color: t.superficie,
         borderRadius: BorderRadius.circular(TokensRapix.radioLg),
-        border: Border.all(color: TokensRapix.contorno),
+        border: Border.all(color: t.contorno),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -613,10 +623,10 @@ class _CardCuenta extends StatelessWidget {
           for (int i = 0; i < filas.length; i++) ...[
             _CuentaFilaTile(fila: filas[i]),
             if (i < filas.length - 1)
-              const Divider(
+              Divider(
                 height: 1,
                 thickness: 1,
-                color: TokensRapix.contornoSuave,
+                color: t.contornoSuave,
               ),
           ],
         ],
@@ -638,6 +648,7 @@ class _CuentaFilaTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = tokens(context);
     return InkWell(
       onTap: () => _mostrarProximamente(context),
       child: Padding(
@@ -653,7 +664,7 @@ class _CuentaFilaTile extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: TokensRapix.tintaSilenciada,
+                      color: t.tintaSilenciada,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -662,7 +673,7 @@ class _CuentaFilaTile extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: TokensRapix.tinta,
+                      color: t.tinta,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -671,12 +682,73 @@ class _CuentaFilaTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            const Icon(
+            Icon(
               Icons.chevron_right_rounded,
               size: 20,
-              color: TokensRapix.tintaSuave,
+              color: t.tintaSuave,
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CardPreferencias extends ConsumerWidget {
+  const _CardPreferencias();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = tokens(context);
+    final modo = ref.watch(temaControladorProvider);
+    final esOscuro = modo == ThemeMode.dark;
+    return Container(
+      decoration: BoxDecoration(
+        color: t.superficie,
+        borderRadius: BorderRadius.circular(TokensRapix.radioLg),
+        border: Border.all(color: t.contorno),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: SwitchListTile.adaptive(
+        value: esOscuro,
+        activeThumbColor: TokensRapix.verde,
+        onChanged: (valor) {
+          ref
+              .read(temaControladorProvider.notifier)
+              .cambiar(valor ? ThemeMode.dark : ThemeMode.light);
+        },
+        secondary: Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: t.superficieAlt,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          alignment: Alignment.center,
+          child: Icon(
+            Icons.dark_mode_outlined,
+            size: 18,
+            color: t.tinta,
+          ),
+        ),
+        title: Text(
+          'Modo oscuro',
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: t.tinta,
+          ),
+        ),
+        subtitle: Text(
+          esOscuro ? 'Activado' : 'Desactivado',
+          style: GoogleFonts.inter(
+            fontSize: 11,
+            color: t.tintaSilenciada,
+          ),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 4,
         ),
       ),
     );
@@ -700,7 +772,7 @@ class _BotonLogout extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: TokensRapix.peligroSuave),
+            border: Border.all(color: tokens(context).peligroSuave),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -761,5 +833,8 @@ Future<void> _confirmarCerrarSesion(BuildContext context, WidgetRef ref) async {
   );
   if (confirmado != true) return;
   await ref.read(autenticacionControladorProvider.notifier).cerrarSesion();
+  await ref
+      .read(temaControladorProvider.notifier)
+      .cambiar(ThemeMode.light);
   if (context.mounted) context.go('/iniciar-sesion');
 }

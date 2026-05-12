@@ -142,3 +142,149 @@ class EstadoColores {
   final Color texto;
   final Color punto;
 }
+
+/// Paleta de superficies y texto en modo oscuro.
+///
+/// Los tokens de marca (verde, peligro, ambar) se mantienen en [TokensRapix]
+/// porque no cambian entre temas. Aqui solo se redefinen las superficies y
+/// los colores de texto/contorno cuyo contraste depende del modo.
+class TokensRapixOscuro {
+  TokensRapixOscuro._();
+
+  // Superficies (warm-neutral oscuro)
+  static const Color fondo = Color(0xFF111210);
+  static const Color superficie = Color(0xFF1A1B18);
+  static const Color superficieAlt = Color(0xFF22231F);
+  static const Color superficieHundida = Color(0xFF2A2B27);
+  static const Color contorno = Color(0xFF35362F);
+  static const Color contornoSuave = Color(0xFF2A2B25);
+
+  // Texto
+  static const Color tinta = Color(0xFFF4F2EC);
+  static const Color tintaSilenciada = Color(0xFFB0B1A8);
+  static const Color tintaSuave = Color(0xFF7E7F76);
+
+  // Variantes para chips informativos en dark
+  static const Color verdeSuave = Color(0xFF153A2A);
+  static const Color verdeTinta = Color(0xFFB7E8CB);
+  static const Color peligroSuave = Color(0xFF3A1414);
+}
+
+/// Extension del [ThemeData] que expone los tokens de superficie y texto
+/// del rediseno Rapix de forma theme-aware.
+///
+/// Acceso ergonomico: usar [tokens] (`tokens(context).fondo`) en widgets.
+class TokensRapixExt extends ThemeExtension<TokensRapixExt> {
+  const TokensRapixExt({
+    required this.fondo,
+    required this.superficie,
+    required this.superficieAlt,
+    required this.superficieHundida,
+    required this.contorno,
+    required this.contornoSuave,
+    required this.tinta,
+    required this.tintaSilenciada,
+    required this.tintaSuave,
+    required this.verdeSuave,
+    required this.verdeTinta,
+    required this.peligroSuave,
+  });
+
+  final Color fondo;
+  final Color superficie;
+  final Color superficieAlt;
+  final Color superficieHundida;
+  final Color contorno;
+  final Color contornoSuave;
+  final Color tinta;
+  final Color tintaSilenciada;
+  final Color tintaSuave;
+  final Color verdeSuave;
+  final Color verdeTinta;
+  final Color peligroSuave;
+
+  static const TokensRapixExt claro = TokensRapixExt(
+    fondo: TokensRapix.fondo,
+    superficie: TokensRapix.superficie,
+    superficieAlt: TokensRapix.superficieAlt,
+    superficieHundida: TokensRapix.superficieHundida,
+    contorno: TokensRapix.contorno,
+    contornoSuave: TokensRapix.contornoSuave,
+    tinta: TokensRapix.tinta,
+    tintaSilenciada: TokensRapix.tintaSilenciada,
+    tintaSuave: TokensRapix.tintaSuave,
+    verdeSuave: TokensRapix.verdeSuave,
+    verdeTinta: TokensRapix.verdeTinta,
+    peligroSuave: TokensRapix.peligroSuave,
+  );
+
+  static const TokensRapixExt oscuro = TokensRapixExt(
+    fondo: TokensRapixOscuro.fondo,
+    superficie: TokensRapixOscuro.superficie,
+    superficieAlt: TokensRapixOscuro.superficieAlt,
+    superficieHundida: TokensRapixOscuro.superficieHundida,
+    contorno: TokensRapixOscuro.contorno,
+    contornoSuave: TokensRapixOscuro.contornoSuave,
+    tinta: TokensRapixOscuro.tinta,
+    tintaSilenciada: TokensRapixOscuro.tintaSilenciada,
+    tintaSuave: TokensRapixOscuro.tintaSuave,
+    verdeSuave: TokensRapixOscuro.verdeSuave,
+    verdeTinta: TokensRapixOscuro.verdeTinta,
+    peligroSuave: TokensRapixOscuro.peligroSuave,
+  );
+
+  @override
+  TokensRapixExt copyWith({
+    Color? fondo,
+    Color? superficie,
+    Color? superficieAlt,
+    Color? superficieHundida,
+    Color? contorno,
+    Color? contornoSuave,
+    Color? tinta,
+    Color? tintaSilenciada,
+    Color? tintaSuave,
+    Color? verdeSuave,
+    Color? verdeTinta,
+    Color? peligroSuave,
+  }) {
+    return TokensRapixExt(
+      fondo: fondo ?? this.fondo,
+      superficie: superficie ?? this.superficie,
+      superficieAlt: superficieAlt ?? this.superficieAlt,
+      superficieHundida: superficieHundida ?? this.superficieHundida,
+      contorno: contorno ?? this.contorno,
+      contornoSuave: contornoSuave ?? this.contornoSuave,
+      tinta: tinta ?? this.tinta,
+      tintaSilenciada: tintaSilenciada ?? this.tintaSilenciada,
+      tintaSuave: tintaSuave ?? this.tintaSuave,
+      verdeSuave: verdeSuave ?? this.verdeSuave,
+      verdeTinta: verdeTinta ?? this.verdeTinta,
+      peligroSuave: peligroSuave ?? this.peligroSuave,
+    );
+  }
+
+  @override
+  TokensRapixExt lerp(ThemeExtension<TokensRapixExt>? other, double t) {
+    if (other is! TokensRapixExt) return this;
+    return TokensRapixExt(
+      fondo: Color.lerp(fondo, other.fondo, t)!,
+      superficie: Color.lerp(superficie, other.superficie, t)!,
+      superficieAlt: Color.lerp(superficieAlt, other.superficieAlt, t)!,
+      superficieHundida:
+          Color.lerp(superficieHundida, other.superficieHundida, t)!,
+      contorno: Color.lerp(contorno, other.contorno, t)!,
+      contornoSuave: Color.lerp(contornoSuave, other.contornoSuave, t)!,
+      tinta: Color.lerp(tinta, other.tinta, t)!,
+      tintaSilenciada: Color.lerp(tintaSilenciada, other.tintaSilenciada, t)!,
+      tintaSuave: Color.lerp(tintaSuave, other.tintaSuave, t)!,
+      verdeSuave: Color.lerp(verdeSuave, other.verdeSuave, t)!,
+      verdeTinta: Color.lerp(verdeTinta, other.verdeTinta, t)!,
+      peligroSuave: Color.lerp(peligroSuave, other.peligroSuave, t)!,
+    );
+  }
+}
+
+/// Acceso ergonomico a los tokens theme-aware de Rapix.
+TokensRapixExt tokens(BuildContext context) =>
+    Theme.of(context).extension<TokensRapixExt>() ?? TokensRapixExt.claro;

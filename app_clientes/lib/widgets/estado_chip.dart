@@ -1,47 +1,60 @@
 import 'package:flutter/material.dart';
 
+import '../nucleo/tema/tokens_rapix.dart';
+
+/// Chip de estado de pedido. Reutiliza la paleta unificada de
+/// [TokensRapix.estados] para mantener una sola fuente de verdad para los
+/// colores por estado en toda la app.
 class EstadoChip extends StatelessWidget {
   const EstadoChip({super.key, required this.estado});
 
   final String estado;
 
-  static const Map<String, ({Color color, String etiqueta})> _mapa = {
-    'PENDIENTE_ASIGNACION': (
-      color: Color(0xFFFFA000),
-      etiqueta: 'Pendiente'
-    ),
-    'ASIGNADO': (color: Color(0xFF1976D2), etiqueta: 'Asignado'),
-    'RECOGIDO': (color: Color(0xFF7B1FA2), etiqueta: 'Recogido'),
-    'EN_TRANSITO': (color: Color(0xFF512DA8), etiqueta: 'En transito'),
-    'EN_PUNTO_INTERCAMBIO': (
-      color: Color(0xFF303F9F),
-      etiqueta: 'En punto de intercambio'
-    ),
-    'EN_REPARTO': (color: Color(0xFF1565C0), etiqueta: 'En reparto'),
-    'ENTREGADO': (color: Color(0xFF388E3C), etiqueta: 'Entregado'),
-    'FALLIDO': (color: Color(0xFFD32F2F), etiqueta: 'Fallido'),
-    'DEVUELTO': (color: Color(0xFF6D4C41), etiqueta: 'Devuelto'),
-    'CANCELADO': (color: Color(0xFF616161), etiqueta: 'Cancelado'),
+  static const Map<String, String> _etiquetas = {
+    'PENDIENTE_ASIGNACION': 'Pendiente',
+    'ASIGNADO': 'Asignado',
+    'RECOGIDO': 'Recogido',
+    'EN_TRANSITO': 'En transito',
+    'EN_PUNTO_INTERCAMBIO': 'En punto de intercambio',
+    'EN_REPARTO': 'En reparto',
+    'ENTREGADO': 'Entregado',
+    'FALLIDO': 'Fallido',
+    'DEVUELTO': 'Devuelto',
+    'CANCELADO': 'Cancelado',
   };
 
   @override
   Widget build(BuildContext context) {
-    final info = _mapa[estado] ??
-        (color: Colors.grey, etiqueta: estado.replaceAll('_', ' '));
+    final colores = TokensRapix.estados[estado];
+    final etiqueta = _etiquetas[estado] ?? estado.replaceAll('_', ' ');
+    final fondo = colores?.fondo ?? tokens(context).superficieAlt;
+    final texto = colores?.texto ?? tokens(context).tintaSilenciada;
+    final punto = colores?.punto ?? tokens(context).tintaSuave;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: info.color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: info.color.withValues(alpha: 0.4)),
+        color: fondo,
+        borderRadius: BorderRadius.circular(TokensRapix.radioPill),
       ),
-      child: Text(
-        info.etiqueta,
-        style: TextStyle(
-          color: info.color,
-          fontWeight: FontWeight.w600,
-          fontSize: 12,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(color: punto, shape: BoxShape.circle),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            etiqueta,
+            style: TextStyle(
+              color: texto,
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
+            ),
+          ),
+        ],
       ),
     );
   }

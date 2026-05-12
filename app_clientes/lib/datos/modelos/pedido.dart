@@ -85,6 +85,13 @@ class Pedido {
     if (raw == null) return null;
     return RepartidorAsignado.desdeJson(raw as Map<String, dynamic>);
   }
+
+  static const _estadosTerminales = {'ENTREGADO', 'CANCELADO', 'DEVUELTO'};
+
+  static bool esEstadoTerminal(String estado) =>
+      _estadosTerminales.contains(estado);
+
+  bool get esEditable => !esEstadoTerminal(estado);
 }
 
 class RepartidorAsignado {

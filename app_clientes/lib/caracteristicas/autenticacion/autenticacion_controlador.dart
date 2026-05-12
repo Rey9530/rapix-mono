@@ -1,8 +1,12 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../datos/modelos/usuario.dart';
 import '../../datos/repositorios/autenticacion_repositorio.dart';
+import '../../datos/repositorios/tokens_dispositivo_repositorio.dart';
 import '../../nucleo/almacenamiento/almacenamiento_seguro.dart';
+import '../../nucleo/notificaciones/servicio_notificaciones.dart';
 
 class AutenticacionEstado {
   AutenticacionEstado({
@@ -10,12 +14,14 @@ class AutenticacionEstado {
     this.cargando = false,
     this.inicializado = false,
     this.error,
+    this.errorRed = false,
   });
 
   final Usuario? usuario;
   final bool cargando;
   final bool inicializado;
   final String? error;
+  final bool errorRed;
 
   bool get autenticado => usuario != null;
 
@@ -24,14 +30,17 @@ class AutenticacionEstado {
     bool? cargando,
     bool? inicializado,
     String? error,
+    bool? errorRed,
     bool limpiarUsuario = false,
     bool limpiarError = false,
+    bool limpiarErrorRed = false,
   }) {
     return AutenticacionEstado(
       usuario: limpiarUsuario ? null : (usuario ?? this.usuario),
       cargando: cargando ?? this.cargando,
       inicializado: inicializado ?? this.inicializado,
       error: limpiarError ? null : (error ?? this.error),
+      errorRed: limpiarErrorRed ? false : (errorRed ?? this.errorRed),
     );
   }
 }
@@ -40,19 +49,71 @@ class AutenticacionControlador extends StateNotifier<AutenticacionEstado> {
   AutenticacionControlador({
     required this.repositorio,
     required this.almacen,
-  }) : super(AutenticacionEstado()) {
-    _cargarSesion();
-  }
+    required this.servicioNotificaciones,
+    required this.tokensRepositorio,
+  }) : super(AutenticacionEstado());
 
   final AutenticacionRepositorio repositorio;
   final AlmacenamientoSeguro almacen;
+  final ServicioNotificaciones servicioNotificaciones;
+  final TokensDispositivoRepositorio tokensRepositorio;
 
-  Future<void> _cargarSesion() async {
-    final usuarioGuardado = Usuario.desdeJsonString(await almacen.usuario());
+  /// Verifica la sesion al arrancar la app: si hay tokenRefresco guardado,
+  /// llama a /autenticacion/refrescar para renovar el par y obtener el
+  /// usuario fresco. El splash invoca este metodo.
+  ///
+  /// - Sin tokenRefresco: estado inicializado sin usuario (va a login).
+  /// - Refresh OK: guarda tokens nuevos y usuario, marca autenticado.
+  /// - 401: limpia storage y queda sin usuario (va a login).
+  /// - Error de red u otros: marca [errorRed] para que el splash muestre
+  ///   pantalla de error con boton de reintentar (no limpia storage).
+  Future<void> inicializarSesion() async {
     state = state.copia(
-      usuario: usuarioGuardado,
-      inicializado: true,
+      cargando: true,
+      limpiarError: true,
+      limpiarErrorRed: true,
     );
+
+    final tokenRefresco = await almacen.tokenRefresco();
+    if (tokenRefresco == null || tokenRefresco.isEmpty) {
+      state = AutenticacionEstado(inicializado: true);
+      return;
+    }
+
+    try {
+      final respuesta = await repositorio.refrescar(tokenRefresco);
+      await almacen.guardarTokens(
+        tokenAcceso: respuesta.tokenAcceso,
+        tokenRefresco: respuesta.tokenRefresco,
+      );
+      await almacen.guardarUsuario(respuesta.usuario.aJsonString());
+      state = AutenticacionEstado(
+        usuario: respuesta.usuario,
+        inicializado: true,
+      );
+      await _sincronizarTokenPush();
+    } on DioException catch (e) {
+      final codigo = e.response?.statusCode;
+      // Si hubo respuesta del servidor en el rango 4xx, el token es invalido
+      // o esta mal formado: limpiar storage y mandar a login.
+      if (codigo != null && codigo >= 400 && codigo < 500) {
+        await almacen.limpiar();
+        state = AutenticacionEstado(inicializado: true);
+      } else {
+        // Error de red, timeout o 5xx: mantener storage y permitir reintento.
+        state = state.copia(
+          inicializado: true,
+          cargando: false,
+          errorRed: true,
+        );
+      }
+    } catch (_) {
+      state = state.copia(
+        inicializado: true,
+        cargando: false,
+        errorRed: true,
+      );
+    }
   }
 
   Future<bool> iniciarSesion({
@@ -74,6 +135,7 @@ class AutenticacionControlador extends StateNotifier<AutenticacionEstado> {
         usuario: respuesta.usuario,
         cargando: false,
       );
+      await _sincronizarTokenPush();
       return true;
     } catch (e) {
       state = state.copia(cargando: false, error: _formatearError(e));
@@ -112,6 +174,7 @@ class AutenticacionControlador extends StateNotifier<AutenticacionEstado> {
         usuario: respuesta.usuario,
         cargando: false,
       );
+      await _sincronizarTokenPush();
       return true;
     } catch (e) {
       state = state.copia(cargando: false, error: _formatearError(e));
@@ -125,6 +188,17 @@ class AutenticacionControlador extends StateNotifier<AutenticacionEstado> {
   }
 
   Future<void> cerrarSesion() async {
+    final tokenFcm = await almacen.tokenFcm();
+    if (tokenFcm != null && tokenFcm.isNotEmpty) {
+      try {
+        await tokensRepositorio.revocar(tokenFcm);
+      } catch (_) {
+        // Ignorar errores: si el token ya no existe en backend o hay red caida,
+        // igual procedemos con el cierre de sesion local.
+      }
+    }
+    await servicioNotificaciones.eliminarToken();
+
     final tokenRefresco = await almacen.tokenRefresco();
     if (tokenRefresco != null) {
       try {
@@ -135,6 +209,34 @@ class AutenticacionControlador extends StateNotifier<AutenticacionEstado> {
     }
     await almacen.limpiar();
     state = AutenticacionEstado(inicializado: true);
+  }
+
+  Future<void> _sincronizarTokenPush() async {
+    if (state.usuario == null) return;
+    try {
+      await servicioNotificaciones.inicializar();
+      final token = await servicioNotificaciones.obtenerToken();
+      if (token == null || token.isEmpty) return;
+
+      final guardado = await almacen.tokenFcm();
+      if (guardado != token) {
+        await tokensRepositorio.registrar(token);
+        await almacen.guardarTokenFcm(token);
+      }
+
+      servicioNotificaciones.escucharRefresco((nuevo) async {
+        try {
+          await tokensRepositorio.registrar(nuevo);
+          await almacen.guardarTokenFcm(nuevo);
+        } catch (e) {
+          if (kDebugMode) {
+            debugPrint('[FCM] error al re-registrar token: $e');
+          }
+        }
+      });
+    } catch (e) {
+      if (kDebugMode) debugPrint('[FCM] error al sincronizar token: $e');
+    }
   }
 
   String _formatearError(Object error) {
@@ -154,6 +256,8 @@ final autenticacionControladorProvider =
     return AutenticacionControlador(
       repositorio: ref.watch(autenticacionRepositorioProvider),
       almacen: ref.watch(almacenamientoSeguroProvider),
+      servicioNotificaciones: ref.watch(servicioNotificacionesProvider),
+      tokensRepositorio: ref.watch(tokensDispositivoRepositorioProvider),
     );
   },
 );

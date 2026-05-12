@@ -31,7 +31,7 @@ class WordmarkRapix extends StatelessWidget {
               fontSize: tamano,
               fontWeight: FontWeight.w800,
               letterSpacing: -1,
-              color: colorTexto ?? TokensRapix.tinta,
+              color: colorTexto ?? tokens(context).tinta,
               height: 1,
             ),
           ),

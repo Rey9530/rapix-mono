@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 import {
   IsDateString,
   IsEmail,
+  IsEnum,
   IsLatitude,
   IsLongitude,
   IsNumber,
@@ -12,6 +13,7 @@ import {
   Matches,
   MaxLength,
 } from 'class-validator';
+import { MetodoPago } from '../../../generated/prisma/client.js';
 
 export class ActualizarPedidoDto {
   @ApiProperty({ required: false })
@@ -73,6 +75,10 @@ export class ActualizarPedidoDto {
   @ApiProperty({ required: false })
   @IsOptional() @Type(() => Number) @IsNumber() @IsPositive()
   montoContraEntrega?: number;
+
+  @ApiProperty({ enum: MetodoPago, required: false })
+  @IsOptional() @IsEnum(MetodoPago)
+  metodoPago?: MetodoPago;
 
   @ApiProperty({ required: false })
   @IsOptional() @IsDateString()

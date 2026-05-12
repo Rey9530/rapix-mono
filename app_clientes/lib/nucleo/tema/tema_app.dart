@@ -28,6 +28,7 @@ class TemaApp {
 
     return tema.copyWith(
       scaffoldBackgroundColor: TokensRapix.fondo,
+      extensions: const [TokensRapixExt.claro],
       textTheme: GoogleFonts.interTextTheme(tema.textTheme).apply(
         bodyColor: TokensRapix.tinta,
         displayColor: TokensRapix.tinta,
@@ -166,23 +167,158 @@ class TemaApp {
     final colores = base.copyWith(
       primary: TokensRapix.verde,
       onPrimary: Colors.white,
+      primaryContainer: TokensRapixOscuro.verdeSuave,
+      onPrimaryContainer: TokensRapixOscuro.verdeTinta,
+      surface: TokensRapixOscuro.superficie,
+      onSurface: TokensRapixOscuro.tinta,
+      onSurfaceVariant: TokensRapixOscuro.tintaSilenciada,
+      surfaceContainerHighest: TokensRapixOscuro.superficieAlt,
+      outline: TokensRapixOscuro.contorno,
+      outlineVariant: TokensRapixOscuro.contornoSuave,
+      error: TokensRapix.peligro,
+      onError: Colors.white,
+      errorContainer: TokensRapixOscuro.peligroSuave,
     );
+
     final tema = ThemeData(useMaterial3: true, colorScheme: colores);
+
     return tema.copyWith(
-      textTheme: GoogleFonts.interTextTheme(tema.textTheme),
+      scaffoldBackgroundColor: TokensRapixOscuro.fondo,
+      extensions: const [TokensRapixExt.oscuro],
+      textTheme: GoogleFonts.interTextTheme(tema.textTheme).apply(
+        bodyColor: TokensRapixOscuro.tinta,
+        displayColor: TokensRapixOscuro.tinta,
+      ),
       primaryTextTheme: GoogleFonts.interTextTheme(tema.primaryTextTheme),
+      appBarTheme: AppBarTheme(
+        backgroundColor: TokensRapixOscuro.superficie,
+        foregroundColor: TokensRapixOscuro.tinta,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        centerTitle: false,
+        titleTextStyle: GoogleFonts.inter(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: TokensRapixOscuro.tinta,
+          letterSpacing: -0.2,
+        ),
+      ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           minimumSize: const Size.fromHeight(50),
           backgroundColor: TokensRapix.verde,
           foregroundColor: Colors.white,
+          disabledBackgroundColor: TokensRapix.verde.withValues(alpha: 0.5),
+          disabledForegroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
           textStyle: GoogleFonts.inter(
             fontSize: 15,
             fontWeight: FontWeight.w700,
+            letterSpacing: -0.1,
           ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: TokensRapix.verde,
+          textStyle: GoogleFonts.inter(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          minimumSize: const Size.fromHeight(48),
+          foregroundColor: TokensRapixOscuro.tinta,
+          backgroundColor: TokensRapixOscuro.superficie,
+          side: const BorderSide(
+            color: TokensRapixOscuro.contorno,
+            width: 1.5,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(TokensRapix.radioMd),
+          ),
+          textStyle: GoogleFonts.inter(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: TokensRapixOscuro.superficie,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 14,
+        ),
+        hintStyle: GoogleFonts.inter(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: TokensRapixOscuro.tintaSuave,
+        ),
+        labelStyle: GoogleFonts.inter(
+          fontSize: 14,
+          color: TokensRapixOscuro.tintaSilenciada,
+        ),
+        floatingLabelStyle: GoogleFonts.inter(
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+          color: TokensRapix.verde,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(TokensRapix.radioMd),
+          borderSide: const BorderSide(
+            color: TokensRapixOscuro.contorno,
+            width: 1.5,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(TokensRapix.radioMd),
+          borderSide: const BorderSide(
+            color: TokensRapixOscuro.contorno,
+            width: 1.5,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(TokensRapix.radioMd),
+          borderSide: const BorderSide(color: TokensRapix.verde, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(TokensRapix.radioMd),
+          borderSide: const BorderSide(color: TokensRapix.peligro, width: 1.5),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(TokensRapix.radioMd),
+          borderSide: const BorderSide(color: TokensRapix.peligro, width: 1.5),
+        ),
+      ),
+      dividerTheme: const DividerThemeData(
+        color: TokensRapixOscuro.contorno,
+        thickness: 1,
+        space: 1,
+      ),
+      cardTheme: CardThemeData(
+        elevation: 0,
+        color: TokensRapixOscuro.superficie,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(TokensRapix.radioLg),
+          side: const BorderSide(color: TokensRapixOscuro.contornoSuave),
+        ),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: TokensRapixOscuro.superficie,
+        contentTextStyle: GoogleFonts.inter(
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+          color: TokensRapixOscuro.tinta,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(TokensRapix.radioMd),
         ),
       ),
     );

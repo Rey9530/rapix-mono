@@ -53,7 +53,7 @@ class PedidosListadoPantalla extends ConsumerWidget {
     final consulta = ref.watch(_consultaPedidosProvider);
 
     return Scaffold(
-      backgroundColor: TokensRapix.fondo,
+      backgroundColor: tokens(context).fondo,
       appBar: const _AppBarPedidos(),
       floatingActionButton: _FabNuevoPedido(
         alPresionar: () => context.push('/pedidos/nuevo'),
@@ -150,7 +150,7 @@ class _AppBarPedidos extends ConsumerWidget implements PreferredSizeWidget {
     );
     return AppBar(
       toolbarHeight: 64,
-      backgroundColor: TokensRapix.fondo,
+      backgroundColor: tokens(context).fondo,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       automaticallyImplyLeading: false,
@@ -164,7 +164,7 @@ class _AppBarPedidos extends ConsumerWidget implements PreferredSizeWidget {
             style: GoogleFonts.inter(
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: TokensRapix.tinta,
+              color: tokens(context).tinta,
               letterSpacing: -0.3,
               height: 1.2,
             ),
@@ -173,7 +173,7 @@ class _AppBarPedidos extends ConsumerWidget implements PreferredSizeWidget {
             subtitulo,
             style: GoogleFonts.inter(
               fontSize: 12,
-              color: TokensRapix.tintaSilenciada,
+              color: tokens(context).tintaSilenciada,
               height: 1.3,
             ),
           ),
@@ -195,16 +195,16 @@ class _BarraBusqueda extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       child: Container(
         decoration: BoxDecoration(
-          color: TokensRapix.superficieAlt,
+          color: tokens(context).superficieAlt,
           borderRadius: BorderRadius.circular(14),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
         child: Row(
           children: [
-            const Icon(
+            Icon(
               Icons.search,
               size: 18,
-              color: TokensRapix.tintaSilenciada,
+              color: tokens(context).tintaSilenciada,
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -212,13 +212,13 @@ class _BarraBusqueda extends StatelessWidget {
                 onChanged: alCambiar,
                 style: GoogleFonts.inter(
                   fontSize: 14,
-                  color: TokensRapix.tinta,
+                  color: tokens(context).tinta,
                 ),
                 decoration: InputDecoration(
                   hintText: 'Buscar por código o cliente',
                   hintStyle: GoogleFonts.inter(
                     fontSize: 14,
-                    color: TokensRapix.tintaSilenciada,
+                    color: tokens(context).tintaSilenciada,
                   ),
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
@@ -233,12 +233,12 @@ class _BarraBusqueda extends StatelessWidget {
               GestureDetector(
                 onTap: () => alCambiar(''),
                 behavior: HitTestBehavior.opaque,
-                child: const Padding(
-                  padding: EdgeInsets.all(4),
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
                   child: Icon(
                     Icons.close,
                     size: 16,
-                    color: TokensRapix.tintaSilenciada,
+                    color: tokens(context).tintaSilenciada,
                   ),
                 ),
               ),
@@ -302,10 +302,10 @@ class _Pill extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         decoration: BoxDecoration(
-          color: activo ? TokensRapix.tinta : TokensRapix.superficie,
+          color: activo ? tokens(context).tinta : tokens(context).superficie,
           borderRadius: BorderRadius.circular(TokensRapix.radioPill),
           border: Border.all(
-            color: activo ? TokensRapix.tinta : TokensRapix.contorno,
+            color: activo ? tokens(context).tinta : tokens(context).contorno,
           ),
         ),
         alignment: Alignment.center,
@@ -314,7 +314,7 @@ class _Pill extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: activo ? Colors.white : TokensRapix.tinta,
+            color: activo ? tokens(context).fondo : tokens(context).tinta,
           ),
         ),
       ),
@@ -331,8 +331,8 @@ class _TarjetaPedido extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final estados = TokensRapix.estados[pedido.estado];
-    final fondoIcono = estados?.fondo ?? TokensRapix.superficieAlt;
-    final colorIcono = estados?.texto ?? TokensRapix.tintaSilenciada;
+    final fondoIcono = estados?.fondo ?? tokens(context).superficieAlt;
+    final colorIcono = estados?.texto ?? tokens(context).tintaSilenciada;
     final codigo = pedido.codigoSeguimiento.isEmpty
         ? '#${pedido.id.substring(0, 6)}'
         : pedido.codigoSeguimiento;
@@ -343,9 +343,9 @@ class _TarjetaPedido extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: TokensRapix.superficie,
+          color: tokens(context).superficie,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: TokensRapix.contorno),
+          border: Border.all(color: tokens(context).contorno),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -378,7 +378,7 @@ class _TarjetaPedido extends StatelessWidget {
                           style: GoogleFonts.jetBrainsMono(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
-                            color: TokensRapix.tinta,
+                            color: tokens(context).tinta,
                             letterSpacing: 0.2,
                           ),
                           overflow: TextOverflow.ellipsis,
@@ -394,7 +394,7 @@ class _TarjetaPedido extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                      color: TokensRapix.tinta,
+                      color: tokens(context).tinta,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -404,7 +404,7 @@ class _TarjetaPedido extends StatelessWidget {
                     pedido.direccionDestino,
                     style: GoogleFonts.inter(
                       fontSize: 11,
-                      color: TokensRapix.tintaSilenciada,
+                      color: tokens(context).tintaSilenciada,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -433,7 +433,7 @@ class _PieTarjeta extends StatelessWidget {
         _fechaRelativa(pedido.creadoEn),
         style: GoogleFonts.inter(
           fontSize: 11,
-          color: TokensRapix.tintaSuave,
+          color: tokens(context).tintaSuave,
         ),
       ),
     ];
@@ -447,7 +447,7 @@ class _PieTarjeta extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 11,
             fontWeight: FontWeight.w600,
-            color: TokensRapix.tinta,
+            color: tokens(context).tinta,
           ),
         ),
       ]);
@@ -459,7 +459,7 @@ class _PieTarjeta extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 11,
             fontWeight: FontWeight.w600,
-            color: TokensRapix.tinta,
+            color: tokens(context).tinta,
           ),
         ),
       ]);
@@ -496,7 +496,7 @@ class _Separador extends StatelessWidget {
       '·',
       style: GoogleFonts.inter(
         fontSize: 11,
-        color: TokensRapix.tintaSuave,
+        color: tokens(context).tintaSuave,
       ),
     );
   }
@@ -524,9 +524,9 @@ class _ChipEstadoRapix extends StatelessWidget {
   Widget build(BuildContext context) {
     final colores = TokensRapix.estados[estado];
     final etiqueta = _etiquetas[estado] ?? estado.replaceAll('_', ' ');
-    final fondo = colores?.fondo ?? TokensRapix.superficieAlt;
-    final texto = colores?.texto ?? TokensRapix.tintaSilenciada;
-    final punto = colores?.punto ?? TokensRapix.tintaSuave;
+    final fondo = colores?.fondo ?? tokens(context).superficieAlt;
+    final texto = colores?.texto ?? tokens(context).tintaSilenciada;
+    final punto = colores?.punto ?? tokens(context).tintaSuave;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -623,14 +623,14 @@ class _ListadoVacio extends StatelessWidget {
           width: 64,
           height: 64,
           decoration: BoxDecoration(
-            color: TokensRapix.superficieAlt,
+            color: tokens(context).superficieAlt,
             borderRadius: BorderRadius.circular(20),
           ),
           alignment: Alignment.center,
-          child: const Icon(
+          child: Icon(
             Icons.inbox_outlined,
             size: 32,
-            color: TokensRapix.tintaSilenciada,
+            color: tokens(context).tintaSilenciada,
           ),
         ),
         const SizedBox(height: 14),
@@ -640,7 +640,7 @@ class _ListadoVacio extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 15,
             fontWeight: FontWeight.w600,
-            color: TokensRapix.tinta,
+            color: tokens(context).tinta,
           ),
         ),
         const SizedBox(height: 4),
@@ -651,7 +651,7 @@ class _ListadoVacio extends StatelessWidget {
           textAlign: TextAlign.center,
           style: GoogleFonts.inter(
             fontSize: 13,
-            color: TokensRapix.tintaSilenciada,
+            color: tokens(context).tintaSilenciada,
           ),
         ),
       ],
@@ -682,7 +682,7 @@ class _ErrorListado extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 15,
             fontWeight: FontWeight.w600,
-            color: TokensRapix.tinta,
+            color: tokens(context).tinta,
           ),
         ),
         const SizedBox(height: 4),
@@ -691,7 +691,7 @@ class _ErrorListado extends StatelessWidget {
           textAlign: TextAlign.center,
           style: GoogleFonts.inter(
             fontSize: 12,
-            color: TokensRapix.tintaSilenciada,
+            color: tokens(context).tintaSilenciada,
           ),
         ),
         const SizedBox(height: 16),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/autenticacion/controlador_autenticacion.dart';
+import '../proveedores_globales.dart';
 import '../../features/autenticacion/pantalla_inicio_sesion.dart';
 import '../../features/cierre/pantalla_cierre_diario.dart';
 import '../../features/en_curso/pantalla_lista_en_curso.dart';
@@ -17,8 +18,27 @@ import '../../features/recogidas/pantalla_lista_recogidas.dart';
 
 final enrutadorAppProveedor = Provider<GoRouter>((ref) {
   final auth = ref.watch(controladorAutenticacionProveedor);
+  final servicioPush = ref.watch(servicioPushProveedor);
+  late final GoRouter enrutador;
 
-  return GoRouter(
+  void atenderDeepLink() {
+    final ruta = servicioPush.deepLinkPendiente.value;
+    if (ruta == null || ruta.isEmpty) return;
+    final estaAutenticado = auth.maybeWhen(
+      data: (usuario) => usuario != null,
+      orElse: () => false,
+    );
+    if (!estaAutenticado) return;
+    enrutador.go(ruta);
+    servicioPush.deepLinkPendiente.value = null;
+  }
+
+  servicioPush.deepLinkPendiente.addListener(atenderDeepLink);
+  ref.onDispose(
+    () => servicioPush.deepLinkPendiente.removeListener(atenderDeepLink),
+  );
+
+  enrutador = GoRouter(
     initialLocation: '/inicio/recogidas',
     redirect: (context, state) {
       // Mientras la sesión se restaura del storage no decidimos nada.
@@ -126,4 +146,6 @@ final enrutadorAppProveedor = Provider<GoRouter>((ref) {
       body: Center(child: Text('Ruta no encontrada: ${state.matchedLocation}')),
     ),
   );
+
+  return enrutador;
 });

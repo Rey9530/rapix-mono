@@ -1,4 +1,4 @@
-package com.example.app_clientes
+package com.rapix.rider
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -10,6 +10,8 @@ class AlmacenamientoSeguro {
   static const _claveTokenAcceso = 'token_acceso';
   static const _claveTokenRefresco = 'token_refresco';
   static const _claveUsuario = 'usuario_json';
+  static const _claveTema = 'tema_app';
+  static const _claveTokenFcm = 'token_fcm';
 
   Future<void> guardarTokens({
     required String tokenAcceso,
@@ -27,10 +29,24 @@ class AlmacenamientoSeguro {
 
   Future<String?> usuario() => _almacen.read(key: _claveUsuario);
 
+  Future<void> guardarTema(String modo) =>
+      _almacen.write(key: _claveTema, value: modo);
+
+  Future<String?> tema() => _almacen.read(key: _claveTema);
+
+  Future<void> guardarTokenFcm(String token) =>
+      _almacen.write(key: _claveTokenFcm, value: token);
+
+  Future<String?> tokenFcm() => _almacen.read(key: _claveTokenFcm);
+
+  Future<void> eliminarTokenFcm() => _almacen.delete(key: _claveTokenFcm);
+
   Future<void> limpiar() async {
     await _almacen.delete(key: _claveTokenAcceso);
     await _almacen.delete(key: _claveTokenRefresco);
     await _almacen.delete(key: _claveUsuario);
+    await _almacen.delete(key: _claveTema);
+    await _almacen.delete(key: _claveTokenFcm);
   }
 }
 

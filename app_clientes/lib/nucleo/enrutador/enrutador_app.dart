@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mb;
 
 import '../../caracteristicas/autenticacion/autenticacion_controlador.dart';
+import '../notificaciones/servicio_notificaciones.dart';
 import '../../caracteristicas/autenticacion/iniciar_sesion_pantalla.dart';
 import '../../caracteristicas/autenticacion/registrar_pantalla.dart';
 import '../../caracteristicas/autenticacion/selector_ubicacion_pantalla.dart';
@@ -16,18 +17,40 @@ import '../../caracteristicas/pedidos/pedidos_listado_pantalla.dart';
 import '../../caracteristicas/perfil/editar_negocio_pantalla.dart';
 import '../../caracteristicas/perfil/perfil_pantalla.dart';
 import '../../caracteristicas/seguimiento/seguimiento_pantalla.dart';
+import '../../caracteristicas/splash/splash_pantalla.dart';
 import '../../widgets/esqueleto_navegacion.dart';
 
 final enrutadorAppProvider = Provider<GoRouter>((ref) {
-  return GoRouter(
-    initialLocation: '/inicio',
+  final servicio = ref.watch(servicioNotificacionesProvider);
+  late final GoRouter enrutador;
+
+  void atender() {
+    final ruta = servicio.deepLinkPendiente.value;
+    if (ruta == null || ruta.isEmpty) return;
+    final auth = ref.read(autenticacionControladorProvider);
+    if (!auth.autenticado) return;
+    enrutador.go(ruta);
+    servicio.deepLinkPendiente.value = null;
+  }
+
+  servicio.deepLinkPendiente.addListener(atender);
+  ref.onDispose(() => servicio.deepLinkPendiente.removeListener(atender));
+
+  enrutador = GoRouter(
+    initialLocation: '/splash',
     refreshListenable: _NotifierAuth(ref),
     redirect: (context, state) {
       final auth = ref.read(autenticacionControladorProvider);
-      if (!auth.inicializado) return null;
-
       final ruta = state.matchedLocation;
-      final esPublica = ruta.startsWith('/iniciar-sesion') ||
+
+      // Mientras no se haya inicializado la sesion, mantener al usuario
+      // en /splash (es la unica pantalla preparada para ese estado).
+      if (!auth.inicializado) {
+        return ruta == '/splash' ? null : '/splash';
+      }
+
+      final esPublica = ruta == '/splash' ||
+          ruta.startsWith('/iniciar-sesion') ||
           ruta.startsWith('/registrar') ||
           ruta.startsWith('/seleccionar-ubicacion') ||
           ruta.startsWith('/seguimiento/');
@@ -42,6 +65,10 @@ final enrutadorAppProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
+      GoRoute(
+        path: '/splash',
+        builder: (_, _) => const SplashPantalla(),
+      ),
       GoRoute(
         path: '/iniciar-sesion',
         builder: (_, _) => const IniciarSesionPantalla(),
@@ -66,7 +93,7 @@ final enrutadorAppProvider = Provider<GoRouter>((ref) {
             SeguimientoPantalla(codigo: state.pathParameters['codigo']!),
       ),
       StatefulShellRoute.indexedStack(
-        builder: (context, state, shell) => EsqueletoNavegacion(shell: shell),
+        builder: (_, state, shell) => EsqueletoNavegacion(shell: shell),
         branches: [
           StatefulShellBranch(
             routes: [
@@ -128,6 +155,8 @@ final enrutadorAppProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
+
+  return enrutador;
 });
 
 class _NotifierAuth extends ChangeNotifier {
