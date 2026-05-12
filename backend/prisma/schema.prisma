@@ -30,6 +30,11 @@ enum EstadoUsuario {
   PENDIENTE_VERIFICACION
 }
 
+enum TipoCuentaBancaria {
+  AHORRO
+  CORRIENTE
+}
+
 // ============================================================
 // ENUMS — Pedidos (Fase 3)
 // ============================================================
@@ -80,6 +85,11 @@ enum EstadoCierreFinanciero {
   APROBADO
   RECHAZADO
   CON_DISCREPANCIA
+}
+
+enum TipoMovimientoCaja {
+  COBRO_RECOGIDA
+  COBRO_ENTREGA
 }
 
 // ============================================================
@@ -152,28 +162,44 @@ enum EstadoMensajeWhatsapp {
 // ============================================================
 
 model Usuario {
-  id              String        @id @default(uuid())
-  email           String        @unique
-  telefono        String        @unique
-  hashContrasena  String
-  nombreCompleto  String
-  rol             RolUsuario
-  estado          EstadoUsuario @default(PENDIENTE_VERIFICACION)
-  urlAvatar       String?
-  ultimoIngresoEn DateTime?
-  creadoEn        DateTime      @default(now())
-  actualizadoEn   DateTime      @updatedAt
+  id                 String        @id @default(uuid())
+  email              String        @unique
+  telefono           String        @unique
+  hashContrasena     String
+  nombreCompleto     String
+  rol                RolUsuario
+  estado             EstadoUsuario @default(PENDIENTE_VERIFICACION)
+  urlAvatar          String?
+  ultimoIngresoEn    DateTime?
+  correoVerificadoEn DateTime?
+  creadoEn           DateTime      @default(now())
+  actualizadoEn      DateTime      @updatedAt
 
-  perfilAdmin        PerfilAdmin?
-  perfilVendedor     PerfilVendedor?
-  perfilRepartidor   PerfilRepartidor?
-  tokensRefresco     TokenRefresco[]
-  registrosAuditoria RegistroAuditoria[]
-  notificaciones     Notificacion[]
-  tokensDispositivo  TokenDispositivo[]
+  perfilAdmin              PerfilAdmin?
+  perfilVendedor           PerfilVendedor?
+  perfilRepartidor         PerfilRepartidor?
+  tokensRefresco           TokenRefresco[]
+  registrosAuditoria       RegistroAuditoria[]
+  notificaciones           Notificacion[]
+  tokensDispositivo        TokenDispositivo[]
+  tokensVerificacionCorreo TokenVerificacionCorreo[]
 
   @@index([rol, estado])
   @@map("usuarios")
+}
+
+model TokenVerificacionCorreo {
+  id        String    @id @default(uuid())
+  usuarioId String
+  tokenHash String    @unique
+  expiraEn  DateTime
+  usadoEn   DateTime?
+  creadoEn  DateTime  @default(now())
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId])
+  @@map("tokens_verificacion_correo")
 }
 
 model TokenRefresco {
@@ -220,11 +246,45 @@ model PerfilVendedor {
   creadoEn       DateTime @default(now())
   actualizadoEn  DateTime @updatedAt
 
-  usuario   Usuario            @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  pedidos   Pedido[]
-  paquetes  PaqueteRecargado[]
+  usuario          Usuario            @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  pedidos          Pedido[]
+  paquetes         PaqueteRecargado[]
+  cuentasBancarias CuentaBancaria[]
 
   @@map("perfiles_vendedor")
+}
+
+model Banco {
+  id            String   @id @default(uuid())
+  codigo        String   @unique
+  nombre        String
+  activo        Boolean  @default(true)
+  creadoEn      DateTime @default(now()) @map("creado_en")
+  actualizadoEn DateTime @updatedAt        @map("actualizado_en")
+
+  cuentas CuentaBancaria[]
+
+  @@index([activo, nombre])
+  @@map("bancos")
+}
+
+model CuentaBancaria {
+  id               String             @id @default(uuid())
+  perfilVendedorId String             @map("perfil_vendedor_id")
+  bancoId          String             @map("banco_id")
+  tipoCuenta       TipoCuentaBancaria @map("tipo_cuenta")
+  numeroCuenta     String             @map("numero_cuenta")
+  alias            String?
+  esPrincipal      Boolean            @default(false) @map("es_principal")
+  activa           Boolean            @default(true)
+  creadoEn         DateTime           @default(now()) @map("creado_en")
+  actualizadoEn    DateTime           @updatedAt        @map("actualizado_en")
+
+  perfilVendedor PerfilVendedor @relation(fields: [perfilVendedorId], references: [id], onDelete: Cascade)
+  banco          Banco          @relation(fields: [bancoId], references: [id])
+
+  @@index([perfilVendedorId, activa])
+  @@map("cuentas_bancarias")
 }
 
 model PerfilRepartidor {
@@ -243,11 +303,12 @@ model PerfilRepartidor {
   creadoEn           DateTime  @default(now())
   actualizadoEn      DateTime  @updatedAt
 
-  usuario            Usuario            @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuario            Usuario                    @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   zonas              ZonaRepartidor[]
-  pedidosRecogida    Pedido[]           @relation("RepartidorRecogida")
-  pedidosEntrega     Pedido[]           @relation("RepartidorEntrega")
+  pedidosRecogida    Pedido[]                   @relation("RepartidorRecogida")
+  pedidosEntrega     Pedido[]                   @relation("RepartidorEntrega")
   cierresFinancieros CierreFinanciero[]
+  movimientosCaja    MovimientoCajaRepartidor[]
 
   @@map("perfiles_repartidor")
 }
@@ -371,9 +432,9 @@ model Pedido {
   repartidorEntrega  PerfilRepartidor? @relation("RepartidorEntrega", fields: [repartidorEntregaId], references: [id])
   paqueteRecargado   PaqueteRecargado? @relation(fields: [paqueteRecargadoId], references: [id])
 
-  eventos                  EventoPedido[]
-  comprobantes             ComprobanteEntrega[]
-  cierresFinancierosPedido CierreFinancieroPedido[]
+  eventos         EventoPedido[]
+  comprobantes    ComprobanteEntrega[]
+  movimientosCaja MovimientoCajaRepartidor[]
 
   @@index([estado])
   @@index([vendedorId, creadoEn])
@@ -480,24 +541,31 @@ model CierreFinanciero {
   creadoEn           DateTime               @default(now())
   actualizadoEn      DateTime               @updatedAt
 
-  repartidor PerfilRepartidor         @relation(fields: [repartidorId], references: [id])
-  pedidos    CierreFinancieroPedido[]
+  repartidor  PerfilRepartidor           @relation(fields: [repartidorId], references: [id])
+  movimientos MovimientoCajaRepartidor[]
 
   @@unique([repartidorId, fechaCierre])
   @@index([fechaCierre, estado])
   @@map("cierres_financieros")
 }
 
-model CierreFinancieroPedido {
-  cierreId String
-  pedidoId String
-  monto    Decimal @db.Decimal(10, 2)
+model MovimientoCajaRepartidor {
+  id           String             @id @default(uuid())
+  repartidorId String
+  pedidoId     String?
+  cierreId     String?
+  tipo         TipoMovimientoCaja
+  monto        Decimal            @db.Decimal(10, 2)
+  descripcion  String?
+  creadoEn     DateTime           @default(now())
 
-  cierre CierreFinanciero @relation(fields: [cierreId], references: [id], onDelete: Cascade)
-  pedido Pedido           @relation(fields: [pedidoId], references: [id])
+  repartidor PerfilRepartidor  @relation(fields: [repartidorId], references: [id])
+  pedido     Pedido?           @relation(fields: [pedidoId], references: [id])
+  cierre     CierreFinanciero? @relation(fields: [cierreId], references: [id])
 
-  @@id([cierreId, pedidoId])
-  @@map("cierres_financieros_pedidos")
+  @@index([repartidorId, cierreId])
+  @@index([repartidorId, creadoEn])
+  @@map("movimientos_caja_repartidor")
 }
 
 // ============================================================

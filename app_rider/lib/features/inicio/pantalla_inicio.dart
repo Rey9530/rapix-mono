@@ -35,6 +35,11 @@ class PantallaInicio extends ConsumerWidget {
         title: const Text('Rapix Repartidor'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.account_balance_wallet_outlined),
+            tooltip: 'Mi billetera',
+            onPressed: () => context.go('/inicio/billetera'),
+          ),
+          IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Cerrar sesión',
             onPressed: () async {

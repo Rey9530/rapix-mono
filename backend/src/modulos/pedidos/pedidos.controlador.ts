@@ -100,6 +100,28 @@ export class PedidosControlador {
 
   @ApiBearerAuth('autenticacion-jwt')
   @Roles('VENDEDOR')
+  @Get('preview-costo-envio')
+  @ApiOperation({
+    summary:
+      'Costo de envío que se cobraría al vendedor al entregar (preview, sin crear pedido)',
+  })
+  previewCostoEnvio(@UsuarioActual() usuario: Usuario) {
+    return this.servicio.previewCostoEnvio(usuario);
+  }
+
+  @ApiBearerAuth('autenticacion-jwt')
+  @Roles('VENDEDOR')
+  @Get('contexto-vendedor')
+  @ApiOperation({
+    summary:
+      'Contexto de tienda del vendedor autenticado (ubicación, nombre de negocio). Usado por la pantalla de crear pedido para no depender de localStorage.',
+  })
+  obtenerContextoVendedor(@UsuarioActual() usuario: Usuario) {
+    return this.servicio.obtenerContextoVendedor(usuario);
+  }
+
+  @ApiBearerAuth('autenticacion-jwt')
+  @Roles('VENDEDOR')
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiConsumes('multipart/form-data', 'application/json')
@@ -145,7 +167,7 @@ export class PedidosControlador {
   @ApiBearerAuth('autenticacion-jwt')
   @Roles('VENDEDOR', 'ADMIN')
   @Patch(':id')
-  @ApiOperation({ summary: 'Actualizar (solo PENDIENTE_ASIGNACION)' })
+  @ApiOperation({ summary: 'Actualizar pedido (cualquier estado no terminal)' })
   actualizar(
     @UsuarioActual() usuario: Usuario,
     @Param('id', ParseUUIDPipe) id: string,

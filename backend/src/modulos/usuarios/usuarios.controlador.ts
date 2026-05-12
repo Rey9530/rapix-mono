@@ -47,7 +47,7 @@ export class UsuariosControlador {
   // El endpoint /yo va antes de /:id para no ser tragado por la ruta dinámica.
   @Get('yo')
   @ApiOperation({ summary: 'Perfil del usuario autenticado' })
-  obtenerYo(@UsuarioActual() usuario: Usuario): UsuarioPublicoDto {
+  obtenerYo(@UsuarioActual() usuario: Usuario): Promise<UsuarioPublicoDto> {
     return this.servicio.obtenerYo(usuario);
   }
 

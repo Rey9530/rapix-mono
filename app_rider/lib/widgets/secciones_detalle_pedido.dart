@@ -368,10 +368,64 @@ class TarjetaCobro extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final esContraEntrega = pedido.metodoPago == 'CONTRA_ENTREGA';
+    final costoEnvio = double.tryParse(pedido.costoEnvio ?? '0') ?? 0;
+    final debeCobrarVendedor =
+        pedido.modoFacturacion == 'POR_ENVIO' && costoEnvio > 0;
     return TarjetaSeccion(
       titulo: 'Cobro',
       icono: Icons.payments_outlined,
       hijos: [
+        if (debeCobrarVendedor) ...[
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.orange.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.orange.shade400, width: 1.5),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.warning_amber_rounded,
+                    color: Colors.orange.shade800, size: 24),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'DEBES COBRAR AL VENDEDOR',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12,
+                          color: Colors.orange.shade900,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '\$${pedido.costoEnvio}',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.orange.shade900,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Cobra antes de marcar como recogido',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.orange.shade900,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+        ],
         if (pedido.metodoPago != null)
           FilaInfo(
             etiqueta: 'Método de pago',

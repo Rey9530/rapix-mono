@@ -10,7 +10,10 @@ class Usuario {
     required this.nombreCompleto,
     required this.rol,
     this.estado,
+    this.creadoEn,
+    this.correoVerificadoEn,
     this.perfilVendedor,
+    this.estadisticas,
   });
 
   final String id;
@@ -19,10 +22,16 @@ class Usuario {
   final String nombreCompleto;
   final String rol;
   final String? estado;
+  final DateTime? creadoEn;
+  final DateTime? correoVerificadoEn;
   final PerfilVendedor? perfilVendedor;
+  final EstadisticasUsuario? estadisticas;
+
+  bool get correoVerificado => correoVerificadoEn != null;
 
   factory Usuario.desdeJson(Map<String, dynamic> json) {
     final perfilJson = json['perfilVendedor'] as Map<String, dynamic>?;
+    final estadJson = json['estadisticas'] as Map<String, dynamic>?;
     return Usuario(
       id: json['id'] as String,
       email: json['email'] as String,
@@ -30,8 +39,12 @@ class Usuario {
       nombreCompleto: json['nombreCompleto'] as String,
       rol: json['rol'] as String,
       estado: json['estado'] as String?,
+      creadoEn: _parseFecha(json['creadoEn']),
+      correoVerificadoEn: _parseFecha(json['correoVerificadoEn']),
       perfilVendedor:
           perfilJson != null ? PerfilVendedor.desdeJson(perfilJson) : null,
+      estadisticas:
+          estadJson != null ? EstadisticasUsuario.desdeJson(estadJson) : null,
     );
   }
 
@@ -42,7 +55,10 @@ class Usuario {
         'nombreCompleto': nombreCompleto,
         'rol': rol,
         'estado': estado,
+        'creadoEn': creadoEn?.toIso8601String(),
+        'correoVerificadoEn': correoVerificadoEn?.toIso8601String(),
         'perfilVendedor': perfilVendedor?.aJson(),
+        'estadisticas': estadisticas?.aJson(),
       };
 
   String aJsonString() => jsonEncode(aJson());
@@ -87,4 +103,42 @@ class PerfilVendedor {
         'longitud': longitud,
         'urlLogo': urlLogo,
       };
+}
+
+class EstadisticasUsuario {
+  const EstadisticasUsuario({
+    required this.enviosTotales,
+    required this.enviosEntregados,
+    required this.saldoRecargado,
+  });
+
+  final int enviosTotales;
+  final int enviosEntregados;
+  final int saldoRecargado;
+
+  /// Porcentaje 0..100. Devuelve null si no hay envíos para evitar /0.
+  double? get porcentajeEntregados {
+    if (enviosTotales == 0) return null;
+    return (enviosEntregados / enviosTotales) * 100.0;
+  }
+
+  factory EstadisticasUsuario.desdeJson(Map<String, dynamic> json) =>
+      EstadisticasUsuario(
+        enviosTotales: parseIntSeguroODefault(json['enviosTotales']),
+        enviosEntregados: parseIntSeguroODefault(json['enviosEntregados']),
+        saldoRecargado: parseIntSeguroODefault(json['saldoRecargado']),
+      );
+
+  Map<String, dynamic> aJson() => {
+        'enviosTotales': enviosTotales,
+        'enviosEntregados': enviosEntregados,
+        'saldoRecargado': saldoRecargado,
+      };
+}
+
+DateTime? _parseFecha(dynamic valor) {
+  if (valor == null) return null;
+  if (valor is DateTime) return valor;
+  if (valor is String && valor.isNotEmpty) return DateTime.tryParse(valor);
+  return null;
 }

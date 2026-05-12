@@ -12,8 +12,11 @@ import '../../caracteristicas/inicio/inicio_pantalla.dart';
 import '../../caracteristicas/paquetes/mis_paquetes_pantalla.dart';
 import '../../caracteristicas/paquetes/paquetes_tienda_pantalla.dart';
 import '../../caracteristicas/pedidos/crear_pedido_pantalla.dart';
+import '../../caracteristicas/pedidos/mapa_pedido_pantalla.dart';
 import '../../caracteristicas/pedidos/pedido_detalle_pantalla.dart';
 import '../../caracteristicas/pedidos/pedidos_listado_pantalla.dart';
+import '../../caracteristicas/perfil/cuentas_bancarias/formulario_cuenta_bancaria_pantalla.dart';
+import '../../caracteristicas/perfil/cuentas_bancarias/lista_cuentas_bancarias_pantalla.dart';
 import '../../caracteristicas/perfil/editar_negocio_pantalla.dart';
 import '../../caracteristicas/perfil/perfil_pantalla.dart';
 import '../../caracteristicas/seguimiento/seguimiento_pantalla.dart';
@@ -118,6 +121,15 @@ final enrutadorAppProvider = Provider<GoRouter>((ref) {
                     builder: (_, state) => PedidoDetallePantalla(
                       pedidoId: state.pathParameters['id']!,
                     ),
+                    routes: [
+                      GoRoute(
+                        path: 'mapa',
+                        builder: (_, state) => MapaPedidoPantalla(
+                          pedidoId: state.pathParameters['id']!,
+                          enfoque: state.uri.queryParameters['enfoque'],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -146,6 +158,23 @@ final enrutadorAppProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'editar-negocio',
                     builder: (_, _) => const EditarNegocioPantalla(),
+                  ),
+                  GoRoute(
+                    path: 'cuentas-bancarias',
+                    builder: (_, _) => const ListaCuentasBancariasPantalla(),
+                    routes: [
+                      GoRoute(
+                        path: 'nueva',
+                        builder: (_, _) =>
+                            const FormularioCuentaBancariaPantalla(),
+                      ),
+                      GoRoute(
+                        path: ':id/editar',
+                        builder: (_, state) => FormularioCuentaBancariaPantalla(
+                          cuentaId: state.pathParameters['id'],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

@@ -19,6 +19,7 @@ import { RefrescarDto } from './dto/refrescar.dto.js';
 import { RegistrarDto, RolRegistrable } from './dto/registrar.dto.js';
 import { RespuestaAutenticacionDto } from './dto/respuesta-autenticacion.dto.js';
 import { UsuarioPublicoDto } from './dto/usuario-publico.dto.js';
+import { VerificacionCorreoServicio } from './verificacion-correo.servicio.js';
 
 interface ContextoPeticion {
   userAgent?: string;
@@ -37,6 +38,7 @@ export class AutenticacionServicio {
   constructor(
     private readonly prisma: PrismaServicio,
     private readonly jwtService: JwtService,
+    private readonly verificacionCorreo: VerificacionCorreoServicio,
   ) {}
 
   async registrar(
@@ -93,7 +95,25 @@ export class AutenticacionServicio {
       return creado;
     });
 
+    // Disparo fire-and-forget: el registro no debe fallar si SMTP cae.
+    this.verificacionCorreo
+      .generarYEnviar(usuario)
+      .catch((err) =>
+        this.logger.error('Falló envío de verificación de correo', err),
+      );
+
     return this.emitirPar(usuario, contexto);
+  }
+
+  async reenviarVerificacionCorreo(usuario: Usuario): Promise<void> {
+    if (usuario.correoVerificadoEn) {
+      throw new BadRequestException('El correo ya está verificado');
+    }
+    await this.verificacionCorreo.generarYEnviar(usuario);
+  }
+
+  async verificarCorreo(token: string): Promise<void> {
+    await this.verificacionCorreo.verificar(token);
   }
 
   async iniciarSesion(
@@ -204,8 +224,15 @@ export class AutenticacionServicio {
       },
     });
 
+    // Cargamos el perfil de vendedor (si existe) para que la respuesta de
+    // autenticación lo incluya y la app pueda mostrar la sección de negocio.
+    const usuarioConPerfil = await this.prisma.usuario.findUnique({
+      where: { id: usuario.id },
+      include: { perfilVendedor: true },
+    });
+
     return {
-      usuario: UsuarioPublicoDto.desde(usuario),
+      usuario: UsuarioPublicoDto.desde(usuarioConPerfil ?? usuario),
       tokenAcceso,
       tokenRefresco,
     };

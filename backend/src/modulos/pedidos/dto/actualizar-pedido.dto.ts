@@ -12,12 +12,13 @@ import {
   IsString,
   Matches,
   MaxLength,
+  MinLength,
 } from 'class-validator';
 import { MetodoPago } from '../../../generated/prisma/client.js';
 
 export class ActualizarPedidoDto {
   @ApiProperty({ required: false })
-  @IsOptional() @IsString() @MaxLength(120)
+  @IsOptional() @IsString() @MinLength(2) @MaxLength(120)
   nombreCliente?: string;
 
   @ApiProperty({ required: false })

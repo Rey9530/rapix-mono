@@ -6,7 +6,9 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../datos/modelos/usuario.dart';
 import '../../nucleo/tema/proveedor_tema.dart';
 import '../../nucleo/tema/tokens_rapix.dart';
+import '../../nucleo/util/fechas.dart';
 import '../autenticacion/autenticacion_controlador.dart';
+import 'cuentas_bancarias/cuentas_bancarias_controlador.dart';
 
 class PerfilPantalla extends ConsumerWidget {
   const PerfilPantalla({super.key});
@@ -17,9 +19,7 @@ class PerfilPantalla extends ConsumerWidget {
     final usuario = estado.usuario;
 
     if (usuario == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
@@ -52,6 +52,10 @@ class _HeroOscuro extends StatelessWidget {
     final subtitulo = perfilVendedor?.nombreNegocio?.trim().isNotEmpty == true
         ? perfilVendedor!.nombreNegocio!
         : usuario.rol;
+
+    final desde = usuario.creadoEn != null
+        ? miembroDesde(usuario.creadoEn!)
+        : null;
 
     return Container(
       color: TokensRapix.tinta,
@@ -97,53 +101,31 @@ class _HeroOscuro extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 6),
-                          // TODO: integrar con backend (rating y fechaRegistro
-                          // del vendedor). Hoy se muestran placeholders.
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.star_rounded,
-                                size: 14,
-                                color: TokensRapix.ambar,
+                          if (desde != null) ...[
+                            const SizedBox(height: 6),
+                            Text(
+                              desde,
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                color: Colors.white.withValues(alpha: 0.6),
                               ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '4.8',
-                                style: GoogleFonts.inter(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              Flexible(
-                                child: Text(
-                                  '· miembro desde mar 2024',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 11,
-                                    color:
-                                        Colors.white.withValues(alpha: 0.6),
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ],
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 18),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                // TODO: integrar con backend (envíos totales,
-                // porcentaje de entregados, saldo del vendedor).
-                child: _StatsGrid(),
-              ),
+              if (usuario.estadisticas != null) ...[
+                const SizedBox(height: 18),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: _StatsGrid(estadisticas: usuario.estadisticas!),
+                ),
+              ],
             ],
           ),
         ),
@@ -212,17 +194,33 @@ class _AvatarHero extends StatelessWidget {
 }
 
 class _StatsGrid extends StatelessWidget {
-  const _StatsGrid();
+  const _StatsGrid({required this.estadisticas});
+
+  final EstadisticasUsuario estadisticas;
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    final pct = estadisticas.porcentajeEntregados;
+    final entregadosLabel = pct == null ? '—' : '${pct.round()}%';
+    return Row(
       children: [
-        Expanded(child: _StatItem(valor: '247', etiqueta: 'Envíos totales')),
-        SizedBox(width: 10),
-        Expanded(child: _StatItem(valor: '98%', etiqueta: 'Entregados')),
-        SizedBox(width: 10),
-        Expanded(child: _StatItem(valor: '34', etiqueta: 'Saldo')),
+        Expanded(
+          child: _StatItem(
+            valor: estadisticas.enviosTotales.toString(),
+            etiqueta: 'Envíos totales',
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _StatItem(valor: entregadosLabel, etiqueta: 'Entregados'),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _StatItem(
+            valor: estadisticas.saldoRecargado.toString(),
+            etiqueta: 'Saldo',
+          ),
+        ),
       ],
     );
   }
@@ -294,21 +292,178 @@ class _SheetClara extends ConsumerWidget {
           ),
         ),
         clipBehavior: Clip.antiAlias,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
-          children: [
-            if (perfilVendedor != null) ...[
-              _CardNegocio(perfil: perfilVendedor),
+        child: RefreshIndicator(
+          color: TokensRapix.verde,
+          onRefresh: () => ref
+              .read(autenticacionControladorProvider.notifier)
+              .recargarUsuario(),
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
+            children: [
+              _BannerCorreoVerificacion(usuario: usuario),
+              if (perfilVendedor != null) ...[
+                _CardNegocio(perfil: perfilVendedor),
+                const SizedBox(height: 12),
+              ],
+              _ListaAccesos(esVendedor: usuario.rol == 'VENDEDOR'),
               const SizedBox(height: 12),
+              _CardCuenta(usuario: usuario),
+              const SizedBox(height: 12),
+              const _CardPreferencias(),
+              const SizedBox(height: 12),
+              _BotonLogout(onTap: () => _confirmarCerrarSesion(context, ref)),
             ],
-            const _GridAccesos(),
-            const SizedBox(height: 12),
-            _CardCuenta(usuario: usuario),
-            const SizedBox(height: 12),
-            const _CardPreferencias(),
-            const SizedBox(height: 12),
-            _BotonLogout(
-              onTap: () => _confirmarCerrarSesion(context, ref),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BannerCorreoVerificacion extends ConsumerStatefulWidget {
+  const _BannerCorreoVerificacion({required this.usuario});
+
+  final Usuario usuario;
+
+  @override
+  ConsumerState<_BannerCorreoVerificacion> createState() =>
+      _BannerCorreoVerificacionState();
+}
+
+class _BannerCorreoVerificacionState
+    extends ConsumerState<_BannerCorreoVerificacion> {
+  bool _enviando = false;
+
+  Future<void> _reenviar() async {
+    if (_enviando) return;
+    setState(() => _enviando = true);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await ref
+          .read(autenticacionControladorProvider.notifier)
+          .reenviarVerificacionCorreo();
+      if (!mounted) return;
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('Te enviamos un correo de verificación.'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+    } catch (_) {
+      if (!mounted) return;
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('No se pudo enviar el correo. Intenta de nuevo.'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+    } finally {
+      if (mounted) setState(() => _enviando = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = tokens(context);
+    if (widget.usuario.correoVerificado) {
+      // Verificado: chip discreto verde, sin acción.
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: t.verdeSuave,
+            borderRadius: BorderRadius.circular(TokensRapix.radioMd),
+            border: Border.all(color: t.contornoSuave),
+          ),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.verified_rounded,
+                size: 18,
+                color: TokensRapix.verdeOscuro,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Correo verificado',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: TokensRapix.verdeOscuro,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // No verificado: banner llamativo con botón de reenvío.
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(14, 12, 8, 12),
+        decoration: BoxDecoration(
+          color: t.peligroSuave,
+          borderRadius: BorderRadius.circular(TokensRapix.radioMd),
+          border: Border.all(color: TokensRapix.peligro.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.mark_email_unread_outlined,
+              size: 20,
+              color: TokensRapix.peligro,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Correo sin verificar',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: TokensRapix.peligro,
+                    ),
+                  ),
+                  Text(
+                    widget.usuario.email,
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: t.tintaSilenciada,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            TextButton(
+              onPressed: _enviando ? null : _reenviar,
+              child: _enviando
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: TokensRapix.peligro,
+                      ),
+                    )
+                  : Text(
+                      'Reenviar',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: TokensRapix.peligro,
+                      ),
+                    ),
             ),
           ],
         ),
@@ -403,10 +558,7 @@ class _CardNegocio extends StatelessWidget {
           if (perfil.direccion != null) ...[
             const SizedBox(height: 14),
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 10,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
                 color: t.superficieAlt,
                 borderRadius: BorderRadius.circular(TokensRapix.radioMd),
@@ -422,10 +574,7 @@ class _CardNegocio extends StatelessWidget {
                   Expanded(
                     child: Text(
                       perfil.direccion!,
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        color: t.tinta,
-                      ),
+                      style: GoogleFonts.inter(fontSize: 12, color: t.tinta),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -437,29 +586,19 @@ class _CardNegocio extends StatelessWidget {
           if (perfil.latitud != null && perfil.longitud != null) ...[
             const SizedBox(height: 8),
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 10,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
                 color: t.superficieAlt,
                 borderRadius: BorderRadius.circular(TokensRapix.radioMd),
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.map_outlined,
-                    size: 14,
-                    color: t.tintaSilenciada,
-                  ),
+                  Icon(Icons.map_outlined, size: 14, color: t.tintaSilenciada),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       '${perfil.latitud!.toStringAsFixed(5)}, ${perfil.longitud!.toStringAsFixed(5)}',
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        color: t.tinta,
-                      ),
+                      style: GoogleFonts.inter(fontSize: 12, color: t.tinta),
                     ),
                   ),
                 ],
@@ -472,125 +611,171 @@ class _CardNegocio extends StatelessWidget {
   }
 }
 
-class _GridAccesos extends StatelessWidget {
-  const _GridAccesos();
+class _ListaAccesos extends ConsumerWidget {
+  const _ListaAccesos({required this.esVendedor});
+
+  final bool esVendedor;
 
   @override
-  Widget build(BuildContext context) {
-    const accesos = <_AccesoData>[
-      _AccesoData(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = tokens(context);
+    final items = <_AccesoItem>[
+      if (esVendedor)
+        _AccesoItem(
+          icono: Icons.account_balance_outlined,
+          titulo: 'Datos bancarios',
+          subtituloBuilder: (ctx, ref) => _resumenCuentasBancarias(ref),
+          onTap: (ctx) => ctx.push('/perfil/cuentas-bancarias'),
+        ),
+      _AccesoItem(
         icono: Icons.notifications_outlined,
         titulo: 'Notificaciones',
         subtitulo: '3 nuevas',
+        onTap: (ctx) => _mostrarProximamente(ctx),
       ),
-      _AccesoData(
+      _AccesoItem(
         icono: Icons.account_balance_wallet_outlined,
         titulo: 'Pagos',
         subtitulo: 'BAC •• 4456',
+        onTap: (ctx) => _mostrarProximamente(ctx),
       ),
-      _AccesoData(
+      _AccesoItem(
         icono: Icons.inventory_2_outlined,
         titulo: 'Mis paquetes',
         subtitulo: '2 activos',
+        onTap: (ctx) => _mostrarProximamente(ctx),
       ),
-      _AccesoData(
+      _AccesoItem(
         icono: Icons.help_outline_rounded,
         titulo: 'Ayuda',
         subtitulo: 'WhatsApp 24/7',
+        onTap: (ctx) => _mostrarProximamente(ctx),
       ),
     ];
 
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(child: _AccesoTile(data: accesos[0])),
-            const SizedBox(width: 10),
-            Expanded(child: _AccesoTile(data: accesos[1])),
+    return Container(
+      decoration: BoxDecoration(
+        color: t.superficie,
+        borderRadius: BorderRadius.circular(TokensRapix.radioLg),
+        border: Border.all(color: t.contorno),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          for (int i = 0; i < items.length; i++) ...[
+            _AccesoFilaTile(item: items[i]),
+            if (i < items.length - 1)
+              Divider(
+                height: 1,
+                thickness: 1,
+                color: t.contornoSuave,
+                indent: 16,
+                endIndent: 16,
+              ),
           ],
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(child: _AccesoTile(data: accesos[2])),
-            const SizedBox(width: 10),
-            Expanded(child: _AccesoTile(data: accesos[3])),
-          ],
-        ),
-      ],
+        ],
+      ),
+    );
+  }
+
+  String _resumenCuentasBancarias(WidgetRef ref) {
+    final async = ref.watch(cuentasBancariasProvider);
+    return async.when(
+      loading: () => 'Cargando...',
+      error: (_, __) => 'No disponible',
+      data: (lista) {
+        if (lista.isEmpty) return 'Agregar cuenta bancaria';
+        final principal = lista.firstWhere(
+          (c) => c.esPrincipal,
+          orElse: () => lista.first,
+        );
+        final etiqueta = principal.alias?.isNotEmpty == true
+            ? principal.alias!
+            : principal.banco.nombre;
+        final extra = lista.length > 1 ? ' · +${lista.length - 1}' : '';
+        return '$etiqueta · ${principal.numeroEnmascarado}$extra';
+      },
     );
   }
 }
 
-class _AccesoData {
-  const _AccesoData({
+class _AccesoItem {
+  _AccesoItem({
     required this.icono,
     required this.titulo,
-    required this.subtitulo,
+    this.subtitulo,
+    this.subtituloBuilder,
+    this.onTap,
   });
 
   final IconData icono;
   final String titulo;
-  final String subtitulo;
+  final String? subtitulo;
+  final String Function(BuildContext, WidgetRef)? subtituloBuilder;
+  final void Function(BuildContext context)? onTap;
 }
 
-class _AccesoTile extends StatelessWidget {
-  const _AccesoTile({required this.data});
+class _AccesoFilaTile extends ConsumerWidget {
+  const _AccesoFilaTile({required this.item});
 
-  final _AccesoData data;
+  final _AccesoItem item;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final t = tokens(context);
-    return Material(
-      color: t.superficie,
-      borderRadius: BorderRadius.circular(TokensRapix.radioLg),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(TokensRapix.radioLg),
-        onTap: () => _mostrarProximamente(context),
-        child: Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(TokensRapix.radioLg),
-            border: Border.all(color: t.contorno),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: t.superficieAlt,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                alignment: Alignment.center,
-                child: Icon(data.icono, size: 18, color: t.tinta),
+    final subtitulo =
+        item.subtituloBuilder?.call(context, ref) ?? item.subtitulo ?? '';
+
+    return InkWell(
+      onTap: item.onTap == null ? null : () => item.onTap!(context),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: t.verdeSuave,
+                borderRadius: BorderRadius.circular(TokensRapix.radioMd),
               ),
-              const SizedBox(height: 10),
-              Text(
-                data.titulo,
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.2,
-                  color: t.tinta,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              alignment: Alignment.center,
+              child: Icon(item.icono, size: 20, color: TokensRapix.verdeOscuro),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.titulo,
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.2,
+                      color: t.tinta,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (subtitulo.isNotEmpty) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitulo,
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: t.tintaSilenciada,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ],
               ),
-              const SizedBox(height: 2),
-              Text(
-                data.subtitulo,
-                style: GoogleFonts.inter(
-                  fontSize: 11,
-                  color: t.tintaSilenciada,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(width: 8),
+            Icon(Icons.chevron_right_rounded, size: 20, color: t.tintaSuave),
+          ],
         ),
       ),
     );
@@ -623,11 +808,7 @@ class _CardCuenta extends StatelessWidget {
           for (int i = 0; i < filas.length; i++) ...[
             _CuentaFilaTile(fila: filas[i]),
             if (i < filas.length - 1)
-              Divider(
-                height: 1,
-                thickness: 1,
-                color: t.contornoSuave,
-              ),
+              Divider(height: 1, thickness: 1, color: t.contornoSuave),
           ],
         ],
       ),
@@ -682,11 +863,7 @@ class _CuentaFilaTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Icon(
-              Icons.chevron_right_rounded,
-              size: 20,
-              color: t.tintaSuave,
-            ),
+            Icon(Icons.chevron_right_rounded, size: 20, color: t.tintaSuave),
           ],
         ),
       ),
@@ -725,11 +902,7 @@ class _CardPreferencias extends ConsumerWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           alignment: Alignment.center,
-          child: Icon(
-            Icons.dark_mode_outlined,
-            size: 18,
-            color: t.tinta,
-          ),
+          child: Icon(Icons.dark_mode_outlined, size: 18, color: t.tinta),
         ),
         title: Text(
           'Modo oscuro',
@@ -741,15 +914,9 @@ class _CardPreferencias extends ConsumerWidget {
         ),
         subtitle: Text(
           esOscuro ? 'Activado' : 'Desactivado',
-          style: GoogleFonts.inter(
-            fontSize: 11,
-            color: t.tintaSilenciada,
-          ),
+          style: GoogleFonts.inter(fontSize: 11, color: t.tintaSilenciada),
         ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: 4,
-        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
       ),
     );
   }
@@ -823,9 +990,7 @@ Future<void> _confirmarCerrarSesion(BuildContext context, WidgetRef ref) async {
         ),
         FilledButton(
           onPressed: () => Navigator.of(ctx).pop(true),
-          style: FilledButton.styleFrom(
-            backgroundColor: TokensRapix.peligro,
-          ),
+          style: FilledButton.styleFrom(backgroundColor: TokensRapix.peligro),
           child: const Text('Cerrar sesión'),
         ),
       ],
@@ -833,8 +998,6 @@ Future<void> _confirmarCerrarSesion(BuildContext context, WidgetRef ref) async {
   );
   if (confirmado != true) return;
   await ref.read(autenticacionControladorProvider.notifier).cerrarSesion();
-  await ref
-      .read(temaControladorProvider.notifier)
-      .cambiar(ThemeMode.light);
+  await ref.read(temaControladorProvider.notifier).cambiar(ThemeMode.light);
   if (context.mounted) context.go('/iniciar-sesion');
 }

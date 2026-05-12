@@ -18,7 +18,7 @@ class LineaTiempoEstado extends StatelessWidget {
     }
     final formato = DateFormat('dd/MM/yyyy HH:mm');
     final ordenados = [...eventos]
-      ..sort((a, b) => a.creadoEn.compareTo(b.creadoEn));
+      ..sort((a, b) => b.creadoEn.compareTo(a.creadoEn));
 
     return Column(
       children: [

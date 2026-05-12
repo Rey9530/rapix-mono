@@ -6,32 +6,14 @@ part of 'cierre_financiero.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$PedidoCierreImpl _$$PedidoCierreImplFromJson(Map<String, dynamic> json) =>
-    _$PedidoCierreImpl(
-      id: json['id'] as String,
-      codigoSeguimiento: json['codigoSeguimiento'] as String,
-      montoContraEntrega: json['montoContraEntrega'] as String,
-      entregadoEn: json['entregadoEn'] == null
-          ? null
-          : DateTime.parse(json['entregadoEn'] as String),
-    );
-
-Map<String, dynamic> _$$PedidoCierreImplToJson(_$PedidoCierreImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'codigoSeguimiento': instance.codigoSeguimiento,
-      'montoContraEntrega': instance.montoContraEntrega,
-      'entregadoEn': instance.entregadoEn?.toIso8601String(),
-    };
-
 _$ResumenCierreHoyImpl _$$ResumenCierreHoyImplFromJson(
   Map<String, dynamic> json,
 ) => _$ResumenCierreHoyImpl(
   fecha: json['fecha'] as String,
   montoEsperado: json['montoEsperado'] as String,
-  cantidadPedidos: (json['cantidadPedidos'] as num).toInt(),
-  pedidos: (json['pedidos'] as List<dynamic>)
-      .map((e) => PedidoCierre.fromJson(e as Map<String, dynamic>))
+  cantidadMovimientos: (json['cantidadMovimientos'] as num).toInt(),
+  movimientos: (json['movimientos'] as List<dynamic>)
+      .map((e) => MovimientoCaja.fromJson(e as Map<String, dynamic>))
       .toList(),
 );
 
@@ -40,8 +22,8 @@ Map<String, dynamic> _$$ResumenCierreHoyImplToJson(
 ) => <String, dynamic>{
   'fecha': instance.fecha,
   'montoEsperado': instance.montoEsperado,
-  'cantidadPedidos': instance.cantidadPedidos,
-  'pedidos': instance.pedidos,
+  'cantidadMovimientos': instance.cantidadMovimientos,
+  'movimientos': instance.movimientos,
 };
 
 _$CierreFinancieroImpl _$$CierreFinancieroImplFromJson(

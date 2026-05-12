@@ -65,6 +65,10 @@ class AutenticacionRepositorio {
       data: {'tokenRefresco': tokenRefresco},
     );
   }
+
+  Future<void> reenviarVerificacion() async {
+    await _dio.post<void>('/autenticacion/reenviar-verificacion');
+  }
 }
 
 final autenticacionRepositorioProvider =

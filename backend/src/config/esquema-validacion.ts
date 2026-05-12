@@ -42,6 +42,28 @@ export const esquemaValidacionEnv = Joi.object({
   SMTP_PASSWORD: Joi.string().optional().allow(''),
   SMTP_FROM_EMAIL: Joi.string().email().default('no-reply@delivery.com'),
   SMTP_FROM_NAME: Joi.string().default('Rapix'),
+
+  // Driver de correo: 'mailgun' (default) usa la API HTTP de Mailgun;
+  // 'smtp' deja activo el adaptador nodemailer legacy como fallback.
+  // SMTP se removera en una tarea posterior una vez Mailgun este estable.
+  MAIL_DRIVER: Joi.string().valid('mailgun', 'smtp').default('mailgun'),
+  MAILGUN_API_KEY: Joi.string().when('MAIL_DRIVER', {
+    is: 'mailgun',
+    then: Joi.string().min(1).required(),
+    otherwise: Joi.string().optional().allow(''),
+  }),
+  MAILGUN_DOMAIN: Joi.string().when('MAIL_DRIVER', {
+    is: 'mailgun',
+    then: Joi.string().hostname().required(),
+    otherwise: Joi.string().optional().allow(''),
+  }),
+  MAILGUN_REGION: Joi.string().valid('us', 'eu').default('us'),
+  MAILGUN_FROM: Joi.string().when('MAIL_DRIVER', {
+    is: 'mailgun',
+    then: Joi.string().min(1).required(),
+    otherwise: Joi.string().optional().allow(''),
+  }),
+  MAILGUN_SANDBOX: Joi.boolean().truthy('true').falsy('false').default(false),
   FIREBASE_PROJECT_ID: Joi.string().optional().allow(''),
   FIREBASE_PRIVATE_KEY: Joi.string().optional().allow(''),
   FIREBASE_CLIENT_EMAIL: Joi.string().optional().allow(''),

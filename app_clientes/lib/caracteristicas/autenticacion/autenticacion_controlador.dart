@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../datos/modelos/usuario.dart';
 import '../../datos/repositorios/autenticacion_repositorio.dart';
 import '../../datos/repositorios/tokens_dispositivo_repositorio.dart';
+import '../../datos/repositorios/usuarios_repositorio.dart';
 import '../../nucleo/almacenamiento/almacenamiento_seguro.dart';
 import '../../nucleo/notificaciones/servicio_notificaciones.dart';
 
@@ -48,12 +49,14 @@ class AutenticacionEstado {
 class AutenticacionControlador extends StateNotifier<AutenticacionEstado> {
   AutenticacionControlador({
     required this.repositorio,
+    required this.usuariosRepositorio,
     required this.almacen,
     required this.servicioNotificaciones,
     required this.tokensRepositorio,
   }) : super(AutenticacionEstado());
 
   final AutenticacionRepositorio repositorio;
+  final UsuariosRepositorio usuariosRepositorio;
   final AlmacenamientoSeguro almacen;
   final ServicioNotificaciones servicioNotificaciones;
   final TokensDispositivoRepositorio tokensRepositorio;
@@ -187,6 +190,27 @@ class AutenticacionControlador extends StateNotifier<AutenticacionEstado> {
     state = state.copia(usuario: usuario);
   }
 
+  /// Vuelve a pedir el perfil del usuario al backend (incluye estadisticas
+  /// y correoVerificadoEn). Pensado para el pull-to-refresh del perfil y
+  /// para refrescar tras verificar el correo desde el navegador.
+  Future<void> recargarUsuario() async {
+    if (state.usuario == null) return;
+    try {
+      final fresco = await usuariosRepositorio.obtenerYo();
+      await almacen.guardarUsuario(fresco.aJsonString());
+      state = state.copia(usuario: fresco);
+    } catch (_) {
+      // Mantenemos el usuario previo si falla la red.
+    }
+  }
+
+  /// Solicita al backend reenviar el correo de verificacion al usuario
+  /// autenticado. Lanza [Exception] si la peticion falla (la UI lo captura
+  /// para mostrar el snackbar correspondiente).
+  Future<void> reenviarVerificacionCorreo() async {
+    await repositorio.reenviarVerificacion();
+  }
+
   Future<void> cerrarSesion() async {
     final tokenFcm = await almacen.tokenFcm();
     if (tokenFcm != null && tokenFcm.isNotEmpty) {
@@ -255,6 +279,7 @@ final autenticacionControladorProvider =
   (ref) {
     return AutenticacionControlador(
       repositorio: ref.watch(autenticacionRepositorioProvider),
+      usuariosRepositorio: ref.watch(usuariosRepositorioProvider),
       almacen: ref.watch(almacenamientoSeguroProvider),
       servicioNotificaciones: ref.watch(servicioNotificacionesProvider),
       tokensRepositorio: ref.watch(tokensDispositivoRepositorioProvider),

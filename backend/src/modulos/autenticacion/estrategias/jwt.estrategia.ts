@@ -20,7 +20,10 @@ export class JwtEstrategia extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: PayloadJwtAcceso): Promise<Usuario> {
-    const usuario = await this.prisma.usuario.findUnique({ where: { id: payload.sub } });
+    const usuario = await this.prisma.usuario.findUnique({
+      where: { id: payload.sub },
+      include: { perfilVendedor: true },
+    });
     if (!usuario || usuario.estado === 'INACTIVO' || usuario.estado === 'SUSPENDIDO') {
       throw new UnauthorizedException('Usuario no autorizado');
     }

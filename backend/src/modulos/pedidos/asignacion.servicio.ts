@@ -6,6 +6,7 @@ import {
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EventosDominio } from '../../eventos/eventos-dominio.js';
 import { PedidoEstadoCambiadoEvento } from '../../eventos/pedido-estado-cambiado.evento.js';
+import { PedidoRepartidorReasignadoEvento } from '../../eventos/pedido-repartidor-reasignado.evento.js';
 import type { Usuario } from '../../generated/prisma/client.js';
 import { PrismaServicio } from '../../prisma/prisma.servicio.js';
 import { AsignarMultiplePedidosDto } from './dto/asignar-multiple-pedidos.dto.js';
@@ -133,6 +134,11 @@ export class AsignacionServicio {
       transicionar = true;
     }
 
+    // Capturamos los repartidores anteriores ANTES del update para poder
+    // detectar y notificar reasignaciones (cambio sin transitar el estado).
+    const anteriorRecogidaId = pedido.repartidorRecogidaId;
+    const anteriorEntregaId = pedido.repartidorEntregaId;
+
     const actualizado = await this.prisma.$transaction(async (tx) => {
       const p = await tx.pedido.update({ where: { id: pedidoId }, data: datos });
       if (transicionar) {
@@ -149,6 +155,9 @@ export class AsignacionServicio {
     });
 
     if (transicionar) {
+      // La transicion PENDIENTE_ASIGNACION -> ASIGNADO ya cubre la notificacion
+      // al rider de recogida via PedidoEstadoCambiado, no emitimos reasignacion
+      // para evitar doble push.
       this.eventos.emit(
         EventosDominio.PedidoEstadoCambiado,
         new PedidoEstadoCambiadoEvento(
@@ -159,6 +168,39 @@ export class AsignacionServicio {
           new Date(),
         ),
       );
+    } else {
+      // Reasignacion sin cambio de estado: notificar al rider nuevo y al
+      // anterior (si lo habia) por cada lado donde haya cambio efectivo.
+      if (
+        dto.repartidorRecogidaId &&
+        dto.repartidorRecogidaId !== anteriorRecogidaId
+      ) {
+        this.eventos.emit(
+          EventosDominio.PedidoRepartidorReasignado,
+          new PedidoRepartidorReasignadoEvento(
+            pedidoId,
+            'recogida',
+            anteriorRecogidaId,
+            dto.repartidorRecogidaId,
+            usuario.id,
+          ),
+        );
+      }
+      if (
+        dto.repartidorEntregaId &&
+        dto.repartidorEntregaId !== anteriorEntregaId
+      ) {
+        this.eventos.emit(
+          EventosDominio.PedidoRepartidorReasignado,
+          new PedidoRepartidorReasignadoEvento(
+            pedidoId,
+            'entrega',
+            anteriorEntregaId,
+            dto.repartidorEntregaId,
+            usuario.id,
+          ),
+        );
+      }
     }
     return actualizado;
   }

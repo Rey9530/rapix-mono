@@ -21,3 +21,10 @@ export class CanalNoConfiguradoError extends Error {
     this.name = 'CanalNoConfiguradoError';
   }
 }
+
+/**
+ * Token DI del adaptador de email activo. Resuelto en `notificaciones.modulo`
+ * con un factory que devuelve `MailgunAdaptador` o `EmailAdaptador` (SMTP)
+ * segun la variable `MAIL_DRIVER`.
+ */
+export const EMAIL_CANAL = 'EMAIL_CANAL';

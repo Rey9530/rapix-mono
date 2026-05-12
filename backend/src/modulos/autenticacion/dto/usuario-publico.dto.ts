@@ -1,6 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 import type { EstadoUsuario, RolUsuario, Usuario } from '../../../generated/prisma/client.js';
 
+export class EstadisticasUsuarioDto {
+  @ApiProperty({ example: 247 })
+  enviosTotales!: number;
+
+  @ApiProperty({ example: 240 })
+  enviosEntregados!: number;
+
+  @ApiProperty({ example: 34 })
+  saldoRecargado!: number;
+}
+
 // Vista pública del Usuario — nunca expone hashContrasena.
 export class UsuarioPublicoDto {
   @ApiProperty({ format: 'uuid' })
@@ -13,7 +24,7 @@ export class UsuarioPublicoDto {
   telefono!: string;
 
   @ApiProperty()
-  nombreCompleto!: string; 
+  nombreCompleto!: string;
 
   @ApiProperty({ enum: ['ADMIN', 'VENDEDOR', 'REPARTIDOR', 'CLIENTE'] })
   rol!: RolUsuario;
@@ -27,6 +38,13 @@ export class UsuarioPublicoDto {
   @ApiProperty({ nullable: true, type: Date })
   ultimoIngresoEn!: Date | null;
 
+  @ApiProperty({
+    nullable: true,
+    type: Date,
+    description: 'Fecha en que el usuario verificó su correo electrónico, o null si aún no.',
+  })
+  correoVerificadoEn!: Date | null;
+
   @ApiProperty({ type: Date })
   creadoEn!: Date;
 
@@ -36,7 +54,15 @@ export class UsuarioPublicoDto {
   @ApiProperty({ nullable: true })
   perfilVendedor?: any; // Se incluye para conveniencia, aunque idealmente habría un DTO específico para vendedores.
 
-  static desde(usuario: any): UsuarioPublicoDto {
+  @ApiProperty({
+    type: EstadisticasUsuarioDto,
+    nullable: true,
+    description:
+      'Solo presente para usuarios con perfil de vendedor. Contadores agregados de pedidos y saldo.',
+  })
+  estadisticas?: EstadisticasUsuarioDto;
+
+  static desde(usuario: any, estadisticas?: EstadisticasUsuarioDto): UsuarioPublicoDto {
     const dto = new UsuarioPublicoDto();
     dto.id = usuario.id;
     dto.email = usuario.email;
@@ -46,9 +72,11 @@ export class UsuarioPublicoDto {
     dto.estado = usuario.estado;
     dto.urlAvatar = usuario.urlAvatar;
     dto.ultimoIngresoEn = usuario.ultimoIngresoEn;
+    dto.correoVerificadoEn = usuario.correoVerificadoEn ?? null;
     dto.creadoEn = usuario.creadoEn;
     dto.actualizadoEn = usuario.actualizadoEn;
-    dto.perfilVendedor = usuario.perfilVendedor; 
+    dto.perfilVendedor = usuario.perfilVendedor;
+    if (estadisticas) dto.estadisticas = estadisticas;
     return dto;
   }
 }

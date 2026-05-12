@@ -15,238 +15,6 @@ final _privateConstructorUsedError = UnsupportedError(
   'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
 );
 
-PedidoCierre _$PedidoCierreFromJson(Map<String, dynamic> json) {
-  return _PedidoCierre.fromJson(json);
-}
-
-/// @nodoc
-mixin _$PedidoCierre {
-  String get id => throw _privateConstructorUsedError;
-  String get codigoSeguimiento => throw _privateConstructorUsedError;
-  String get montoContraEntrega => throw _privateConstructorUsedError;
-  DateTime? get entregadoEn => throw _privateConstructorUsedError;
-
-  /// Serializes this PedidoCierre to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of PedidoCierre
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $PedidoCierreCopyWith<PedidoCierre> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $PedidoCierreCopyWith<$Res> {
-  factory $PedidoCierreCopyWith(
-    PedidoCierre value,
-    $Res Function(PedidoCierre) then,
-  ) = _$PedidoCierreCopyWithImpl<$Res, PedidoCierre>;
-  @useResult
-  $Res call({
-    String id,
-    String codigoSeguimiento,
-    String montoContraEntrega,
-    DateTime? entregadoEn,
-  });
-}
-
-/// @nodoc
-class _$PedidoCierreCopyWithImpl<$Res, $Val extends PedidoCierre>
-    implements $PedidoCierreCopyWith<$Res> {
-  _$PedidoCierreCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of PedidoCierre
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? codigoSeguimiento = null,
-    Object? montoContraEntrega = null,
-    Object? entregadoEn = freezed,
-  }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            codigoSeguimiento: null == codigoSeguimiento
-                ? _value.codigoSeguimiento
-                : codigoSeguimiento // ignore: cast_nullable_to_non_nullable
-                      as String,
-            montoContraEntrega: null == montoContraEntrega
-                ? _value.montoContraEntrega
-                : montoContraEntrega // ignore: cast_nullable_to_non_nullable
-                      as String,
-            entregadoEn: freezed == entregadoEn
-                ? _value.entregadoEn
-                : entregadoEn // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-          )
-          as $Val,
-    );
-  }
-}
-
-/// @nodoc
-abstract class _$$PedidoCierreImplCopyWith<$Res>
-    implements $PedidoCierreCopyWith<$Res> {
-  factory _$$PedidoCierreImplCopyWith(
-    _$PedidoCierreImpl value,
-    $Res Function(_$PedidoCierreImpl) then,
-  ) = __$$PedidoCierreImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    String id,
-    String codigoSeguimiento,
-    String montoContraEntrega,
-    DateTime? entregadoEn,
-  });
-}
-
-/// @nodoc
-class __$$PedidoCierreImplCopyWithImpl<$Res>
-    extends _$PedidoCierreCopyWithImpl<$Res, _$PedidoCierreImpl>
-    implements _$$PedidoCierreImplCopyWith<$Res> {
-  __$$PedidoCierreImplCopyWithImpl(
-    _$PedidoCierreImpl _value,
-    $Res Function(_$PedidoCierreImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of PedidoCierre
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? codigoSeguimiento = null,
-    Object? montoContraEntrega = null,
-    Object? entregadoEn = freezed,
-  }) {
-    return _then(
-      _$PedidoCierreImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        codigoSeguimiento: null == codigoSeguimiento
-            ? _value.codigoSeguimiento
-            : codigoSeguimiento // ignore: cast_nullable_to_non_nullable
-                  as String,
-        montoContraEntrega: null == montoContraEntrega
-            ? _value.montoContraEntrega
-            : montoContraEntrega // ignore: cast_nullable_to_non_nullable
-                  as String,
-        entregadoEn: freezed == entregadoEn
-            ? _value.entregadoEn
-            : entregadoEn // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$PedidoCierreImpl implements _PedidoCierre {
-  const _$PedidoCierreImpl({
-    required this.id,
-    required this.codigoSeguimiento,
-    required this.montoContraEntrega,
-    this.entregadoEn,
-  });
-
-  factory _$PedidoCierreImpl.fromJson(Map<String, dynamic> json) =>
-      _$$PedidoCierreImplFromJson(json);
-
-  @override
-  final String id;
-  @override
-  final String codigoSeguimiento;
-  @override
-  final String montoContraEntrega;
-  @override
-  final DateTime? entregadoEn;
-
-  @override
-  String toString() {
-    return 'PedidoCierre(id: $id, codigoSeguimiento: $codigoSeguimiento, montoContraEntrega: $montoContraEntrega, entregadoEn: $entregadoEn)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$PedidoCierreImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.codigoSeguimiento, codigoSeguimiento) ||
-                other.codigoSeguimiento == codigoSeguimiento) &&
-            (identical(other.montoContraEntrega, montoContraEntrega) ||
-                other.montoContraEntrega == montoContraEntrega) &&
-            (identical(other.entregadoEn, entregadoEn) ||
-                other.entregadoEn == entregadoEn));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    codigoSeguimiento,
-    montoContraEntrega,
-    entregadoEn,
-  );
-
-  /// Create a copy of PedidoCierre
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$PedidoCierreImplCopyWith<_$PedidoCierreImpl> get copyWith =>
-      __$$PedidoCierreImplCopyWithImpl<_$PedidoCierreImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$PedidoCierreImplToJson(this);
-  }
-}
-
-abstract class _PedidoCierre implements PedidoCierre {
-  const factory _PedidoCierre({
-    required final String id,
-    required final String codigoSeguimiento,
-    required final String montoContraEntrega,
-    final DateTime? entregadoEn,
-  }) = _$PedidoCierreImpl;
-
-  factory _PedidoCierre.fromJson(Map<String, dynamic> json) =
-      _$PedidoCierreImpl.fromJson;
-
-  @override
-  String get id;
-  @override
-  String get codigoSeguimiento;
-  @override
-  String get montoContraEntrega;
-  @override
-  DateTime? get entregadoEn;
-
-  /// Create a copy of PedidoCierre
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$PedidoCierreImplCopyWith<_$PedidoCierreImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
 ResumenCierreHoy _$ResumenCierreHoyFromJson(Map<String, dynamic> json) {
   return _ResumenCierreHoy.fromJson(json);
 }
@@ -255,8 +23,8 @@ ResumenCierreHoy _$ResumenCierreHoyFromJson(Map<String, dynamic> json) {
 mixin _$ResumenCierreHoy {
   String get fecha => throw _privateConstructorUsedError;
   String get montoEsperado => throw _privateConstructorUsedError;
-  int get cantidadPedidos => throw _privateConstructorUsedError;
-  List<PedidoCierre> get pedidos => throw _privateConstructorUsedError;
+  int get cantidadMovimientos => throw _privateConstructorUsedError;
+  List<MovimientoCaja> get movimientos => throw _privateConstructorUsedError;
 
   /// Serializes this ResumenCierreHoy to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -278,8 +46,8 @@ abstract class $ResumenCierreHoyCopyWith<$Res> {
   $Res call({
     String fecha,
     String montoEsperado,
-    int cantidadPedidos,
-    List<PedidoCierre> pedidos,
+    int cantidadMovimientos,
+    List<MovimientoCaja> movimientos,
   });
 }
 
@@ -300,8 +68,8 @@ class _$ResumenCierreHoyCopyWithImpl<$Res, $Val extends ResumenCierreHoy>
   $Res call({
     Object? fecha = null,
     Object? montoEsperado = null,
-    Object? cantidadPedidos = null,
-    Object? pedidos = null,
+    Object? cantidadMovimientos = null,
+    Object? movimientos = null,
   }) {
     return _then(
       _value.copyWith(
@@ -313,14 +81,14 @@ class _$ResumenCierreHoyCopyWithImpl<$Res, $Val extends ResumenCierreHoy>
                 ? _value.montoEsperado
                 : montoEsperado // ignore: cast_nullable_to_non_nullable
                       as String,
-            cantidadPedidos: null == cantidadPedidos
-                ? _value.cantidadPedidos
-                : cantidadPedidos // ignore: cast_nullable_to_non_nullable
+            cantidadMovimientos: null == cantidadMovimientos
+                ? _value.cantidadMovimientos
+                : cantidadMovimientos // ignore: cast_nullable_to_non_nullable
                       as int,
-            pedidos: null == pedidos
-                ? _value.pedidos
-                : pedidos // ignore: cast_nullable_to_non_nullable
-                      as List<PedidoCierre>,
+            movimientos: null == movimientos
+                ? _value.movimientos
+                : movimientos // ignore: cast_nullable_to_non_nullable
+                      as List<MovimientoCaja>,
           )
           as $Val,
     );
@@ -339,8 +107,8 @@ abstract class _$$ResumenCierreHoyImplCopyWith<$Res>
   $Res call({
     String fecha,
     String montoEsperado,
-    int cantidadPedidos,
-    List<PedidoCierre> pedidos,
+    int cantidadMovimientos,
+    List<MovimientoCaja> movimientos,
   });
 }
 
@@ -360,8 +128,8 @@ class __$$ResumenCierreHoyImplCopyWithImpl<$Res>
   $Res call({
     Object? fecha = null,
     Object? montoEsperado = null,
-    Object? cantidadPedidos = null,
-    Object? pedidos = null,
+    Object? cantidadMovimientos = null,
+    Object? movimientos = null,
   }) {
     return _then(
       _$ResumenCierreHoyImpl(
@@ -373,14 +141,14 @@ class __$$ResumenCierreHoyImplCopyWithImpl<$Res>
             ? _value.montoEsperado
             : montoEsperado // ignore: cast_nullable_to_non_nullable
                   as String,
-        cantidadPedidos: null == cantidadPedidos
-            ? _value.cantidadPedidos
-            : cantidadPedidos // ignore: cast_nullable_to_non_nullable
+        cantidadMovimientos: null == cantidadMovimientos
+            ? _value.cantidadMovimientos
+            : cantidadMovimientos // ignore: cast_nullable_to_non_nullable
                   as int,
-        pedidos: null == pedidos
-            ? _value._pedidos
-            : pedidos // ignore: cast_nullable_to_non_nullable
-                  as List<PedidoCierre>,
+        movimientos: null == movimientos
+            ? _value._movimientos
+            : movimientos // ignore: cast_nullable_to_non_nullable
+                  as List<MovimientoCaja>,
       ),
     );
   }
@@ -392,9 +160,9 @@ class _$ResumenCierreHoyImpl implements _ResumenCierreHoy {
   const _$ResumenCierreHoyImpl({
     required this.fecha,
     required this.montoEsperado,
-    required this.cantidadPedidos,
-    required final List<PedidoCierre> pedidos,
-  }) : _pedidos = pedidos;
+    required this.cantidadMovimientos,
+    required final List<MovimientoCaja> movimientos,
+  }) : _movimientos = movimientos;
 
   factory _$ResumenCierreHoyImpl.fromJson(Map<String, dynamic> json) =>
       _$$ResumenCierreHoyImplFromJson(json);
@@ -404,18 +172,18 @@ class _$ResumenCierreHoyImpl implements _ResumenCierreHoy {
   @override
   final String montoEsperado;
   @override
-  final int cantidadPedidos;
-  final List<PedidoCierre> _pedidos;
+  final int cantidadMovimientos;
+  final List<MovimientoCaja> _movimientos;
   @override
-  List<PedidoCierre> get pedidos {
-    if (_pedidos is EqualUnmodifiableListView) return _pedidos;
+  List<MovimientoCaja> get movimientos {
+    if (_movimientos is EqualUnmodifiableListView) return _movimientos;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_pedidos);
+    return EqualUnmodifiableListView(_movimientos);
   }
 
   @override
   String toString() {
-    return 'ResumenCierreHoy(fecha: $fecha, montoEsperado: $montoEsperado, cantidadPedidos: $cantidadPedidos, pedidos: $pedidos)';
+    return 'ResumenCierreHoy(fecha: $fecha, montoEsperado: $montoEsperado, cantidadMovimientos: $cantidadMovimientos, movimientos: $movimientos)';
   }
 
   @override
@@ -426,9 +194,12 @@ class _$ResumenCierreHoyImpl implements _ResumenCierreHoy {
             (identical(other.fecha, fecha) || other.fecha == fecha) &&
             (identical(other.montoEsperado, montoEsperado) ||
                 other.montoEsperado == montoEsperado) &&
-            (identical(other.cantidadPedidos, cantidadPedidos) ||
-                other.cantidadPedidos == cantidadPedidos) &&
-            const DeepCollectionEquality().equals(other._pedidos, _pedidos));
+            (identical(other.cantidadMovimientos, cantidadMovimientos) ||
+                other.cantidadMovimientos == cantidadMovimientos) &&
+            const DeepCollectionEquality().equals(
+              other._movimientos,
+              _movimientos,
+            ));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -437,8 +208,8 @@ class _$ResumenCierreHoyImpl implements _ResumenCierreHoy {
     runtimeType,
     fecha,
     montoEsperado,
-    cantidadPedidos,
-    const DeepCollectionEquality().hash(_pedidos),
+    cantidadMovimientos,
+    const DeepCollectionEquality().hash(_movimientos),
   );
 
   /// Create a copy of ResumenCierreHoy
@@ -462,8 +233,8 @@ abstract class _ResumenCierreHoy implements ResumenCierreHoy {
   const factory _ResumenCierreHoy({
     required final String fecha,
     required final String montoEsperado,
-    required final int cantidadPedidos,
-    required final List<PedidoCierre> pedidos,
+    required final int cantidadMovimientos,
+    required final List<MovimientoCaja> movimientos,
   }) = _$ResumenCierreHoyImpl;
 
   factory _ResumenCierreHoy.fromJson(Map<String, dynamic> json) =
@@ -474,9 +245,9 @@ abstract class _ResumenCierreHoy implements ResumenCierreHoy {
   @override
   String get montoEsperado;
   @override
-  int get cantidadPedidos;
+  int get cantidadMovimientos;
   @override
-  List<PedidoCierre> get pedidos;
+  List<MovimientoCaja> get movimientos;
 
   /// Create a copy of ResumenCierreHoy
   /// with the given fields replaced by the non-null parameter values.

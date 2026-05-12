@@ -4,6 +4,8 @@ export const EventosDominio = {
   // Pedidos (Fase 3)
   PedidoCreado: 'pedido.creado',
   PedidoEstadoCambiado: 'pedido.estado_cambiado',
+  PedidoActualizado: 'pedido.actualizado',
+  PedidoRepartidorReasignado: 'pedido.repartidor_reasignado',
 
   // Cierres financieros (Fase 5)
   CierreEnviado: 'cierre.enviado',
@@ -17,6 +19,7 @@ export const EventosDominio = {
 
   // Usuarios
   UsuarioRegistrado: 'usuario.registrado',
+  VerificacionCorreoSolicitada: 'usuario.verificacion_correo_solicitada',
 
   // WhatsApp Baileys (Fase 8)
   WhatsappEstadoCambiado: 'whatsapp.estado_cambiado',

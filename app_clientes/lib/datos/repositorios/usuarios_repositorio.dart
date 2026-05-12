@@ -36,6 +36,11 @@ class UsuariosRepositorio {
 
   final Dio _dio;
 
+  Future<Usuario> obtenerYo() async {
+    final respuesta = await _dio.get<Map<String, dynamic>>('/usuarios/yo');
+    return Usuario.desdeJson(respuesta.data!);
+  }
+
   Future<Usuario> actualizarPerfilVendedor(
     ActualizarPerfilVendedorEntrada entrada,
   ) async {

@@ -1,28 +1,17 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'movimiento_caja.dart';
+
 part 'cierre_financiero.freezed.dart';
 part 'cierre_financiero.g.dart';
-
-@freezed
-class PedidoCierre with _$PedidoCierre {
-  const factory PedidoCierre({
-    required String id,
-    required String codigoSeguimiento,
-    required String montoContraEntrega,
-    DateTime? entregadoEn,
-  }) = _PedidoCierre;
-
-  factory PedidoCierre.fromJson(Map<String, dynamic> json) =>
-      _$PedidoCierreFromJson(json);
-}
 
 @freezed
 class ResumenCierreHoy with _$ResumenCierreHoy {
   const factory ResumenCierreHoy({
     required String fecha,
     required String montoEsperado,
-    required int cantidadPedidos,
-    required List<PedidoCierre> pedidos,
+    required int cantidadMovimientos,
+    required List<MovimientoCaja> movimientos,
   }) = _ResumenCierreHoy;
 
   factory ResumenCierreHoy.fromJson(Map<String, dynamic> json) =>

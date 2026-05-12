@@ -31,12 +31,14 @@ export const EVENTO_CIERRE_RECHAZADO = EventosDominio.CierreRechazado;
 export interface ResumenCierreHoy {
   fecha: string;
   montoEsperado: string;
-  cantidadPedidos: number;
-  pedidos: Array<{
+  cantidadMovimientos: number;
+  movimientos: Array<{
     id: string;
-    codigoSeguimiento: string;
-    montoContraEntrega: string;
-    entregadoEn: Date;
+    tipo: string;
+    monto: string;
+    descripcion: string | null;
+    codigoSeguimiento: string | null;
+    creadoEn: Date;
   }>;
 }
 
@@ -63,36 +65,29 @@ export class CierresFinancierosServicio {
     const perfil = await this.requerirPerfilRepartidor(usuario);
     const { inicio, fin, fechaIso } = rangoDelDia();
 
-    const pedidos = await this.prisma.pedido.findMany({
+    const movimientos = await this.prisma.movimientoCajaRepartidor.findMany({
       where: {
-        repartidorEntregaId: perfil.id,
-        estado: 'ENTREGADO',
-        metodoPago: 'CONTRA_ENTREGA',
-        entregadoEn: { gte: inicio, lte: fin },
+        repartidorId: perfil.id,
+        cierreId: null,
+        creadoEn: { gte: inicio, lte: fin },
       },
-      select: {
-        id: true,
-        codigoSeguimiento: true,
-        montoContraEntrega: true,
-        entregadoEn: true,
-      },
-      orderBy: { entregadoEn: 'asc' },
+      include: { pedido: { select: { codigoSeguimiento: true } } },
+      orderBy: { creadoEn: 'asc' },
     });
 
-    const total = pedidos.reduce(
-      (sum, p) => sum + Number(p.montoContraEntrega ?? 0),
-      0,
-    );
+    const total = movimientos.reduce((sum, m) => sum + Number(m.monto), 0);
 
     return {
       fecha: fechaIso,
       montoEsperado: total.toFixed(2),
-      cantidadPedidos: pedidos.length,
-      pedidos: pedidos.map((p) => ({
-        id: p.id,
-        codigoSeguimiento: p.codigoSeguimiento,
-        montoContraEntrega: (p.montoContraEntrega ?? 0).toString(),
-        entregadoEn: p.entregadoEn!,
+      cantidadMovimientos: movimientos.length,
+      movimientos: movimientos.map((m) => ({
+        id: m.id,
+        tipo: m.tipo,
+        monto: m.monto.toString(),
+        descripcion: m.descripcion,
+        codigoSeguimiento: m.pedido?.codigoSeguimiento ?? null,
+        creadoEn: m.creadoEn,
       })),
     };
   }
@@ -119,18 +114,18 @@ export class CierresFinancierosServicio {
       });
     }
 
-    const pedidos = await this.prisma.pedido.findMany({
-      where: {
-        repartidorEntregaId: perfil.id,
-        estado: 'ENTREGADO',
-        metodoPago: 'CONTRA_ENTREGA',
-        entregadoEn: { gte: inicio, lte: fin },
-      },
-      select: { id: true, montoContraEntrega: true },
-    });
+    const movimientosPendientes =
+      await this.prisma.movimientoCajaRepartidor.findMany({
+        where: {
+          repartidorId: perfil.id,
+          cierreId: null,
+          creadoEn: { gte: inicio, lte: fin },
+        },
+        select: { id: true, monto: true },
+      });
 
-    const montoEsperado = pedidos.reduce(
-      (sum, p) => sum + Number(p.montoContraEntrega ?? 0),
+    const montoEsperado = movimientosPendientes.reduce(
+      (sum, m) => sum + Number(m.monto),
       0,
     );
     const diferencia = Number(dto.montoReportado) - montoEsperado;
@@ -155,13 +150,10 @@ export class CierresFinancierosServicio {
         },
       });
 
-      if (pedidos.length > 0) {
-        await tx.cierreFinancieroPedido.createMany({
-          data: pedidos.map((p) => ({
-            cierreId: creado.id,
-            pedidoId: p.id,
-            monto: (p.montoContraEntrega ?? 0).toString(),
-          })),
+      if (movimientosPendientes.length > 0) {
+        await tx.movimientoCajaRepartidor.updateMany({
+          where: { id: { in: movimientosPendientes.map((m) => m.id) } },
+          data: { cierreId: creado.id },
         });
       }
 
@@ -212,7 +204,12 @@ export class CierresFinancierosServicio {
     const cierre = await this.prisma.cierreFinanciero.findUnique({
       where: { id },
       include: {
-        pedidos: { include: { pedido: { select: { codigoSeguimiento: true, nombreCliente: true } } } },
+        movimientos: {
+          include: {
+            pedido: { select: { codigoSeguimiento: true, nombreCliente: true } },
+          },
+          orderBy: { creadoEn: 'asc' },
+        },
       },
     });
     if (!cierre) throw new NotFoundException({ codigo: 'CIERRE_NO_ENCONTRADO' });

@@ -1,5 +1,6 @@
 import {
   ForbiddenException,
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
@@ -14,8 +15,8 @@ import {
 import { PrismaServicio } from '../../prisma/prisma.servicio.js';
 import { RedisServicio } from '../../redis/redis.servicio.js';
 import { WhatsappBaileysAdaptador } from '../whatsapp/adaptadores/whatsapp-baileys.adaptador.js';
-import { CanalAdaptador } from './canales/canal.adaptador.js';
-import { EmailAdaptador } from './canales/email.adaptador.js';
+import type { CanalAdaptador } from './canales/canal.adaptador.js';
+import { EMAIL_CANAL } from './canales/canal.adaptador.js';
 import { PushAdaptador } from './canales/push.adaptador.js';
 import { FiltrosNotificacionDto } from './dto/filtros-notificacion.dto.js';
 
@@ -38,7 +39,7 @@ export class NotificacionesServicio {
     private readonly redis: RedisServicio,
     private readonly push: PushAdaptador,
     private readonly whatsapp: WhatsappBaileysAdaptador,
-    private readonly email: EmailAdaptador,
+    @Inject(EMAIL_CANAL) private readonly email: CanalAdaptador,
   ) {}
 
   // ──────────────────────────────────────────────────

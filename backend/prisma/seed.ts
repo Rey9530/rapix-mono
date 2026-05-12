@@ -4,11 +4,13 @@
 //   - 2 vendedores (+ PerfilVendedor con direccion/lat/lng)
 //   - 3 repartidores (+ PerfilRepartidor con tipoVehiculo/documentoIdentidad)
 //   - 2 reglas de tarifa (POR_ENVIO $3, PAQUETE 100 envíos $250)
+//   - Catálogo de bancos de El Salvador
 
 import 'dotenv/config';
 import { PrismaPg } from '@prisma/adapter-pg';
 import bcrypt from 'bcrypt';
 import { PrismaClient } from '../src/generated/prisma/client.js';
+import { BANCOS_EL_SALVADOR } from '../src/modulos/cuentas-bancarias/bancos-el-salvador.constante.js';
 
 interface SeedVendedor {
   email: string;
@@ -158,8 +160,20 @@ async function main() {
   }
 
   await sembrarReglasTarifa();
+  await sembrarBancos();
 
   console.log('\nSeed completado.');
+}
+
+async function sembrarBancos() {
+  for (const banco of BANCOS_EL_SALVADOR) {
+    await prisma.banco.upsert({
+      where: { codigo: banco.codigo },
+      update: { nombre: banco.nombre, activo: true },
+      create: { codigo: banco.codigo, nombre: banco.nombre, activo: true },
+    });
+  }
+  console.log(`Catálogo de bancos listo: ${BANCOS_EL_SALVADOR.length} entradas`);
 }
 
 async function sembrarReglasTarifa() {

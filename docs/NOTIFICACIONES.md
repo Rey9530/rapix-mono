@@ -36,7 +36,7 @@ Update notificaciones.estado = ENVIADO | FALLIDO
 |-------|-----------|---------------|
 | PUSH | Firebase Cloud Messaging (FCM) | Apps móviles (repartidor, vendedor) |
 | WHATSAPP | **WhatsApp Cloud API** (Meta — Graph API v20+) | Cliente final, comunicación rica con plantillas aprobadas |
-| EMAIL | **SMTP** vía `nodemailer` (Mailhog en dev; Postfix/SES/etc. en prod) | Comprobantes, reportes |
+| EMAIL | **Mailgun HTTP API** (`mailgun.js`) por default; SMTP/`nodemailer` como fallback temporal vía `MAIL_DRIVER=smtp` | Comprobantes, reportes |
 
 ## 🗺️ Matriz de Notificaciones
 
@@ -263,7 +263,27 @@ export class WhatsAppAdaptador {
 
 > **Plantillas**: para eventos transaccionales (PEDIDO_CREADO, PEDIDO_ENTREGADO, etc.) pre-aprobar plantillas en Meta Business Manager y referenciarlas vía `datos.plantilla`. Para mensajes dentro de ventana de 24h se puede usar `type: 'text'`.
 
-### EmailAdaptador (SMTP via nodemailer)
+### Adaptador de email (Mailgun por default, SMTP como fallback)
+
+El canal EMAIL se resuelve en `NotificacionesModulo` con un provider factory
+apuntado al token `EMAIL_CANAL`. Según `MAIL_DRIVER`:
+
+- `MAIL_DRIVER=mailgun` (default) → `MailgunAdaptador` (HTTP API vía
+  `mailgun.js`). Requiere `MAILGUN_API_KEY`, `MAILGUN_DOMAIN`, `MAILGUN_FROM`
+  (validados por Joi al arranque; el proceso aborta si faltan).
+  Opcionales: `MAILGUN_REGION` (`us`/`eu`), `MAILGUN_SANDBOX`.
+  Emite tags `canal:EMAIL` + `plantilla:<clave>` y custom variables
+  (`v:notificacion-id`, `v:usuario-id`, `v:plantilla`) para tracking en el
+  dashboard de Mailgun.
+- `MAIL_DRIVER=smtp` → `EmailAdaptador` (nodemailer). Queda como interruptor
+  de emergencia: cambiar la env var y reiniciar revierte sin redeploy. Será
+  removido en una tarea de cleanup posterior.
+
+> **Fuera de alcance** (TODOs documentados en el adaptador): templates
+> server-side de Mailgun, webhooks (`delivered`/`bounced`/`complained`),
+> suppressions list, cc/bcc/attachments por mensaje.
+
+#### EmailAdaptador (SMTP via nodemailer) — legacy/fallback
 
 ```typescript
 import { Injectable, OnModuleInit } from '@nestjs/common';

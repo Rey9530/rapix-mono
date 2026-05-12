@@ -15,7 +15,9 @@ import { UsuariosModulo } from './modulos/usuarios/usuarios.modulo.js';
 import { ZonasModulo } from './modulos/zonas/zonas.modulo.js';
 import { RepartidoresModulo } from './modulos/repartidores/repartidores.modulo.js';
 import { ArchivosModulo } from './modulos/archivos/archivos.modulo.js';
+import { BilleteraModulo } from './modulos/billetera/billetera.modulo.js';
 import { PedidosModulo } from './modulos/pedidos/pedidos.modulo.js';
+import { CuentasBancariasModulo } from './modulos/cuentas-bancarias/cuentas-bancarias.modulo.js';
 import { PaquetesRecargadosModulo } from './modulos/paquetes-recargados/paquetes-recargados.modulo.js';
 import { ReglasTarifaModulo } from './modulos/reglas-tarifa/reglas-tarifa.modulo.js';
 import { ReportesModulo } from './modulos/reportes/reportes.modulo.js';
@@ -49,9 +51,11 @@ import { WhatsappModulo } from './modulos/whatsapp/whatsapp.modulo.js';
     RepartidoresModulo,
     UsuariosModulo,
     ZonasModulo,
+    CuentasBancariasModulo,
     PaquetesRecargadosModulo,
     ReglasTarifaModulo,
     PedidosModulo,
+    BilleteraModulo,
     CierresFinancierosModulo,
     NotificacionesModulo,
     MapasModulo,

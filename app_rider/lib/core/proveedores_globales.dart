@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/repositorios/autenticacion_repositorio.dart';
+import '../data/repositorios/billetera_repositorio.dart';
 import '../data/repositorios/cierres_repositorio.dart';
 import '../data/repositorios/mapas_repositorio.dart';
 import '../data/repositorios/pedidos_repositorio.dart';
@@ -40,6 +41,10 @@ final pedidosRepositorioProveedor = Provider<PedidosRepositorio>((ref) {
 
 final cierresRepositorioProveedor = Provider<CierresRepositorio>((ref) {
   return CierresRepositorio(dio: ref.watch(dioProveedor));
+});
+
+final billeteraRepositorioProveedor = Provider<BilleteraRepositorio>((ref) {
+  return BilleteraRepositorio(dio: ref.watch(dioProveedor));
 });
 
 final mapasRepositorioProveedor = Provider<MapasRepositorio>((ref) {

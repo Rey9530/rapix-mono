@@ -57,6 +57,29 @@ $ yarn run test:e2e
 $ yarn run test:cov
 ```
 
+## Correo (Mailgun + fallback SMTP)
+
+El backend envía correos a través del adaptador `MailgunAdaptador` (HTTP API)
+con `EmailAdaptador` (SMTP/nodemailer) como **fallback temporal**. El selector
+se controla con la variable `MAIL_DRIVER`:
+
+- `MAIL_DRIVER=mailgun` (default) → usa Mailgun. Requiere `MAILGUN_API_KEY`,
+  `MAILGUN_DOMAIN`, `MAILGUN_FROM`. La validación Joi aborta el arranque si
+  faltan.
+- `MAIL_DRIVER=smtp` → revierte al transporte nodemailer (Mailhog en dev,
+  Postfix/SES en prod). Sirve como interruptor de emergencia: cambiar la env
+  var y reiniciar, sin redeploy.
+
+Variables en `.env.example`. **Nunca commitear la API key real**; `.env` está
+en `.gitignore`. El adaptador Mailgun emite tags `canal:EMAIL` +
+`plantilla:<clave>` y custom variables (`v:notificacion-id`, `v:usuario-id`,
+`v:plantilla`) para tracking en el dashboard de Mailgun.
+
+> **TODO** (no en alcance de esta tarea): templates server-side de Mailgun,
+> webhooks (`delivered`/`bounced`/`complained`), suppressions list, soporte
+> de cc/bcc/attachments por mensaje. La rama SMTP se removerá en una tarea
+> de cleanup posterior una vez Mailgun esté estable en producción.
+
 ## Deployment
 
 When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.

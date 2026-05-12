@@ -10,16 +10,19 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { RespuestaPaginada } from '../../comun/dto/respuesta-paginada.js';
 import { EventosDominio } from '../../eventos/eventos-dominio.js';
 import { PaqueteAgotadoEvento } from '../../eventos/paquete-agotado.evento.js';
+import { PedidoActualizadoEvento } from '../../eventos/pedido-actualizado.evento.js';
 import { PedidoCreadoEvento } from '../../eventos/pedido-creado.evento.js';
 import { PedidoEstadoCambiadoEvento } from '../../eventos/pedido-estado-cambiado.evento.js';
 import type {
   EstadoPedido,
   Pedido,
+  PerfilRepartidor,
   Prisma,
   Usuario,
 } from '../../generated/prisma/client.js';
 import { PrismaServicio } from '../../prisma/prisma.servicio.js';
 import { ArchivosServicio } from '../archivos/archivos.servicio.js';
+import { BilleteraServicio } from '../billetera/billetera.servicio.js';
 import { PaqueteAgotadoException } from '../paquetes-recargados/excepciones/paquete-agotado.excepcion.js';
 import { FacturacionServicio } from '../paquetes-recargados/facturacion.servicio.js';
 import { GeoServicio } from '../zonas/geo.servicio.js';
@@ -27,6 +30,7 @@ import { CodigoSeguimientoServicio } from './codigo-seguimiento.servicio.js';
 import { GoogleMapsServicio } from './google-maps.servicio.js';
 import { ActualizarPedidoDto } from './dto/actualizar-pedido.dto.js';
 import { CancelarPedidoDto } from './dto/cancelar-pedido.dto.js';
+import { ContextoVendedorDto } from './dto/contexto-vendedor.dto.js';
 import { CrearPedidoDto } from './dto/crear-pedido.dto.js';
 import { FiltrosPedidoDto } from './dto/filtros-pedido.dto.js';
 import {
@@ -57,7 +61,73 @@ export class PedidosServicio {
     private readonly facturacion: FacturacionServicio,
     private readonly eventos: EventEmitter2,
     private readonly googleMaps: GoogleMapsServicio,
+    private readonly billetera: BilleteraServicio,
   ) {}
+
+  // ──────────────────────────────────────────────────
+  // Preview de facturación
+  // ──────────────────────────────────────────────────
+
+  async previewCostoEnvio(usuario: Usuario) {
+    const perfil = await this.prisma.perfilVendedor.findUnique({
+      where: { usuarioId: usuario.id },
+      select: { id: true },
+    });
+    if (!perfil) {
+      throw new BadRequestException({
+        codigo: 'USUARIO_SIN_PERFIL',
+        mensaje: 'El usuario autenticado no tiene PerfilVendedor.',
+      });
+    }
+    return this.facturacion.previewParaVendedor(perfil.id);
+  }
+
+  // ──────────────────────────────────────────────────
+  // Contexto de tienda del vendedor
+  // ──────────────────────────────────────────────────
+  //
+  // El frontend de crear pedido usa este endpoint para no depender de
+  // cache local (flutter_secure_storage) que puede estar stale tras un
+  // cold start o registro reciente. Devuelve 200 siempre; si el usuario
+  // VENDEDOR no tiene PerfilVendedor, `tieneUbicacion=false` indica al
+  // cliente que debe pedir al usuario actualizar su perfil — esto es
+  // intencionalmente distinto del 400 que lanza `previewCostoEnvio`.
+
+  async obtenerContextoVendedor(
+    usuario: Usuario,
+  ): Promise<ContextoVendedorDto> {
+    const perfil = await this.prisma.perfilVendedor.findUnique({
+      where: { usuarioId: usuario.id },
+      select: {
+        id: true,
+        nombreNegocio: true,
+        direccion: true,
+        latitud: true,
+        longitud: true,
+        urlLogo: true,
+      },
+    });
+    if (!perfil) {
+      return {
+        tieneUbicacion: false,
+        vendedorId: null,
+        nombreNegocio: null,
+        direccion: null,
+        latitud: null,
+        longitud: null,
+        urlLogo: null,
+      };
+    }
+    return {
+      tieneUbicacion: true,
+      vendedorId: perfil.id,
+      nombreNegocio: perfil.nombreNegocio,
+      direccion: perfil.direccion,
+      latitud: perfil.latitud,
+      longitud: perfil.longitud,
+      urlLogo: perfil.urlLogo,
+    };
+  }
 
   // ──────────────────────────────────────────────────
   // Creación / CRUD ligero
@@ -180,7 +250,7 @@ export class PedidosServicio {
           costoEnvio: billing.costoEnvio,
           paqueteRecargadoId: billing.paqueteRecargadoId,
           montoContraEntrega: dto.montoContraEntrega ?? null,
-          programadoPara: dto.programadoPara ? new Date(dto.programadoPara) : null,
+          programadoPara: new Date(dto.programadoPara),
         },
       });
 
@@ -351,6 +421,9 @@ export class PedidosServicio {
       }
     }
 
+    const cambios = this.detectarCambiosPedido(dto, pedido);
+    if (cambios.length === 0) return pedido;
+
     const datos: Prisma.PedidoUpdateInput = { ...dto };
     // Si cambian coordenadas, re-resolver zonas.
     if (dto.latitudOrigen !== undefined && dto.longitudOrigen !== undefined) {
@@ -370,7 +443,80 @@ export class PedidosServicio {
       datos.montoContraEntrega = null;
     }
 
-    return this.prisma.pedido.update({ where: { id }, data: datos });
+    const actualizado = await this.prisma.$transaction(async (tx) => {
+      const p = await tx.pedido.update({ where: { id }, data: datos });
+      await tx.eventoPedido.create({
+        data: {
+          pedidoId: id,
+          estado: pedido.estado,
+          actorId: usuario.id,
+          notas: `Pedido actualizado: ${cambios.join(', ')}`,
+        },
+      });
+      return p;
+    });
+
+    this.eventos.emit(
+      EventosDominio.PedidoActualizado,
+      new PedidoActualizadoEvento(id, cambios, usuario.id),
+    );
+
+    return actualizado;
+  }
+
+  // Detecta qué campos del DTO difieren del pedido actual.
+  // Devuelve las etiquetas en español listas para incluir en `notas` del EventoPedido.
+  private detectarCambiosPedido(
+    dto: ActualizarPedidoDto,
+    pedido: Pedido,
+  ): string[] {
+    const cambios = new Set<string>();
+    const camposSimples: Array<[keyof ActualizarPedidoDto, string]> = [
+      ['nombreCliente', 'nombre'],
+      ['telefonoCliente', 'teléfono'],
+      ['emailCliente', 'email'],
+      ['direccionOrigen', 'dirección origen'],
+      ['notasOrigen', 'notas origen'],
+      ['direccionDestino', 'dirección destino'],
+      ['notasDestino', 'notas destino'],
+      ['descripcionPaquete', 'descripción paquete'],
+      ['pesoPaqueteKg', 'peso paquete'],
+      ['valorDeclarado', 'valor declarado'],
+      ['montoContraEntrega', 'monto contra entrega'],
+      ['metodoPago', 'método de pago'],
+    ];
+    for (const [campo, label] of camposSimples) {
+      const nuevo = dto[campo];
+      if (nuevo === undefined) continue;
+      const actual = (pedido as unknown as Record<string, unknown>)[campo];
+      if (!this.valoresIguales(actual, nuevo)) cambios.add(label);
+    }
+    const cambioOrigen =
+      (dto.latitudOrigen !== undefined &&
+        !this.valoresIguales(pedido.latitudOrigen, dto.latitudOrigen)) ||
+      (dto.longitudOrigen !== undefined &&
+        !this.valoresIguales(pedido.longitudOrigen, dto.longitudOrigen));
+    if (cambioOrigen) cambios.add('coordenadas origen');
+    const cambioDestino =
+      (dto.latitudDestino !== undefined &&
+        !this.valoresIguales(pedido.latitudDestino, dto.latitudDestino)) ||
+      (dto.longitudDestino !== undefined &&
+        !this.valoresIguales(pedido.longitudDestino, dto.longitudDestino));
+    if (cambioDestino) cambios.add('coordenadas destino');
+    if (dto.programadoPara !== undefined) {
+      const actualIso = pedido.programadoPara?.toISOString() ?? null;
+      if (actualIso !== dto.programadoPara) cambios.add('fecha programada');
+    }
+    return [...cambios];
+  }
+
+  private valoresIguales(a: unknown, b: unknown): boolean {
+    if (a == null && b == null) return true;
+    if (a == null || b == null) return false;
+    const numA = Number(a as never);
+    const numB = Number(b as never);
+    if (!Number.isNaN(numA) && !Number.isNaN(numB) && numA === numB) return true;
+    return String(a) === String(b);
   }
 
   async cancelar(usuario: Usuario, id: string, dto: CancelarPedidoDto) {
@@ -380,12 +526,22 @@ export class PedidosServicio {
 
     PedidoMaquinaEstados.validarTransicion(pedido.estado, 'CANCELADO');
 
+    // Si ya hubo cobro de recogida, advertir explícitamente en el evento
+    // y en motivoCancelado. No se reversa automáticamente (decisión de negocio).
+    const cobroPrevio = await this.prisma.movimientoCajaRepartidor.findFirst({
+      where: { pedidoId: id, tipo: 'COBRO_RECOGIDA' },
+    });
+    const motivoOriginal = dto.motivo ?? '';
+    const notasFinales = cobroPrevio
+      ? `[ATENCIÓN: cobro de $${cobroPrevio.monto.toString()} al vendedor no reversado] ${motivoOriginal}`.trim()
+      : (motivoOriginal || null);
+
     return this.transicionar({
       pedidoId: id,
       hacia: 'CANCELADO',
       actorId: usuario.id,
-      notas: dto.motivo,
-      extrasUpdate: { canceladoEn: new Date(), motivoCancelado: dto.motivo ?? null },
+      notas: notasFinales ?? undefined,
+      extrasUpdate: { canceladoEn: new Date(), motivoCancelado: notasFinales },
     });
   }
 
@@ -394,9 +550,26 @@ export class PedidosServicio {
   // ──────────────────────────────────────────────────
 
   async recoger(usuario: Usuario, id: string, dto: RecogerPedidoDto) {
-    return this.transicionarRider(usuario, id, 'RECOGIDO', 'recogida', dto, {
-      recogidoEn: new Date(),
-    });
+    return this.transicionarRider(
+      usuario,
+      id,
+      'RECOGIDO',
+      'recogida',
+      dto,
+      { recogidoEn: new Date() },
+      async (tx, pedido, perfilRider) => {
+        const costoEnvio = Number(pedido.costoEnvio ?? 0);
+        if (pedido.modoFacturacion === 'POR_ENVIO' && costoEnvio > 0) {
+          await this.billetera.registrarMovimientoEnTx(tx, {
+            repartidorId: perfilRider.id,
+            pedidoId: pedido.id,
+            tipo: 'COBRO_RECOGIDA',
+            monto: pedido.costoEnvio,
+            descripcion: `Cobro de envío al vendedor (pedido ${pedido.codigoSeguimiento})`,
+          });
+        }
+      },
+    );
   }
 
   async enTransito(usuario: Usuario, id: string, dto: EnTransitoPedidoDto) {
@@ -507,6 +680,19 @@ export class PedidosServicio {
         where: { id: perfil.id },
         data: { totalEntregas: { increment: 1 } },
       });
+      if (
+        pedido.metodoPago === 'CONTRA_ENTREGA' &&
+        pedido.montoContraEntrega != null &&
+        Number(pedido.montoContraEntrega) > 0
+      ) {
+        await this.billetera.registrarMovimientoEnTx(tx, {
+          repartidorId: perfil.id,
+          pedidoId: id,
+          tipo: 'COBRO_ENTREGA',
+          monto: pedido.montoContraEntrega,
+          descripcion: `Cobro contra entrega al cliente (pedido ${pedido.codigoSeguimiento})`,
+        });
+      }
       return p;
     });
 
@@ -625,6 +811,11 @@ export class PedidosServicio {
     lado: 'recogida' | 'entrega',
     dto: { latitud?: number; longitud?: number; notas?: string },
     extrasUpdate: Record<string, unknown> = {},
+    dentroDeTx?: (
+      tx: Prisma.TransactionClient,
+      pedido: Pedido,
+      perfilRider: PerfilRepartidor,
+    ) => Promise<void>,
   ) {
     const pedido = await this.prisma.pedido.findUnique({ where: { id: pedidoId } });
     if (!pedido) throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
@@ -648,6 +839,9 @@ export class PedidosServicio {
       longitud: dto.longitud,
       notas: dto.notas,
       extrasUpdate,
+      dentroDeTx: dentroDeTx
+        ? (tx, pedidoActualizado) => dentroDeTx(tx, pedidoActualizado, perfil)
+        : undefined,
     });
   }
 
@@ -659,8 +853,9 @@ export class PedidosServicio {
     longitud?: number;
     notas?: string;
     extrasUpdate?: Record<string, unknown>;
+    dentroDeTx?: (tx: Prisma.TransactionClient, pedido: Pedido) => Promise<void>;
   }) {
-    const { pedidoId, hacia, actorId, latitud, longitud, notas, extrasUpdate } = params;
+    const { pedidoId, hacia, actorId, latitud, longitud, notas, extrasUpdate, dentroDeTx } = params;
     const actualizado = await this.prisma.$transaction(async (tx) => {
       const p = await tx.pedido.update({
         where: { id: pedidoId },
@@ -676,6 +871,7 @@ export class PedidosServicio {
           notas: notas ?? null,
         },
       });
+      if (dentroDeTx) await dentroDeTx(tx, p);
       return p;
     });
     this.emitirCambio(pedidoId, actualizado.estado, hacia, actorId);

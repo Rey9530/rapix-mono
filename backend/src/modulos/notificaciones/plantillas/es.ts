@@ -80,6 +80,38 @@ export const PLANTILLAS_ES = {
     titulo: 'Pedido {{1}} cancelado',
     cuerpo: 'Tu pedido {{1}} fue cancelado.',
   },
+  PEDIDO_ACTUALIZADO_REPARTIDOR: {
+    titulo: 'Pedido {{1}} modificado',
+    cuerpo: 'El vendedor actualizó datos del pedido {{1}}: {{2}}.',
+  },
+  PEDIDO_REPARTO_ASIGNADO_REPARTIDOR: {
+    titulo: 'Nuevo pedido para entregar',
+    cuerpo: 'Tienes un nuevo pedido para entregar: {{1}}.',
+  },
+  PEDIDO_DESASIGNADO_REPARTIDOR: {
+    titulo: 'Pedido {{1}} reasignado',
+    cuerpo: 'El pedido {{1}} fue reasignado a otro repartidor.',
+  },
+  PEDIDO_EN_INTERCAMBIO_VENDEDOR: {
+    titulo: 'Pedido {{1}} en punto de intercambio',
+    cuerpo: 'Tu pedido {{1}} llegó al punto de intercambio.',
+  },
+  PEDIDO_EN_INTERCAMBIO_CLIENTE: {
+    titulo: 'Pedido {{1}} en punto de intercambio',
+    cuerpo: 'Tu pedido {{1}} llegó al punto de intercambio y será reenviado pronto.',
+  },
+  PEDIDO_DEVUELTO_VENDEDOR: {
+    titulo: 'Pedido {{1}} devuelto',
+    cuerpo: 'El pedido {{1}} fue devuelto. Coordina la recepción con el repartidor.',
+  },
+  PEDIDO_REINTENTANDO_VENDEDOR: {
+    titulo: 'Reintentando entrega del pedido {{1}}',
+    cuerpo: 'El repartidor está reintentando entregar el pedido {{1}}.',
+  },
+  PEDIDO_REINTENTANDO_CLIENTE: {
+    titulo: 'Reintentando tu entrega',
+    cuerpo: 'Estamos reintentando entregar tu pedido {{1}}.',
+  },
 
   // ── Cierres financieros ────────────────────────────────
   CIERRE_ENVIADO_ADMIN: {

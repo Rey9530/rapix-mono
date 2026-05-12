@@ -14,10 +14,10 @@ class CrearPedidoEntrada {
     required this.longitudOrigen,
     required this.direccionDestino,
     required this.metodoPago,
+    required this.programadoPara,
     this.urlMapasDestino,
     this.latitudDestino,
     this.longitudDestino,
-    this.programadoPara,
     this.descripcionPaquete,
     this.montoContraEntrega,
     this.notasOrigen,
@@ -34,7 +34,7 @@ class CrearPedidoEntrada {
   final String? urlMapasDestino;
   final double? latitudDestino;
   final double? longitudDestino;
-  final DateTime? programadoPara;
+  final DateTime programadoPara;
   final String metodoPago;
   final String? descripcionPaquete;
   final double? montoContraEntrega;
@@ -50,13 +50,12 @@ class CrearPedidoEntrada {
         'longitudOrigen': longitudOrigen.toString(),
         'direccionDestino': direccionDestino,
         'metodoPago': metodoPago,
+        'programadoPara': programadoPara.toIso8601String(),
         if (urlMapasDestino != null && urlMapasDestino!.isNotEmpty)
           'urlMapasDestino': urlMapasDestino,
         if (latitudDestino != null) 'latitudDestino': latitudDestino.toString(),
         if (longitudDestino != null)
           'longitudDestino': longitudDestino.toString(),
-        if (programadoPara != null)
-          'programadoPara': programadoPara!.toIso8601String(),
         if (descripcionPaquete != null) 'descripcionPaquete': descripcionPaquete,
         if (montoContraEntrega != null)
           'montoContraEntrega': montoContraEntrega.toString(),
@@ -65,19 +64,79 @@ class CrearPedidoEntrada {
       };
 }
 
+class PreviewCostoEnvio {
+  const PreviewCostoEnvio({
+    required this.modoFacturacion,
+    required this.costoEnvio,
+    required this.fuente,
+  });
+
+  final String modoFacturacion;
+  final double costoEnvio;
+  final String fuente;
+
+  factory PreviewCostoEnvio.desdeJson(Map<String, dynamic> json) {
+    return PreviewCostoEnvio(
+      modoFacturacion: json['modoFacturacion'] as String,
+      costoEnvio: (json['costoEnvio'] as num).toDouble(),
+      fuente: json['fuente'] as String,
+    );
+  }
+
+  bool get debeMostrarse => fuente != 'PAQUETE';
+}
+
+class ContextoVendedor {
+  const ContextoVendedor({
+    required this.tieneUbicacion,
+    this.vendedorId,
+    this.nombreNegocio,
+    this.direccion,
+    this.latitud,
+    this.longitud,
+    this.urlLogo,
+  });
+
+  final bool tieneUbicacion;
+  final String? vendedorId;
+  final String? nombreNegocio;
+  final String? direccion;
+  final double? latitud;
+  final double? longitud;
+  final String? urlLogo;
+
+  factory ContextoVendedor.desdeJson(Map<String, dynamic> json) {
+    return ContextoVendedor(
+      tieneUbicacion: json['tieneUbicacion'] as bool,
+      vendedorId: json['vendedorId'] as String?,
+      nombreNegocio: json['nombreNegocio'] as String?,
+      direccion: json['direccion'] as String?,
+      latitud: (json['latitud'] as num?)?.toDouble(),
+      longitud: (json['longitud'] as num?)?.toDouble(),
+      urlLogo: json['urlLogo'] as String?,
+    );
+  }
+}
+
 class ActualizarPedidoEntrada {
   ActualizarPedidoEntrada({
     this.metodoPago,
     this.montoContraEntrega,
+    this.nombreCliente,
+    this.telefonoCliente,
   });
 
   final String? metodoPago;
   final double? montoContraEntrega;
+  final String? nombreCliente;
+  final String? telefonoCliente;
 
   Map<String, dynamic> aJson() => {
         if (metodoPago != null) 'metodoPago': metodoPago,
         if (montoContraEntrega != null)
           'montoContraEntrega': montoContraEntrega,
+        if (nombreCliente != null) 'nombreCliente': nombreCliente,
+        if (telefonoCliente != null) 'telefonoCliente': telefonoCliente,
       };
 }
 
@@ -153,8 +212,34 @@ class PedidosRepositorio {
     );
     return Pedido.desdeJson(respuesta.data!);
   }
+
+  Future<PreviewCostoEnvio> previewCostoEnvio() async {
+    final respuesta = await _dio.get<Map<String, dynamic>>(
+      '/pedidos/preview-costo-envio',
+    );
+    return PreviewCostoEnvio.desdeJson(respuesta.data!);
+  }
+
+  Future<ContextoVendedor> obtenerContextoVendedor() async {
+    final respuesta = await _dio.get<Map<String, dynamic>>(
+      '/pedidos/contexto-vendedor',
+    );
+    return ContextoVendedor.desdeJson(respuesta.data!);
+  }
 }
 
 final pedidosRepositorioProvider = Provider<PedidosRepositorio>((ref) {
   return PedidosRepositorio(ref.watch(dioClienteProvider));
+});
+
+final previewCostoEnvioProvider =
+    FutureProvider.autoDispose<PreviewCostoEnvio>((ref) async {
+  final repo = ref.watch(pedidosRepositorioProvider);
+  return repo.previewCostoEnvio();
+});
+
+final contextoVendedorProvider =
+    FutureProvider.autoDispose<ContextoVendedor>((ref) async {
+  final repo = ref.watch(pedidosRepositorioProvider);
+  return repo.obtenerContextoVendedor();
 });

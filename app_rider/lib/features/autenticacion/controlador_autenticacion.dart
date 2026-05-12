@@ -53,6 +53,13 @@ class ControladorAutenticacion extends AsyncNotifier<Usuario?> {
     state = const AsyncValue.data(null);
   }
 
+  /// Invocado por el interceptor cuando el refresh falla (sesion expirada).
+  /// El almacenamiento ya quedo limpio; aqui solo reflejamos `null` en el
+  /// estado para que el router (via refreshListenable) redirija a /login.
+  void marcarSesionExpirada() {
+    state = const AsyncValue.data(null);
+  }
+
   Future<void> _refrescarPerfilEnSegundoPlano() async {
     final repo = ref.read(autenticacionRepositorioProveedor);
     try {

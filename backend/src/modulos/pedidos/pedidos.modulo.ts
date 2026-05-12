@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { BilleteraModulo } from '../billetera/billetera.modulo.js';
 import { PaquetesRecargadosModulo } from '../paquetes-recargados/paquetes-recargados.modulo.js';
 import { ZonasModulo } from '../zonas/zonas.modulo.js';
 import { AsignacionServicio } from './asignacion.servicio.js';
@@ -8,7 +9,7 @@ import { PedidosControlador } from './pedidos.controlador.js';
 import { PedidosServicio } from './pedidos.servicio.js';
 
 @Module({
-  imports: [ZonasModulo, PaquetesRecargadosModulo],
+  imports: [ZonasModulo, PaquetesRecargadosModulo, BilleteraModulo],
   controllers: [PedidosControlador],
   providers: [
     PedidosServicio,

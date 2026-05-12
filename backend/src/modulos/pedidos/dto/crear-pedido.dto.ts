@@ -132,8 +132,8 @@ export class CrearPedidoDto {
   @IsPositive()
   montoContraEntrega?: number;
 
-  @ApiProperty({ required: false })
-  @IsOptional()
+  @ApiProperty({ description: 'Fecha de entrega programada (ISO 8601). Obligatorio.' })
   @IsDateString()
-  programadoPara?: string;
+  @IsNotEmpty()
+  programadoPara!: string;
 }

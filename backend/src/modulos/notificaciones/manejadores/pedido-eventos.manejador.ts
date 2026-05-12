@@ -1,8 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { EventosDominio } from '../../../eventos/eventos-dominio.js';
+import { PedidoActualizadoEvento } from '../../../eventos/pedido-actualizado.evento.js';
 import { PedidoCreadoEvento } from '../../../eventos/pedido-creado.evento.js';
 import { PedidoEstadoCambiadoEvento } from '../../../eventos/pedido-estado-cambiado.evento.js';
+import { PedidoRepartidorReasignadoEvento } from '../../../eventos/pedido-repartidor-reasignado.evento.js';
 import { PrismaServicio } from '../../../prisma/prisma.servicio.js';
 import { NotificacionesServicio } from '../notificaciones.servicio.js';
 import {
@@ -81,10 +83,18 @@ export class PedidoEventosManejador {
         await this.enviarClienteWhatsapp(pedido, 'PEDIDO_EN_TRANSITO_CLIENTE', [cs]);
         break;
 
-      case 'EN_REPARTO':
-        await this.enviarPlantilla('PEDIDO_EN_REPARTO_VENDEDOR', pedido.vendedor.usuario.id, ['PUSH'], [cs], datosPedido);
-        await this.enviarClienteWhatsapp(pedido, 'PEDIDO_EN_REPARTO_CLIENTE', [cs]);
+      case 'EN_REPARTO': {
+        const esReintento = evento.desde === 'FALLIDO';
+        const claveVendedor: ClavePlantilla = esReintento
+          ? 'PEDIDO_REINTENTANDO_VENDEDOR'
+          : 'PEDIDO_EN_REPARTO_VENDEDOR';
+        const claveCliente: ClavePlantilla = esReintento
+          ? 'PEDIDO_REINTENTANDO_CLIENTE'
+          : 'PEDIDO_EN_REPARTO_CLIENTE';
+        await this.enviarPlantilla(claveVendedor, pedido.vendedor.usuario.id, ['PUSH'], [cs], datosPedido);
+        await this.enviarClienteWhatsapp(pedido, claveCliente, [cs]);
         break;
+      }
 
       case 'ENTREGADO':
         await this.enviarPlantilla(
@@ -130,8 +140,103 @@ export class PedidoEventosManejador {
         await this.enviarClienteWhatsapp(pedido, 'PEDIDO_CANCELADO_CLIENTE', [cs]);
         break;
 
+      case 'EN_PUNTO_INTERCAMBIO':
+        await this.enviarPlantilla(
+          'PEDIDO_EN_INTERCAMBIO_VENDEDOR',
+          pedido.vendedor.usuario.id,
+          ['PUSH'],
+          [cs],
+          datosPedido,
+        );
+        await this.enviarClienteWhatsapp(pedido, 'PEDIDO_EN_INTERCAMBIO_CLIENTE', [cs]);
+        break;
+
+      case 'DEVUELTO':
+        await this.enviarPlantilla(
+          'PEDIDO_DEVUELTO_VENDEDOR',
+          pedido.vendedor.usuario.id,
+          ['PUSH', 'EMAIL'],
+          [cs],
+          datosPedido,
+        );
+        break;
+
       default:
         break;
+    }
+  }
+
+  @OnEvent(EventosDominio.PedidoActualizado, { async: true })
+  async alActualizar(evento: PedidoActualizadoEvento): Promise<void> {
+    if (evento.cambios.length === 0) return;
+    const pedido = await this.cargarPedido(evento.pedidoId);
+    if (!pedido) return;
+
+    const cs = pedido.codigoSeguimiento;
+    const cambiosStr = evento.cambios.join(', ');
+    const datos = { pedidoId: pedido.id, codigoSeguimiento: cs, cambios: cambiosStr };
+
+    const usuariosNotificados = new Set<string>();
+
+    if (pedido.repartidorRecogida) {
+      await this.enviarPlantilla(
+        'PEDIDO_ACTUALIZADO_REPARTIDOR',
+        pedido.repartidorRecogida.usuario.id,
+        ['PUSH'],
+        [cs, cambiosStr],
+        datos,
+      );
+      usuariosNotificados.add(pedido.repartidorRecogida.usuario.id);
+    }
+    if (
+      pedido.repartidorEntrega &&
+      !usuariosNotificados.has(pedido.repartidorEntrega.usuario.id)
+    ) {
+      await this.enviarPlantilla(
+        'PEDIDO_ACTUALIZADO_REPARTIDOR',
+        pedido.repartidorEntrega.usuario.id,
+        ['PUSH'],
+        [cs, cambiosStr],
+        datos,
+      );
+    }
+  }
+
+  @OnEvent(EventosDominio.PedidoRepartidorReasignado, { async: true })
+  async alReasignarRepartidor(
+    evento: PedidoRepartidorReasignadoEvento,
+  ): Promise<void> {
+    const pedido = await this.cargarPedido(evento.pedidoId);
+    if (!pedido) return;
+    const cs = pedido.codigoSeguimiento;
+    const datos = { pedidoId: pedido.id, codigoSeguimiento: cs };
+
+    const nuevo = await this.prisma.perfilRepartidor.findUnique({
+      where: { id: evento.nuevoRepartidorId },
+      select: { usuario: { select: { id: true } } },
+    });
+    if (nuevo) {
+      const clave: ClavePlantilla =
+        evento.lado === 'recogida'
+          ? 'PEDIDO_ASIGNADO_REPARTIDOR'
+          : 'PEDIDO_REPARTO_ASIGNADO_REPARTIDOR';
+      await this.enviarPlantilla(clave, nuevo.usuario.id, ['PUSH'], [cs], datos);
+    }
+
+    if (evento.anteriorRepartidorId) {
+      const anterior = await this.prisma.perfilRepartidor.findUnique({
+        where: { id: evento.anteriorRepartidorId },
+        select: { usuario: { select: { id: true } } },
+      });
+      if (anterior) {
+        await this.enviarPlantilla(
+          'PEDIDO_DESASIGNADO_REPARTIDOR',
+          anterior.usuario.id,
+          ['PUSH'],
+          [cs],
+          datos,
+        );
+      }
     }
   }
 

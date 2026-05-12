@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../core/network/excepciones_api.dart';
 import '../../core/proveedores_globales.dart';
+import '../billetera/proveedor_billetera.dart';
 import 'proveedor_cierre.dart';
 
 class PantallaCierreDiario extends ConsumerStatefulWidget {
@@ -64,6 +65,8 @@ class _PantallaCierreDiarioEstado extends ConsumerState<PantallaCierreDiario> {
         ),
       );
       ref.invalidate(resumenCierreHoyProveedor);
+      ref.invalidate(movimientosPendientesProveedor);
+      ref.invalidate(saldoPendienteProveedor);
       if (mounted) {
         setState(() {
           _foto = null;
@@ -121,17 +124,34 @@ class _PantallaCierreDiarioEstado extends ConsumerState<PantallaCierreDiario> {
                             fontWeight: FontWeight.bold,
                           ),
                     ),
-                    Text('${resumen.cantidadPedidos} pedidos contra-entrega'),
-                    if (resumen.pedidos.isNotEmpty) ...[
+                    Text(
+                      '${resumen.cantidadMovimientos} movimiento${resumen.cantidadMovimientos == 1 ? '' : 's'} pendiente${resumen.cantidadMovimientos == 1 ? '' : 's'}',
+                    ),
+                    if (resumen.movimientos.isNotEmpty) ...[
                       const Divider(height: 24),
-                      ...resumen.pedidos.map(
-                        (p) => Padding(
+                      ...resumen.movimientos.map(
+                        (m) => Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Expanded(child: Text(p.codigoSeguimiento)),
-                              Text('\$${p.montoContraEntrega}'),
+                              Icon(
+                                m.tipo == 'COBRO_RECOGIDA'
+                                    ? Icons.local_shipping
+                                    : Icons.payments_outlined,
+                                size: 18,
+                                color: m.tipo == 'COBRO_RECOGIDA'
+                                    ? Colors.orange
+                                    : Colors.green,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  m.codigoSeguimiento ?? 'sin código',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              Text('\$${m.monto}'),
                             ],
                           ),
                         ),

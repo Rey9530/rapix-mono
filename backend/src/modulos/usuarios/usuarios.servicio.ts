@@ -96,8 +96,36 @@ export class UsuariosServicio {
     return UsuarioDetalleDto.desdeDetalle(usuario);
   }
 
-  obtenerYo(usuario: Usuario): UsuarioPublicoDto {
-    return UsuarioPublicoDto.desde(usuario);
+  async obtenerYo(usuario: Usuario): Promise<UsuarioPublicoDto> {
+    if (usuario.rol !== 'VENDEDOR') {
+      return UsuarioPublicoDto.desde(usuario);
+    }
+
+    // Para VENDEDOR adjuntamos contadores agregados de pedidos y saldo
+    // recargado. perfilVendedor ya viene cargado por JwtEstrategia, pero
+    // lo refrescamos para reflejar saldo reciente.
+    const perfil = await this.prisma.perfilVendedor.findUnique({
+      where: { usuarioId: usuario.id },
+    });
+    if (!perfil) return UsuarioPublicoDto.desde(usuario);
+
+    const [enviosTotales, enviosEntregados] = await Promise.all([
+      this.prisma.pedido.count({
+        where: { vendedorId: perfil.id, estado: { not: 'CANCELADO' } },
+      }),
+      this.prisma.pedido.count({
+        where: { vendedorId: perfil.id, estado: 'ENTREGADO' },
+      }),
+    ]);
+
+    return UsuarioPublicoDto.desde(
+      { ...usuario, perfilVendedor: perfil },
+      {
+        enviosTotales,
+        enviosEntregados,
+        saldoRecargado: perfil.saldoRecargado,
+      },
+    );
   }
 
   async actualizarYo(
