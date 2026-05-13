@@ -32,9 +32,17 @@ export const PLANTILLAS_ES = {
     titulo: 'Pedido {{1}} recogido',
     cuerpo: 'El repartidor ya tiene tu pedido y va al punto de intercambio.',
   },
-  PEDIDO_RECOGIDO_CLIENTE: {
-    titulo: 'Pedido {{1}} en camino',
-    cuerpo: 'Tu pedido {{1}} ya fue recogido. Pronto será entregado.',
+  PEDIDO_CLIENTE_SIN_RESPUESTA_VENDEDOR: {
+    titulo: 'Cliente sin responder',
+    cuerpo: 'El cliente {{2}} del pedido {{1}} no respondió a la confirmación de entrega.',
+  },
+  PEDIDO_CLIENTE_SIN_CONTACTO_VENDEDOR: {
+    titulo: 'No pudimos contactar al cliente',
+    cuerpo: 'No pudimos contactar por WhatsApp al cliente del pedido {{1}}. Motivo: {{2}}.',
+  },
+  PEDIDO_CLIENTE_RECHAZO_VENDEDOR: {
+    titulo: 'Cliente rechazó la entrega',
+    cuerpo: 'El cliente del pedido {{1}} no podrá recibir el envío. Motivo: {{2}}.',
   },
   PEDIDO_EN_TRANSITO_CLIENTE: {
     titulo: 'Pedido {{1}} en tránsito',
@@ -139,6 +147,12 @@ export const PLANTILLAS_ES = {
   PAQUETE_AGOTADO_VENDEDOR: {
     titulo: 'Paquete agotado',
     cuerpo: 'Se agotaron los envíos de tu paquete prepago. Recarga para seguir enviando.',
+  },
+
+  // ── Depósitos a vendedores ─────────────────────────────
+  DEPOSITO_REGISTRADO_VENDEDOR: {
+    titulo: 'Depósito registrado',
+    cuerpo: 'Se te depositó ${{1}} por {{2}} paquete(s). Revisa el comprobante en la app.',
   },
 } as const satisfies Record<string, Plantilla>;
 

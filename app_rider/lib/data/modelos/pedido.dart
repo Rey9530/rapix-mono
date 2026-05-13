@@ -26,6 +26,8 @@ class Pedido with _$Pedido {
     required String id,
     required String codigoSeguimiento,
     required EstadoPedido estado,
+    String? vendedorId,
+    String? nombreVendedor,
     String? nombreCliente,
     String? telefonoCliente,
     String? emailCliente,
@@ -53,4 +55,16 @@ class Pedido with _$Pedido {
   }) = _Pedido;
 
   factory Pedido.fromJson(Map<String, dynamic> json) => _$PedidoFromJson(json);
+
+  /// Normaliza el JSON recibido por endpoints que incluyen la relacion
+  /// `vendedor` anidada (p. ej. `/repartidores/yo/recogidas-pendientes`)
+  /// al shape aplanado que usa el modelo Freezed.
+  factory Pedido.desdeJsonAnidado(Map<String, dynamic> json) {
+    final vendedor = json['vendedor'] as Map<String, dynamic>?;
+    return Pedido.fromJson({
+      ...json,
+      'vendedorId': vendedor?['id'] ?? json['vendedorId'],
+      'nombreVendedor': vendedor?['nombreNegocio'],
+    }..remove('vendedor'));
+  }
 }

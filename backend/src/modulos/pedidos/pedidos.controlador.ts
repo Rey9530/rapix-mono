@@ -28,6 +28,7 @@ import { UsuarioActual } from '../../comun/decoradores/usuario-actual.decorador.
 import type { Usuario } from '../../generated/prisma/client.js';
 import { AsignacionServicio } from './asignacion.servicio.js';
 import { ActualizarPedidoDto } from './dto/actualizar-pedido.dto.js';
+import { AsignarMultipleEntregaDto } from './dto/asignar-multiple-entrega.dto.js';
 import { AsignarMultiplePedidosDto } from './dto/asignar-multiple-pedidos.dto.js';
 import { AsignarPedidoDto } from './dto/asignar-pedido.dto.js';
 import { CancelarPedidoDto } from './dto/cancelar-pedido.dto.js';
@@ -94,6 +95,22 @@ export class PedidosControlador {
     @Body() dto: AsignarMultiplePedidosDto,
   ) {
     return this.asignacion.asignarMultiple(usuario, dto);
+  }
+
+  // ─── Asignación múltiple de ENTREGA — ADMIN ───────
+  @ApiBearerAuth('autenticacion-jwt')
+  @Roles('ADMIN')
+  @Post('asignar-multiple-entrega')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary:
+      'Asignar el rider de entrega a varios pedidos en EN_PUNTO_INTERCAMBIO',
+  })
+  asignarMultipleEntrega(
+    @UsuarioActual() usuario: Usuario,
+    @Body() dto: AsignarMultipleEntregaDto,
+  ) {
+    return this.asignacion.asignarMultipleEntrega(usuario, dto);
   }
 
   // ─── Crear / listar / detalle ─────────────────────

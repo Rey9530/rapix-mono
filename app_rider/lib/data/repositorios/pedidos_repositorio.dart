@@ -10,7 +10,9 @@ class PedidosRepositorio {
 
   Future<List<Pedido>> recogidasPendientes() async {
     final r = await _dio.get<List<dynamic>>('/repartidores/yo/recogidas-pendientes');
-    return r.data!.map((e) => Pedido.fromJson(e as Map<String, dynamic>)).toList();
+    return r.data!
+        .map((e) => Pedido.desdeJsonAnidado(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<List<Pedido>> entregasPendientes() async {
@@ -20,7 +22,36 @@ class PedidosRepositorio {
 
   Future<List<Pedido>> activosEnCurso() async {
     final r = await _dio.get<List<dynamic>>('/repartidores/yo/activos-en-curso');
-    return r.data!.map((e) => Pedido.fromJson(e as Map<String, dynamic>)).toList();
+    return r.data!
+        .map((e) => Pedido.desdeJsonAnidado(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Aplica la misma transición a varios pedidos en paralelo. Cada llamada usa
+  /// el endpoint individual existente; si alguna falla devuelve el error en
+  /// `fallidos` en vez de propagar, para que la UI muestre éxito parcial.
+  Future<ResultadoBulk> transicionesBulk(
+    List<String> ids,
+    Future<Pedido> Function(String id) operacion,
+  ) async {
+    final resultados = await Future.wait(
+      ids.map((id) async {
+        try {
+          await operacion(id);
+          return _ResultadoItem(id, null);
+        } catch (e) {
+          return _ResultadoItem(id, e);
+        }
+      }),
+    );
+    final fallidos = resultados
+        .where((r) => r.error != null)
+        .map((r) => FalloBulk(r.id, r.error!))
+        .toList();
+    return ResultadoBulk(
+      exitosos: resultados.length - fallidos.length,
+      fallidos: fallidos,
+    );
   }
 
   Future<Pedido> pedidoPorId(String id) async {
@@ -112,6 +143,11 @@ class PedidosRepositorio {
     }
   }
 
+  static String mensajeError(Object error) {
+    if (error is ExcepcionApi) return error.mensaje;
+    return 'Error inesperado';
+  }
+
   ExcepcionApi _mapearError(DioException e, String mensajePorDefecto) {
     final statusCode = e.response?.statusCode;
     final data = e.response?.data;
@@ -125,4 +161,27 @@ class PedidosRepositorio {
     }
     return ExcepcionApi(mensaje, codigoHttp: statusCode, codigoNegocio: codigoNegocio);
   }
+}
+
+class ResultadoBulk {
+  final int exitosos;
+  final List<FalloBulk> fallidos;
+
+  const ResultadoBulk({required this.exitosos, required this.fallidos});
+
+  int get total => exitosos + fallidos.length;
+  bool get todoOk => fallidos.isEmpty;
+}
+
+class FalloBulk {
+  final String pedidoId;
+  final Object error;
+
+  const FalloBulk(this.pedidoId, this.error);
+}
+
+class _ResultadoItem {
+  final String id;
+  final Object? error;
+  _ResultadoItem(this.id, this.error);
 }

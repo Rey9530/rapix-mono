@@ -33,6 +33,11 @@ class EsqueletoNavegacion extends StatelessWidget {
             label: 'Paquetes',
           ),
           NavigationDestination(
+            icon: Icon(Icons.payments_outlined),
+            selectedIcon: Icon(Icons.payments),
+            label: 'Cobros',
+          ),
+          NavigationDestination(
             icon: Icon(Icons.person_outline),
             selectedIcon: Icon(Icons.person),
             label: 'Perfil',

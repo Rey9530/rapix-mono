@@ -9,6 +9,7 @@ import { PedidoEstadoCambiadoEvento } from '../../eventos/pedido-estado-cambiado
 import { PedidoRepartidorReasignadoEvento } from '../../eventos/pedido-repartidor-reasignado.evento.js';
 import type { Usuario } from '../../generated/prisma/client.js';
 import { PrismaServicio } from '../../prisma/prisma.servicio.js';
+import { AsignarMultipleEntregaDto } from './dto/asignar-multiple-entrega.dto.js';
 import { AsignarMultiplePedidosDto } from './dto/asignar-multiple-pedidos.dto.js';
 import { AsignarPedidoDto } from './dto/asignar-pedido.dto.js';
 import { PedidoMaquinaEstados } from './maquina-estados/pedido-maquina-estados.js';
@@ -221,6 +222,90 @@ export class AsignacionServicio {
         fallidos.push({ pedidoId, motivo });
       }
     }
+    return { asignados, fallidos };
+  }
+
+  /**
+   * Asigna en lote el rider de entrega a pedidos en EN_PUNTO_INTERCAMBIO.
+   * Valida que el rider pertenezca a la zona de destino de cada pedido.
+   * Permite reasignación silenciosa: si el pedido ya tenía repartidorEntregaId,
+   * emite PedidoRepartidorReasignado para notificar al anterior y al nuevo.
+   * No transiciona el estado: el pedido sigue EN_PUNTO_INTERCAMBIO hasta que
+   * el rider asignado ejecute tomarEntrega.
+   */
+  async asignarMultipleEntrega(
+    usuario: Usuario,
+    dto: AsignarMultipleEntregaDto,
+  ) {
+    const rider = await this.prisma.perfilRepartidor.findUnique({
+      where: { id: dto.repartidorEntregaId },
+      select: { id: true },
+    });
+    if (!rider) {
+      throw new BadRequestException('Repartidor de entrega no existe');
+    }
+
+    const zonasDelRider = await this.prisma.zonaRepartidor.findMany({
+      where: { repartidorId: dto.repartidorEntregaId },
+      select: { zonaId: true },
+    });
+    const zonasIds = new Set(zonasDelRider.map((z) => z.zonaId));
+
+    let asignados = 0;
+    const fallidos: Array<{ pedidoId: string; motivo: string }> = [];
+
+    for (const pedidoId of dto.pedidoIds) {
+      try {
+        const pedido = await this.prisma.pedido.findUnique({
+          where: { id: pedidoId },
+        });
+        if (!pedido) {
+          throw new Error('Pedido no encontrado');
+        }
+        if (pedido.estado !== 'EN_PUNTO_INTERCAMBIO') {
+          throw new Error(
+            `Pedido no está en EN_PUNTO_INTERCAMBIO (estado actual: ${pedido.estado})`,
+          );
+        }
+        if (!pedido.zonaDestinoId) {
+          throw new Error('Pedido sin zona de destino');
+        }
+        if (!zonasIds.has(pedido.zonaDestinoId)) {
+          throw new Error(
+            'Repartidor no pertenece a la zona de destino del pedido',
+          );
+        }
+
+        const anteriorEntregaId = pedido.repartidorEntregaId;
+        if (anteriorEntregaId === dto.repartidorEntregaId) {
+          asignados++;
+          continue;
+        }
+
+        await this.prisma.pedido.update({
+          where: { id: pedidoId },
+          data: { repartidorEntregaId: dto.repartidorEntregaId },
+        });
+
+        this.eventos.emit(
+          EventosDominio.PedidoRepartidorReasignado,
+          new PedidoRepartidorReasignadoEvento(
+            pedidoId,
+            'entrega',
+            anteriorEntregaId,
+            dto.repartidorEntregaId,
+            usuario.id,
+          ),
+        );
+
+        asignados++;
+      } catch (e) {
+        const motivo =
+          e instanceof Error ? e.message : 'Error desconocido al asignar';
+        fallidos.push({ pedidoId, motivo });
+      }
+    }
+
     return { asignados, fallidos };
   }
 

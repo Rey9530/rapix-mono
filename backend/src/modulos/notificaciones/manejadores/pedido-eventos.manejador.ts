@@ -75,8 +75,8 @@ export class PedidoEventosManejador {
 
       case 'RECOGIDO':
         await this.enviarPlantilla('PEDIDO_RECOGIDO_VENDEDOR', pedido.vendedor.usuario.id, ['PUSH'], [cs], datosPedido);
-        await this.enviarClienteWhatsapp(pedido, 'PEDIDO_RECOGIDO_CLIENTE', [cs]);
-        // PUSH al cliente: solo aplica si tuviéramos Usuario; lo omitimos.
+        // El contacto al cliente al estado RECOGIDO ahora lo maneja
+        // ConfirmacionEntregaModulo (bot de IA por WhatsApp).
         break;
 
       case 'EN_TRANSITO':

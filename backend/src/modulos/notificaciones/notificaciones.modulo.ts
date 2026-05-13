@@ -5,6 +5,7 @@ import { EmailAdaptador } from './canales/email.adaptador.js';
 import { MailgunAdaptador } from './canales/mailgun.adaptador.js';
 import { PushAdaptador } from './canales/push.adaptador.js';
 import { CierreEventosManejador } from './manejadores/cierre-eventos.manejador.js';
+import { DepositoEventosManejador } from './manejadores/deposito-eventos.manejador.js';
 import { PaqueteEventosManejador } from './manejadores/paquete-eventos.manejador.js';
 import { PedidoEventosManejador } from './manejadores/pedido-eventos.manejador.js';
 import { VerificacionCorreoManejador } from './manejadores/verificacion-correo.manejador.js';
@@ -31,6 +32,7 @@ import { TokensDispositivoServicio } from './tokens-dispositivo.servicio.js';
     PedidoEventosManejador,
     CierreEventosManejador,
     PaqueteEventosManejador,
+    DepositoEventosManejador,
     VerificacionCorreoManejador,
   ],
   exports: [NotificacionesServicio],

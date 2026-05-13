@@ -101,6 +101,7 @@ export interface FiltrosPedido {
   vendedorId?: string;
   repartidorId?: string;
   zonaId?: string;
+  zonaDestinoId?: string;
   desde?: string;
   hasta?: string;
   busqueda?: string;

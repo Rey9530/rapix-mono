@@ -202,7 +202,8 @@ export class RepartidoresServicio {
     if (tipo === 'recogidas-pendientes') {
       return this.prisma.pedido.findMany({
         where: { repartidorRecogidaId: perfil.id, estado: 'ASIGNADO' },
-        orderBy: { creadoEn: 'asc' },
+        include: { vendedor: { select: { id: true, nombreNegocio: true } } },
+        orderBy: [{ vendedorId: 'asc' }, { creadoEn: 'asc' }],
       });
     }
     if (tipo === 'entregas-pendientes') {
@@ -217,7 +218,8 @@ export class RepartidoresServicio {
           repartidorRecogidaId: perfil.id,
           estado: { in: ['RECOGIDO', 'EN_TRANSITO', 'EN_PUNTO_INTERCAMBIO'] },
         },
-        orderBy: { recogidoEn: 'asc' },
+        include: { vendedor: { select: { id: true, nombreNegocio: true } } },
+        orderBy: [{ vendedorId: 'asc' }, { recogidoEn: 'asc' }],
       });
     }
     return this.prisma.pedido.findMany({

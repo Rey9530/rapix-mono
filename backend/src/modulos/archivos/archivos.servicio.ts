@@ -135,6 +135,10 @@ export class ArchivosServicio implements OnModuleInit {
     return `vendedores/${usuarioId}/logo-${Date.now()}.${ext}`;
   }
 
+  static armarKeyDeposito(vendedorId: string, ext = 'jpg'): string {
+    return `depositos/${vendedorId}/comprobante-${Date.now()}.${ext}`;
+  }
+
   static armarKeyWhatsapp(chatId: string, ext = 'bin'): string {
     return `whatsapp/${chatId}/${Date.now()}.${ext}`;
   }

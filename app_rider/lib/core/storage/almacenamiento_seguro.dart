@@ -9,7 +9,10 @@ class AlmacenamientoSeguro {
   final FlutterSecureStorage _almacen;
 
   AlmacenamientoSeguro({FlutterSecureStorage? almacen})
-      : _almacen = almacen ?? const FlutterSecureStorage();
+      : _almacen = almacen ??
+            const FlutterSecureStorage(
+              aOptions: AndroidOptions(encryptedSharedPreferences: true),
+            );
 
   Future<void> guardarTokens({
     required String tokenAcceso,

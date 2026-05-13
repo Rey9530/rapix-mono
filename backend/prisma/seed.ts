@@ -51,16 +51,16 @@ const VENDEDORES: SeedVendedor[] = [
     latitud: 13.6929,
     longitud: -89.2182,
   },
-  {
-    email: 'vendedor2@delivery.com',
-    telefono: '+50370010002',
-    contrasena: 'Vendedor123!',
-    nombreCompleto: 'Tienda Dos',
-    nombreNegocio: 'Tienda Dos',
-    direccion: 'Col Roma #45, San Salvador',
-    latitud: 13.6950,
-    longitud: -89.2200,
-  },
+  // {
+  //   email: 'vendedor2@delivery.com',
+  //   telefono: '+50370010002',
+  //   contrasena: 'Vendedor123!',
+  //   nombreCompleto: 'Tienda Dos',
+  //   nombreNegocio: 'Tienda Dos',
+  //   direccion: 'Col Roma #45, San Salvador',
+  //   latitud: 13.6950,
+  //   longitud: -89.2200,
+  // },
 ];
 
 const REPARTIDORES: SeedRepartidor[] = [
@@ -73,23 +73,23 @@ const REPARTIDORES: SeedRepartidor[] = [
     placa: 'M-1001',
     documentoIdentidad: '01234567-1',
   },
-  {
-    email: 'repartidor2@delivery.com',
-    telefono: '+50370020002',
-    contrasena: 'Repartidor123!',
-    nombreCompleto: 'María Repartidora',
-    tipoVehiculo: 'moto',
-    placa: 'M-1002',
-    documentoIdentidad: '01234567-2',
-  },
-  {
-    email: 'repartidor3@delivery.com',
-    telefono: '+50370020003',
-    contrasena: 'Repartidor123!',
-    nombreCompleto: 'Pedro Ciclista',
-    tipoVehiculo: 'bicicleta',
-    documentoIdentidad: '01234567-3',
-  },
+  // {
+  //   email: 'repartidor2@delivery.com',
+  //   telefono: '+50370020002',
+  //   contrasena: 'Repartidor123!',
+  //   nombreCompleto: 'María Repartidora',
+  //   tipoVehiculo: 'moto',
+  //   placa: 'M-1002',
+  //   documentoIdentidad: '01234567-2',
+  // },
+  // {
+  //   email: 'repartidor3@delivery.com',
+  //   telefono: '+50370020003',
+  //   contrasena: 'Repartidor123!',
+  //   nombreCompleto: 'Pedro Ciclista',
+  //   tipoVehiculo: 'bicicleta',
+  //   documentoIdentidad: '01234567-3',
+  // },
 ];
 
 const prisma = new PrismaClient({

@@ -1,0 +1,354 @@
+<div class="container-fluid p-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="m-0">Depósitos a vendedores</h4>
+  </div>
+
+  @if (mensajeError()) {
+    <div class="alert alert-danger">{{ mensajeError() }}</div>
+  }
+
+  <!-- 1. Selector de vendedor + resumen -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-6">
+          <label class="form-label">Vendedor</label>
+          <select
+            class="form-select"
+            (change)="alCambiarVendedor($any($event.target).value)"
+          >
+            <option value="">Selecciona un vendedor...</option>
+            @for (v of vendedores(); track v.id) {
+              <option [value]="v.id">
+                {{ v.nombreNegocio }} — {{ v.usuario.nombreCompleto }}
+              </option>
+            }
+          </select>
+        </div>
+        @if (saldo()) {
+          <div class="col-md-3">
+            <div class="text-muted small">Total pendiente</div>
+            <div class="fs-4 fw-bold text-success">
+              ${{ saldo()!.totalPendiente }}
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="text-muted small">Paquetes</div>
+            <div class="fs-4 fw-bold">{{ saldo()!.cantidad }}</div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Tabla de paquetes pendientes -->
+  @if (vendedorSeleccionadoId()) {
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h6 class="m-0">Paquetes pendientes de depósito</h6>
+        <div>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary me-2"
+            (click)="alSeleccionarTodos()"
+            [disabled]="!saldo() || saldo()!.paquetes.length === 0"
+          >
+            Seleccionar todos
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary"
+            (click)="alLimpiarSeleccion()"
+            [disabled]="seleccionados().size === 0"
+          >
+            Limpiar
+          </button>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover m-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 40px"></th>
+              <th>Código</th>
+              <th>Cliente</th>
+              <th>Destino</th>
+              <th>Entregado</th>
+              <th class="text-end">Monto</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (cargandoSaldo()) {
+              <tr>
+                <td colspan="6" class="text-center p-4">
+                  <div class="spinner-border text-primary"></div>
+                </td>
+              </tr>
+            } @else if (!saldo() || saldo()!.paquetes.length === 0) {
+              <tr>
+                <td colspan="6" class="text-center text-muted p-4">
+                  Este vendedor no tiene paquetes pendientes de depósito.
+                </td>
+              </tr>
+            } @else {
+              @for (p of saldo()!.paquetes; track trackPaquete($index, p)) {
+                <tr [class.table-active]="estaSeleccionado(p.id)">
+                  <td>
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      [id]="'paq-' + p.id"
+                      [checked]="estaSeleccionado(p.id)"
+                      (change)="alAlternarPaquete(p.id, $event)"
+                    />
+                  </td>
+                  <td>
+                    <label class="form-check-label" [for]="'paq-' + p.id">
+                      <strong>{{ p.codigoSeguimiento }}</strong>
+                    </label>
+                  </td>
+                  <td>{{ p.nombreCliente }}</td>
+                  <td>
+                    <small>{{ p.direccionDestino }}</small>
+                  </td>
+                  <td>
+                    @if (p.entregadoEn) {
+                      {{ p.entregadoEn | date: "dd/MM/yyyy HH:mm" }}
+                    } @else {
+                      -
+                    }
+                  </td>
+                  <td class="text-end fw-semibold">
+                    ${{ p.montoContraEntrega }}
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3. Formulario de depósito -->
+    <div class="card mb-3">
+      <div class="card-body">
+        <form [formGroup]="form" (ngSubmit)="registrar()">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Fecha de depósito *</label>
+              <input
+                type="date"
+                class="form-control"
+                formControlName="fechaDeposito"
+              />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Cuenta bancaria (opcional)</label>
+              <select class="form-select" formControlName="cuentaBancariaId">
+                <option value="">— Sin especificar —</option>
+                @for (c of cuentasBancarias(); track c.id) {
+                  <option [value]="c.id">{{ formatearCuenta(c) }}</option>
+                }
+              </select>
+              @if (
+                cuentasBancarias().length === 0 && vendedorSeleccionadoId()
+              ) {
+                <small class="text-muted">
+                  Este vendedor no tiene cuentas bancarias activas registradas.
+                </small>
+              }
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Referencia</label>
+              <input
+                class="form-control"
+                formControlName="referencia"
+                placeholder="Ej: SPEI-12345"
+                maxlength="100"
+              />
+            </div>
+            <div class="col-12">
+              <label class="form-label">Notas (opcional)</label>
+              <textarea
+                class="form-control"
+                rows="2"
+                formControlName="notas"
+                maxlength="500"
+              ></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Comprobante (imagen) *</label>
+              <input
+                type="file"
+                class="form-control"
+                accept="image/*"
+                (change)="alSeleccionarComprobante($event)"
+              />
+              @if (comprobante()) {
+                <div class="mt-2 d-flex align-items-center gap-2">
+                  <span class="badge bg-info">{{ comprobante()!.type }}</span>
+                  <span class="flex-grow-1">
+                    {{ comprobante()!.name }} —
+                    {{ formatearTamano(comprobante()!.size) }}
+                  </span>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-secondary"
+                    (click)="quitarComprobante()"
+                  >
+                    Quitar
+                  </button>
+                </div>
+              } @else {
+                <small class="text-muted">
+                  Acepta JPG, PNG o WebP. Máximo 10 MB.
+                </small>
+              }
+            </div>
+          </div>
+
+          <hr />
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="text-muted small">Suma seleccionada</div>
+              <div class="fs-4 fw-bold">
+                ${{ sumaSeleccionada() | number: "1.2-2" }}
+                <small class="text-muted">
+                  ({{ seleccionados().size }} paquetes)
+                </small>
+              </div>
+            </div>
+            <button
+              type="submit"
+              class="btn btn-primary px-4"
+              [disabled]="!puedeRegistrar()"
+            >
+              @if (enviando()) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+                Registrando...
+              } @else {
+                Registrar depósito
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- 4. Historial colapsable -->
+  <div class="card">
+    <div
+      class="card-header d-flex justify-content-between align-items-center"
+      role="button"
+      (click)="alternarHistorial()"
+    >
+      <h6 class="m-0">
+        Historial de depósitos
+        <span class="text-muted">({{ historialTotal() }})</span>
+      </h6>
+      <span>
+        @if (historialAbierto()) {
+          ▾
+        } @else {
+          ▸
+        }
+      </span>
+    </div>
+    @if (historialAbierto()) {
+      <div class="table-responsive">
+        <table class="table table-hover m-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Fecha</th>
+              <th>Vendedor</th>
+              <th>Paquetes</th>
+              <th class="text-end">Monto</th>
+              <th>Referencia</th>
+              <th>Comprobante</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (cargandoHistorial()) {
+              <tr>
+                <td colspan="6" class="text-center p-4">
+                  <div class="spinner-border text-primary"></div>
+                </td>
+              </tr>
+            } @else if (historial().length === 0) {
+              <tr>
+                <td colspan="6" class="text-center text-muted p-4">
+                  Aún no hay depósitos registrados.
+                </td>
+              </tr>
+            } @else {
+              @for (d of historial(); track trackDeposito($index, d)) {
+                <tr>
+                  <td>{{ d.fechaDeposito | date: "dd/MM/yyyy" }}</td>
+                  <td>{{ d.vendedor?.nombreNegocio ?? "—" }}</td>
+                  <td>{{ d._count?.pedidos ?? 0 }}</td>
+                  <td class="text-end fw-semibold">${{ d.monto }}</td>
+                  <td>{{ d.referencia ?? "—" }}</td>
+                  <td>
+                    @if (d.urlComprobante) {
+                      <a
+                        [href]="d.urlComprobante"
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        Ver
+                      </a>
+                    } @else {
+                      —
+                    }
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (historialTotalPaginas() > 1) {
+        <div class="card-body">
+          <nav>
+            <ul class="pagination m-0 justify-content-end">
+              <li
+                class="page-item"
+                [class.disabled]="filtrosHistorial.pagina === 1"
+              >
+                <button
+                  class="page-link"
+                  type="button"
+                  (click)="irPaginaHistorial((filtrosHistorial.pagina ?? 1) - 1)"
+                >
+                  ‹
+                </button>
+              </li>
+              <li class="page-item active">
+                <span class="page-link">
+                  {{ filtrosHistorial.pagina }} /
+                  {{ historialTotalPaginas() }}
+                </span>
+              </li>
+              <li
+                class="page-item"
+                [class.disabled]="
+                  filtrosHistorial.pagina === historialTotalPaginas()
+                "
+              >
+                <button
+                  class="page-link"
+                  type="button"
+                  (click)="irPaginaHistorial((filtrosHistorial.pagina ?? 1) + 1)"
+                >
+                  ›
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      }
+    }
+  </div>
+</div>

@@ -334,6 +334,7 @@ export class PedidosServicio {
         { zonaDestinoId: filtros.zonaId },
       ];
     }
+    if (filtros.zonaDestinoId) where.zonaDestinoId = filtros.zonaDestinoId;
     if (filtros.vendedorId && usuario.rol === 'ADMIN') where.vendedorId = filtros.vendedorId;
     if (filtros.repartidorId && usuario.rol === 'ADMIN') {
       where.OR = [

@@ -21,7 +21,7 @@ class AppRepartidor extends ConsumerWidget {
     final router = ref.watch(enrutadorAppProveedor);
 
     return MaterialApp.router(
-      title: 'Rapix Repartidor',
+      title: 'Rapix Rider',
       debugShowCheckedModeBanner: false,
       theme: TemaApp.claro(),
       routerConfig: router,

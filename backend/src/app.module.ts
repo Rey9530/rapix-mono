@@ -17,6 +17,7 @@ import { RepartidoresModulo } from './modulos/repartidores/repartidores.modulo.j
 import { ArchivosModulo } from './modulos/archivos/archivos.modulo.js';
 import { BilleteraModulo } from './modulos/billetera/billetera.modulo.js';
 import { PedidosModulo } from './modulos/pedidos/pedidos.modulo.js';
+import { VendedoresModulo } from './modulos/vendedores/vendedores.modulo.js';
 import { CuentasBancariasModulo } from './modulos/cuentas-bancarias/cuentas-bancarias.modulo.js';
 import { PaquetesRecargadosModulo } from './modulos/paquetes-recargados/paquetes-recargados.modulo.js';
 import { ReglasTarifaModulo } from './modulos/reglas-tarifa/reglas-tarifa.modulo.js';
@@ -26,6 +27,7 @@ import { CierresFinancierosModulo } from './modulos/cierres-financieros/cierres-
 import { NotificacionesModulo } from './modulos/notificaciones/notificaciones.modulo.js';
 import { MapasModulo } from './modulos/mapas/mapas.modulo.js';
 import { WhatsappModulo } from './modulos/whatsapp/whatsapp.modulo.js';
+import { ConfirmacionEntregaModulo } from './modulos/confirmacion-entrega/confirmacion-entrega.modulo.js';
 
 @Module({
   imports: [
@@ -55,12 +57,14 @@ import { WhatsappModulo } from './modulos/whatsapp/whatsapp.modulo.js';
     PaquetesRecargadosModulo,
     ReglasTarifaModulo,
     PedidosModulo,
+    VendedoresModulo,
     BilleteraModulo,
     CierresFinancierosModulo,
     NotificacionesModulo,
     MapasModulo,
     ReportesModulo,
     WhatsappModulo,
+    ConfirmacionEntregaModulo,
   ],
   providers: [
     // Orden: Throttler primero, JWT, luego Roles.

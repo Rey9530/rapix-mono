@@ -51,6 +51,14 @@ export const content: Routes = [
       ),
   },
   {
+    path: "depositos",
+    data: { title: "Depósitos a vendedores", breadcrumb: "Depósitos" },
+    loadChildren: () =>
+      import("../../components/depositos/depositos.routes").then(
+        (r) => r.depositosRoutes,
+      ),
+  },
+  {
     path: "whatsapp",
     data: { title: "WhatsApp", breadcrumb: "WhatsApp" },
     loadChildren: () =>

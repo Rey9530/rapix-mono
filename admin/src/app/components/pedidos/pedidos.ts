@@ -7,6 +7,7 @@ import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { ToastrService } from "ngx-toastr";
 import { Subject, debounceTime } from "rxjs";
 
+import { AsignarEntregasZonaModal } from "./asignar-entregas-zona.modal";
 import { AsignarPedidoModal } from "./asignar-pedido.modal";
 import { AsignarRetirosZonaModal } from "./asignar-retiros-zona.modal";
 import { PedidosServicio } from "../../nucleo/datos/pedidos.servicio";
@@ -145,6 +146,17 @@ export class Pedidos implements OnInit {
 
   abrirAsignarRetirosZona(): void {
     const ref = this.modal.open(AsignarRetirosZonaModal, {
+      size: "xl",
+      centered: true,
+      backdrop: "static",
+    });
+    ref.closed.subscribe((res) => {
+      if (res === "asignado") this.recargar();
+    });
+  }
+
+  abrirAsignarEntregasZona(): void {
+    const ref = this.modal.open(AsignarEntregasZonaModal, {
       size: "xl",
       centered: true,
       backdrop: "static",

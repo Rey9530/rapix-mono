@@ -24,6 +24,8 @@ mixin _$Pedido {
   String get id => throw _privateConstructorUsedError;
   String get codigoSeguimiento => throw _privateConstructorUsedError;
   EstadoPedido get estado => throw _privateConstructorUsedError;
+  String? get vendedorId => throw _privateConstructorUsedError;
+  String? get nombreVendedor => throw _privateConstructorUsedError;
   String? get nombreCliente => throw _privateConstructorUsedError;
   String? get telefonoCliente => throw _privateConstructorUsedError;
   String? get emailCliente => throw _privateConstructorUsedError;
@@ -67,6 +69,8 @@ abstract class $PedidoCopyWith<$Res> {
     String id,
     String codigoSeguimiento,
     EstadoPedido estado,
+    String? vendedorId,
+    String? nombreVendedor,
     String? nombreCliente,
     String? telefonoCliente,
     String? emailCliente,
@@ -112,6 +116,8 @@ class _$PedidoCopyWithImpl<$Res, $Val extends Pedido>
     Object? id = null,
     Object? codigoSeguimiento = null,
     Object? estado = null,
+    Object? vendedorId = freezed,
+    Object? nombreVendedor = freezed,
     Object? nombreCliente = freezed,
     Object? telefonoCliente = freezed,
     Object? emailCliente = freezed,
@@ -151,6 +157,14 @@ class _$PedidoCopyWithImpl<$Res, $Val extends Pedido>
                 ? _value.estado
                 : estado // ignore: cast_nullable_to_non_nullable
                       as EstadoPedido,
+            vendedorId: freezed == vendedorId
+                ? _value.vendedorId
+                : vendedorId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            nombreVendedor: freezed == nombreVendedor
+                ? _value.nombreVendedor
+                : nombreVendedor // ignore: cast_nullable_to_non_nullable
+                      as String?,
             nombreCliente: freezed == nombreCliente
                 ? _value.nombreCliente
                 : nombreCliente // ignore: cast_nullable_to_non_nullable
@@ -265,6 +279,8 @@ abstract class _$$PedidoImplCopyWith<$Res> implements $PedidoCopyWith<$Res> {
     String id,
     String codigoSeguimiento,
     EstadoPedido estado,
+    String? vendedorId,
+    String? nombreVendedor,
     String? nombreCliente,
     String? telefonoCliente,
     String? emailCliente,
@@ -309,6 +325,8 @@ class __$$PedidoImplCopyWithImpl<$Res>
     Object? id = null,
     Object? codigoSeguimiento = null,
     Object? estado = null,
+    Object? vendedorId = freezed,
+    Object? nombreVendedor = freezed,
     Object? nombreCliente = freezed,
     Object? telefonoCliente = freezed,
     Object? emailCliente = freezed,
@@ -348,6 +366,14 @@ class __$$PedidoImplCopyWithImpl<$Res>
             ? _value.estado
             : estado // ignore: cast_nullable_to_non_nullable
                   as EstadoPedido,
+        vendedorId: freezed == vendedorId
+            ? _value.vendedorId
+            : vendedorId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        nombreVendedor: freezed == nombreVendedor
+            ? _value.nombreVendedor
+            : nombreVendedor // ignore: cast_nullable_to_non_nullable
+                  as String?,
         nombreCliente: freezed == nombreCliente
             ? _value.nombreCliente
             : nombreCliente // ignore: cast_nullable_to_non_nullable
@@ -456,6 +482,8 @@ class _$PedidoImpl implements _Pedido {
     required this.id,
     required this.codigoSeguimiento,
     required this.estado,
+    this.vendedorId,
+    this.nombreVendedor,
     this.nombreCliente,
     this.telefonoCliente,
     this.emailCliente,
@@ -491,6 +519,10 @@ class _$PedidoImpl implements _Pedido {
   final String codigoSeguimiento;
   @override
   final EstadoPedido estado;
+  @override
+  final String? vendedorId;
+  @override
+  final String? nombreVendedor;
   @override
   final String? nombreCliente;
   @override
@@ -542,7 +574,7 @@ class _$PedidoImpl implements _Pedido {
 
   @override
   String toString() {
-    return 'Pedido(id: $id, codigoSeguimiento: $codigoSeguimiento, estado: $estado, nombreCliente: $nombreCliente, telefonoCliente: $telefonoCliente, emailCliente: $emailCliente, direccionOrigen: $direccionOrigen, latitudOrigen: $latitudOrigen, longitudOrigen: $longitudOrigen, notasOrigen: $notasOrigen, direccionDestino: $direccionDestino, latitudDestino: $latitudDestino, longitudDestino: $longitudDestino, notasDestino: $notasDestino, descripcionPaquete: $descripcionPaquete, pesoPaqueteKg: $pesoPaqueteKg, valorDeclarado: $valorDeclarado, urlFotoPaquete: $urlFotoPaquete, metodoPago: $metodoPago, modoFacturacion: $modoFacturacion, costoEnvio: $costoEnvio, montoContraEntrega: $montoContraEntrega, recogidoEn: $recogidoEn, enIntercambioEn: $enIntercambioEn, entregadoEn: $entregadoEn, creadoEn: $creadoEn, actualizadoEn: $actualizadoEn)';
+    return 'Pedido(id: $id, codigoSeguimiento: $codigoSeguimiento, estado: $estado, vendedorId: $vendedorId, nombreVendedor: $nombreVendedor, nombreCliente: $nombreCliente, telefonoCliente: $telefonoCliente, emailCliente: $emailCliente, direccionOrigen: $direccionOrigen, latitudOrigen: $latitudOrigen, longitudOrigen: $longitudOrigen, notasOrigen: $notasOrigen, direccionDestino: $direccionDestino, latitudDestino: $latitudDestino, longitudDestino: $longitudDestino, notasDestino: $notasDestino, descripcionPaquete: $descripcionPaquete, pesoPaqueteKg: $pesoPaqueteKg, valorDeclarado: $valorDeclarado, urlFotoPaquete: $urlFotoPaquete, metodoPago: $metodoPago, modoFacturacion: $modoFacturacion, costoEnvio: $costoEnvio, montoContraEntrega: $montoContraEntrega, recogidoEn: $recogidoEn, enIntercambioEn: $enIntercambioEn, entregadoEn: $entregadoEn, creadoEn: $creadoEn, actualizadoEn: $actualizadoEn)';
   }
 
   @override
@@ -554,6 +586,10 @@ class _$PedidoImpl implements _Pedido {
             (identical(other.codigoSeguimiento, codigoSeguimiento) ||
                 other.codigoSeguimiento == codigoSeguimiento) &&
             (identical(other.estado, estado) || other.estado == estado) &&
+            (identical(other.vendedorId, vendedorId) ||
+                other.vendedorId == vendedorId) &&
+            (identical(other.nombreVendedor, nombreVendedor) ||
+                other.nombreVendedor == nombreVendedor) &&
             (identical(other.nombreCliente, nombreCliente) ||
                 other.nombreCliente == nombreCliente) &&
             (identical(other.telefonoCliente, telefonoCliente) ||
@@ -611,6 +647,8 @@ class _$PedidoImpl implements _Pedido {
     id,
     codigoSeguimiento,
     estado,
+    vendedorId,
+    nombreVendedor,
     nombreCliente,
     telefonoCliente,
     emailCliente,
@@ -656,6 +694,8 @@ abstract class _Pedido implements Pedido {
     required final String id,
     required final String codigoSeguimiento,
     required final EstadoPedido estado,
+    final String? vendedorId,
+    final String? nombreVendedor,
     final String? nombreCliente,
     final String? telefonoCliente,
     final String? emailCliente,
@@ -690,6 +730,10 @@ abstract class _Pedido implements Pedido {
   String get codigoSeguimiento;
   @override
   EstadoPedido get estado;
+  @override
+  String? get vendedorId;
+  @override
+  String? get nombreVendedor;
   @override
   String? get nombreCliente;
   @override

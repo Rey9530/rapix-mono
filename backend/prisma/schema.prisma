@@ -158,6 +158,32 @@ enum EstadoMensajeWhatsapp {
 }
 
 // ============================================================
+// ENUMS — Confirmación de entrega por IA
+// ============================================================
+
+enum EstadoConfirmacionEntrega {
+  INICIADA
+  PROCESANDO
+  REPREGUNTADA
+  RESUELTA
+  EXPIRADA
+  FALLIDA
+}
+
+enum IntencionConfirmacion {
+  CONFIRMA
+  RECHAZA
+  CONDICIONAL
+  AMBIGUO
+}
+
+enum RolMensajeConfirmacion {
+  SISTEMA
+  CLIENTE
+  BOT
+}
+
+// ============================================================
 // MODELOS — Usuarios y Autenticación
 // ============================================================
 
@@ -250,6 +276,7 @@ model PerfilVendedor {
   pedidos          Pedido[]
   paquetes         PaqueteRecargado[]
   cuentasBancarias CuentaBancaria[]
+  depositos        DepositoVendedor[]
 
   @@map("perfiles_vendedor")
 }
@@ -282,6 +309,7 @@ model CuentaBancaria {
 
   perfilVendedor PerfilVendedor @relation(fields: [perfilVendedorId], references: [id], onDelete: Cascade)
   banco          Banco          @relation(fields: [bancoId], references: [id])
+  depositos      DepositoVendedor[]
 
   @@index([perfilVendedorId, activa])
   @@map("cuentas_bancarias")
@@ -414,6 +442,9 @@ model Pedido {
   repartidorRecogidaId String?
   repartidorEntregaId  String?
 
+  // Liquidacion al vendedor (Fase 9) — null = pendiente; no-null = ya depositado.
+  depositoId String?
+
   programadoPara  DateTime?
   recogidoEn      DateTime?
   enIntercambioEn DateTime?
@@ -421,6 +452,10 @@ model Pedido {
   canceladoEn     DateTime?
   motivoCancelado String?
   motivoFallo     String?
+
+  entregaConfirmada    Boolean?
+  notaRider            String?
+  fechaContactoCliente DateTime?
 
   creadoEn      DateTime @default(now())
   actualizadoEn DateTime @updatedAt
@@ -431,15 +466,18 @@ model Pedido {
   repartidorRecogida PerfilRepartidor? @relation("RepartidorRecogida", fields: [repartidorRecogidaId], references: [id])
   repartidorEntrega  PerfilRepartidor? @relation("RepartidorEntrega", fields: [repartidorEntregaId], references: [id])
   paqueteRecargado   PaqueteRecargado? @relation(fields: [paqueteRecargadoId], references: [id])
+  deposito           DepositoVendedor? @relation(fields: [depositoId], references: [id], onDelete: SetNull)
 
-  eventos         EventoPedido[]
-  comprobantes    ComprobanteEntrega[]
-  movimientosCaja MovimientoCajaRepartidor[]
+  eventos             EventoPedido[]
+  comprobantes        ComprobanteEntrega[]
+  movimientosCaja     MovimientoCajaRepartidor[]
+  confirmacionEntrega ConfirmacionEntregaConversacion?
 
   @@index([estado])
   @@index([vendedorId, creadoEn])
   @@index([repartidorRecogidaId])
   @@index([repartidorEntregaId])
+  @@index([vendedorId, depositoId, metodoPago, estado])
   @@map("pedidos")
 }
 
@@ -566,6 +604,35 @@ model MovimientoCajaRepartidor {
   @@index([repartidorId, cierreId])
   @@index([repartidorId, creadoEn])
   @@map("movimientos_caja_repartidor")
+}
+
+// ============================================================
+// LIQUIDACIONES A VENDEDORES — Fase 9
+//
+// Cada DepositoVendedor agrupa N pedidos CONTRA_ENTREGA cuyo
+// montoContraEntrega ya fue trasladado al vendedor. Un Pedido se
+// considera "pendiente de deposito" cuando depositoId IS NULL y
+// "ya depositado" cuando depositoId IS NOT NULL.
+// ============================================================
+
+model DepositoVendedor {
+  id               String   @id @default(uuid())
+  vendedorId       String
+  cuentaBancariaId String?
+  monto            Decimal  @db.Decimal(12, 2)
+  fechaDeposito    DateTime
+  referencia       String?
+  notas            String?
+  urlComprobante   String?
+  creadoEn         DateTime @default(now())
+  actualizadoEn    DateTime @updatedAt
+
+  vendedor       PerfilVendedor  @relation(fields: [vendedorId], references: [id], onDelete: Restrict)
+  cuentaBancaria CuentaBancaria? @relation(fields: [cuentaBancariaId], references: [id], onDelete: SetNull)
+  pedidos        Pedido[]
+
+  @@index([vendedorId, fechaDeposito])
+  @@map("depositos_vendedor")
 }
 
 // ============================================================
@@ -711,8 +778,9 @@ model ChatWhatsapp {
   creadoEn        DateTime         @default(now())
   actualizadoEn   DateTime         @updatedAt
 
-  mensajes      MensajeWhatsapp[]
-  participantes ParticipanteGrupoWhatsapp[]
+  mensajes              MensajeWhatsapp[]
+  participantes         ParticipanteGrupoWhatsapp[]
+  confirmacionesEntrega ConfirmacionEntregaConversacion[]
 
   @@index([tipo, ultimoMensajeEn])
   @@index([archivado, ultimoMensajeEn])
@@ -772,11 +840,12 @@ model MensajeWhatsapp {
   creadoEn      DateTime @default(now())
   actualizadoEn DateTime @updatedAt
 
-  chat       ChatWhatsapp             @relation(fields: [chatId], references: [id], onDelete: Cascade)
-  remitente  ContactoWhatsapp?        @relation("MensajesPorContacto", fields: [remitenteId], references: [id], onDelete: SetNull)
-  respondeA  MensajeWhatsapp?         @relation("RespuestaMensaje", fields: [respondeAId], references: [id], onDelete: SetNull)
-  respuestas MensajeWhatsapp[]        @relation("RespuestaMensaje")
-  reacciones ReaccionMensajeWhatsapp[]
+  chat                     ChatWhatsapp                     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  remitente                ContactoWhatsapp?                @relation("MensajesPorContacto", fields: [remitenteId], references: [id], onDelete: SetNull)
+  respondeA                MensajeWhatsapp?                 @relation("RespuestaMensaje", fields: [respondeAId], references: [id], onDelete: SetNull)
+  respuestas               MensajeWhatsapp[]                @relation("RespuestaMensaje")
+  reacciones               ReaccionMensajeWhatsapp[]
+  intercambiosConfirmacion ConfirmacionEntregaIntercambio[]
 
   @@unique([chatId, externoId])
   @@index([chatId, creadoEn])
@@ -798,4 +867,52 @@ model ReaccionMensajeWhatsapp {
   @@unique([mensajeId, jidAutor])
   @@index([mensajeId])
   @@map("reacciones_mensaje_whatsapp")
+}
+
+// ============================================================
+// MODELOS — Confirmacion de entrega por IA (WhatsApp + OpenAI)
+//
+// Al pasar un pedido a RECOGIDO, se crea una conversacion 1:1 con el cliente
+// final. Cada turno (saliente del bot o entrante del cliente) se registra
+// como un intercambio para auditoria y para alimentar el contexto a OpenAI
+// en respuestas posteriores.
+// ============================================================
+
+model ConfirmacionEntregaConversacion {
+  id                          String                    @id @default(uuid())
+  pedidoId                    String                    @unique
+  chatId                      String?
+  estado                      EstadoConfirmacionEntrega @default(INICIADA)
+  intencionFinal              IntencionConfirmacion?
+  iniciadaEn                  DateTime                  @default(now())
+  resueltaEn                  DateTime?
+  vencimientoNotificacionEn   DateTime
+  notificacionVendedorEnviada Boolean                   @default(false)
+  motivoFalla                 String?
+  creadoEn                    DateTime                  @default(now())
+  actualizadoEn               DateTime                  @updatedAt
+
+  pedido       Pedido                          @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  chat         ChatWhatsapp?                   @relation(fields: [chatId], references: [id], onDelete: SetNull)
+  intercambios ConfirmacionEntregaIntercambio[]
+
+  @@index([estado, vencimientoNotificacionEn, notificacionVendedorEnviada])
+  @@index([chatId, estado])
+  @@map("confirmaciones_entrega_conversacion")
+}
+
+model ConfirmacionEntregaIntercambio {
+  id                   String                  @id @default(uuid())
+  conversacionId       String
+  rol                  RolMensajeConfirmacion
+  texto                String
+  mensajeWhatsappId    String?
+  intencionClasificada IntencionConfirmacion?
+  creadoEn             DateTime                @default(now())
+
+  conversacion    ConfirmacionEntregaConversacion @relation(fields: [conversacionId], references: [id], onDelete: Cascade)
+  mensajeWhatsapp MensajeWhatsapp?                @relation(fields: [mensajeWhatsappId], references: [id], onDelete: SetNull)
+
+  @@index([conversacionId, creadoEn])
+  @@map("confirmacion_entrega_intercambios")
 }

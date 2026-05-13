@@ -6,22 +6,43 @@ import 'utiles_estado_pedido.dart';
 class TarjetaPedido extends StatelessWidget {
   final Pedido pedido;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
+  final bool seleccionada;
+  final bool deshabilitada;
 
-  const TarjetaPedido({super.key, required this.pedido, this.onTap});
+  const TarjetaPedido({
+    super.key,
+    required this.pedido,
+    this.onTap,
+    this.onLongPress,
+    this.seleccionada = false,
+    this.deshabilitada = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final color = colorEstadoPedido(pedido.estado);
     final direccion = _direccionPrincipal();
     final icono = _icono();
+    final primary = Theme.of(context).colorScheme.primary;
 
-    return Card(
+    final card = Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      shape: seleccionada
+          ? RoundedRectangleBorder(
+              side: BorderSide(color: primary, width: 2),
+              borderRadius: BorderRadius.circular(12),
+            )
+          : null,
       child: ListTile(
-        onTap: onTap,
+        onTap: deshabilitada ? null : onTap,
+        onLongPress: deshabilitada ? null : onLongPress,
         leading: CircleAvatar(
           backgroundColor: color,
-          child: Icon(icono, color: Colors.white),
+          child: Icon(
+            seleccionada ? Icons.check : icono,
+            color: Colors.white,
+          ),
         ),
         title: Text(
           pedido.codigoSeguimiento,
@@ -61,6 +82,9 @@ class TarjetaPedido extends StatelessWidget {
             : const Icon(Icons.chevron_right),
       ),
     );
+
+    if (!deshabilitada) return card;
+    return Opacity(opacity: 0.45, child: IgnorePointer(child: card));
   }
 
   String _direccionPrincipal() {

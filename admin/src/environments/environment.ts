@@ -2,6 +2,6 @@
 // automáticamente vía `fileReplacements` de angular.json.
 export const environment = {
   produccion: true,
-  urlApi: "/api/v1",
+  urlApi: "https://b.rapixapp.com/api/v1",
   tokenMapboxPublico: "",
 };

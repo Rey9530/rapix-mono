@@ -18,7 +18,7 @@ class PantallaInicio extends ConsumerWidget {
   ];
 
   int _indiceActual(String location) {
-    if (location.startsWith('/inicio/en-curso')) return 1;
+    if (location.startsWith('/')) return 1;
     if (location.startsWith('/inicio/entregas')) return 2;
     if (location.startsWith('/inicio/mapa')) return 3;
     if (location.startsWith('/inicio/cierre')) return 4;
@@ -43,7 +43,9 @@ class PantallaInicio extends ConsumerWidget {
             icon: const Icon(Icons.logout),
             tooltip: 'Cerrar sesión',
             onPressed: () async {
-              await ref.read(controladorAutenticacionProveedor.notifier).cerrarSesion();
+              await ref
+                  .read(controladorAutenticacionProveedor.notifier)
+                  .cerrarSesion();
             },
           ),
         ],
@@ -53,11 +55,23 @@ class PantallaInicio extends ConsumerWidget {
         selectedIndex: indice,
         onDestinationSelected: (i) => context.go(_rutas[i]),
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.archive_outlined), label: 'Recoger'),
-          NavigationDestination(icon: Icon(Icons.directions_bike_outlined), label: 'En curso'),
-          NavigationDestination(icon: Icon(Icons.local_shipping_outlined), label: 'Entregar'),
+          NavigationDestination(
+            icon: Icon(Icons.archive_outlined),
+            label: 'Recoger',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.directions_bike_outlined),
+            label: 'En curso',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.local_shipping_outlined),
+            label: 'Entregar',
+          ),
           NavigationDestination(icon: Icon(Icons.map_outlined), label: 'Mapa'),
-          NavigationDestination(icon: Icon(Icons.point_of_sale_outlined), label: 'Cierre'),
+          NavigationDestination(
+            icon: Icon(Icons.point_of_sale_outlined),
+            label: 'Cierre',
+          ),
         ],
       ),
     );

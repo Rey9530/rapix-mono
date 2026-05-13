@@ -28,6 +28,13 @@ export const menuItems: IMenu[] = [
     level: 1,
   },
   {
+    title: "Depósitos a vendedores",
+    icon: "gift",
+    type: "link",
+    path: "/depositos",
+    level: 1,
+  },
+  {
     title: "WhatsApp",
     icon: "chat",
     type: "link",

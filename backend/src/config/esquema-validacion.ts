@@ -77,4 +77,11 @@ export const esquemaValidacionEnv = Joi.object({
   WHATSAPP_BAILEYS_LOG_LEVEL: Joi.string()
     .valid('trace', 'debug', 'info', 'warn', 'error', 'fatal', 'silent')
     .default('warn'),
+
+  // Confirmacion de entrega por IA (OpenAI). OPENAI_API_KEY queda opcional:
+  // si falta, el clasificador degrada a AMBIGUO con respuesta generica y
+  // el backend levanta igual (util en dev/test).
+  OPENAI_API_KEY: Joi.string().min(1).optional().allow(''),
+  OPENAI_MODEL_CONFIRMACION_ENTREGA: Joi.string().default('gpt-4o-mini'),
+  CONFIRMACION_ENTREGA_TIMEOUT_MINUTOS: Joi.number().integer().min(1).max(1440).default(60),
 });

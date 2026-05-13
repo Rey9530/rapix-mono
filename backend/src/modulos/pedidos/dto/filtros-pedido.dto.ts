@@ -10,6 +10,9 @@ export class FiltrosPedidoDto extends PaginacionDto {
   zonaId?: string;
 
   @IsOptional() @IsUUID()
+  zonaDestinoId?: string;
+
+  @IsOptional() @IsUUID()
   vendedorId?: string;
 
   @IsOptional() @IsUUID()

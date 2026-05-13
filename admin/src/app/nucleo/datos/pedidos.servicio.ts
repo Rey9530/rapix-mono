@@ -18,6 +18,11 @@ export interface AsignarMultiplePayload {
   repartidorEntregaId?: string;
 }
 
+export interface AsignarMultipleEntregaPayload {
+  pedidoIds: string[];
+  repartidorEntregaId: string;
+}
+
 export interface RespuestaAsignarMultiple {
   asignados: number;
   fallidos: Array<{ pedidoId: string; motivo: string }>;
@@ -63,6 +68,15 @@ export class PedidosServicio {
   ): Observable<RespuestaAsignarMultiple> {
     return this.http.post<RespuestaAsignarMultiple>(
       `${this.base}/asignar-multiple`,
+      payload,
+    );
+  }
+
+  asignarMultipleEntrega(
+    payload: AsignarMultipleEntregaPayload,
+  ): Observable<RespuestaAsignarMultiple> {
+    return this.http.post<RespuestaAsignarMultiple>(
+      `${this.base}/asignar-multiple-entrega`,
       payload,
     );
   }
