@@ -64,6 +64,11 @@ export const esquemaValidacionEnv = Joi.object({
     otherwise: Joi.string().optional().allow(''),
   }),
   MAILGUN_SANDBOX: Joi.boolean().truthy('true').falsy('false').default(false),
+
+  // Recuperación de contraseña — código corto enviado por correo (Fase 1).
+  RECUPERACION_CONTRASENA_TTL_MINUTOS: Joi.number().integer().min(1).default(15),
+  RECUPERACION_CONTRASENA_MAX_INTENTOS: Joi.number().integer().min(1).default(5),
+
   FIREBASE_PROJECT_ID: Joi.string().optional().allow(''),
   FIREBASE_PRIVATE_KEY: Joi.string().optional().allow(''),
   FIREBASE_CLIENT_EMAIL: Joi.string().optional().allow(''),

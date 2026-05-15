@@ -201,14 +201,15 @@ model Usuario {
   creadoEn           DateTime      @default(now())
   actualizadoEn      DateTime      @updatedAt
 
-  perfilAdmin              PerfilAdmin?
-  perfilVendedor           PerfilVendedor?
-  perfilRepartidor         PerfilRepartidor?
-  tokensRefresco           TokenRefresco[]
-  registrosAuditoria       RegistroAuditoria[]
-  notificaciones           Notificacion[]
-  tokensDispositivo        TokenDispositivo[]
-  tokensVerificacionCorreo TokenVerificacionCorreo[]
+  perfilAdmin                   PerfilAdmin?
+  perfilVendedor                PerfilVendedor?
+  perfilRepartidor              PerfilRepartidor?
+  tokensRefresco                TokenRefresco[]
+  registrosAuditoria            RegistroAuditoria[]
+  notificaciones                Notificacion[]
+  tokensDispositivo             TokenDispositivo[]
+  tokensVerificacionCorreo      TokenVerificacionCorreo[]
+  tokensRecuperacionContrasena  TokenRecuperacionContrasena[]
 
   @@index([rol, estado])
   @@map("usuarios")
@@ -226,6 +227,21 @@ model TokenVerificacionCorreo {
 
   @@index([usuarioId])
   @@map("tokens_verificacion_correo")
+}
+
+model TokenRecuperacionContrasena {
+  id        String    @id @default(uuid())
+  usuarioId String
+  tokenHash String    @unique
+  expiraEn  DateTime
+  usadoEn   DateTime?
+  intentos  Int       @default(0)
+  creadoEn  DateTime  @default(now())
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId])
+  @@map("tokens_recuperacion_contrasena")
 }
 
 model TokenRefresco {

@@ -8,6 +8,7 @@ import { CierreEventosManejador } from './manejadores/cierre-eventos.manejador.j
 import { DepositoEventosManejador } from './manejadores/deposito-eventos.manejador.js';
 import { PaqueteEventosManejador } from './manejadores/paquete-eventos.manejador.js';
 import { PedidoEventosManejador } from './manejadores/pedido-eventos.manejador.js';
+import { RecuperacionContrasenaManejador } from './manejadores/recuperacion-contrasena.manejador.js';
 import { VerificacionCorreoManejador } from './manejadores/verificacion-correo.manejador.js';
 import { NotificacionesControlador } from './notificaciones.controlador.js';
 import { NotificacionesServicio } from './notificaciones.servicio.js';
@@ -34,6 +35,7 @@ import { TokensDispositivoServicio } from './tokens-dispositivo.servicio.js';
     PaqueteEventosManejador,
     DepositoEventosManejador,
     VerificacionCorreoManejador,
+    RecuperacionContrasenaManejador,
   ],
   exports: [NotificacionesServicio],
 })

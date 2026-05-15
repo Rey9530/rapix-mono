@@ -69,6 +69,32 @@ class AutenticacionRepositorio {
   Future<void> reenviarVerificacion() async {
     await _dio.post<void>('/autenticacion/reenviar-verificacion');
   }
+
+  Future<void> solicitarRecuperacionContrasena({
+    required String email,
+  }) async {
+    await _dio.post<void>(
+      '/autenticacion/solicitar-recuperacion-contrasena',
+      data: {'email': email},
+      options: Options(extra: {'omitirAuth': true}),
+    );
+  }
+
+  Future<void> confirmarRecuperacionContrasena({
+    required String email,
+    required String codigo,
+    required String nuevaContrasena,
+  }) async {
+    await _dio.post<void>(
+      '/autenticacion/confirmar-recuperacion-contrasena',
+      data: {
+        'email': email,
+        'codigo': codigo,
+        'nuevaContrasena': nuevaContrasena,
+      },
+      options: Options(extra: {'omitirAuth': true}),
+    );
+  }
 }
 
 final autenticacionRepositorioProvider =

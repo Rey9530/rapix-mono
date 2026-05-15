@@ -211,6 +211,40 @@ class AutenticacionControlador extends StateNotifier<AutenticacionEstado> {
     await repositorio.reenviarVerificacion();
   }
 
+  Future<bool> solicitarRecuperacionContrasena({
+    required String email,
+  }) async {
+    state = state.copia(cargando: true, limpiarError: true);
+    try {
+      await repositorio.solicitarRecuperacionContrasena(email: email);
+      state = state.copia(cargando: false);
+      return true;
+    } catch (e) {
+      state = state.copia(cargando: false, error: _formatearError(e));
+      return false;
+    }
+  }
+
+  Future<bool> confirmarRecuperacionContrasena({
+    required String email,
+    required String codigo,
+    required String nuevaContrasena,
+  }) async {
+    state = state.copia(cargando: true, limpiarError: true);
+    try {
+      await repositorio.confirmarRecuperacionContrasena(
+        email: email,
+        codigo: codigo,
+        nuevaContrasena: nuevaContrasena,
+      );
+      state = state.copia(cargando: false);
+      return true;
+    } catch (e) {
+      state = state.copia(cargando: false, error: _formatearError(e));
+      return false;
+    }
+  }
+
   Future<void> cerrarSesion() async {
     final tokenFcm = await almacen.tokenFcm();
     if (tokenFcm != null && tokenFcm.isNotEmpty) {
@@ -265,6 +299,16 @@ class AutenticacionControlador extends StateNotifier<AutenticacionEstado> {
 
   String _formatearError(Object error) {
     final mensaje = error.toString();
+    if (mensaje.contains('429')) {
+      return 'Demasiadas solicitudes. Intenta en unos minutos.';
+    }
+    if (mensaje.contains('bloqueado')) {
+      return 'Demasiados intentos. Solicita un código nuevo.';
+    }
+    if (mensaje.contains('Código inválido') ||
+        mensaje.contains('expirado')) {
+      return 'Código inválido o expirado';
+    }
     if (mensaje.contains('401')) return 'Credenciales invalidas';
     if (mensaje.contains('409')) return 'El usuario ya existe';
     if (mensaje.contains('PEDIDO_ZONA_INVALIDA')) {

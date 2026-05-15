@@ -5,7 +5,9 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mb;
 
 import '../../caracteristicas/autenticacion/autenticacion_controlador.dart';
 import '../notificaciones/servicio_notificaciones.dart';
+import '../../caracteristicas/autenticacion/confirmar_recuperacion_pantalla.dart';
 import '../../caracteristicas/autenticacion/iniciar_sesion_pantalla.dart';
+import '../../caracteristicas/autenticacion/recuperar_contrasena_pantalla.dart';
 import '../../caracteristicas/autenticacion/registrar_pantalla.dart';
 import '../../caracteristicas/autenticacion/selector_ubicacion_pantalla.dart';
 import '../../caracteristicas/cobros/cobros_pantalla.dart';
@@ -56,6 +58,7 @@ final enrutadorAppProvider = Provider<GoRouter>((ref) {
       final esPublica = ruta == '/splash' ||
           ruta.startsWith('/iniciar-sesion') ||
           ruta.startsWith('/registrar') ||
+          ruta.startsWith('/recuperar-contrasena') ||
           ruta.startsWith('/seleccionar-ubicacion') ||
           ruta.startsWith('/seguimiento/');
 
@@ -80,6 +83,18 @@ final enrutadorAppProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/registrar',
         builder: (_, _) => const RegistrarPantalla(),
+      ),
+      GoRoute(
+        path: '/recuperar-contrasena',
+        builder: (_, _) => const RecuperarContrasenaPantalla(),
+        routes: [
+          GoRoute(
+            path: 'confirmar',
+            builder: (_, state) => ConfirmarRecuperacionPantalla(
+              email: state.extra as String? ?? '',
+            ),
+          ),
+        ],
       ),
       GoRoute(
         path: '/seleccionar-ubicacion',

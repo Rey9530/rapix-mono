@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,25 +8,30 @@ import '../../nucleo/tema/tokens_rapix.dart';
 import '../../widgets/wordmark_rapix.dart';
 import 'autenticacion_controlador.dart';
 
-class IniciarSesionPantalla extends ConsumerStatefulWidget {
-  const IniciarSesionPantalla({super.key});
+class ConfirmarRecuperacionPantalla extends ConsumerStatefulWidget {
+  const ConfirmarRecuperacionPantalla({super.key, required this.email});
+
+  final String email;
 
   @override
-  ConsumerState<IniciarSesionPantalla> createState() =>
-      _IniciarSesionPantallaEstado();
+  ConsumerState<ConfirmarRecuperacionPantalla> createState() =>
+      _ConfirmarRecuperacionPantallaEstado();
 }
 
-class _IniciarSesionPantallaEstado
-    extends ConsumerState<IniciarSesionPantalla> {
+class _ConfirmarRecuperacionPantallaEstado
+    extends ConsumerState<ConfirmarRecuperacionPantalla> {
   final _formulario = GlobalKey<FormState>();
-  final _emailCtrl = TextEditingController();
+  final _codigoCtrl = TextEditingController();
   final _contrasenaCtrl = TextEditingController();
+  final _confirmarCtrl = TextEditingController();
   bool _verContrasena = false;
+  bool _verConfirmar = false;
 
   @override
   void dispose() {
-    _emailCtrl.dispose();
+    _codigoCtrl.dispose();
     _contrasenaCtrl.dispose();
+    _confirmarCtrl.dispose();
     super.dispose();
   }
 
@@ -33,13 +39,19 @@ class _IniciarSesionPantallaEstado
     if (!_formulario.currentState!.validate()) return;
     final ok = await ref
         .read(autenticacionControladorProvider.notifier)
-        .iniciarSesion(
-          email: _emailCtrl.text.trim(),
-          contrasena: _contrasenaCtrl.text,
+        .confirmarRecuperacionContrasena(
+          email: widget.email,
+          codigo: _codigoCtrl.text.trim(),
+          nuevaContrasena: _contrasenaCtrl.text,
         );
     if (!mounted) return;
     if (ok) {
-      context.go('/inicio');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Contraseña actualizada. Inicia sesión.'),
+        ),
+      );
+      context.go('/iniciar-sesion');
     } else {
       final error = ref.read(autenticacionControladorProvider).error;
       if (error != null) {
@@ -49,12 +61,22 @@ class _IniciarSesionPantallaEstado
     }
   }
 
-  void _mostrarProximamente(String funcionalidad) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$funcionalidad — próximamente'),
-      ),
-    );
+  Future<void> _reenviar() async {
+    final ok = await ref
+        .read(autenticacionControladorProvider.notifier)
+        .solicitarRecuperacionContrasena(email: widget.email);
+    if (!mounted) return;
+    if (ok) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Te enviamos un nuevo código.')),
+      );
+    } else {
+      final error = ref.read(autenticacionControladorProvider).error;
+      if (error != null) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(error)));
+      }
+    }
   }
 
   @override
@@ -62,10 +84,18 @@ class _IniciarSesionPantallaEstado
     final estado = ref.watch(autenticacionControladorProvider);
     return Scaffold(
       backgroundColor: tokens(context).fondo,
+      appBar: AppBar(
+        backgroundColor: tokens(context).fondo,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: tokens(context).tinta),
+          onPressed: () => context.pop(),
+        ),
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 420),
               child: Form(
@@ -74,86 +104,107 @@ class _IniciarSesionPantallaEstado
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const _Encabezado(),
-                    const SizedBox(height: 36),
-                    const _Bienvenida(),
+                    const SizedBox(height: 32),
+                    _Titulo(email: widget.email),
                     const SizedBox(height: 24),
                     _CampoEtiquetado(
-                      etiqueta: 'Correo electrónico',
-                      hint: 'tu@correo.com',
-                      controlador: _emailCtrl,
-                      tipoTeclado: TextInputType.emailAddress,
-                      autofill: const [AutofillHints.email],
+                      etiqueta: 'Código de 6 dígitos',
+                      hint: '••••••',
+                      controlador: _codigoCtrl,
+                      tipoTeclado: TextInputType.number,
+                      maxLength: 6,
+                      formatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
                       validador: (v) {
                         final t = v?.trim() ?? '';
-                        if (t.isEmpty) return 'Ingresa tu correo';
-                        if (!t.contains('@')) return 'Correo inválido';
+                        if (t.isEmpty) return 'Ingresa el código';
+                        if (!RegExp(r'^[0-9]{6}$').hasMatch(t)) {
+                          return 'El código debe tener 6 dígitos';
+                        }
                         return null;
                       },
                     ),
                     const SizedBox(height: 14),
                     _CampoEtiquetado(
-                      etiqueta: 'Contraseña',
+                      etiqueta: 'Nueva contraseña',
                       hint: '••••••••',
                       controlador: _contrasenaCtrl,
                       ofuscar: !_verContrasena,
-                      autofill: const [AutofillHints.password],
+                      autofill: const [AutofillHints.newPassword],
                       sufijo: _BotonSufijoTexto(
                         texto: _verContrasena ? 'OCULTAR' : 'MOSTRAR',
                         alPresionar: () => setState(
                           () => _verContrasena = !_verContrasena,
                         ),
                       ),
-                      validador: (v) => (v == null || v.isEmpty)
-                          ? 'Ingresa tu contraseña'
-                          : null,
+                      validador: (v) {
+                        final t = v ?? '';
+                        if (t.isEmpty) return 'Ingresa una nueva contraseña';
+                        if (t.length < 8) {
+                          return 'Mínimo 8 caracteres';
+                        }
+                        if (!RegExp(r'[A-Z]').hasMatch(t)) {
+                          return 'Debe incluir una mayúscula';
+                        }
+                        if (!RegExp(r'[0-9]').hasMatch(t)) {
+                          return 'Debe incluir un número';
+                        }
+                        if (!RegExp(r'[!@#\$%^&*(),.?":{}|<>_\-+=/\\\[\]~`'
+                                "'"
+                                r';]')
+                            .hasMatch(t)) {
+                          return 'Debe incluir un símbolo';
+                        }
+                        return null;
+                      },
                     ),
-                    const SizedBox(height: 4),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () => context.push('/recuperar-contrasena'),
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    const SizedBox(height: 6),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 2),
+                      child: Text(
+                        'Mínimo 8 caracteres con mayúscula, número y símbolo.',
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          color: tokens(context).tintaSuave,
+                          height: 1.4,
                         ),
-                        child: const Text('¿Olvidaste tu contraseña?'),
                       ),
                     ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 14),
+                    _CampoEtiquetado(
+                      etiqueta: 'Confirmar contraseña',
+                      hint: '••••••••',
+                      controlador: _confirmarCtrl,
+                      ofuscar: !_verConfirmar,
+                      sufijo: _BotonSufijoTexto(
+                        texto: _verConfirmar ? 'OCULTAR' : 'MOSTRAR',
+                        alPresionar: () => setState(
+                          () => _verConfirmar = !_verConfirmar,
+                        ),
+                      ),
+                      validador: (v) {
+                        if (v == null || v.isEmpty) {
+                          return 'Confirma tu contraseña';
+                        }
+                        if (v != _contrasenaCtrl.text) {
+                          return 'Las contraseñas no coinciden';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 22),
                     _BotonPrincipal(
-                      etiqueta: 'Iniciar sesión',
+                      etiqueta: 'Cambiar contraseña',
                       cargando: estado.cargando,
                       alPresionar: estado.cargando ? null : _enviar,
                     ),
-                    const SizedBox(height: 22),
-                    const _DivisorOContinua(),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _BotonOAuth(
-                            etiqueta: 'Google',
-                            alPresionar: () =>
-                                _mostrarProximamente('Login con Google'),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _BotonOAuth(
-                            etiqueta: 'Apple',
-                            alPresionar: () =>
-                                _mostrarProximamente('Login con Apple'),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    _PieRegistro(
-                      alPresionar: () => context.push('/registrar'),
+                    const SizedBox(height: 12),
+                    Center(
+                      child: TextButton(
+                        onPressed: estado.cargando ? null : _reenviar,
+                        child: const Text('¿No te llegó? Reenviar código'),
+                      ),
                     ),
                   ],
                 ),
@@ -173,24 +224,17 @@ class _Encabezado extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const WordmarkRapix(tamano: 32),
-        const SizedBox(height: 8),
-        Text(
-          'Logística simple para tu negocio',
-          style: GoogleFonts.inter(
-            fontSize: 13,
-            color: tokens(context).tintaSilenciada,
-            height: 1.5,
-          ),
-        ),
+      children: const [
+        WordmarkRapix(tamano: 28),
       ],
     );
   }
 }
 
-class _Bienvenida extends StatelessWidget {
-  const _Bienvenida();
+class _Titulo extends StatelessWidget {
+  const _Titulo({required this.email});
+
+  final String email;
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +242,7 @@ class _Bienvenida extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Bienvenido de vuelta',
+          'Verifica el código',
           style: GoogleFonts.inter(
             fontSize: 26,
             fontWeight: FontWeight.w700,
@@ -208,12 +252,25 @@ class _Bienvenida extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        Text(
-          'Inicia sesión para gestionar tus envíos.',
-          style: GoogleFonts.inter(
-            fontSize: 13,
-            color: tokens(context).tintaSilenciada,
-            height: 1.5,
+        RichText(
+          text: TextSpan(
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: tokens(context).tintaSilenciada,
+              height: 1.5,
+            ),
+            children: [
+              const TextSpan(text: 'Enviamos un código a '),
+              TextSpan(
+                text: email,
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: tokens(context).tinta,
+                ),
+              ),
+              const TextSpan(text: '. Ingrésalo abajo junto a tu nueva contraseña.'),
+            ],
           ),
         ),
       ],
@@ -231,6 +288,8 @@ class _CampoEtiquetado extends StatelessWidget {
     this.sufijo,
     this.validador,
     this.autofill,
+    this.maxLength,
+    this.formatters,
   });
 
   final String etiqueta;
@@ -241,6 +300,8 @@ class _CampoEtiquetado extends StatelessWidget {
   final Widget? sufijo;
   final String? Function(String?)? validador;
   final Iterable<String>? autofill;
+  final int? maxLength;
+  final List<TextInputFormatter>? formatters;
 
   @override
   Widget build(BuildContext context) {
@@ -264,6 +325,8 @@ class _CampoEtiquetado extends StatelessWidget {
           obscureText: ofuscar,
           autofillHints: autofill,
           validator: validador,
+          maxLength: maxLength,
+          inputFormatters: formatters,
           style: GoogleFonts.inter(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -272,6 +335,7 @@ class _CampoEtiquetado extends StatelessWidget {
           ),
           decoration: InputDecoration(
             hintText: hint,
+            counterText: '',
             suffixIcon: sufijo,
             suffixIconConstraints: const BoxConstraints(
               minWidth: 0,
@@ -352,86 +416,6 @@ class _BotonPrincipal extends StatelessWidget {
                 ),
               )
             : Text(etiqueta),
-      ),
-    );
-  }
-}
-
-class _DivisorOContinua extends StatelessWidget {
-  const _DivisorOContinua();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Expanded(child: Divider()),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Text(
-            'O CONTINÚA CON',
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: tokens(context).tintaSuave,
-              letterSpacing: 0.5,
-            ),
-          ),
-        ),
-        const Expanded(child: Divider()),
-      ],
-    );
-  }
-}
-
-class _BotonOAuth extends StatelessWidget {
-  const _BotonOAuth({
-    required this.etiqueta,
-    required this.alPresionar,
-  });
-
-  final String etiqueta;
-  final VoidCallback alPresionar;
-
-  @override
-  Widget build(BuildContext context) {
-    return OutlinedButton(
-      onPressed: alPresionar,
-      child: Text(etiqueta),
-    );
-  }
-}
-
-class _PieRegistro extends StatelessWidget {
-  const _PieRegistro({required this.alPresionar});
-
-  final VoidCallback alPresionar;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            '¿Aún no tienes cuenta? ',
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              color: tokens(context).tintaSilenciada,
-            ),
-          ),
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: alPresionar,
-            child: Text(
-              'Regístrate',
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: TokensRapix.verde,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

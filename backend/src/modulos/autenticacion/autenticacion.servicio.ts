@@ -19,6 +19,7 @@ import { RefrescarDto } from './dto/refrescar.dto.js';
 import { RegistrarDto, RolRegistrable } from './dto/registrar.dto.js';
 import { RespuestaAutenticacionDto } from './dto/respuesta-autenticacion.dto.js';
 import { UsuarioPublicoDto } from './dto/usuario-publico.dto.js';
+import { RecuperacionContrasenaServicio } from './recuperacion-contrasena.servicio.js';
 import { VerificacionCorreoServicio } from './verificacion-correo.servicio.js';
 
 interface ContextoPeticion {
@@ -39,6 +40,7 @@ export class AutenticacionServicio {
     private readonly prisma: PrismaServicio,
     private readonly jwtService: JwtService,
     private readonly verificacionCorreo: VerificacionCorreoServicio,
+    private readonly recuperacionContrasena: RecuperacionContrasenaServicio,
   ) {}
 
   async registrar(
@@ -114,6 +116,18 @@ export class AutenticacionServicio {
 
   async verificarCorreo(token: string): Promise<void> {
     await this.verificacionCorreo.verificar(token);
+  }
+
+  async solicitarRecuperacionContrasena(email: string): Promise<void> {
+    await this.recuperacionContrasena.solicitar(email);
+  }
+
+  async confirmarRecuperacionContrasena(
+    email: string,
+    codigo: string,
+    nuevaContrasena: string,
+  ): Promise<void> {
+    await this.recuperacionContrasena.confirmar(email, codigo, nuevaContrasena);
   }
 
   async iniciarSesion(

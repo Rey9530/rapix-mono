@@ -18,16 +18,19 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
 import { Publico } from '../../comun/decoradores/publico.decorador.js';
 import { UsuarioActual } from '../../comun/decoradores/usuario-actual.decorador.js';
 import type { Usuario } from '../../generated/prisma/client.js';
 import { AutenticacionServicio } from './autenticacion.servicio.js';
 import { CerrarSesionDto } from './dto/cerrar-sesion.dto.js';
+import { ConfirmarRecuperacionContrasenaDto } from './dto/confirmar-recuperacion-contrasena.dto.js';
 import { IniciarSesionDto } from './dto/iniciar-sesion.dto.js';
 import { RefrescarDto } from './dto/refrescar.dto.js';
 import { RegistrarDto } from './dto/registrar.dto.js';
 import { RespuestaAutenticacionDto } from './dto/respuesta-autenticacion.dto.js';
+import { SolicitarRecuperacionContrasenaDto } from './dto/solicitar-recuperacion-contrasena.dto.js';
 
 @ApiTags('Autenticacion')
 @Controller('autenticacion')
@@ -121,6 +124,46 @@ export class AutenticacionControlador {
   ): Promise<{ enviado: true }> {
     await this.servicio.reenviarVerificacionCorreo(usuario);
     return { enviado: true };
+  }
+
+  @Publico()
+  @Throttle({ default: { limit: 5, ttl: 3_600_000 } })
+  @Post('solicitar-recuperacion-contrasena')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Solicita un código de recuperación de contraseña por correo',
+  })
+  @ApiOkResponse({
+    description:
+      'Siempre responde 200 aunque el email no exista (anti-enumeración). El código solo se envía si la cuenta existe y está activa.',
+  })
+  async solicitarRecuperacionContrasena(
+    @Body() dto: SolicitarRecuperacionContrasenaDto,
+  ): Promise<{ enviado: true }> {
+    await this.servicio.solicitarRecuperacionContrasena(dto.email);
+    return { enviado: true };
+  }
+
+  @Publico()
+  @Throttle({ default: { limit: 10, ttl: 600_000 } })
+  @Post('confirmar-recuperacion-contrasena')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary:
+      'Confirma el código de recuperación y establece la nueva contraseña',
+  })
+  @ApiOkResponse({
+    description: 'Contraseña actualizada y todas las sesiones revocadas',
+  })
+  async confirmarRecuperacionContrasena(
+    @Body() dto: ConfirmarRecuperacionContrasenaDto,
+  ): Promise<{ ok: true }> {
+    await this.servicio.confirmarRecuperacionContrasena(
+      dto.email,
+      dto.codigo,
+      dto.nuevaContrasena,
+    );
+    return { ok: true };
   }
 
   private contextoDe(peticion: Request) {

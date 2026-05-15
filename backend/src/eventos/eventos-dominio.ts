@@ -23,6 +23,7 @@ export const EventosDominio = {
   // Usuarios
   UsuarioRegistrado: 'usuario.registrado',
   VerificacionCorreoSolicitada: 'usuario.verificacion_correo_solicitada',
+  RecuperacionContrasenaSolicitada: 'usuario.recuperacion_contrasena_solicitada',
 
   // WhatsApp Baileys (Fase 8)
   WhatsappEstadoCambiado: 'whatsapp.estado_cambiado',
