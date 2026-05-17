@@ -7,6 +7,7 @@ import {
   CrearDepositoPayload,
   CuentaBancariaOpcion,
   DepositoVendedor,
+  DepositoVendedorDetalle,
   FiltrosDepositosAdmin,
   SaldoPendienteVendedor,
   VendedorOpcion,
@@ -48,6 +49,12 @@ export class DepositosServicio {
     if (payload.notas) form.append("notas", payload.notas);
     form.append("comprobante", payload.comprobante);
     return this.http.post<DepositoVendedor>(`${this.base}/depositos`, form);
+  }
+
+  obtenerPorId(id: string): Observable<DepositoVendedorDetalle> {
+    return this.http.get<DepositoVendedorDetalle>(
+      `${this.base}/depositos/${id}`,
+    );
   }
 
   listar(

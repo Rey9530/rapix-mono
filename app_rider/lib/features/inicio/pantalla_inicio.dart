@@ -18,7 +18,7 @@ class PantallaInicio extends ConsumerWidget {
   ];
 
   int _indiceActual(String location) {
-    if (location.startsWith('/')) return 1;
+    if (location.startsWith('/inicio/en-curso')) return 1;
     if (location.startsWith('/inicio/entregas')) return 2;
     if (location.startsWith('/inicio/mapa')) return 3;
     if (location.startsWith('/inicio/cierre')) return 4;

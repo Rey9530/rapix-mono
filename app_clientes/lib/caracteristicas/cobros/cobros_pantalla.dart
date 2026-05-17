@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../datos/modelos/deposito.dart';
@@ -241,122 +242,131 @@ class _PestanaHistorial extends ConsumerWidget {
               ],
             );
           }
-          return _ListaAgrupadaPorDeposito(paquetes: pagina.datos);
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: pagina.datos.length,
+            separatorBuilder: (_, _) => const SizedBox(height: 10),
+            itemBuilder: (context, i) =>
+                _TarjetaDeposito(deposito: pagina.datos[i]),
+          );
         },
       ),
     );
   }
 }
 
-class _ListaAgrupadaPorDeposito extends StatelessWidget {
-  const _ListaAgrupadaPorDeposito({required this.paquetes});
+class _TarjetaDeposito extends StatelessWidget {
+  const _TarjetaDeposito({required this.deposito});
 
-  final List<PaqueteDepositado> paquetes;
-
-  @override
-  Widget build(BuildContext context) {
-    final grupos = <String, List<PaqueteDepositado>>{};
-    for (final p in paquetes) {
-      grupos.putIfAbsent(p.deposito.id, () => []).add(p);
-    }
-
-    final ordenados = grupos.values.toList()
-      ..sort((a, b) =>
-          b.first.deposito.fechaDeposito.compareTo(a.first.deposito.fechaDeposito));
-
-    final widgets = <Widget>[];
-    for (final grupo in ordenados) {
-      final deposito = grupo.first.deposito;
-      final subtotal = grupo.fold<double>(
-        0,
-        (acc, p) => acc + p.montoContraEntrega,
-      );
-      widgets.add(_EncabezadoGrupo(
-        fecha: deposito.fechaDeposito,
-        referencia: deposito.referencia,
-        subtotal: subtotal,
-      ));
-      for (final p in grupo) {
-        widgets.add(_TarjetaPaqueteDepositado(paquete: p));
-      }
-      widgets.add(const SizedBox(height: 12));
-    }
-
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: widgets,
-    );
-  }
-}
-
-class _EncabezadoGrupo extends StatelessWidget {
-  const _EncabezadoGrupo({
-    required this.fecha,
-    required this.subtotal,
-    this.referencia,
-  });
-
-  final DateTime fecha;
-  final double subtotal;
-  final String? referencia;
+  final DepositoHistorial deposito;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _formatoFechaGrupo.format(fecha.toLocal()),
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                if (referencia != null && referencia!.isNotEmpty)
-                  Text(
-                    'Ref. $referencia',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-              ],
-            ),
-          ),
-          Text(
-            _formatoMoneda.format(subtotal),
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+    final tema = Theme.of(context);
+    final referencia = deposito.referencia;
+    final cuenta = deposito.cuentaBancaria;
+    final url = deposito.urlComprobante;
 
-class _TarjetaPaqueteDepositado extends StatelessWidget {
-  const _TarjetaPaqueteDepositado({required this.paquete});
-
-  final PaqueteDepositado paquete;
-
-  @override
-  Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 6),
-      child: ListTile(
-        title: Text(paquete.codigoSeguimiento),
-        subtitle: Text(paquete.nombreCliente),
-        trailing: Text(
-          _formatoMoneda.format(paquete.montoContraEntrega),
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => context.push('/cobros/${deposito.id}'),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              if (url != null && url.isNotEmpty)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    url,
+                    width: 48,
+                    height: 48,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => Container(
+                      width: 48,
+                      height: 48,
+                      color: tema.colorScheme.surfaceContainerHighest,
+                      alignment: Alignment.center,
+                      child: Icon(
+                        Icons.receipt_long_outlined,
+                        color: tema.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                )
+              else
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: tema.colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  alignment: Alignment.center,
+                  child: Icon(
+                    Icons.receipt_long_outlined,
+                    color: tema.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            _formatoFechaGrupo.format(
+                                deposito.fechaDeposito.toLocal()),
+                            style: tema.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _formatoMoneda.format(deposito.monto),
+                          style: tema.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${deposito.cantidadPaquetes} '
+                      'paquete${deposito.cantidadPaquetes == 1 ? '' : 's'}'
+                      '${referencia != null && referencia.isNotEmpty ? '  ·  Ref. $referencia' : ''}',
+                      style: tema.textTheme.bodySmall,
+                    ),
+                    if (cuenta != null) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        '${cuenta.bancoNombre} ${_ultimos4(cuenta.numeroCuenta)}',
+                        style: tema.textTheme.bodySmall?.copyWith(
+                          color: tema.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ),
+              const Icon(Icons.chevron_right, size: 22),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  static String _ultimos4(String numero) {
+    if (numero.length <= 4) return numero;
+    return '··${numero.substring(numero.length - 4)}';
   }
 }
 

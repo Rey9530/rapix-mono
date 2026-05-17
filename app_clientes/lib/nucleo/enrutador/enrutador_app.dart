@@ -10,6 +10,7 @@ import '../../caracteristicas/autenticacion/iniciar_sesion_pantalla.dart';
 import '../../caracteristicas/autenticacion/recuperar_contrasena_pantalla.dart';
 import '../../caracteristicas/autenticacion/registrar_pantalla.dart';
 import '../../caracteristicas/autenticacion/selector_ubicacion_pantalla.dart';
+import '../../caracteristicas/cobros/cobro_detalle_pantalla.dart';
 import '../../caracteristicas/cobros/cobros_pantalla.dart';
 import '../../caracteristicas/inicio/inicio_pantalla.dart';
 import '../../caracteristicas/paquetes/mis_paquetes_pantalla.dart';
@@ -170,6 +171,14 @@ final enrutadorAppProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/cobros',
                 builder: (_, _) => const CobrosPantalla(),
+                routes: [
+                  GoRoute(
+                    path: ':depositoId',
+                    builder: (_, state) => CobroDetallePantalla(
+                      depositoId: state.pathParameters['depositoId']!,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

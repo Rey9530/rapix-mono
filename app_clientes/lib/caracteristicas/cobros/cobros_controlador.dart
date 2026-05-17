@@ -12,3 +12,8 @@ final historialDepositosProvider =
     FutureProvider.autoDispose<PaginaDepositos>((ref) async {
   return ref.watch(cobrosRepositorioProvider).historial();
 });
+
+final depositoDetalleProvider = FutureProvider.autoDispose
+    .family<DepositoDetalle, String>((ref, depositoId) async {
+  return ref.watch(cobrosRepositorioProvider).detalleDeposito(depositoId);
+});

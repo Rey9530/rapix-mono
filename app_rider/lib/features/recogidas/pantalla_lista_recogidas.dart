@@ -32,6 +32,9 @@ class PantallaListaRecogidas extends ConsumerWidget {
                     const SizedBox(height: 12),
                     FilledButton.tonal(
                       onPressed: () => ref.invalidate(recogidasPendientesProveedor),
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size.fromHeight(48),
+                      ),
                       child: const Text('Reintentar'),
                     ),
                   ],

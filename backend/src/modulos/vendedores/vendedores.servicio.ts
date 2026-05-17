@@ -45,50 +45,112 @@ export class VendedoresServicio {
   ) {
     const perfil = await this.requerirPerfilVendedor(usuario);
 
-    const where: Prisma.PedidoWhereInput = {
+    const where: Prisma.DepositoVendedorWhereInput = {
       vendedorId: perfil.id,
-      metodoPago: 'CONTRA_ENTREGA',
-      estado: 'ENTREGADO',
-      depositoId: { not: null },
     };
 
     if (filtros.desde || filtros.hasta) {
       const rango: Prisma.DateTimeFilter = {};
       if (filtros.desde) rango.gte = new Date(filtros.desde);
       if (filtros.hasta) rango.lte = new Date(filtros.hasta);
-      where.deposito = { fechaDeposito: rango };
+      where.fechaDeposito = rango;
     }
 
     const skip = (filtros.pagina - 1) * filtros.limite;
     const [filas, total] = await Promise.all([
-      this.prisma.pedido.findMany({
+      this.prisma.depositoVendedor.findMany({
         where,
         skip,
         take: filtros.limite,
-        orderBy: [
-          { deposito: { fechaDeposito: 'desc' } },
-          { entregadoEn: 'desc' },
-        ],
+        orderBy: { fechaDeposito: 'desc' },
         select: {
           id: true,
-          codigoSeguimiento: true,
-          nombreCliente: true,
-          montoContraEntrega: true,
-          entregadoEn: true,
-          deposito: {
+          fechaDeposito: true,
+          monto: true,
+          referencia: true,
+          urlComprobante: true,
+          _count: { select: { pedidos: true } },
+          cuentaBancaria: {
             select: {
               id: true,
-              fechaDeposito: true,
-              referencia: true,
-              monto: true,
+              alias: true,
+              numeroCuenta: true,
+              tipoCuenta: true,
+              banco: { select: { id: true, nombre: true } },
             },
           },
         },
       }),
-      this.prisma.pedido.count({ where }),
+      this.prisma.depositoVendedor.count({ where }),
     ]);
 
     return RespuestaPaginada.de(filas, total, filtros.pagina, filtros.limite);
+  }
+
+  async obtenerDepositoDeVendedor(usuario: Usuario, depositoId: string) {
+    const perfil = await this.requerirPerfilVendedor(usuario);
+
+    const deposito = await this.prisma.depositoVendedor.findUnique({
+      where: { id: depositoId },
+      select: {
+        id: true,
+        vendedorId: true,
+        monto: true,
+        fechaDeposito: true,
+        referencia: true,
+        notas: true,
+        urlComprobante: true,
+        creadoEn: true,
+        cuentaBancaria: {
+          select: {
+            id: true,
+            tipoCuenta: true,
+            numeroCuenta: true,
+            alias: true,
+            esPrincipal: true,
+            banco: { select: { id: true, codigo: true, nombre: true } },
+          },
+        },
+        pedidos: {
+          orderBy: { entregadoEn: 'desc' },
+          select: {
+            id: true,
+            codigoSeguimiento: true,
+            nombreCliente: true,
+            telefonoCliente: true,
+            direccionDestino: true,
+            montoContraEntrega: true,
+            entregadoEn: true,
+            repartidorEntrega: {
+              select: {
+                id: true,
+                usuario: {
+                  select: { nombreCompleto: true, telefono: true },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!deposito) {
+      throw new NotFoundException({
+        codigo: 'DEPOSITO_NO_ENCONTRADO',
+        mensaje: 'Deposito no existe',
+      });
+    }
+
+    if (deposito.vendedorId !== perfil.id) {
+      throw new ForbiddenException({
+        codigo: 'DEPOSITO_NO_AUTORIZADO',
+        mensaje: 'Este deposito no pertenece al vendedor autenticado',
+      });
+    }
+
+    // No exponer vendedorId al cliente — el vendedor ya sabe quien es.
+    const { vendedorId: _vendedorId, ...resto } = deposito;
+    return resto;
   }
 
   // ──────────────────────────────────────────────────
@@ -269,6 +331,71 @@ export class VendedoresServicio {
       ),
     );
 
+    return deposito;
+  }
+
+  async obtenerDepositoPorId(depositoId: string) {
+    const deposito = await this.prisma.depositoVendedor.findUnique({
+      where: { id: depositoId },
+      include: {
+        vendedor: {
+          select: {
+            id: true,
+            nombreNegocio: true,
+            rfc: true,
+            direccion: true,
+            usuario: {
+              select: {
+                id: true,
+                nombreCompleto: true,
+                email: true,
+                telefono: true,
+              },
+            },
+          },
+        },
+        cuentaBancaria: {
+          select: {
+            id: true,
+            tipoCuenta: true,
+            numeroCuenta: true,
+            alias: true,
+            esPrincipal: true,
+            banco: { select: { id: true, codigo: true, nombre: true } },
+          },
+        },
+        pedidos: {
+          orderBy: { entregadoEn: 'desc' },
+          select: {
+            id: true,
+            codigoSeguimiento: true,
+            nombreCliente: true,
+            telefonoCliente: true,
+            emailCliente: true,
+            direccionDestino: true,
+            montoContraEntrega: true,
+            entregadoEn: true,
+            zonaDestino: {
+              select: { id: true, codigo: true, nombre: true },
+            },
+            repartidorEntrega: {
+              select: {
+                id: true,
+                usuario: {
+                  select: { nombreCompleto: true, telefono: true },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!deposito) {
+      throw new NotFoundException({
+        codigo: 'DEPOSITO_NO_ENCONTRADO',
+        mensaje: 'Deposito no existe',
+      });
+    }
     return deposito;
   }
 

@@ -213,6 +213,9 @@ class _PantallaCierreDiarioEstado extends ConsumerState<PantallaCierreDiario> {
                                 !_enviando)
                             ? _enviar
                             : null,
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size.fromHeight(48),
+                        ),
                         icon: _enviando
                             ? const SizedBox(
                                 height: 18,

@@ -1,0 +1,279 @@
+<div class="modal-header">
+  <h5 class="modal-title">Detalle del depósito</h5>
+  <button
+    type="button"
+    class="btn-close"
+    (click)="modal.dismiss()"
+    aria-label="Cerrar"
+  ></button>
+</div>
+
+<div class="modal-body">
+  @if (cargando()) {
+    <div class="text-center p-4">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  } @else if (mensajeError(); as err) {
+    <div class="alert alert-danger m-0">{{ err }}</div>
+  } @else if (detalle(); as d) {
+    <!-- Cabecera con monto + fecha -->
+    <div class="d-flex justify-content-between align-items-start mb-4 gap-3 flex-wrap">
+      <div>
+        <h4 class="mb-1">${{ d.monto | number: "1.2-2" }}</h4>
+        <div class="text-muted small">
+          Depositado el {{ d.fechaDeposito | date: "dd/MM/yyyy" }}
+        </div>
+      </div>
+      <div class="text-end">
+        <span class="badge bg-info">
+          {{ d.pedidos.length }}
+          {{ d.pedidos.length === 1 ? "paquete" : "paquetes" }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Resumen del depósito -->
+    <div class="card mb-3">
+      <div class="card-header fw-semibold">Resumen del depósito</div>
+      <div class="card-body">
+        <dl class="row mb-0">
+          <dt class="col-sm-4">Fecha de depósito</dt>
+          <dd class="col-sm-8">
+            {{ d.fechaDeposito | date: "dd/MM/yyyy" }}
+          </dd>
+
+          <dt class="col-sm-4">Monto total</dt>
+          <dd class="col-sm-8">
+            <strong>${{ d.monto | number: "1.2-2" }}</strong>
+          </dd>
+
+          <dt class="col-sm-4">Referencia</dt>
+          <dd class="col-sm-8">
+            @if (d.referencia) {
+              {{ d.referencia }}
+            } @else {
+              <span class="text-muted">Sin referencia</span>
+            }
+          </dd>
+
+          <dt class="col-sm-4">Notas</dt>
+          <dd class="col-sm-8">
+            @if (d.notas) {
+              <span class="text-pre-wrap">{{ d.notas }}</span>
+            } @else {
+              <span class="text-muted">Sin notas</span>
+            }
+          </dd>
+
+          <dt class="col-sm-4">Registrado</dt>
+          <dd class="col-sm-8">
+            {{ d.creadoEn | date: "dd/MM/yyyy HH:mm" }}
+          </dd>
+
+          <dt class="col-sm-4">Última actualización</dt>
+          <dd class="col-sm-8 mb-0">
+            {{ d.actualizadoEn | date: "dd/MM/yyyy HH:mm" }}
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Vendedor -->
+    <div class="card mb-3">
+      <div class="card-header fw-semibold">Vendedor</div>
+      <div class="card-body">
+        <div class="mb-3">
+          <div class="fw-bold">{{ d.vendedor.nombreNegocio }}</div>
+          @if (d.vendedor.rfc) {
+            <small class="text-muted">RFC: {{ d.vendedor.rfc }}</small>
+          }
+        </div>
+        <dl class="row mb-0">
+          <dt class="col-sm-4">Contacto</dt>
+          <dd class="col-sm-8">{{ d.vendedor.usuario.nombreCompleto }}</dd>
+
+          <dt class="col-sm-4">Correo</dt>
+          <dd class="col-sm-8">{{ d.vendedor.usuario.email }}</dd>
+
+          <dt class="col-sm-4">Teléfono</dt>
+          <dd class="col-sm-8">{{ d.vendedor.usuario.telefono }}</dd>
+
+          <dt class="col-sm-4">Dirección</dt>
+          <dd class="col-sm-8 mb-0">{{ d.vendedor.direccion }}</dd>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Cuenta bancaria -->
+    <div class="card mb-3">
+      <div class="card-header fw-semibold">Cuenta bancaria de destino</div>
+      <div class="card-body">
+        @if (d.cuentaBancaria; as c) {
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <strong>{{ c.banco.nombre }}</strong>
+            <span class="badge bg-secondary">{{ c.banco.codigo }}</span>
+            @if (c.esPrincipal) {
+              <span class="badge bg-primary">Principal</span>
+            }
+          </div>
+          <dl class="row mb-0">
+            <dt class="col-sm-4">Tipo de cuenta</dt>
+            <dd class="col-sm-8">
+              {{ c.tipoCuenta === "AHORRO" ? "Ahorro" : "Corriente" }}
+            </dd>
+
+            <dt class="col-sm-4">Número de cuenta</dt>
+            <dd class="col-sm-8">
+              <code>{{ c.numeroCuenta }}</code>
+            </dd>
+
+            <dt class="col-sm-4">Alias</dt>
+            <dd class="col-sm-8 mb-0">
+              @if (c.alias) {
+                {{ c.alias }}
+              } @else {
+                <span class="text-muted">Sin alias</span>
+              }
+            </dd>
+          </dl>
+        } @else {
+          <div class="alert alert-warning m-0">
+            Este depósito no tiene una cuenta bancaria asociada.
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Comprobante -->
+    <div class="card mb-3">
+      <div class="card-header fw-semibold">Comprobante</div>
+      <div class="card-body">
+        @if (d.urlComprobante) {
+          <a
+            [href]="d.urlComprobante"
+            target="_blank"
+            rel="noopener"
+            class="d-inline-block"
+          >
+            <img
+              [src]="d.urlComprobante"
+              alt="Comprobante del depósito"
+              class="img-fluid rounded border"
+              style="max-height: 320px"
+            />
+          </a>
+          <div class="mt-2">
+            <a
+              [href]="d.urlComprobante"
+              target="_blank"
+              rel="noopener"
+              class="small"
+            >
+              Abrir comprobante en nueva pestaña
+            </a>
+          </div>
+        } @else {
+          <div class="text-muted">Sin comprobante adjunto.</div>
+        }
+      </div>
+    </div>
+
+    <!-- Paquetes depositados -->
+    <div class="card mb-0">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="fw-semibold">
+          Paquetes depositados ({{ d.pedidos.length }})
+        </span>
+        <span class="small text-muted">
+          Suma: <strong>${{ sumaPedidos() | number: "1.2-2" }}</strong>
+        </span>
+      </div>
+      @if (d.pedidos.length === 0) {
+        <div class="card-body text-muted">
+          Este depósito no tiene paquetes asociados.
+        </div>
+      } @else {
+        <div class="table-responsive">
+          <table class="table table-sm table-hover m-0 align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Código</th>
+                <th>Cliente</th>
+                <th>Destino</th>
+                <th>Repartidor</th>
+                <th>Entregado</th>
+                <th class="text-end">Monto</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of d.pedidos; track p.id) {
+                <tr>
+                  <td>
+                    <strong>{{ p.codigoSeguimiento }}</strong>
+                  </td>
+                  <td>
+                    <div>{{ p.nombreCliente }}</div>
+                    <small class="text-muted d-block">
+                      {{ p.telefonoCliente }}
+                    </small>
+                    @if (p.emailCliente) {
+                      <small class="text-muted d-block">
+                        {{ p.emailCliente }}
+                      </small>
+                    }
+                  </td>
+                  <td>
+                    <small>{{ p.direccionDestino }}</small>
+                    @if (p.zonaDestino; as z) {
+                      <div>
+                        <span class="badge bg-light text-dark border">
+                          {{ z.codigo }} — {{ z.nombre }}
+                        </span>
+                      </div>
+                    }
+                  </td>
+                  <td>
+                    @if (p.repartidorEntrega; as r) {
+                      <div>{{ r.usuario.nombreCompleto }}</div>
+                      <small class="text-muted">{{ r.usuario.telefono }}</small>
+                    } @else {
+                      <span class="text-muted">—</span>
+                    }
+                  </td>
+                  <td>
+                    @if (p.entregadoEn) {
+                      {{ p.entregadoEn | date: "dd/MM/yyyy HH:mm" }}
+                    } @else {
+                      <span class="text-muted">—</span>
+                    }
+                  </td>
+                  <td class="text-end fw-semibold">
+                    @if (p.montoContraEntrega) {
+                      ${{ p.montoContraEntrega | number: "1.2-2" }}
+                    } @else {
+                      <span class="text-muted">—</span>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+            <tfoot class="table-light">
+              <tr>
+                <td colspan="5" class="text-end fw-semibold">Total</td>
+                <td class="text-end fw-bold">
+                  ${{ sumaPedidos() | number: "1.2-2" }}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="modal.close()">
+    Cerrar
+  </button>
+</div>

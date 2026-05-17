@@ -53,6 +53,56 @@ export interface DepositoVendedor {
   _count?: { pedidos: number };
 }
 
+export interface PedidoEnDeposito {
+  id: string;
+  codigoSeguimiento: string;
+  nombreCliente: string;
+  telefonoCliente: string;
+  emailCliente: string | null;
+  direccionDestino: string;
+  montoContraEntrega: string | null;
+  entregadoEn: string | null;
+  zonaDestino: { id: string; codigo: string; nombre: string } | null;
+  repartidorEntrega: {
+    id: string;
+    usuario: { nombreCompleto: string; telefono: string };
+  } | null;
+}
+
+export interface DepositoVendedorDetalle {
+  id: string;
+  vendedorId: string;
+  cuentaBancariaId: string | null;
+  monto: string;
+  fechaDeposito: string;
+  referencia: string | null;
+  notas: string | null;
+  urlComprobante: string | null;
+  creadoEn: string;
+  actualizadoEn: string;
+  vendedor: {
+    id: string;
+    nombreNegocio: string;
+    rfc: string | null;
+    direccion: string;
+    usuario: {
+      id: string;
+      nombreCompleto: string;
+      email: string;
+      telefono: string;
+    };
+  };
+  cuentaBancaria: {
+    id: string;
+    tipoCuenta: "AHORRO" | "CORRIENTE";
+    numeroCuenta: string;
+    alias: string | null;
+    esPrincipal: boolean;
+    banco: { id: string; codigo: string; nombre: string };
+  } | null;
+  pedidos: PedidoEnDeposito[];
+}
+
 export interface FiltrosDepositosAdmin {
   pagina?: number;
   limite?: number;

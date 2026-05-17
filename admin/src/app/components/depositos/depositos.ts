@@ -7,9 +7,11 @@ import {
   Validators,
 } from "@angular/forms";
 
+import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { ToastrService } from "ngx-toastr";
 
 import { DepositosServicio } from "../../nucleo/datos/depositos.servicio";
+import { DepositoDetalleModal } from "./deposito-detalle.modal";
 import {
   CuentaBancariaOpcion,
   DepositoVendedor,
@@ -31,6 +33,7 @@ export class Depositos implements OnInit {
   private readonly servicio = inject(DepositosServicio);
   private readonly fb = inject(FormBuilder);
   private readonly toast = inject(ToastrService);
+  private readonly modal = inject(NgbModal);
 
   readonly vendedores = signal<VendedorOpcion[]>([]);
   readonly vendedorSeleccionadoId = signal<string | null>(null);
@@ -258,6 +261,15 @@ export class Depositos implements OnInit {
         this.cargandoHistorial.set(false);
       },
     });
+  }
+
+  verDetalle(d: DepositoVendedor): void {
+    const ref = this.modal.open(DepositoDetalleModal, {
+      size: "xl",
+      centered: true,
+      scrollable: true,
+    });
+    ref.componentInstance.depositoId = d.id;
   }
 
   irPaginaHistorial(p: number): void {

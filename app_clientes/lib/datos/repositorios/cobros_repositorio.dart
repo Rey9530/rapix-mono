@@ -33,6 +33,13 @@ class CobrosRepositorio {
     );
     return PaginaDepositos.desdeJson(respuesta.data!);
   }
+
+  Future<DepositoDetalle> detalleDeposito(String depositoId) async {
+    final respuesta = await _dio.get<Map<String, dynamic>>(
+      '/vendedores/yo/depositos/$depositoId',
+    );
+    return DepositoDetalle.desdeJson(respuesta.data!);
+  }
 }
 
 final cobrosRepositorioProvider = Provider<CobrosRepositorio>((ref) {

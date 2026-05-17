@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import '../storage/almacenamiento_seguro.dart';
 
@@ -6,7 +8,7 @@ class InterceptorError extends Interceptor {
   final Dio dio;
   final Future<void> Function() alSesionExpirada;
 
-  bool _refrescando = false;
+  Completer<bool>? _refrescoEnCurso;
 
   InterceptorError({
     required this.almacenamiento,
@@ -42,11 +44,17 @@ class InterceptorError extends Interceptor {
   }
 
   Future<bool> _refrescarTokens() async {
-    if (_refrescando) return false;
-    _refrescando = true;
+    final pendiente = _refrescoEnCurso;
+    if (pendiente != null) return pendiente.future;
+
+    final completer = Completer<bool>();
+    _refrescoEnCurso = completer;
     try {
       final tokenRefresco = await almacenamiento.tokenRefresco();
-      if (tokenRefresco == null || tokenRefresco.isEmpty) return false;
+      if (tokenRefresco == null || tokenRefresco.isEmpty) {
+        completer.complete(false);
+        return false;
+      }
 
       final respuesta = await dio.post<Map<String, dynamic>>(
         '/autenticacion/refrescar',
@@ -54,14 +62,21 @@ class InterceptorError extends Interceptor {
         options: Options(extra: {'omitirAuth': true}),
       );
       final datos = respuesta.data;
-      if (datos == null) return false;
+      if (datos == null) {
+        completer.complete(false);
+        return false;
+      }
       await almacenamiento.guardarTokens(
         tokenAcceso: datos['tokenAcceso'] as String,
         tokenRefresco: datos['tokenRefresco'] as String,
       );
+      completer.complete(true);
       return true;
+    } catch (e) {
+      if (!completer.isCompleted) completer.complete(false);
+      rethrow;
     } finally {
-      _refrescando = false;
+      _refrescoEnCurso = null;
     }
   }
 }

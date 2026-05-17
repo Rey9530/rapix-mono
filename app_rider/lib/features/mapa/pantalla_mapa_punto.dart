@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' hide Size;
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/config/entorno.dart';
@@ -216,6 +216,9 @@ class _SinToken extends StatelessWidget {
           const SizedBox(height: 24),
           FilledButton.icon(
             onPressed: () => _abrirGoogleMaps(context, lat, lng),
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(48),
+            ),
             icon: const Icon(Icons.navigation),
             label: const Text('Abrir en Google Maps'),
           ),

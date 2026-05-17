@@ -58,13 +58,26 @@ export class VendedoresControlador {
   @Roles('VENDEDOR')
   @Get('yo/historial-depositos')
   @ApiOperation({
-    summary: 'Historial paginado de paquetes ya depositados al vendedor',
+    summary: 'Historial paginado de depositos hechos al vendedor',
   })
   historialDepositos(
     @UsuarioActual() usuario: Usuario,
     @Query() filtros: FiltrosHistorialDepositosDto,
   ) {
     return this.servicio.listarHistorialDepositos(usuario, filtros);
+  }
+
+  @Roles('VENDEDOR')
+  @Get('yo/depositos/:depositoId')
+  @ApiOperation({
+    summary:
+      'Detalle de un deposito propio (paquetes, cuenta bancaria, comprobante)',
+  })
+  obtenerMiDeposito(
+    @UsuarioActual() usuario: Usuario,
+    @Param('depositoId', ParseUUIDPipe) depositoId: string,
+  ) {
+    return this.servicio.obtenerDepositoDeVendedor(usuario, depositoId);
   }
 
   // ──────────────────────────────────────────────────
@@ -103,6 +116,17 @@ export class VendedoresControlador {
       mimetype: foto.mimetype,
       originalname: foto.originalname,
     });
+  }
+
+  @Roles('ADMIN')
+  @Get('depositos/:depositoId')
+  @ApiOperation({
+    summary: 'ADMIN: detalle completo de un deposito',
+  })
+  obtenerDeposito(
+    @Param('depositoId', ParseUUIDPipe) depositoId: string,
+  ) {
+    return this.servicio.obtenerDepositoPorId(depositoId);
   }
 
   @Roles('ADMIN')

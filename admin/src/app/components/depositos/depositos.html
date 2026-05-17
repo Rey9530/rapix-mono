@@ -266,18 +266,19 @@
               <th class="text-end">Monto</th>
               <th>Referencia</th>
               <th>Comprobante</th>
+              <th class="text-center">Acciones</th>
             </tr>
           </thead>
           <tbody>
             @if (cargandoHistorial()) {
               <tr>
-                <td colspan="6" class="text-center p-4">
+                <td colspan="7" class="text-center p-4">
                   <div class="spinner-border text-primary"></div>
                 </td>
               </tr>
             } @else if (historial().length === 0) {
               <tr>
-                <td colspan="6" class="text-center text-muted p-4">
+                <td colspan="7" class="text-center text-muted p-4">
                   Aún no hay depósitos registrados.
                 </td>
               </tr>
@@ -301,6 +302,16 @@
                     } @else {
                       —
                     }
+                  </td>
+                  <td class="text-center">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-primary"
+                      (click)="verDetalle(d)"
+                      title="Ver detalle"
+                    >
+                      Detalle
+                    </button>
                   </td>
                 </tr>
               }

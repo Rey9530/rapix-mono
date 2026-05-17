@@ -140,6 +140,9 @@ class _PantallaComprobanteEntregaEstado
           const SizedBox(height: 24),
           FilledButton.icon(
             onPressed: (_foto != null && !_enviando) ? _enviar : null,
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(48),
+            ),
             icon: _enviando
                 ? const SizedBox(
                     height: 18,

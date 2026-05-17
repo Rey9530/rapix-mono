@@ -58,19 +58,9 @@ class AutenticacionRepositorio {
     final token = await _almacenamiento.tokenAcceso();
     if (token == null || token.isEmpty) return null;
     try {
-      final respuesta = await _dio.get<Map<String, dynamic>>('/repartidores/yo');
-      final datos = respuesta.data!;
-      // Backend devuelve PerfilRepartidor con `usuario` adentro en /yo (admin) pero no aquí;
-      // Por tanto, primero intento decodificar como Usuario directo, si falla fallback al campo `usuario`.
-      Usuario? usuario;
-      if (datos.containsKey('email') && datos.containsKey('rol')) {
-        usuario = Usuario.fromJson(datos);
-      } else if (datos['usuario'] is Map<String, dynamic>) {
-        usuario = Usuario.fromJson(datos['usuario'] as Map<String, dynamic>);
-      }
-      if (usuario != null) {
-        await _almacenamiento.guardarUsuario(jsonEncode(usuario.toJson()));
-      }
+      final respuesta = await _dio.get<Map<String, dynamic>>('/usuarios/yo');
+      final usuario = Usuario.fromJson(respuesta.data!);
+      await _almacenamiento.guardarUsuario(jsonEncode(usuario.toJson()));
       return usuario;
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) return null;
