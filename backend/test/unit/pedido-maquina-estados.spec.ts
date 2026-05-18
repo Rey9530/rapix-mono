@@ -12,8 +12,13 @@ describe('PedidoMaquinaEstados', () => {
       ['ASIGNADO', 'RECOGIDO'],
       ['ASIGNADO', 'CANCELADO'],
       ['RECOGIDO', 'EN_TRANSITO'],
+      // RECOGIDO/EN_TRANSITO/EN_PUNTO_INTERCAMBIO → FALLIDO se habilita para
+      // el corto-circuito iniciado por el cliente via ConfirmacionEntrega.
+      ['RECOGIDO', 'FALLIDO'],
       ['EN_TRANSITO', 'EN_PUNTO_INTERCAMBIO'],
+      ['EN_TRANSITO', 'FALLIDO'],
       ['EN_PUNTO_INTERCAMBIO', 'EN_REPARTO'],
+      ['EN_PUNTO_INTERCAMBIO', 'FALLIDO'],
       ['EN_REPARTO', 'ENTREGADO'],
       ['EN_REPARTO', 'FALLIDO'],
       ['FALLIDO', 'EN_REPARTO'],

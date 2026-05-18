@@ -24,12 +24,13 @@ export class RegistrarDto {
   email!: string;
 
   @ApiProperty({
-    example: '+50370001234',
-    description: '8-15 dígitos, opcionalmente con prefijo +.',
+    example: '70001234',
+    description:
+      '8 dígitos, debe iniciar con 2, 6 o 7 (El Salvador). El servidor agrega el prefijo +503.',
   })
   @IsString()
-  @Matches(/^\+?[0-9]{8,15}$/, {
-    message: 'El teléfono debe tener 8-15 dígitos, opcionalmente con prefijo +.',
+  @Matches(/^[267][0-9]{7}$/, {
+    message: 'El teléfono debe tener 8 dígitos y empezar con 2, 6 o 7.',
   })
   telefono!: string;
 

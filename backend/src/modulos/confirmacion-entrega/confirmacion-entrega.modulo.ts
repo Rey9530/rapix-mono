@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { NotificacionesModulo } from '../notificaciones/notificaciones.modulo.js';
+import { PedidosModulo } from '../pedidos/pedidos.modulo.js';
 import { WhatsappModulo } from '../whatsapp/whatsapp.modulo.js';
+import { ZonasModulo } from '../zonas/zonas.modulo.js';
 import { ConfirmacionEntregaCronServicio } from './confirmacion-entrega-cron.servicio.js';
 import { ConfirmacionEntregaListener } from './confirmacion-entrega.listener.js';
 import { ConfirmacionEntregaServicio } from './confirmacion-entrega.servicio.js';
@@ -21,7 +23,7 @@ import { IaClasificadorServicio } from './ia-clasificador.servicio.js';
  *    notifica al vendedor por FCM.
  */
 @Module({
-  imports: [WhatsappModulo, NotificacionesModulo],
+  imports: [WhatsappModulo, NotificacionesModulo, PedidosModulo, ZonasModulo],
   providers: [
     ConfirmacionEntregaServicio,
     ConfirmacionEntregaListener,

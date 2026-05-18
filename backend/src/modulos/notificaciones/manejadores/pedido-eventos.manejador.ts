@@ -15,8 +15,6 @@ import {
 interface PedidoConDestinatarios {
   id: string;
   codigoSeguimiento: string;
-  emailCliente: string | null;
-  telefonoCliente: string;
   estado: string;
   motivoFallo: string | null;
   motivoCancelado: string | null;
@@ -44,12 +42,8 @@ export class PedidoEventosManejador {
       pedido.codigoSeguimiento,
     ]);
 
-    // Cliente → WHATSAPP (sin usuario en el sistema; va por destino)
-    await this.enviarClienteWhatsapp(
-      pedido,
-      'PEDIDO_CREADO_CLIENTE',
-      [pedido.codigoSeguimiento],
-    );
+    // El cliente final no recibe notificacion al crear: la unica notificacion
+    // automatica al cliente arranca al pasar a RECOGIDO (ConfirmacionEntregaModulo).
   }
 
   @OnEvent(EventosDominio.PedidoEstadoCambiado, { async: true })
@@ -59,6 +53,10 @@ export class PedidoEventosManejador {
     const cs = pedido.codigoSeguimiento;
     const datosPedido = { pedidoId: pedido.id, codigoSeguimiento: cs };
 
+    // Nota: las notificaciones al CLIENTE FINAL por cambios de estado se
+    // eliminaron deliberadamente. El unico contacto automatico al cliente es
+    // la conversacion de ConfirmacionEntregaModulo, que arranca al pasar a
+    // RECOGIDO. Aqui solo notificamos a vendedor, repartidor y admin.
     switch (evento.hacia) {
       case 'ASIGNADO':
         await this.enviarPlantilla('PEDIDO_ASIGNADO_VENDEDOR', pedido.vendedor.usuario.id, ['PUSH'], [cs], datosPedido);
@@ -75,12 +73,11 @@ export class PedidoEventosManejador {
 
       case 'RECOGIDO':
         await this.enviarPlantilla('PEDIDO_RECOGIDO_VENDEDOR', pedido.vendedor.usuario.id, ['PUSH'], [cs], datosPedido);
-        // El contacto al cliente al estado RECOGIDO ahora lo maneja
-        // ConfirmacionEntregaModulo (bot de IA por WhatsApp).
+        // El contacto al cliente en RECOGIDO lo maneja ConfirmacionEntregaModulo.
         break;
 
       case 'EN_TRANSITO':
-        await this.enviarClienteWhatsapp(pedido, 'PEDIDO_EN_TRANSITO_CLIENTE', [cs]);
+        // Sin notificacion al cliente.
         break;
 
       case 'EN_REPARTO': {
@@ -88,11 +85,7 @@ export class PedidoEventosManejador {
         const claveVendedor: ClavePlantilla = esReintento
           ? 'PEDIDO_REINTENTANDO_VENDEDOR'
           : 'PEDIDO_EN_REPARTO_VENDEDOR';
-        const claveCliente: ClavePlantilla = esReintento
-          ? 'PEDIDO_REINTENTANDO_CLIENTE'
-          : 'PEDIDO_EN_REPARTO_CLIENTE';
         await this.enviarPlantilla(claveVendedor, pedido.vendedor.usuario.id, ['PUSH'], [cs], datosPedido);
-        await this.enviarClienteWhatsapp(pedido, claveCliente, [cs]);
         break;
       }
 
@@ -104,9 +97,7 @@ export class PedidoEventosManejador {
           [cs],
           datosPedido,
         );
-        if (pedido.emailCliente) {
-          await this.enviarClienteEmail(pedido.emailCliente, 'PEDIDO_ENTREGADO_CLIENTE', [cs]);
-        }
+        // Sin notificacion al cliente (ni WhatsApp ni email).
         break;
 
       case 'FALLIDO':
@@ -117,7 +108,6 @@ export class PedidoEventosManejador {
           [cs, pedido.motivoFallo ?? 'sin detalle'],
           datosPedido,
         );
-        await this.enviarClienteWhatsapp(pedido, 'PEDIDO_FALLIDO_CLIENTE', [cs]);
         await this.enviarAdmins(
           'PEDIDO_FALLIDO_ADMIN',
           ['PUSH'],
@@ -137,7 +127,6 @@ export class PedidoEventosManejador {
             datosPedido,
           );
         }
-        await this.enviarClienteWhatsapp(pedido, 'PEDIDO_CANCELADO_CLIENTE', [cs]);
         break;
 
       case 'EN_PUNTO_INTERCAMBIO':
@@ -148,7 +137,6 @@ export class PedidoEventosManejador {
           [cs],
           datosPedido,
         );
-        await this.enviarClienteWhatsapp(pedido, 'PEDIDO_EN_INTERCAMBIO_CLIENTE', [cs]);
         break;
 
       case 'DEVUELTO':
@@ -250,8 +238,6 @@ export class PedidoEventosManejador {
       select: {
         id: true,
         codigoSeguimiento: true,
-        emailCliente: true,
-        telefonoCliente: true,
         estado: true,
         motivoFallo: true,
         motivoCancelado: true,
@@ -274,38 +260,6 @@ export class PedidoEventosManejador {
     await this.notif.enviarMulticanal(usuarioId, canales, titulo, cuerpo, {
       plantillaClave: clave,
       ...datosExtra,
-    });
-  }
-
-  private async enviarClienteWhatsapp(
-    pedido: PedidoConDestinatarios,
-    clave: ClavePlantilla,
-    params: Array<string | number>,
-  ): Promise<void> {
-    const { titulo, cuerpo } = renderizarPlantilla(clave, params);
-    await this.notif.enviar({
-      usuarioId: null,
-      canal: 'WHATSAPP',
-      titulo,
-      cuerpo,
-      datos: { plantillaClave: clave, telefono: pedido.telefonoCliente },
-      destino: pedido.telefonoCliente,
-    });
-  }
-
-  private async enviarClienteEmail(
-    email: string,
-    clave: ClavePlantilla,
-    params: Array<string | number>,
-  ): Promise<void> {
-    const { titulo, cuerpo } = renderizarPlantilla(clave, params);
-    await this.notif.enviar({
-      usuarioId: null,
-      canal: 'EMAIL',
-      titulo,
-      cuerpo,
-      datos: { plantillaClave: clave },
-      destino: email,
     });
   }
 

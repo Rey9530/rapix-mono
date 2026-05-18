@@ -38,6 +38,8 @@ class PaqueteRecargado {
     required this.precio,
     required this.compradoEn,
     this.expiraEn,
+    this.metodoPago,
+    this.urlComprobantePago,
   });
 
   final String id;
@@ -48,6 +50,8 @@ class PaqueteRecargado {
   final double precio;
   final DateTime compradoEn;
   final DateTime? expiraEn;
+  final String? metodoPago;
+  final String? urlComprobantePago;
 
   int get enviosUsados => enviosTotales - enviosRestantes;
 
@@ -64,6 +68,8 @@ class PaqueteRecargado {
       expiraEn: json['expiraEn'] != null
           ? DateTime.tryParse(json['expiraEn'] as String)
           : null,
+      metodoPago: json['metodoPago'] as String?,
+      urlComprobantePago: json['urlComprobantePago'] as String?,
     );
   }
 }

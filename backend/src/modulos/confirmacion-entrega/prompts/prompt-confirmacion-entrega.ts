@@ -68,6 +68,74 @@ export function componerMensajeInicial(params: {
 }
 
 /**
+ * Mensaje inicial cuando el pedido no tiene coordenadas de destino. Pide
+ * direccion escrita y URL de Google Maps; ambas se procesan al recibir
+ * respuesta.
+ */
+export function componerMensajePedirDireccion(params: {
+  nombreCliente: string;
+  nombreNegocio: string;
+}): string {
+  const primer = params.nombreCliente.trim().split(/\s+/)[0] || params.nombreCliente;
+  return (
+    `Hola ${primer}, soy el asistente de Rapix. ${params.nombreNegocio} envio un pedido para ti y el repartidor ya va en camino.\n\n` +
+    `Aun no tenemos la ubicacion exacta de entrega. Por favor, respondeme con:\n` +
+    `1) La direccion escrita.\n` +
+    `2) Un link de Google Maps con formato https://maps.app.goo.gl/...`
+  );
+}
+
+export const MSG_DIRECCION_SIN_URL =
+  'No detecte un link de Google Maps en tu respuesta. Compartelo con formato https://maps.app.goo.gl/... y, si puedes, incluye la direccion escrita.';
+
+export const MSG_URL_INVALIDA =
+  'No pude leer las coordenadas de ese link. Asegurate de copiar un link valido de Google Maps (https://maps.app.goo.gl/...) y enviamelo de nuevo.';
+
+export const MSG_DIRECCION_FUERA_DE_ZONA =
+  'Lamentablemente esa direccion esta fuera de nuestra zona de entrega. Vamos a notificar al negocio para coordinar contigo.';
+
+export const MSG_PEDIR_DOBLE_CONFIRMACION =
+  'Para asegurarnos: confirmas que NO podras recibir el pedido hoy? Responde SI para confirmar o NO si si podras recibirlo.';
+
+export const MSG_DOBLE_CONFIRMACION_AMBIGUA =
+  'No entendi tu respuesta. Por favor responde solo SI (no podre recibir) o NO (si podre recibir).';
+
+export const MSG_DOBLE_CONFIRMACION_RETOMA =
+  'Perfecto, mantendremos la entrega normal. El repartidor seguira hacia tu direccion.';
+
+export const MSG_OFRECER_UBICACION_ALTERNATIVA =
+  'Entendido. Puedes recibir en otra direccion cercana? Si SI, comparteme un link de Google Maps (https://maps.app.goo.gl/...) de la nueva ubicacion. Si NO, responde NO para cancelar la entrega.';
+
+export const MSG_OFERTA_AMBIGUA =
+  'No entendi. Si tienes otra direccion, envia el link de Google Maps. Si prefieres cancelar, responde NO.';
+
+export const MSG_PEDIR_NUEVA_UBICACION =
+  'Por favor envia el link de Google Maps (https://maps.app.goo.gl/...) de la nueva direccion donde podras recibir.';
+
+export const MSG_NUEVA_UBICACION_FUERA_DE_ZONA =
+  'La nueva direccion esta fuera de la zona de entrega original. No podemos relocalizar; marcaremos el pedido como no entregado y el negocio te contactara.';
+
+export function componerNuevaUbicacionLejos(params: {
+  distanciaMetros: number;
+  limiteMetros: number;
+}): string {
+  return (
+    `La nueva direccion esta a ${Math.round(params.distanciaMetros)} m de la original ` +
+    `y supera nuestro limite de relocalizacion de ${params.limiteMetros} m. ` +
+    `Marcaremos el pedido como no entregado y el negocio te contactara.`
+  );
+}
+
+export const MSG_RELOCALIZACION_EXITOSA =
+  'Listo, actualizamos la direccion de entrega. El repartidor llegara a la nueva ubicacion en breve.';
+
+export const MSG_RECHAZO_TOTAL =
+  'Entendido. Marcaremos el pedido como no entregado y el negocio se pondra en contacto contigo para reagendar.';
+
+export const MSG_DIRECCION_CONFIRMADA_PEDIR_DISPONIBILIDAD =
+  'Gracias, ubicacion registrada. Podras recibir el pedido en los proximos minutos?';
+
+/**
  * Cierre de fallback cuando OpenAI no esta disponible o la respuesta no se
  * pudo parsear. Se trata como AMBIGUO con repregunta=false para evitar
  * loops y dejar la decision al rider.

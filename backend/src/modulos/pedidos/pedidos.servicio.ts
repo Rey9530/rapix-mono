@@ -230,7 +230,7 @@ export class PedidosServicio {
           codigoSeguimiento,
           vendedorId: perfilVendedor.id,
           nombreCliente: dto.nombreCliente,
-          telefonoCliente: dto.telefonoCliente,
+          telefonoCliente: `+503${dto.telefonoCliente}`,
           emailCliente: dto.emailCliente ?? null,
           direccionOrigen: dto.direccionOrigen,
           latitudOrigen: dto.latitudOrigen,
@@ -426,6 +426,9 @@ export class PedidosServicio {
     if (cambios.length === 0) return pedido;
 
     const datos: Prisma.PedidoUpdateInput = { ...dto };
+    if (dto.telefonoCliente !== undefined) {
+      datos.telefonoCliente = `+503${dto.telefonoCliente}`;
+    }
     // Si cambian coordenadas, re-resolver zonas.
     if (dto.latitudOrigen !== undefined && dto.longitudOrigen !== undefined) {
       const z = await this.geo.resolverZona(dto.latitudOrigen, dto.longitudOrigen);
@@ -704,6 +707,25 @@ export class PedidosServicio {
   async fallar(usuario: Usuario, id: string, dto: FallarPedidoDto) {
     return this.transicionarRider(usuario, id, 'FALLIDO', 'entrega', dto, {
       motivoFallo: dto.motivo,
+    });
+  }
+
+  /**
+   * Marca un pedido como FALLIDO desde un actor del sistema (ej. el bot de
+   * ConfirmacionEntrega), sin requerir contexto de usuario ni asignacion de
+   * repartidor. Valida la transicion contra la maquina de estados.
+   */
+  async marcarFallidoPorSistema(pedidoId: string, motivo: string) {
+    const pedido = await this.prisma.pedido.findUnique({ where: { id: pedidoId } });
+    if (!pedido) throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
+    if (pedido.estado === 'FALLIDO') return pedido;
+    PedidoMaquinaEstados.validarTransicion(pedido.estado, 'FALLIDO');
+    return this.transicionar({
+      pedidoId,
+      hacia: 'FALLIDO',
+      actorId: null,
+      notas: motivo,
+      extrasUpdate: { motivoFallo: motivo },
     });
   }
 

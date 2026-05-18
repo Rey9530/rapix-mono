@@ -17,6 +17,6 @@ import { PedidosServicio } from './pedidos.servicio.js';
     CodigoSeguimientoServicio,
     GoogleMapsServicio,
   ],
-  exports: [PedidosServicio],
+  exports: [PedidosServicio, GoogleMapsServicio],
 })
 export class PedidosModulo {}

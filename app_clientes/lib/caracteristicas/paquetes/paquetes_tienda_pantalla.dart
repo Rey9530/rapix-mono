@@ -1,10 +1,9 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../datos/modelos/paquete_recargado.dart';
-import '../../datos/repositorios/paquetes_repositorio.dart';
 import 'paquetes_controlador.dart';
 
 class PaquetesTiendaPantalla extends ConsumerWidget {
@@ -35,10 +34,8 @@ class PaquetesTiendaPantalla extends ConsumerWidget {
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: lista.length,
-              itemBuilder: (_, i) => _TarjetaRegla(
-                regla: lista[i],
-                formato: formato,
-              ),
+              itemBuilder: (_, i) =>
+                  _TarjetaRegla(regla: lista[i], formato: formato),
             ),
           );
         },
@@ -47,67 +44,17 @@ class PaquetesTiendaPantalla extends ConsumerWidget {
   }
 }
 
-class _TarjetaRegla extends ConsumerWidget {
+class _TarjetaRegla extends StatelessWidget {
   const _TarjetaRegla({required this.regla, required this.formato});
 
   final ReglaTarifaPaquete regla;
   final NumberFormat formato;
 
-  Future<void> _confirmar(BuildContext context, WidgetRef ref) async {
-    final aceptado = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Confirmar compra'),
-        content: Text(
-          'Comprar "${regla.nombre}" por ${formato.format(regla.precioPaquete)}?\n\n'
-          'El admin confirmara el pago para activarlo.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Comprar'),
-          ),
-        ],
-      ),
-    );
-    if (aceptado != true || !context.mounted) return;
-
-    try {
-      await ref.read(paquetesRepositorioProvider).comprar(
-            reglaTarifaId: regla.id,
-            metodoPago: 'TRANSFERENCIA',
-          );
-      ref.invalidate(misPaquetesProvider);
-      ref.invalidate(saldoProvider);
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Compra registrada. Esta pendiente de confirmacion del admin.',
-          ),
-        ),
-      );
-    } on DioException catch (e) {
-      if (!context.mounted) return;
-      final mensaje = e.response?.data is Map<String, dynamic>
-          ? ((e.response!.data as Map<String, dynamic>)['mensaje'] ??
-                  (e.response!.data as Map<String, dynamic>)['message'])
-              ?.toString()
-          : null;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(mensaje ?? 'No se pudo procesar la compra')),
-      );
-    }
-  }
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final precioPorEnvio =
-        regla.tamanoPaquete > 0 ? regla.precioPaquete / regla.tamanoPaquete : 0;
+  Widget build(BuildContext context) {
+    final precioPorEnvio = regla.tamanoPaquete > 0
+        ? regla.precioPaquete / regla.tamanoPaquete
+        : 0;
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: Padding(
@@ -118,8 +65,9 @@ class _TarjetaRegla extends ConsumerWidget {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor:
-                      Theme.of(context).colorScheme.primaryContainer,
+                  backgroundColor: Theme.of(
+                    context,
+                  ).colorScheme.primaryContainer,
                   child: Icon(
                     Icons.inventory_2_outlined,
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -143,10 +91,9 @@ class _TarjetaRegla extends ConsumerWidget {
                 ),
                 Text(
                   formato.format(regla.precioPaquete),
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -164,7 +111,10 @@ class _TarjetaRegla extends ConsumerWidget {
             Align(
               alignment: Alignment.centerRight,
               child: FilledButton.icon(
-                onPressed: () => _confirmar(context, ref),
+                onPressed: () => context.push(
+                  '/paquetes/tienda/comprar',
+                  extra: regla,
+                ),
                 icon: const Icon(Icons.shopping_cart_checkout),
                 label: const Text('Comprar'),
               ),

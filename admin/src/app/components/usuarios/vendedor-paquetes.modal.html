@@ -228,6 +228,7 @@
               <th class="text-end">Restantes / Totales</th>
               <th class="text-end">Precio</th>
               <th>Estado</th>
+              <th>Comprobante</th>
               <th>Expira</th>
               <th class="text-end">Acciones</th>
             </tr>
@@ -235,7 +236,7 @@
           <tbody>
             @if (paquetes().length === 0) {
               <tr>
-                <td colspan="6" class="text-center p-4 text-muted">
+                <td colspan="7" class="text-center p-4 text-muted">
                   Este vendedor no tiene paquetes asignados.
                 </td>
               </tr>
@@ -251,6 +252,23 @@
                     <span class="badge bg-{{ estadoColor(p.estado) }}">
                       {{ p.estado }}
                     </span>
+                    @if (p.metodoPago) {
+                      <div class="small text-muted mt-1">{{ p.metodoPago }}</div>
+                    }
+                  </td>
+                  <td>
+                    @if (p.urlComprobantePago) {
+                      <button
+                        class="btn btn-sm btn-link p-0"
+                        (click)="abrirConfirmarPago(p)"
+                      >
+                        Ver / Autorizar
+                      </button>
+                    } @else if (p.metodoPago === "TRANSFERENCIA") {
+                      <span class="text-muted small">Sin comprobante</span>
+                    } @else {
+                      <span class="text-muted">—</span>
+                    }
                   </td>
                   <td class="small">
                     @if (p.expiraEn) {

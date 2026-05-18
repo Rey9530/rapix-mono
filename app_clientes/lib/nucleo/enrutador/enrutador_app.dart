@@ -14,7 +14,10 @@ import '../../caracteristicas/cobros/cobro_detalle_pantalla.dart';
 import '../../caracteristicas/cobros/cobros_pantalla.dart';
 import '../../caracteristicas/inicio/inicio_pantalla.dart';
 import '../../caracteristicas/paquetes/mis_paquetes_pantalla.dart';
+import '../../caracteristicas/paquetes/paquete_compra_exito_pantalla.dart';
 import '../../caracteristicas/paquetes/paquetes_tienda_pantalla.dart';
+import '../../caracteristicas/paquetes/realizar_compra_paquete_pantalla.dart';
+import '../../datos/modelos/paquete_recargado.dart';
 import '../../caracteristicas/pedidos/crear_pedido_pantalla.dart';
 import '../../caracteristicas/pedidos/mapa_pedido_pantalla.dart';
 import '../../caracteristicas/pedidos/pedido_detalle_pantalla.dart';
@@ -161,6 +164,21 @@ final enrutadorAppProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'tienda',
                     builder: (_, _) => const PaquetesTiendaPantalla(),
+                    routes: [
+                      GoRoute(
+                        path: 'comprar',
+                        builder: (_, state) =>
+                            RealizarCompraPaquetePantalla(
+                          regla: state.extra! as ReglaTarifaPaquete,
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'exito',
+                        builder: (_, state) => PaqueteCompraExitoPantalla(
+                          paquete: state.extra! as PaqueteRecargado,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

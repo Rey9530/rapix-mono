@@ -89,9 +89,18 @@ export function normalizarMensaje(msg: WAMessage): MensajeNormalizado | null {
 
   const fromMe = Boolean(msg.key.fromMe);
   const direccion: DireccionMensajeWhatsapp = fromMe ? 'SALIENTE' : 'ENTRANTE';
+
+  // WhatsApp puede entregar mensajes con `addressingMode: 'lid'` (Linked
+  // Identity, identificador anonimo). En esos casos `key.remoteJid` es el LID
+  // pero `key.remoteJidAlt` trae el JID PN (`...@s.whatsapp.net`) real del
+  // contacto. Si no resolvemos el LID al PN, los mensajes entrantes caen en un
+  // chat distinto del que usa el bot para enviar (que siempre dirige al PN), y
+  // las conversaciones de confirmacion de entrega quedan rotas.
+  const chatJid = resolverJidPreferidoPN(msg.key);
+
   const remitenteJid = fromMe
     ? null
-    : (msg.key.participant ?? msg.key.remoteJid);
+    : (msg.key.participant ?? chatJid);
 
   const enviadoEn = enviadoEnDeMensaje(msg);
   const { tipo, texto, caption, mimeMedia, bytesMedia, duracionSeg, nombreArchivo } =
@@ -104,7 +113,7 @@ export function normalizarMensaje(msg: WAMessage): MensajeNormalizado | null {
 
   return {
     externoId: msg.key.id,
-    chatJid: msg.key.remoteJid,
+    chatJid,
     remitenteJid,
     direccion,
     tipo,
@@ -117,6 +126,21 @@ export function normalizarMensaje(msg: WAMessage): MensajeNormalizado | null {
     enviadoEn,
     payloadCrudo: msg,
   };
+}
+
+function resolverJidPreferidoPN(key: WAMessage['key']): string {
+  const remoteJid = key.remoteJid!;
+  const alt = (key as { remoteJidAlt?: string | null }).remoteJidAlt;
+  const modo = (key as { addressingMode?: string | null }).addressingMode;
+  // Si el JID principal es LID y tenemos un alt con sufijo PN, preferir el PN.
+  if (
+    typeof alt === 'string' &&
+    alt.endsWith('@s.whatsapp.net') &&
+    (modo === 'lid' || remoteJid.endsWith('@lid'))
+  ) {
+    return alt;
+  }
+  return remoteJid;
 }
 
 function enviadoEnDeMensaje(msg: WAMessage): Date | null {

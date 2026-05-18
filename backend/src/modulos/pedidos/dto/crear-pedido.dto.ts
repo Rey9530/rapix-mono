@@ -23,9 +23,15 @@ export class CrearPedidoDto {
   @MaxLength(120)
   nombreCliente!: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: '70001234',
+    description:
+      '8 dígitos, debe iniciar con 2, 6 o 7 (El Salvador). El servidor agrega el prefijo +503.',
+  })
   @IsString()
-  @Matches(/^\+?[0-9]{8,15}$/)
+  @Matches(/^[267][0-9]{7}$/, {
+    message: 'El teléfono debe tener 8 dígitos y empezar con 2, 6 o 7.',
+  })
   telefonoCliente!: string;
 
   @ApiProperty({ required: false })

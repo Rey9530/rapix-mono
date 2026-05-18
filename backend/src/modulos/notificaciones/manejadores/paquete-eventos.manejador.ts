@@ -2,7 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { EventosDominio } from '../../../eventos/eventos-dominio.js';
 import { PaqueteAgotadoEvento } from '../../../eventos/paquete-agotado.evento.js';
+import { PaqueteAutorizadoEvento } from '../../../eventos/paquete-autorizado.evento.js';
 import { PaqueteCompradoEvento } from '../../../eventos/paquete-comprado.evento.js';
+import { PaqueteRechazadoEvento } from '../../../eventos/paquete-rechazado.evento.js';
 import { PaqueteSaldoBajoEvento } from '../../../eventos/paquete-saldo-bajo.evento.js';
 import { PrismaServicio } from '../../../prisma/prisma.servicio.js';
 import { NotificacionesServicio } from '../notificaciones.servicio.js';
@@ -42,6 +44,30 @@ export class PaqueteEventosManejador {
     await this.enviarPlantilla('PAQUETE_SALDO_BAJO_VENDEDOR', usuarioId, ['PUSH', 'EMAIL'], [
       evento.enviosRestantes,
     ]);
+  }
+
+  @OnEvent(EventosDominio.PaqueteAutorizado, { async: true })
+  async alAutorizar(evento: PaqueteAutorizadoEvento): Promise<void> {
+    const usuarioId = await this.usuarioVendedor(evento.vendedorId);
+    if (!usuarioId) return;
+    await this.enviarPlantilla(
+      'PAQUETE_AUTORIZADO_VENDEDOR',
+      usuarioId,
+      ['PUSH', 'EMAIL'],
+      [evento.enviosTotales, evento.precio],
+    );
+  }
+
+  @OnEvent(EventosDominio.PaqueteRechazado, { async: true })
+  async alRechazar(evento: PaqueteRechazadoEvento): Promise<void> {
+    const usuarioId = await this.usuarioVendedor(evento.vendedorId);
+    if (!usuarioId) return;
+    await this.enviarPlantilla(
+      'PAQUETE_RECHAZADO_VENDEDOR',
+      usuarioId,
+      ['PUSH', 'EMAIL'],
+      [evento.precio, evento.motivo ?? 'Sin motivo especificado'],
+    );
   }
 
   // ──────────────────────────────────────────────────

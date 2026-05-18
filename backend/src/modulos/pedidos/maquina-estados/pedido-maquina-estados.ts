@@ -8,9 +8,12 @@ import { TransicionInvalidaException } from './transicion-invalida.excepcion.js'
 export const TRANSICIONES: Record<EstadoPedido, EstadoPedido[]> = {
   PENDIENTE_ASIGNACION: ['ASIGNADO', 'CANCELADO'],
   ASIGNADO: ['RECOGIDO', 'CANCELADO'],
-  RECOGIDO: ['EN_TRANSITO'],
-  EN_TRANSITO: ['EN_PUNTO_INTERCAMBIO'],
-  EN_PUNTO_INTERCAMBIO: ['EN_REPARTO'],
+  // FALLIDO desde estados intermedios habilita el corto-circuito iniciado por
+  // el cliente via ConfirmacionEntregaModulo (rechazo confirmado o ubicacion
+  // alternativa invalida).
+  RECOGIDO: ['EN_TRANSITO', 'FALLIDO'],
+  EN_TRANSITO: ['EN_PUNTO_INTERCAMBIO', 'FALLIDO'],
+  EN_PUNTO_INTERCAMBIO: ['EN_REPARTO', 'FALLIDO'],
   EN_REPARTO: ['ENTREGADO', 'FALLIDO'],
   FALLIDO: ['EN_REPARTO', 'DEVUELTO'],
   ENTREGADO: [],

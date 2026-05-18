@@ -21,8 +21,15 @@ export class ActualizarPedidoDto {
   @IsOptional() @IsString() @MinLength(2) @MaxLength(120)
   nombreCliente?: string;
 
-  @ApiProperty({ required: false })
-  @IsOptional() @IsString() @Matches(/^\+?[0-9]{8,15}$/)
+  @ApiProperty({
+    required: false,
+    example: '70001234',
+    description:
+      '8 dígitos, debe iniciar con 2, 6 o 7 (El Salvador). El servidor agrega el prefijo +503.',
+  })
+  @IsOptional() @IsString() @Matches(/^[267][0-9]{7}$/, {
+    message: 'El teléfono debe tener 8 dígitos y empezar con 2, 6 o 7.',
+  })
   telefonoCliente?: string;
 
   @ApiProperty({ required: false })

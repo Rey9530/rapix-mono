@@ -183,6 +183,14 @@ enum RolMensajeConfirmacion {
   BOT
 }
 
+enum EtapaConversacionEntrega {
+  CONFIRMACION_INICIAL
+  ESPERANDO_DIRECCION_ORIGINAL
+  CONFIRMANDO_RECHAZO
+  OFRECIENDO_UBICACION_ALTERNATIVA
+  ESPERANDO_NUEVA_UBICACION
+}
+
 // ============================================================
 // MODELOS — Usuarios y Autenticación
 // ============================================================
@@ -391,6 +399,7 @@ model Zona {
   longitudCentro     Float
   puntoIntercambioId String?
   activa             Boolean                                   @default(true)
+  radioMaxRelocalizacionMetros Int?
   creadoEn           DateTime                                  @default(now())
   actualizadoEn      DateTime                                  @updatedAt
 
@@ -554,18 +563,21 @@ model ReglaTarifa {
 }
 
 model PaqueteRecargado {
-  id              String        @id @default(uuid())
-  vendedorId      String
-  reglaTarifaId   String
-  nombre          String
-  enviosTotales   Int
-  enviosRestantes Int
-  precio          Decimal       @db.Decimal(10, 2)
-  estado          EstadoPaquete @default(ACTIVO)
-  compradoEn      DateTime      @default(now())
-  expiraEn        DateTime?
-  creadoEn        DateTime      @default(now())
-  actualizadoEn   DateTime      @updatedAt
+  id                  String        @id @default(uuid())
+  vendedorId          String
+  reglaTarifaId       String
+  nombre              String
+  enviosTotales       Int
+  enviosRestantes     Int
+  precio              Decimal       @db.Decimal(10, 2)
+  estado              EstadoPaquete @default(ACTIVO)
+  metodoPago          MetodoPago?
+  urlComprobantePago  String?
+  comprobanteSubidoEn DateTime?
+  compradoEn          DateTime      @default(now())
+  expiraEn            DateTime?
+  creadoEn            DateTime      @default(now())
+  actualizadoEn       DateTime      @updatedAt
 
   vendedor    PerfilVendedor @relation(fields: [vendedorId], references: [id])
   reglaTarifa ReglaTarifa    @relation(fields: [reglaTarifaId], references: [id])
@@ -899,12 +911,17 @@ model ConfirmacionEntregaConversacion {
   pedidoId                    String                    @unique
   chatId                      String?
   estado                      EstadoConfirmacionEntrega @default(INICIADA)
+  etapa                       EtapaConversacionEntrega  @default(CONFIRMACION_INICIAL)
   intencionFinal              IntencionConfirmacion?
   iniciadaEn                  DateTime                  @default(now())
   resueltaEn                  DateTime?
   vencimientoNotificacionEn   DateTime
   notificacionVendedorEnviada Boolean                   @default(false)
   motivoFalla                 String?
+  latitudOriginal             Float?
+  longitudOriginal            Float?
+  latitudPropuesta            Float?
+  longitudPropuesta           Float?
   creadoEn                    DateTime                  @default(now())
   actualizadoEn               DateTime                  @updatedAt
 

@@ -95,9 +95,20 @@ export class WhatsappEventoServicio {
     mensajes: WAMessage[],
     _tipo: 'append' | 'notify' | 'prepend' | string,
   ): Promise<void> {
+    this.logger.log(
+      `messages.upsert recibido: tipo=${_tipo} cantidad=${mensajes.length}`,
+    );
     for (const wa of mensajes) {
       const normalizado = normalizarMensaje(wa);
-      if (!normalizado) continue;
+      if (!normalizado) {
+        this.logger.debug(
+          `Mensaje Baileys descartado (no normalizable): id=${wa.key?.id ?? '?'} remoteJid=${wa.key?.remoteJid ?? '?'} fromMe=${wa.key?.fromMe ?? '?'}`,
+        );
+        continue;
+      }
+      this.logger.log(
+        `Mensaje Baileys normalizado: id=${normalizado.externoId} chatJid=${normalizado.chatJid} dir=${normalizado.direccion} tipo=${normalizado.tipo} texto="${(normalizado.texto ?? '').slice(0, 80)}"`,
+      );
 
       // Asegurar chat
       const nombreChat = wa.pushName ?? null;

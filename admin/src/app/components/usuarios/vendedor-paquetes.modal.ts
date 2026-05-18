@@ -6,7 +6,7 @@ import {
   Validators,
 } from "@angular/forms";
 
-import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
+import { NgbActiveModal, NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { ToastrService } from "ngx-toastr";
 
 import { ReglasTarifaServicio } from "../../nucleo/datos/reglas-tarifa.servicio";
@@ -17,6 +17,7 @@ import {
   PaqueteRecargado,
 } from "../../nucleo/modelos/paquete-recargado.modelo";
 import { ReglaTarifa } from "../../nucleo/modelos/regla-tarifa.modelo";
+import { ConfirmarPagoPaqueteModal } from "./confirmar-pago-paquete.modal";
 
 interface ReglaPaqueteResumen {
   id: string;
@@ -36,6 +37,7 @@ export class VendedorPaquetesModal implements OnInit {
   @Input() nombreVendedor = "";
 
   readonly modal = inject(NgbActiveModal);
+  private readonly modalService = inject(NgbModal);
   private readonly fb = inject(FormBuilder);
   private readonly servicio = inject(UsuariosServicio);
   private readonly reglas = inject(ReglasTarifaServicio);
@@ -233,6 +235,20 @@ export class VendedorPaquetesModal implements OnInit {
         },
         error: (e) => this.fallar(e, "No se pudo actualizar el paquete"),
       });
+  }
+
+  abrirConfirmarPago(paquete: PaqueteRecargado): void {
+    const ref = this.modalService.open(ConfirmarPagoPaqueteModal, {
+      size: "lg",
+      centered: true,
+      scrollable: true,
+    });
+    ref.componentInstance.paquete = paquete;
+    ref.componentInstance.usuarioId = this.usuarioId;
+    ref.componentInstance.nombreVendedor = this.nombreVendedor;
+    ref.closed.subscribe((resultado: unknown) => {
+      if (resultado === true) this.recargar();
+    });
   }
 
   cancelar(paquete: PaqueteRecargado): void {

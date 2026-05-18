@@ -174,14 +174,14 @@ class _RegistrarPantallaEstado extends ConsumerState<RegistrarPantalla> {
             const SizedBox(height: 14),
             _CampoEtiquetado(
               etiqueta: 'Teléfono (WhatsApp)',
-              hint: '+50370001234',
+              hint: '70001234',
               controlador: _telefonoCtrl,
               tipoTeclado: TextInputType.phone,
               autofill: const [AutofillHints.telephoneNumber],
               validador: (v) {
                 final t = v?.trim() ?? '';
-                if (!RegExp(r'^\+?[0-9]{8,15}$').hasMatch(t)) {
-                  return 'Entre 8 y 15 dígitos, opcional con +';
+                if (!RegExp(r'^[267][0-9]{7}$').hasMatch(t)) {
+                  return 'Debe tener 8 dígitos y empezar con 2, 6 o 7';
                 }
                 return null;
               },

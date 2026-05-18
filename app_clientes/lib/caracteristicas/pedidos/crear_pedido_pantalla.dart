@@ -43,7 +43,7 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
   bool _enviando = false;
   final _selectorImagen = ImagePicker();
 
-  DateTime _fechaEntrega = DateTime.now();
+  DateTime _fechaEntrega = DateTime.now().add(const Duration(days: 1));
   double? _latDestino;
   double? _lngDestino;
 
@@ -461,12 +461,12 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
                       icono: Icons.phone_outlined,
                       controlador: _telefonoCliente,
                       teclado: TextInputType.phone,
-                      hint: '+50370001234',
+                      hint: '70001234',
                       ultimo: true,
                       validador: (v) {
                         final t = v?.trim() ?? '';
-                        if (!RegExp(r'^\+?[0-9]{8,15}$').hasMatch(t)) {
-                          return '8-15 dígitos, opcional con +';
+                        if (!RegExp(r'^[267][0-9]{7}$').hasMatch(t)) {
+                          return 'Debe tener 8 dígitos y empezar con 2, 6 o 7';
                         }
                         return null;
                       },
@@ -615,6 +615,7 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
         cargando: _enviando,
         alPresionar: _enviando ? null : _enviar,
         metodoPago: _metodoPago,
+        controladorMonto: _montoContraEntrega,
       ),
     );
   }
@@ -1007,12 +1008,13 @@ class _FilaFechaEntrega extends StatelessWidget {
     return InkWell(
       onTap: () async {
         final ahora = DateTime.now();
-        final hoy = DateTime(ahora.year, ahora.month, ahora.day);
+        final manana = DateTime(ahora.year, ahora.month, ahora.day)
+            .add(const Duration(days: 1));
         final seleccionada = await showDatePicker(
           context: context,
-          initialDate: fecha,
-          firstDate: hoy,
-          lastDate: hoy.add(const Duration(days: 365)),
+          initialDate: fecha.isBefore(manana) ? manana : fecha,
+          firstDate: manana,
+          lastDate: manana.add(const Duration(days: 365)),
           locale: const Locale('es'),
         );
         if (seleccionada != null) alElegir(seleccionada);
@@ -1386,17 +1388,17 @@ class _BarraInferiorCrear extends ConsumerWidget {
     required this.cargando,
     required this.alPresionar,
     required this.metodoPago,
+    required this.controladorMonto,
   });
 
   final bool cargando;
   final VoidCallback? alPresionar;
   final String metodoPago;
+  final TextEditingController controladorMonto;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final preview = ref.watch(previewCostoEnvioProvider);
-    final mostrarNota = metodoPago == 'CONTRA_ENTREGA' &&
-        (preview.value?.debeMostrarse ?? false);
     return Container(
       decoration: BoxDecoration(
         color: tokens(context).superficie,
@@ -1412,81 +1414,45 @@ class _BarraInferiorCrear extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (mostrarNota) ...[
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: TokensRapix.ambar.withValues(alpha: 0.18),
-                    borderRadius:
-                        BorderRadius.circular(TokensRapix.radioMd),
-                    border: Border.all(
-                      color: TokensRapix.ambar.withValues(alpha: 0.45),
-                    ),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(
-                        Icons.info_outline,
-                        size: 16,
-                        color: tokens(context).tinta,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Si el cliente pagará el paquete más el envío, '
-                          'el total a pagar debe ser la suma de ambos '
-                          'para que el rider cobre lo correcto.',
-                          style: GoogleFonts.inter(
-                            fontSize: 11.5,
-                            fontWeight: FontWeight.w600,
-                            color: tokens(context).tinta,
-                            height: 1.35,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+              if (metodoPago == 'CONTRA_ENTREGA') ...[
+                ValueListenableBuilder<TextEditingValue>(
+                  valueListenable: controladorMonto,
+                  builder: (context, valor, _) {
+                    final monto = double.tryParse(valor.text) ?? 0;
+                    return _ResumenCostoEnvio(
+                      monto: monto,
+                      preview: preview,
+                    );
+                  },
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
               ],
-              Row(
-                children: [
-                  Expanded(
-                    child: _ResumenCostoEnvio(preview: preview),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: alPresionar,
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    minimumSize: Size.zero,
                   ),
-                  const SizedBox(width: 12),
-                  FilledButton(
-                    onPressed: alPresionar,
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 22,
-                        vertical: 14,
-                      ),
-                      minimumSize: Size.zero,
-                    ),
-                    child: cargando
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: const [
-                              Text('Crear pedido'),
-                              SizedBox(width: 6),
-                              Icon(Icons.chevron_right, size: 18),
-                            ],
+                  child: cargando
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
                           ),
-                  ),
-                ],
+                        )
+                      : Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Text('Crear pedido'),
+                            SizedBox(width: 6),
+                            Icon(Icons.chevron_right, size: 18),
+                          ],
+                        ),
+                ),
               ),
             ],
           ),
@@ -1497,8 +1463,12 @@ class _BarraInferiorCrear extends ConsumerWidget {
 }
 
 class _ResumenCostoEnvio extends StatelessWidget {
-  const _ResumenCostoEnvio({required this.preview});
+  const _ResumenCostoEnvio({
+    required this.monto,
+    required this.preview,
+  });
 
+  final double monto;
   final AsyncValue<PreviewCostoEnvio> preview;
 
   @override
@@ -1508,95 +1478,87 @@ class _ResumenCostoEnvio extends StatelessWidget {
       symbol: r'$',
       decimalDigits: 2,
     );
-    return preview.when(
-      loading: () => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Calculando…',
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: tokens(context).tintaSilenciada,
-            ),
-          ),
-          const SizedBox(height: 2),
-          SizedBox(
-            height: 18,
-            width: 80,
-            child: LinearProgressIndicator(
-              minHeight: 4,
-              backgroundColor: tokens(context).superficieAlt,
-            ),
-          ),
-        ],
-      ),
-      error: (_, _) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Costo de envío',
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: tokens(context).tintaSilenciada,
-            ),
-          ),
-          Text(
-            'No disponible',
-            style: GoogleFonts.inter(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: tokens(context).tintaSilenciada,
-            ),
+    final datosPreview = preview.value;
+    final envioAplica = datosPreview?.debeMostrarse ?? false;
+    final cargandoEnvio = preview.isLoading;
+    final errorEnvio = preview.hasError;
+    final costoEnvio = envioAplica ? datosPreview!.costoEnvio : 0.0;
+    final total = monto + costoEnvio;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _FilaResumenCosto(
+          etiqueta: 'Paquete',
+          valor: formato.format(monto),
+        ),
+        if (envioAplica || cargandoEnvio || errorEnvio) ...[
+          const SizedBox(height: 6),
+          _FilaResumenCosto(
+            etiqueta: 'Envío',
+            valor: cargandoEnvio
+                ? 'Calculando…'
+                : errorEnvio
+                    ? 'No disponible'
+                    : formato.format(costoEnvio),
+            silenciado: cargandoEnvio || errorEnvio,
           ),
         ],
-      ),
-      data: (p) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: p.debeMostrarse
-            ? [
-                Text(
-                  'Costo de envío a pagar al entregar',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                    color: tokens(context).tintaSilenciada,
-                  ),
-                ),
-                Text(
-                  formato.format(p.costoEnvio),
-                  style: GoogleFonts.inter(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: tokens(context).tinta,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-              ]
-            : [
-                Text(
-                  'Cubierto por tu paquete activo',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                    color: tokens(context).tintaSilenciada,
-                  ),
-                ),
-                Text(
-                  '1 envío del paquete',
-                  style: GoogleFonts.inter(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: tokens(context).tinta,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-              ],
-      ),
+        const SizedBox(height: 8),
+        Container(height: 1, color: tokens(context).contorno),
+        const SizedBox(height: 8),
+        _FilaResumenCosto(
+          etiqueta: 'Total',
+          valor: formato.format(total),
+          esTotal: true,
+        ),
+      ],
+    );
+  }
+}
+
+class _FilaResumenCosto extends StatelessWidget {
+  const _FilaResumenCosto({
+    required this.etiqueta,
+    required this.valor,
+    this.esTotal = false,
+    this.silenciado = false,
+  });
+
+  final String etiqueta;
+  final String valor;
+  final bool esTotal;
+  final bool silenciado;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorTinta = silenciado
+        ? tokens(context).tintaSilenciada
+        : tokens(context).tinta;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          etiqueta,
+          style: GoogleFonts.inter(
+            fontSize: esTotal ? 13 : 12,
+            fontWeight: esTotal ? FontWeight.w600 : FontWeight.w500,
+            color: esTotal
+                ? tokens(context).tinta
+                : tokens(context).tintaSilenciada,
+          ),
+        ),
+        Text(
+          valor,
+          style: GoogleFonts.inter(
+            fontSize: esTotal ? 20 : 14,
+            fontWeight: esTotal ? FontWeight.w700 : FontWeight.w600,
+            color: colorTinta,
+            letterSpacing: esTotal ? -0.3 : 0,
+          ),
+        ),
+      ],
     );
   }
 }

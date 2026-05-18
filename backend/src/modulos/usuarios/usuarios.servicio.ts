@@ -16,9 +16,14 @@ import type {
   Usuario,
 } from '../../generated/prisma/client.js';
 import { PrismaServicio } from '../../prisma/prisma.servicio.js';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventosDominio } from '../../eventos/eventos-dominio.js';
+import { PaqueteAutorizadoEvento } from '../../eventos/paquete-autorizado.evento.js';
+import { PaqueteRechazadoEvento } from '../../eventos/paquete-rechazado.evento.js';
 import { ArchivosServicio } from '../archivos/archivos.servicio.js';
 import { AuditoriaServicio } from '../auditoria/auditoria.servicio.js';
 import { UsuarioPublicoDto } from '../autenticacion/dto/usuario-publico.dto.js';
+import { TRANSICIONES_VALIDAS as TRANSICIONES_PAQUETE } from '../paquetes-recargados/paquetes-recargados.servicio.js';
 import { RepartidoresServicio } from '../repartidores/repartidores.servicio.js';
 import { ActualizarEstadoUsuarioDto } from './dto/actualizar-estado-usuario.dto.js';
 import { ActualizarPaqueteAsignadoDto } from './dto/actualizar-paquete-asignado.dto.js';
@@ -46,6 +51,7 @@ export class UsuariosServicio {
     private readonly repartidores: RepartidoresServicio,
     private readonly archivos: ArchivosServicio,
     private readonly auditoria: AuditoriaServicio,
+    private readonly eventos: EventEmitter2,
   ) {}
 
   async listar(filtros: ListarUsuariosDto): Promise<RespuestaPaginada<UsuarioPublicoDto>> {
@@ -476,6 +482,16 @@ export class UsuariosServicio {
       });
     }
 
+    if (dto.estado !== undefined && dto.estado !== paquete.estado) {
+      const permitidos = TRANSICIONES_PAQUETE[paquete.estado] ?? [];
+      if (!permitidos.includes(dto.estado)) {
+        throw new ConflictException({
+          codigo: 'PAQUETE_TRANSICION_INVALIDA',
+          mensaje: `No se permite ${paquete.estado} → ${dto.estado}`,
+        });
+      }
+    }
+
     const data: Prisma.PaqueteRecargadoUpdateInput = {};
     if (dto.enviosRestantes !== undefined) {
       if (dto.enviosRestantes > paquete.enviosTotales) {
@@ -511,6 +527,33 @@ export class UsuariosServicio {
         ...(dto.notas ? { notas: dto.notas } : {}),
       },
     });
+
+    if (paquete.estado === 'PENDIENTE_PAGO' && actualizado.estado === 'ACTIVO') {
+      this.eventos.emit(
+        EventosDominio.PaqueteAutorizado,
+        new PaqueteAutorizadoEvento(
+          actualizado.id,
+          actualizado.vendedorId,
+          actualizado.enviosTotales,
+          actualizado.precio.toString(),
+          adminId,
+        ),
+      );
+    } else if (
+      paquete.estado === 'PENDIENTE_PAGO' &&
+      actualizado.estado === 'CANCELADO'
+    ) {
+      this.eventos.emit(
+        EventosDominio.PaqueteRechazado,
+        new PaqueteRechazadoEvento(
+          actualizado.id,
+          actualizado.vendedorId,
+          actualizado.precio.toString(),
+          dto.notas ?? null,
+          adminId,
+        ),
+      );
+    }
 
     return actualizado;
   }

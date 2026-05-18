@@ -16,15 +16,22 @@ import type {
   Usuario,
 } from '../../generated/prisma/client.js';
 import { PrismaServicio } from '../../prisma/prisma.servicio.js';
+import { ArchivosServicio } from '../archivos/archivos.servicio.js';
 import { ActualizarPaqueteDto } from './dto/actualizar-paquete.dto.js';
 import { ComprarPaqueteDto } from './dto/comprar-paquete.dto.js';
 import { FiltrosPaqueteDto } from './dto/filtros-paquete.dto.js';
+
+interface ArchivoComprobante {
+  buffer: Buffer;
+  mimetype: string;
+  originalname: string;
+}
 
 // Re-exports retro-compatibles. La verdad vive en `src/eventos/`.
 export const EVENTO_PAQUETE_COMPRADO = EventosDominio.PaqueteComprado;
 export const EVENTO_PAQUETE_AGOTADO = EventosDominio.PaqueteAgotado;
 
-const TRANSICIONES_VALIDAS: Record<EstadoPaquete, EstadoPaquete[]> = {
+export const TRANSICIONES_VALIDAS: Record<EstadoPaquete, EstadoPaquete[]> = {
   PENDIENTE_PAGO: ['ACTIVO', 'CANCELADO'],
   ACTIVO: ['CANCELADO'],
   AGOTADO: [],
@@ -37,6 +44,7 @@ export class PaquetesRecargadosServicio {
   constructor(
     private readonly prisma: PrismaServicio,
     private readonly eventos: EventEmitter2,
+    private readonly archivos: ArchivosServicio,
   ) {}
 
   // ──────────────────────────────────────────────────
@@ -60,8 +68,19 @@ export class PaquetesRecargadosServicio {
   // Compra (VENDEDOR)
   // ──────────────────────────────────────────────────
 
-  async comprar(usuario: Usuario, dto: ComprarPaqueteDto): Promise<PaqueteRecargado> {
+  async comprar(
+    usuario: Usuario,
+    dto: ComprarPaqueteDto,
+    comprobante?: ArchivoComprobante,
+  ): Promise<PaqueteRecargado> {
     const perfilVendedor = await this.requerirPerfilVendedor(usuario);
+
+    if (dto.metodoPago === 'TRANSFERENCIA' && !comprobante) {
+      throw new BadRequestException({
+        codigo: 'COMPROBANTE_REQUERIDO',
+        mensaje: 'Debe adjuntar el comprobante de la transferencia',
+      });
+    }
 
     const regla = await this.prisma.reglaTarifa.findUnique({
       where: { id: dto.reglaTarifaId },
@@ -89,6 +108,20 @@ export class PaquetesRecargadosServicio {
       ? new Date(Date.now() + dto.diasExpiracion * 24 * 60 * 60 * 1000)
       : null;
 
+    let urlComprobantePago: string | null = null;
+    let comprobanteSubidoEn: Date | null = null;
+    if (comprobante) {
+      const ext = mimeExt(comprobante.mimetype);
+      const key = ArchivosServicio.armarKeyComprobantePaquete(perfilVendedor.id, ext);
+      const { url } = await this.archivos.subir(
+        comprobante.buffer,
+        key,
+        comprobante.mimetype,
+      );
+      urlComprobantePago = url;
+      comprobanteSubidoEn = new Date();
+    }
+
     const paquete = await this.prisma.paqueteRecargado.create({
       data: {
         vendedorId: perfilVendedor.id,
@@ -98,6 +131,9 @@ export class PaquetesRecargadosServicio {
         enviosRestantes: regla.tamanoPaquete,
         precio: regla.precioPaquete,
         estado: estadoInicial,
+        metodoPago: dto.metodoPago,
+        urlComprobantePago,
+        comprobanteSubidoEn,
         expiraEn,
       },
     });
@@ -215,4 +251,9 @@ export class PaquetesRecargadosServicio {
     }
     return perfil;
   }
+}
+
+function mimeExt(mime: string): string {
+  const parte = mime.split('/')[1] ?? 'bin';
+  return parte === 'jpeg' ? 'jpg' : parte;
 }

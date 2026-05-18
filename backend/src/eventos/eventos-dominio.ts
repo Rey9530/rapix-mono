@@ -16,6 +16,8 @@ export const EventosDominio = {
   PaqueteComprado: 'paquete.comprado',
   PaqueteAgotado: 'paquete.agotado',
   PaqueteSaldoBajo: 'paquete.saldo_bajo',
+  PaqueteAutorizado: 'paquete.autorizado',
+  PaqueteRechazado: 'paquete.rechazado',
 
   // Depósitos a vendedores (Fase 9)
   DepositoCreado: 'deposito.creado',

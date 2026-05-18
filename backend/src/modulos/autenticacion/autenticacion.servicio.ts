@@ -50,8 +50,10 @@ export class AutenticacionServicio {
     const emailExiste = await this.prisma.usuario.findUnique({ where: { email: dto.email } });
     if (emailExiste) throw new ConflictException('El email ya está registrado');
 
+    const telefonoCompleto = `+503${dto.telefono}`;
+
     const telefonoExiste = await this.prisma.usuario.findUnique({
-      where: { telefono: dto.telefono },
+      where: { telefono: telefonoCompleto },
     });
     if (telefonoExiste) throw new ConflictException('El teléfono ya está registrado');
 
@@ -74,7 +76,7 @@ export class AutenticacionServicio {
       const creado = await tx.usuario.create({
         data: {
           email: dto.email,
-          telefono: dto.telefono,
+          telefono: telefonoCompleto,
           hashContrasena: hash,
           nombreCompleto: dto.nombreCompleto,
           rol: dto.rol,

@@ -1,6 +1,7 @@
 import {
   Injectable,
   Logger,
+  OnApplicationBootstrap,
   OnModuleDestroy,
   OnModuleInit,
   ServiceUnavailableException,
@@ -37,7 +38,9 @@ const RECONEXION_MAX_MS = 60000;
  * `obtenerSocket()` o consumen los eventos de dominio.
  */
 @Injectable()
-export class WhatsappConexionServicio implements OnModuleInit, OnModuleDestroy {
+export class WhatsappConexionServicio
+  implements OnModuleInit, OnApplicationBootstrap, OnModuleDestroy
+{
   private readonly logger = new Logger(WhatsappConexionServicio.name);
   private socket: WASocket | null = null;
   private reconectandoEnMs: number = RECONEXION_BASE_MS;
@@ -53,7 +56,16 @@ export class WhatsappConexionServicio implements OnModuleInit, OnModuleDestroy {
   ) {}
 
   async onModuleInit(): Promise<void> {
+    // Solo aseguramos la fila de sesion aqui. La conexion arranca en
+    // onApplicationBootstrap para que los listeners @OnEvent (registrados al
+    // final del ciclo de inicializacion) ya esten activos cuando emitamos
+    // `WhatsappSocketCreado` — de lo contrario, en arranques con credenciales
+    // previas el evento se pierde y `WhatsappEventoServicio` nunca se suscribe
+    // al socket nuevo (los mensajes entrantes no se procesan).
     await this.asegurarFilaSesion();
+  }
+
+  async onApplicationBootstrap(): Promise<void> {
     if (process.env.WHATSAPP_BAILEYS_HABILITADO === 'false') {
       this.logger.warn(
         'WHATSAPP_BAILEYS_HABILITADO=false; el modulo no levantara la conexion.',

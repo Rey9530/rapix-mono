@@ -9,8 +9,16 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Roles } from '../../comun/decoradores/roles.decorador.js';
 import { UsuarioActual } from '../../comun/decoradores/usuario-actual.decorador.js';
 import type { Usuario } from '../../generated/prisma/client.js';
@@ -18,6 +26,14 @@ import { ActualizarPaqueteDto } from './dto/actualizar-paquete.dto.js';
 import { ComprarPaqueteDto } from './dto/comprar-paquete.dto.js';
 import { FiltrosPaqueteDto } from './dto/filtros-paquete.dto.js';
 import { PaquetesRecargadosServicio } from './paquetes-recargados.servicio.js';
+
+interface ArchivoMultipart {
+  buffer: Buffer;
+  mimetype: string;
+  originalname: string;
+  size: number;
+  fieldname: string;
+}
 
 @ApiTags('Paquetes Recargados')
 @ApiBearerAuth('autenticacion-jwt')
@@ -38,9 +54,28 @@ export class PaquetesRecargadosControlador {
   @Roles('VENDEDOR')
   @Post('comprar')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Comprar un paquete prepago' })
-  comprar(@UsuarioActual() usuario: Usuario, @Body() dto: ComprarPaqueteDto) {
-    return this.servicio.comprar(usuario, dto);
+  @ApiConsumes('multipart/form-data', 'application/json')
+  @ApiOperation({
+    summary:
+      'Comprar un paquete prepago — multipart con campo "comprobante" (obligatorio para TRANSFERENCIA)',
+  })
+  @UseInterceptors(FileInterceptor('comprobante'))
+  comprar(
+    @UsuarioActual() usuario: Usuario,
+    @Body() dto: ComprarPaqueteDto,
+    @UploadedFile() comprobante?: ArchivoMultipart,
+  ) {
+    return this.servicio.comprar(
+      usuario,
+      dto,
+      comprobante
+        ? {
+            buffer: comprobante.buffer,
+            mimetype: comprobante.mimetype,
+            originalname: comprobante.originalname,
+          }
+        : undefined,
+    );
   }
 
   @Roles('VENDEDOR')

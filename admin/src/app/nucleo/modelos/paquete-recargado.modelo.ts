@@ -14,6 +14,9 @@ export interface PaqueteRecargado {
   enviosRestantes: number;
   precio: string;
   estado: EstadoPaquete;
+  metodoPago: string | null;
+  urlComprobantePago: string | null;
+  comprobanteSubidoEn: string | null;
   compradoEn: string;
   expiraEn: string | null;
   creadoEn: string;

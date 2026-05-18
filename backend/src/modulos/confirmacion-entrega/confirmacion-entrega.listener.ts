@@ -43,15 +43,27 @@ export class ConfirmacionEntregaListener {
     if (evento.mensaje.direccion !== 'ENTRANTE') return;
 
     // Short-circuit: solo seguimos si hay conversacion activa para este chat.
+    // Si el cliente tiene varios pedidos en curso al mismo numero, tomamos la
+    // mas reciente — los mensajes del cliente normalmente responden a la
+    // ultima pregunta que envio el bot.
     const activa = await this.prisma.confirmacionEntregaConversacion.findFirst({
       where: {
         chatId: evento.chat.id,
         estado: { in: ['INICIADA', 'REPREGUNTADA'] },
       },
+      orderBy: { iniciadaEn: 'desc' },
       select: { id: true },
     });
-    if (!activa) return;
+    if (!activa) {
+      this.logger.debug(
+        `Mensaje entrante ${evento.mensaje.id} (chat ${evento.chat.id}): sin conversacion activa.`,
+      );
+      return;
+    }
 
+    this.logger.log(
+      `Despachando mensaje entrante ${evento.mensaje.id} a conversacion ${activa.id}.`,
+    );
     try {
       await this.servicio.procesarRespuesta(evento.mensaje.id);
     } catch (error) {

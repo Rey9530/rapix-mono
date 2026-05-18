@@ -1,0 +1,143 @@
+<div class="modal-header">
+  <div>
+    <h5 class="modal-title">Confirmar pago del paquete</h5>
+    @if (nombreVendedor) {
+      <small class="text-muted">{{ nombreVendedor }}</small>
+    }
+  </div>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Cerrar"
+    (click)="modal.dismiss()"
+  ></button>
+</div>
+
+<div class="modal-body">
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <h6 class="mb-0">{{ paquete.nombre }}</h6>
+        <span class="badge bg-{{ estadoColor(paquete.estado) }}">
+          {{ paquete.estado }}
+        </span>
+      </div>
+      <div class="row small text-muted g-2">
+        <div class="col-6">
+          <div class="text-muted">Monto</div>
+          <div class="fw-semibold text-body">
+            ${{ +paquete.precio | number: "1.2-2" }}
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="text-muted">Envíos incluidos</div>
+          <div class="fw-semibold text-body">{{ paquete.enviosTotales }}</div>
+        </div>
+        <div class="col-6">
+          <div class="text-muted">Método de pago</div>
+          <div class="fw-semibold text-body">
+            {{ paquete.metodoPago || "—" }}
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="text-muted">Comprado</div>
+          <div class="fw-semibold text-body">
+            {{ paquete.compradoEn | date: "dd/MM/yyyy HH:mm" }}
+          </div>
+        </div>
+        @if (paquete.comprobanteSubidoEn) {
+          <div class="col-12">
+            <div class="text-muted">Comprobante subido</div>
+            <div class="fw-semibold text-body">
+              {{ paquete.comprobanteSubidoEn | date: "dd/MM/yyyy HH:mm" }}
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label fw-semibold">Comprobante</label>
+    @if (paquete.urlComprobantePago) {
+      <div>
+        <a
+          [href]="paquete.urlComprobantePago"
+          target="_blank"
+          rel="noopener"
+          class="d-inline-block"
+        >
+          <img
+            [src]="paquete.urlComprobantePago"
+            alt="Comprobante de transferencia"
+            class="img-fluid rounded border"
+            style="max-height: 480px"
+          />
+        </a>
+        <div class="mt-2">
+          <a
+            [href]="paquete.urlComprobantePago"
+            target="_blank"
+            rel="noopener"
+            class="small"
+          >
+            Abrir comprobante en nueva pestaña
+          </a>
+        </div>
+      </div>
+    } @else {
+      <div class="alert alert-warning mb-0">
+        Sin comprobante adjunto. Verificá con el vendedor antes de autorizar.
+      </div>
+    }
+  </div>
+
+  <div class="mb-2">
+    <label class="form-label">Notas (auditoría)</label>
+    <textarea
+      class="form-control"
+      rows="2"
+      maxlength="240"
+      [formControl]="notas"
+      placeholder="Ej: Comprobante coincide con el banco. Aprobado."
+    ></textarea>
+    <small class="text-muted">
+      Opcional. Si lo dejás vacío se registra
+      "Comprobante verificado" / "Comprobante rechazado".
+    </small>
+  </div>
+
+  @if (!esPendientePago) {
+    <div class="alert alert-secondary mb-0 small">
+      Este paquete ya no está en estado PENDIENTE_PAGO. Solo se muestra para
+      consulta.
+    </div>
+  }
+</div>
+
+<div class="modal-footer">
+  <button
+    type="button"
+    class="btn btn-secondary"
+    [disabled]="enviando()"
+    (click)="modal.dismiss()"
+  >
+    Cerrar
+  </button>
+  <button
+    type="button"
+    class="btn btn-danger"
+    [disabled]="enviando() || !esPendientePago"
+    (click)="rechazar()"
+  >
+    {{ enviando() ? "Procesando..." : "Rechazar pago" }}
+  </button>
+  <button
+    type="button"
+    class="btn btn-success"
+    [disabled]="enviando() || !esPendientePago"
+    (click)="autorizar()"
+  >
+    {{ enviando() ? "Procesando..." : "Autorizar pago" }}
+  </button>
+</div>

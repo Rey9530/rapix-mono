@@ -148,6 +148,14 @@ export const PLANTILLAS_ES = {
     titulo: 'Paquete agotado',
     cuerpo: 'Se agotaron los envíos de tu paquete prepago. Recarga para seguir enviando.',
   },
+  PAQUETE_AUTORIZADO_VENDEDOR: {
+    titulo: 'Pago de paquete autorizado',
+    cuerpo: 'El admin confirmó tu pago. Tu paquete de {{1}} envíos por ${{2}} ya está activo.',
+  },
+  PAQUETE_RECHAZADO_VENDEDOR: {
+    titulo: 'Pago de paquete rechazado',
+    cuerpo: 'El admin no aprobó el comprobante de tu paquete por ${{1}}. Motivo: {{2}}.',
+  },
 
   // ── Depósitos a vendedores ─────────────────────────────
   DEPOSITO_REGISTRADO_VENDEDOR: {

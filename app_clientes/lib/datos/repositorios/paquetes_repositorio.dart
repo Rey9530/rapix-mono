@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../nucleo/red/dio_cliente.dart';
 import '../modelos/paquete_recargado.dart';
@@ -26,13 +27,21 @@ class PaquetesRepositorio {
   Future<PaqueteRecargado> comprar({
     required String reglaTarifaId,
     required String metodoPago,
+    XFile? comprobante,
   }) async {
+    final campos = <String, dynamic>{
+      'reglaTarifaId': reglaTarifaId,
+      'metodoPago': metodoPago,
+    };
+    if (comprobante != null) {
+      campos['comprobante'] = await MultipartFile.fromFile(
+        comprobante.path,
+        filename: comprobante.name,
+      );
+    }
     final respuesta = await _dio.post<Map<String, dynamic>>(
       '/paquetes-recargados/comprar',
-      data: {
-        'reglaTarifaId': reglaTarifaId,
-        'metodoPago': metodoPago,
-      },
+      data: FormData.fromMap(campos),
     );
     return PaqueteRecargado.desdeJson(respuesta.data!);
   }
