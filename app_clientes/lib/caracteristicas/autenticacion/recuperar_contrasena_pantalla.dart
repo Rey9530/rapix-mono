@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../nucleo/tema/tokens_rapix.dart';
-import '../../widgets/wordmark_rapix.dart';
 import 'autenticacion_controlador.dart';
 
 class RecuperarContrasenaPantalla extends ConsumerStatefulWidget {
@@ -123,8 +122,22 @@ class _Encabezado extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        WordmarkRapix(tamano: 28),
+      children: [
+        Image.asset(
+          'assets/logo_rapix.png',
+          height: 72,
+          fit: BoxFit.contain,
+          alignment: Alignment.centerLeft,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Logística simple para tu negocio',
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            color: tokens(context).tintaSilenciada,
+            height: 1.5,
+          ),
+        ),
       ],
     );
   }

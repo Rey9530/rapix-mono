@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mb;
@@ -39,16 +40,125 @@ class _CompletarRegistroPantallaEstado
   }
 
   Future<void> _elegirUbicacion() async {
+    // Si ya hay una ubicación seleccionada, asumimos que el usuario quiere
+    // refinarla manualmente en el mapa.
+    if (_ubicacionTienda != null) {
+      await _abrirMapa();
+      return;
+    }
+    // Primer toque: intentar GPS. El resultado puede ser un punto (se
+    // usa para centrar el mapa, no para aplicarlo directo), una señal de
+    // "ir al mapa", o cancelar (usuario descartó el diálogo).
+    final resultado = await _obtenerUbicacionActual();
+    if (!mounted) return;
+    if (resultado.punto != null) {
+      await _abrirMapa(puntoInicial: resultado.punto);
+      return;
+    }
+    if (resultado.usarMapa) {
+      await _abrirMapa();
+    }
+    // cancelar → no hacer nada
+  }
+
+  Future<void> _abrirMapa({mb.Point? puntoInicial}) async {
     final resultado = await context.push<mb.Point>(
       '/seleccionar-ubicacion',
       extra: {
         'titulo': 'Ubicación de la tienda',
-        'inicial': _ubicacionTienda,
+        'inicial': puntoInicial ?? _ubicacionTienda,
       },
     );
+    if (!mounted) return;
     if (resultado != null) {
       setState(() => _ubicacionTienda = resultado);
     }
+  }
+
+  // Resuelve la ubicación actual o decide cómo seguir. Si el servicio
+  // está apagado o el permiso es denegado, muestra un diálogo con opción
+  // de reintentar — el bucle re-chequea hasta que el usuario obtiene
+  // ubicación, elige el mapa, o descarta el diálogo.
+  Future<_ResultadoUbicacion> _obtenerUbicacionActual() async {
+    while (true) {
+      if (!await Geolocator.isLocationServiceEnabled()) {
+        if (!mounted) return _ResultadoUbicacion.cancelar;
+        final accion = await _mostrarDialogoUbicacion(
+          titulo: 'Ubicación apagada',
+          mensaje:
+              'El servicio de ubicación del dispositivo está apagado. '
+              'Actívalo en los ajustes y toca "Reintentar" para detectarla '
+              'automáticamente.',
+        );
+        if (!mounted) return _ResultadoUbicacion.cancelar;
+        if (accion == _AccionUbicacion.reintentar) continue;
+        if (accion == _AccionUbicacion.buscarEnMapa) {
+          return _ResultadoUbicacion.irAlMapa;
+        }
+        return _ResultadoUbicacion.cancelar;
+      }
+      var permiso = await Geolocator.checkPermission();
+      if (permiso == LocationPermission.denied) {
+        permiso = await Geolocator.requestPermission();
+      }
+      if (permiso == LocationPermission.denied ||
+          permiso == LocationPermission.deniedForever) {
+        if (!mounted) return _ResultadoUbicacion.cancelar;
+        final accion = await _mostrarDialogoUbicacion(
+          titulo: 'Permiso de ubicación',
+          mensaje:
+              'Necesitamos permiso de ubicación para detectarla '
+              'automáticamente. Concede el permiso o busca el punto en el '
+              'mapa.',
+        );
+        if (!mounted) return _ResultadoUbicacion.cancelar;
+        if (accion == _AccionUbicacion.reintentar) continue;
+        if (accion == _AccionUbicacion.buscarEnMapa) {
+          return _ResultadoUbicacion.irAlMapa;
+        }
+        return _ResultadoUbicacion.cancelar;
+      }
+      try {
+        final pos = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+            timeLimit: Duration(seconds: 10),
+          ),
+        );
+        return _ResultadoUbicacion.con(
+          mb.Point(coordinates: mb.Position(pos.longitude, pos.latitude)),
+        );
+      } catch (_) {
+        if (!mounted) return _ResultadoUbicacion.cancelar;
+        _avisar('No pudimos obtener tu ubicación, marca el punto en el mapa');
+        return _ResultadoUbicacion.irAlMapa;
+      }
+    }
+  }
+
+  Future<_AccionUbicacion?> _mostrarDialogoUbicacion({
+    required String titulo,
+    required String mensaje,
+  }) {
+    return showDialog<_AccionUbicacion>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(titulo),
+        content: Text(mensaje),
+        actions: [
+          TextButton(
+            onPressed: () =>
+                Navigator.of(ctx).pop(_AccionUbicacion.buscarEnMapa),
+            child: const Text('Buscar en mapa'),
+          ),
+          FilledButton(
+            onPressed: () =>
+                Navigator.of(ctx).pop(_AccionUbicacion.reintentar),
+            child: const Text('Reintentar'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _enviar() async {
@@ -373,4 +483,18 @@ class _PieCompletar extends StatelessWidget {
       ),
     );
   }
+}
+
+enum _AccionUbicacion { reintentar, buscarEnMapa }
+
+class _ResultadoUbicacion {
+  const _ResultadoUbicacion._({this.punto, this.usarMapa = false});
+
+  final mb.Point? punto;
+  final bool usarMapa;
+
+  static const cancelar = _ResultadoUbicacion._();
+  static const irAlMapa = _ResultadoUbicacion._(usarMapa: true);
+  static _ResultadoUbicacion con(mb.Point p) =>
+      _ResultadoUbicacion._(punto: p);
 }

@@ -2,7 +2,7 @@ name: app_clientes
 description: "App movil para vendedores y clientes del sistema de delivery."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.0+3
 
 environment:
   sdk: ^3.11.5
@@ -44,6 +44,9 @@ dependencies:
   # Tipografia
   google_fonts: ^6.2.1
 
+  # Renderizado de SVG (iconos de proveedores OAuth, etc.)
+  flutter_svg: ^2.0.10+1
+
   # Autenticacion con Google. Mantener en 6.x; la version 7.x introduce
   # cambios de ruptura (authenticate() en vez de signIn(), singleton, etc.)
   # — migrar requiere reescribir el wrapper en google_sign_in_servicio.dart.
@@ -71,6 +74,7 @@ flutter:
 
   assets:
     - assets/logo_rapix.png
+    - assets/google_logo.svg
 
 flutter_launcher_icons:
   android: "ic_launcher"

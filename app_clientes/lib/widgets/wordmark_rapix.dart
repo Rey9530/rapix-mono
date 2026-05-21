@@ -1,52 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-import '../nucleo/tema/tokens_rapix.dart';
-
-/// Wordmark de la marca Rapix: "rapix" + punto verde acento.
+/// Logo de la marca Rapix renderizado desde `assets/logo_rapix.png`.
 ///
-/// Replica el diseño de `design_handoff_rapix/screens/ui.jsx` (Wordmark).
-/// Inter weight 800, letter-spacing -1, color [TokensRapix.tinta]; el punto
-/// usa [TokensRapix.verde].
+/// [tamano] se aplica como altura de la imagen, manteniendo su relación de
+/// aspecto via [BoxFit.contain].
 class WordmarkRapix extends StatelessWidget {
   const WordmarkRapix({
     super.key,
     this.tamano = 32,
-    this.colorTexto,
-    this.colorPunto,
   });
 
   final double tamano;
-  final Color? colorTexto;
-  final Color? colorPunto;
 
   @override
   Widget build(BuildContext context) {
-    return Text.rich(
-      TextSpan(
-        children: [
-          TextSpan(
-            text: 'rapix',
-            style: GoogleFonts.inter(
-              fontSize: tamano,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -1,
-              color: colorTexto ?? tokens(context).tinta,
-              height: 1,
-            ),
-          ),
-          TextSpan(
-            text: '.',
-            style: GoogleFonts.inter(
-              fontSize: tamano,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -1,
-              color: colorPunto ?? TokensRapix.verde,
-              height: 1,
-            ),
-          ),
-        ],
-      ),
+    return Image.asset(
+      'assets/logo_rapix.png',
+      height: tamano,
+      fit: BoxFit.contain,
+      alignment: Alignment.centerLeft,
     );
   }
 }

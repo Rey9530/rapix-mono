@@ -85,6 +85,7 @@ export class AutenticacionServicio {
           nombreCompleto: dto.nombreCompleto,
           rol: dto.rol,
           estado: 'PENDIENTE_VERIFICACION',
+          registroCompleto: true,
         },
       });
 

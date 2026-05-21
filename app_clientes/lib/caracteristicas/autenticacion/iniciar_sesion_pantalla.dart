@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -83,6 +84,7 @@ class _IniciarSesionPantallaEstado
           const SizedBox(height: 16),
           _BotonOAuth(
             etiqueta: 'Google',
+            iconoAsset: 'assets/google_logo.svg',
             cargando: cargando,
             alPresionar: cargando ? null : _iniciarConGoogle,
           ),
@@ -417,23 +419,40 @@ class _BotonOAuth extends StatelessWidget {
     required this.etiqueta,
     required this.cargando,
     required this.alPresionar,
+    this.iconoAsset,
   });
 
   final String etiqueta;
   final bool cargando;
   final VoidCallback? alPresionar;
+  final String? iconoAsset;
 
   @override
   Widget build(BuildContext context) {
+    final Widget contenido = cargando
+        ? const SizedBox(
+            height: 18,
+            width: 18,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          )
+        : Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (iconoAsset != null) ...[
+                SvgPicture.asset(
+                  iconoAsset!,
+                  height: 20,
+                  width: 20,
+                ),
+                const SizedBox(width: 10),
+              ],
+              Text(etiqueta),
+            ],
+          );
     return OutlinedButton(
       onPressed: alPresionar,
-      child: cargando
-          ? const SizedBox(
-              height: 18,
-              width: 18,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          : Text(etiqueta),
+      child: contenido,
     );
   }
 }

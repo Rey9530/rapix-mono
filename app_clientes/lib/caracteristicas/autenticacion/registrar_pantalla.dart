@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mb;
@@ -50,16 +51,125 @@ class _RegistrarPantallaEstado extends ConsumerState<RegistrarPantalla> {
   }
 
   Future<void> _elegirUbicacion() async {
+    // Si ya hay una ubicación seleccionada, asumimos que el usuario quiere
+    // refinarla manualmente en el mapa.
+    if (_ubicacionTienda != null) {
+      await _abrirMapa();
+      return;
+    }
+    // Primer toque: intentar GPS. El resultado puede ser un punto (se
+    // usa para centrar el mapa, no para aplicarlo directo), una señal de
+    // "ir al mapa", o cancelar (usuario descartó el diálogo).
+    final resultado = await _obtenerUbicacionActual();
+    if (!mounted) return;
+    if (resultado.punto != null) {
+      await _abrirMapa(puntoInicial: resultado.punto);
+      return;
+    }
+    if (resultado.usarMapa) {
+      await _abrirMapa();
+    }
+    // cancelar → no hacer nada
+  }
+
+  Future<void> _abrirMapa({mb.Point? puntoInicial}) async {
     final resultado = await context.push<mb.Point>(
       '/seleccionar-ubicacion',
       extra: {
         'titulo': 'Ubicación de la tienda',
-        'inicial': _ubicacionTienda,
+        'inicial': puntoInicial ?? _ubicacionTienda,
       },
     );
+    if (!mounted) return;
     if (resultado != null) {
       setState(() => _ubicacionTienda = resultado);
     }
+  }
+
+  // Resuelve la ubicación actual o decide cómo seguir. Si el servicio
+  // está apagado o el permiso es denegado, muestra un diálogo con opción
+  // de reintentar — el bucle re-chequea hasta que el usuario obtiene
+  // ubicación, elige el mapa, o descarta el diálogo.
+  Future<_ResultadoUbicacion> _obtenerUbicacionActual() async {
+    while (true) {
+      if (!await Geolocator.isLocationServiceEnabled()) {
+        if (!mounted) return _ResultadoUbicacion.cancelar;
+        final accion = await _mostrarDialogoUbicacion(
+          titulo: 'Ubicación apagada',
+          mensaje:
+              'El servicio de ubicación del dispositivo está apagado. '
+              'Actívalo en los ajustes y toca "Reintentar" para detectarla '
+              'automáticamente.',
+        );
+        if (!mounted) return _ResultadoUbicacion.cancelar;
+        if (accion == _AccionUbicacion.reintentar) continue;
+        if (accion == _AccionUbicacion.buscarEnMapa) {
+          return _ResultadoUbicacion.irAlMapa;
+        }
+        return _ResultadoUbicacion.cancelar;
+      }
+      var permiso = await Geolocator.checkPermission();
+      if (permiso == LocationPermission.denied) {
+        permiso = await Geolocator.requestPermission();
+      }
+      if (permiso == LocationPermission.denied ||
+          permiso == LocationPermission.deniedForever) {
+        if (!mounted) return _ResultadoUbicacion.cancelar;
+        final accion = await _mostrarDialogoUbicacion(
+          titulo: 'Permiso de ubicación',
+          mensaje:
+              'Necesitamos permiso de ubicación para detectarla '
+              'automáticamente. Concede el permiso o busca el punto en el '
+              'mapa.',
+        );
+        if (!mounted) return _ResultadoUbicacion.cancelar;
+        if (accion == _AccionUbicacion.reintentar) continue;
+        if (accion == _AccionUbicacion.buscarEnMapa) {
+          return _ResultadoUbicacion.irAlMapa;
+        }
+        return _ResultadoUbicacion.cancelar;
+      }
+      try {
+        final pos = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+            timeLimit: Duration(seconds: 10),
+          ),
+        );
+        return _ResultadoUbicacion.con(
+          mb.Point(coordinates: mb.Position(pos.longitude, pos.latitude)),
+        );
+      } catch (_) {
+        if (!mounted) return _ResultadoUbicacion.cancelar;
+        _avisar('No pudimos obtener tu ubicación, marca el punto en el mapa');
+        return _ResultadoUbicacion.irAlMapa;
+      }
+    }
+  }
+
+  Future<_AccionUbicacion?> _mostrarDialogoUbicacion({
+    required String titulo,
+    required String mensaje,
+  }) {
+    return showDialog<_AccionUbicacion>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(titulo),
+        content: Text(mensaje),
+        actions: [
+          TextButton(
+            onPressed: () =>
+                Navigator.of(ctx).pop(_AccionUbicacion.buscarEnMapa),
+            child: const Text('Buscar en mapa'),
+          ),
+          FilledButton(
+            onPressed: () =>
+                Navigator.of(ctx).pop(_AccionUbicacion.reintentar),
+            child: const Text('Reintentar'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _enviar() async {
@@ -212,10 +322,11 @@ class _RegistrarPantallaEstado extends ConsumerState<RegistrarPantalla> {
                 return null;
               },
             ),
-            if (_contrasenaCtrl.text.isNotEmpty) ...[
-              const SizedBox(height: 10),
-              _MedidorSeguridad(nivel: nivel),
-            ],
+            const SizedBox(height: 10),
+            _MedidorSeguridad(
+              contrasena: _contrasenaCtrl.text,
+              nivel: nivel,
+            ),
             const SizedBox(height: 28),
             const _TituloSeccion(
               titulo: 'Tu negocio',
@@ -435,45 +546,80 @@ class _BotonSufijoTexto extends StatelessWidget {
   }
 }
 
-class _MedidorSeguridad extends StatelessWidget {
-  const _MedidorSeguridad({required this.nivel});
+enum _CategoriaSeguridad { vacia, debil, intermedia, aceptable }
 
+_CategoriaSeguridad _categoriaPorNivel(int nivel) {
+  if (nivel == 0) return _CategoriaSeguridad.vacia;
+  if (nivel <= 2) return _CategoriaSeguridad.debil;
+  if (nivel == 3) return _CategoriaSeguridad.intermedia;
+  return _CategoriaSeguridad.aceptable;
+}
+
+class _MedidorSeguridad extends StatelessWidget {
+  const _MedidorSeguridad({required this.contrasena, required this.nivel});
+
+  final String contrasena;
   final int nivel;
 
   static const _etiquetas = <String>[
+    'Sin contraseña',
     'Muy débil',
     'Débil',
-    'Regular',
-    'Buena',
-    'Excelente',
+    'Intermedia',
+    'Aceptable',
   ];
 
-  static const _pistas = <String>[
-    'Usa al menos 8 caracteres',
-    'Agrega una mayúscula',
-    'Agrega un número',
-    'Agrega un símbolo',
-    'Cumple todos los requisitos',
-  ];
+  Color _colorPrincipal(BuildContext context, _CategoriaSeguridad cat) {
+    switch (cat) {
+      case _CategoriaSeguridad.vacia:
+        return tokens(context).tintaSuave;
+      case _CategoriaSeguridad.debil:
+        return TokensRapix.peligro;
+      case _CategoriaSeguridad.intermedia:
+        return TokensRapix.ambar;
+      case _CategoriaSeguridad.aceptable:
+        return TokensRapix.verde;
+    }
+  }
+
+  Color _colorFondo(BuildContext context, _CategoriaSeguridad cat) {
+    switch (cat) {
+      case _CategoriaSeguridad.vacia:
+        return tokens(context).superficie;
+      case _CategoriaSeguridad.debil:
+        return TokensRapix.peligroSuave;
+      case _CategoriaSeguridad.intermedia:
+        return TokensRapix.ambar.withValues(alpha: 0.15);
+      case _CategoriaSeguridad.aceptable:
+        return tokens(context).verdeSuave;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final categoria = _categoriaPorNivel(nivel);
+    final color = _colorPrincipal(context, categoria);
+    final fondo = _colorFondo(context, categoria);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: tokens(context).verdeSuave,
+        color: fondo,
         borderRadius: BorderRadius.circular(TokensRapix.radioMd),
+        border: categoria == _CategoriaSeguridad.vacia
+            ? Border.all(color: tokens(context).contorno, width: 1)
+            : null,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'SEGURIDAD DE LA CONTRASEÑA',
+            'SEGURIDAD: ${_etiquetas[nivel].toUpperCase()}',
             style: GoogleFonts.inter(
               fontSize: 11,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.5,
-              color: tokens(context).verdeTinta,
+              color: color,
             ),
           ),
           const SizedBox(height: 8),
@@ -485,22 +631,73 @@ class _MedidorSeguridad extends StatelessWidget {
                   height: 4,
                   margin: EdgeInsets.only(right: i < 3 ? 4 : 0),
                   decoration: BoxDecoration(
-                    color: activo
-                        ? TokensRapix.verde
-                        : tokens(context).contorno,
+                    color: activo ? color : tokens(context).contorno,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
               );
             }),
           ),
-          const SizedBox(height: 8),
-          Text(
-            '${_etiquetas[nivel]} · ${_pistas[nivel]}',
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: tokens(context).verdeTinta,
+          const SizedBox(height: 10),
+          _FilaRequisito(
+            texto: 'Al menos 8 caracteres',
+            cumplido: contrasena.length >= 8,
+            colorCumplido: color,
+          ),
+          _FilaRequisito(
+            texto: 'Una letra mayúscula',
+            cumplido: RegExp(r'[A-Z]').hasMatch(contrasena),
+            colorCumplido: color,
+          ),
+          _FilaRequisito(
+            texto: 'Un número',
+            cumplido: RegExp(r'[0-9]').hasMatch(contrasena),
+            colorCumplido: color,
+          ),
+          _FilaRequisito(
+            texto: 'Un símbolo (!@#\$...)',
+            cumplido: RegExp(r'[^A-Za-z0-9]').hasMatch(contrasena),
+            colorCumplido: color,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FilaRequisito extends StatelessWidget {
+  const _FilaRequisito({
+    required this.texto,
+    required this.cumplido,
+    required this.colorCumplido,
+  });
+
+  final String texto;
+  final bool cumplido;
+  final Color colorCumplido;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        children: [
+          Icon(
+            cumplido ? Icons.check_circle : Icons.radio_button_unchecked,
+            size: 16,
+            color: cumplido ? colorCumplido : tokens(context).tintaSuave,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              texto,
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: cumplido ? FontWeight.w600 : FontWeight.w500,
+                color: cumplido
+                    ? tokens(context).tinta
+                    : tokens(context).tintaSilenciada,
+              ),
             ),
           ),
         ],
@@ -725,4 +922,18 @@ class _PieRegistro extends StatelessWidget {
       ),
     );
   }
+}
+
+enum _AccionUbicacion { reintentar, buscarEnMapa }
+
+class _ResultadoUbicacion {
+  const _ResultadoUbicacion._({this.punto, this.usarMapa = false});
+
+  final mb.Point? punto;
+  final bool usarMapa;
+
+  static const cancelar = _ResultadoUbicacion._();
+  static const irAlMapa = _ResultadoUbicacion._(usarMapa: true);
+  static _ResultadoUbicacion con(mb.Point p) =>
+      _ResultadoUbicacion._(punto: p);
 }
