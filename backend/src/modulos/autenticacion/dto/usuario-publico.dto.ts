@@ -20,8 +20,13 @@ export class UsuarioPublicoDto {
   @ApiProperty({ example: 'usuario@delivery.com' })
   email!: string;
 
-  @ApiProperty({ example: '+50370001234' })
-  telefono!: string;
+  @ApiProperty({
+    nullable: true,
+    example: '+50370001234',
+    description:
+      'Null cuando la cuenta fue creada vía OAuth y aún no ha completado el registro.',
+  })
+  telefono!: string | null;
 
   @ApiProperty()
   nombreCompleto!: string;
@@ -31,6 +36,12 @@ export class UsuarioPublicoDto {
 
   @ApiProperty({ enum: ['ACTIVO', 'INACTIVO', 'SUSPENDIDO', 'PENDIENTE_VERIFICACION'] })
   estado!: EstadoUsuario;
+
+  @ApiProperty({
+    description:
+      'Indica si el usuario ya completó los datos obligatorios (teléfono + perfil de negocio para VENDEDOR). Si es false, la app debe llevarlo a la pantalla de completar registro.',
+  })
+  registroCompleto!: boolean;
 
   @ApiProperty({ nullable: true })
   urlAvatar!: string | null;
@@ -70,6 +81,7 @@ export class UsuarioPublicoDto {
     dto.nombreCompleto = usuario.nombreCompleto;
     dto.rol = usuario.rol;
     dto.estado = usuario.estado;
+    dto.registroCompleto = usuario.registroCompleto ?? false;
     dto.urlAvatar = usuario.urlAvatar;
     dto.ultimoIngresoEn = usuario.ultimoIngresoEn;
     dto.correoVerificadoEn = usuario.correoVerificadoEn ?? null;

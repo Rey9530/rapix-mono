@@ -4,6 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { AutenticacionControlador } from './autenticacion.controlador.js';
 import { AutenticacionServicio } from './autenticacion.servicio.js';
 import { JwtEstrategia } from './estrategias/jwt.estrategia.js';
+import { GoogleVerificadorServicio } from './google-verificador.servicio.js';
 import { RecuperacionContrasenaServicio } from './recuperacion-contrasena.servicio.js';
 import { VerificacionCorreoServicio } from './verificacion-correo.servicio.js';
 
@@ -27,6 +28,7 @@ import { VerificacionCorreoServicio } from './verificacion-correo.servicio.js';
     JwtEstrategia,
     VerificacionCorreoServicio,
     RecuperacionContrasenaServicio,
+    GoogleVerificadorServicio,
   ],
   exports: [AutenticacionServicio, JwtModule],
 })

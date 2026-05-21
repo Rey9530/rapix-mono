@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../nucleo/tema/tokens_rapix.dart';
-import '../../widgets/wordmark_rapix.dart';
 import 'autenticacion_controlador.dart';
 
 class IniciarSesionPantalla extends ConsumerStatefulWidget {
@@ -49,12 +48,59 @@ class _IniciarSesionPantallaEstado
     }
   }
 
+  Future<void> _iniciarConGoogle() async {
+    final ok = await ref
+        .read(autenticacionControladorProvider.notifier)
+        .iniciarSesionConGoogle();
+    if (!mounted) return;
+    if (ok) {
+      // El router decide entre /inicio (registroCompleto=true) o
+      // /completar-registro (registroCompleto=false) automaticamente.
+      context.go('/inicio');
+    } else {
+      final error = ref.read(autenticacionControladorProvider).error;
+      if (error != null) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(error)));
+      }
+    }
+  }
+
   void _mostrarProximamente(String funcionalidad) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('$funcionalidad — próximamente'),
       ),
     );
+  }
+
+  List<Widget> _oauthSeccion(BuildContext context, {required bool cargando}) {
+    final plataforma = Theme.of(context).platform;
+    return switch (plataforma) {
+      TargetPlatform.android => [
+          const SizedBox(height: 22),
+          const _DivisorOContinua(),
+          const SizedBox(height: 16),
+          _BotonOAuth(
+            etiqueta: 'Google',
+            cargando: cargando,
+            alPresionar: cargando ? null : _iniciarConGoogle,
+          ),
+          const SizedBox(height: 24),
+        ],
+      TargetPlatform.iOS => [
+          const SizedBox(height: 22),
+          const _DivisorOContinua(),
+          const SizedBox(height: 16),
+          _BotonOAuth(
+            etiqueta: 'Apple',
+            cargando: false,
+            alPresionar: () => _mostrarProximamente('Login con Apple'),
+          ),
+          const SizedBox(height: 24),
+        ],
+      _ => const [],
+    };
   }
 
   @override
@@ -129,29 +175,7 @@ class _IniciarSesionPantallaEstado
                       cargando: estado.cargando,
                       alPresionar: estado.cargando ? null : _enviar,
                     ),
-                    const SizedBox(height: 22),
-                    const _DivisorOContinua(),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _BotonOAuth(
-                            etiqueta: 'Google',
-                            alPresionar: () =>
-                                _mostrarProximamente('Login con Google'),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _BotonOAuth(
-                            etiqueta: 'Apple',
-                            alPresionar: () =>
-                                _mostrarProximamente('Login con Apple'),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
+                    ..._oauthSeccion(context, cargando: estado.cargando),
                     _PieRegistro(
                       alPresionar: () => context.push('/registrar'),
                     ),
@@ -174,7 +198,12 @@ class _Encabezado extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const WordmarkRapix(tamano: 32),
+        Image.asset(
+          'assets/logo_rapix.png',
+          height: 72,
+          fit: BoxFit.contain,
+          alignment: Alignment.centerLeft,
+        ),
         const SizedBox(height: 8),
         Text(
           'Logística simple para tu negocio',
@@ -386,17 +415,25 @@ class _DivisorOContinua extends StatelessWidget {
 class _BotonOAuth extends StatelessWidget {
   const _BotonOAuth({
     required this.etiqueta,
+    required this.cargando,
     required this.alPresionar,
   });
 
   final String etiqueta;
-  final VoidCallback alPresionar;
+  final bool cargando;
+  final VoidCallback? alPresionar;
 
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
       onPressed: alPresionar,
-      child: Text(etiqueta),
+      child: cargando
+          ? const SizedBox(
+              height: 18,
+              width: 18,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : Text(etiqueta),
     );
   }
 }

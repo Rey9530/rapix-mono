@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Rapix · Plataforma de delivery con recolección y redistribución por zonas. Coordinación de vendedores, repartidores y clientes en El Salvador.">
+<title>Rapix · Logística simple para tu negocio</title>
+<style>
+  :root {
+    --verde: #3AAA35;
+    --verde-oscuro: #006633;
+    --verde-suave: #EAF6E9;
+    --verde-claro: #F4FAF3;
+    --tinta: #1A1A1A;
+    --tinta-2: #333333;
+    --tinta-silenciada: #666666;
+    --tinta-suave: #999999;
+    --fondo: #FFFFFF;
+    --superficie-alt: #F7F7F7;
+    --contorno: #E8E8E8;
+    --contorno-suave: #F0F0F0;
+    --ambar: #FBBF24;
+    --radio-sm: 8px;
+    --radio-md: 12px;
+    --radio-lg: 16px;
+    --radio-xl: 20px;
+    --sombra-sm: 0 1px 2px rgba(19, 20, 15, 0.06);
+    --sombra-md: 0 8px 24px rgba(19, 20, 15, 0.08);
+    --sombra-lg: 0 24px 48px rgba(19, 20, 15, 0.12);
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--tinta-2);
+    background: var(--fondo);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  img, svg { display: block; max-width: 100%; }
+
+  /* ============== Layout helpers ============== */
+  .contenedor {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .seccion {
+    padding: 80px 0;
+  }
+
+  .seccion__encabezado {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 56px;
+  }
+
+  .etiqueta-seccion {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--verde-oscuro);
+    background: var(--verde-suave);
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin-bottom: 16px;
+  }
+
+  h1, h2, h3 {
+    color: var(--tinta);
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  h2 {
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 800;
+    margin-bottom: 14px;
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .subtitulo {
+    color: var(--tinta-silenciada);
+    font-size: 17px;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  /* ============== Navbar ============== */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--contorno-suave);
+  }
+
+  .nav__contenedor {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 68px;
+  }
+
+  .wordmark {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.6px;
+    color: var(--tinta);
+  }
+  .wordmark span { color: var(--verde); }
+
+  .nav__links {
+    display: none;
+    gap: 32px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--tinta-silenciada);
+  }
+
+  .nav__links a {
+    transition: color 0.15s ease;
+  }
+
+  .nav__links a:hover { color: var(--verde-oscuro); }
+
+  @media (min-width: 880px) {
+    .nav__links { display: flex; }
+  }
+
+  .nav__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--tinta);
+    color: #FFFFFF;
+    padding: 10px 18px;
+    border-radius: var(--radio-sm);
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+  .nav__cta:hover { background: var(--verde-oscuro); }
+
+  /* ============== Hero ============== */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 80px 0 100px;
+    background:
+      radial-gradient(1200px 600px at 100% -100px, rgba(58, 170, 53, 0.10), transparent 60%),
+      radial-gradient(900px 500px at -10% 100%, rgba(0, 102, 51, 0.07), transparent 60%),
+      var(--fondo);
+  }
+
+  .hero__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+
+  @media (min-width: 960px) {
+    .hero__grid {
+      grid-template-columns: 1.05fr 1fr;
+      gap: 64px;
+    }
+  }
+
+  .hero__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--verde-suave);
+    color: var(--verde-oscuro);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+
+  .hero__pill::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--verde);
+    box-shadow: 0 0 0 4px rgba(58, 170, 53, 0.18);
+  }
+
+  h1 {
+    font-size: clamp(36px, 6vw, 60px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -1.5px;
+    margin-bottom: 20px;
+  }
+
+  h1 .acento { color: var(--verde); }
+
+  .hero__lead {
+    font-size: 19px;
+    color: var(--tinta-silenciada);
+    line-height: 1.55;
+    margin: 0 0 32px;
+    max-width: 540px;
+  }
+
+  .botones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border-radius: var(--radio-sm);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .btn--primario {
+    background: var(--verde);
+    color: #FFFFFF;
+    box-shadow: 0 6px 16px rgba(58, 170, 53, 0.32);
+  }
+  .btn--primario:hover {
+    background: var(--verde-oscuro);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(58, 170, 53, 0.36);
+  }
+
+  .btn--secundario {
+    background: var(--fondo);
+    color: var(--tinta);
+    border-color: var(--contorno);
+  }
+  .btn--secundario:hover {
+    border-color: var(--verde);
+    color: var(--verde-oscuro);
+    transform: translateY(-2px);
+  }
+
+  .hero__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--contorno);
+    max-width: 540px;
+  }
+
+  .hero__stat strong {
+    display: block;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--tinta);
+    letter-spacing: -0.5px;
+  }
+
+  .hero__stat span {
+    font-size: 13px;
+    color: var(--tinta-silenciada);
+  }
+
+  /* ============== Hero visual (mockup) ============== */
+  .hero__visual {
+    position: relative;
+    min-height: 480px;
+  }
+
+  .panel {
+    position: absolute;
+    background: var(--fondo);
+    border: 1px solid var(--contorno);
+    border-radius: var(--radio-lg);
+    padding: 18px;
+    box-shadow: var(--sombra-lg);
+  }
+
+  .panel__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .panel__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--verde);
+    box-shadow: 0 0 0 4px rgba(58, 170, 53, 0.18);
+  }
+
+  .panel__titulo {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--tinta);
+  }
+
+  .panel__sub {
+    font-size: 11px;
+    color: var(--tinta-suave);
+  }
+
+  .panel--principal {
+    top: 0;
+    left: 0;
+    width: 88%;
+    max-width: 420px;
+  }
+
+  .ruta {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 4px 0;
+  }
+
+  .ruta__paso {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .ruta__nodo {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--verde-suave);
+    color: var(--verde-oscuro);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ruta__paso:not(:last-child) .ruta__nodo::after {
+    content: "";
+    position: absolute;
+    top: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 28px;
+    background: var(--contorno);
+  }
+
+  .ruta__contenido {
+    flex: 1;
+    min-width: 0;
+    padding-top: 3px;
+  }
+
+  .ruta__titulo {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--tinta);
+    margin-bottom: 2px;
+  }
+
+  .ruta__detalle {
+    font-size: 11px;
+    color: var(--tinta-silenciada);
+    line-height: 1.4;
+  }
+
+  .panel--mini {
+    bottom: 32px;
+    right: 0;
+    width: 250px;
+    padding: 16px;
+  }
+
+  .panel--mini-2 {
+    top: 220px;
+    right: 24px;
+    width: 230px;
+  }
+
+  .badge-estado {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: var(--radio-sm);
+    font-size: 11px;
+    font-weight: 700;
+    background: #DCFCE7;
+    color: #15803D;
+    letter-spacing: 0.3px;
+  }
+
+  .mini__fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+  }
+
+  .mini__valor {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--tinta);
+    letter-spacing: -0.5px;
+  }
+
+  .mini__delta {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--verde-oscuro);
+  }
+
+  /* ============== Logos de confianza ============== */
+  .confianza {
+    padding: 32px 0;
+    border-top: 1px solid var(--contorno-suave);
+    border-bottom: 1px solid var(--contorno-suave);
+    background: var(--superficie-alt);
+  }
+
+  .confianza__titulo {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--tinta-suave);
+    margin: 0 0 20px;
+  }
+
+  .confianza__lista {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 36px;
+    color: var(--tinta-silenciada);
+    font-size: 15px;
+    font-weight: 600;
+    opacity: 0.7;
+  }
+
+  .confianza__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ============== Pasos / Cómo funciona ============== */
+  .pasos {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  @media (min-width: 720px) {
+    .pasos { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .pasos { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .paso {
+    background: var(--fondo);
+    border: 1px solid var(--contorno);
+    border-radius: var(--radio-lg);
+    padding: 24px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    position: relative;
+  }
+
+  .paso:hover {
+    transform: translateY(-4px);
+    border-color: var(--verde);
+    box-shadow: var(--sombra-md);
+  }
+
+  .paso__num {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--verde-suave);
+    color: var(--verde-oscuro);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  .paso h3 { font-size: 17px; margin-bottom: 6px; }
+  .paso p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--tinta-silenciada);
+    line-height: 1.55;
+  }
+
+  /* ============== Audiencias / Para quién ============== */
+  .audiencias {
+    background: var(--superficie-alt);
+  }
+
+  .audiencias__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  @media (min-width: 880px) {
+    .audiencias__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .tarjeta {
+    background: var(--fondo);
+    border: 1px solid var(--contorno);
+    border-radius: var(--radio-lg);
+    padding: 32px 28px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .tarjeta:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--sombra-md);
+  }
+
+  .tarjeta__icono {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radio-md);
+    background: var(--verde-suave);
+    color: var(--verde-oscuro);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .tarjeta__icono svg {
+    width: 28px;
+    height: 28px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .tarjeta h3 {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .tarjeta p {
+    color: var(--tinta-silenciada);
+    font-size: 15px;
+    margin: 0 0 18px;
+  }
+
+  .tarjeta__lista {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .tarjeta__lista li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    color: var(--tinta-2);
+  }
+
+  .tarjeta__lista li::before {
+    content: "";
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    border-radius: 50%;
+    background: var(--verde-suave) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23006633' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/12px no-repeat;
+  }
+
+  /* ============== Características ============== */
+  .features {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  @media (min-width: 720px) {
+    .features { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .features { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .feature {
+    padding: 28px;
+    border-radius: var(--radio-lg);
+    border: 1px solid var(--contorno);
+    background: var(--fondo);
+  }
+
+  .feature__icono {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radio-sm);
+    background: var(--verde);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+  }
+
+  .feature__icono svg {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .feature h3 { font-size: 17px; margin-bottom: 8px; }
+  .feature p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--tinta-silenciada);
+    line-height: 1.55;
+  }
+
+  /* ============== Precios ============== */
+  .precios {
+    background: linear-gradient(180deg, var(--fondo) 0%, var(--verde-claro) 100%);
+  }
+
+  .precios__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    max-width: 880px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 720px) {
+    .precios__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .plan {
+    background: var(--fondo);
+    border: 1px solid var(--contorno);
+    border-radius: var(--radio-xl);
+    padding: 36px 32px;
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .plan:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--sombra-md);
+  }
+
+  .plan--destacado {
+    border: 2px solid var(--verde);
+    box-shadow: 0 16px 40px rgba(58, 170, 53, 0.16);
+  }
+
+  .plan__tag {
+    position: absolute;
+    top: -14px;
+    right: 24px;
+    background: var(--verde);
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+
+  .plan__nombre {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--verde-oscuro);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin: 0 0 8px;
+  }
+
+  .plan__precio {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin: 0 0 4px;
+  }
+
+  .plan__precio strong {
+    font-size: 52px;
+    font-weight: 800;
+    color: var(--tinta);
+    letter-spacing: -2px;
+    line-height: 1;
+  }
+
+  .plan__precio span {
+    font-size: 16px;
+    color: var(--tinta-silenciada);
+    font-weight: 600;
+  }
+
+  .plan__desc {
+    font-size: 14px;
+    color: var(--tinta-silenciada);
+    margin: 0 0 24px;
+  }
+
+  .plan__beneficios {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 28px;
+  }
+
+  .plan__beneficios li {
+    display: flex;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 14px;
+    color: var(--tinta-2);
+    align-items: flex-start;
+    border-bottom: 1px solid var(--contorno-suave);
+  }
+  .plan__beneficios li:last-child { border-bottom: none; }
+
+  .plan__beneficios li::before {
+    content: "";
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    border-radius: 50%;
+    background: var(--verde-suave) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23006633' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/12px no-repeat;
+  }
+
+  .plan .btn { width: 100%; }
+
+  /* ============== Operación / Cómo opera Rapix ============== */
+  .operacion {
+    background: var(--verde-oscuro);
+    color: #FFFFFF;
+    border-radius: var(--radio-xl);
+    overflow: hidden;
+    padding: 56px 32px;
+    background-image:
+      radial-gradient(800px 400px at 100% 0, rgba(58, 170, 53, 0.4), transparent 60%),
+      radial-gradient(600px 400px at 0 100%, rgba(0, 0, 0, 0.2), transparent 60%);
+  }
+
+  .operacion__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    align-items: center;
+  }
+
+  @media (min-width: 880px) {
+    .operacion__grid { grid-template-columns: 1fr 1fr; gap: 48px; }
+  }
+
+  .operacion h2 { color: #FFFFFF; }
+
+  .operacion .subtitulo {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .operacion__lista {
+    list-style: none;
+    padding: 0;
+    margin: 24px 0 0;
+  }
+
+  .operacion__lista li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 10px 0;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .operacion__lista li::before {
+    content: "";
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    margin-top: 1px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/13px no-repeat;
+  }
+
+  .operacion__visual {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: var(--radio-lg);
+    padding: 24px;
+  }
+
+  .zonas {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .zona {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: var(--radio-md);
+    padding: 14px;
+    text-align: center;
+  }
+
+  .zona strong {
+    display: block;
+    font-size: 24px;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 2px;
+  }
+
+  .zona span {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+
+  .flecha-flow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 13px;
+    padding: 12px 0;
+  }
+
+  .intercambio {
+    background: var(--verde);
+    color: #FFFFFF;
+    border-radius: var(--radio-md);
+    padding: 16px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.3px;
+  }
+
+  /* ============== Aplicaciones ============== */
+  .apps__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  @media (min-width: 880px) {
+    .apps__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .app-card {
+    border: 1px solid var(--contorno);
+    border-radius: var(--radio-lg);
+    padding: 28px;
+    background: var(--fondo);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .app-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--sombra-md);
+  }
+
+  .app-card__plataforma {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--tinta-suave);
+    margin-bottom: 8px;
+  }
+
+  .app-card h3 { font-size: 19px; margin-bottom: 8px; }
+  .app-card p {
+    color: var(--tinta-silenciada);
+    font-size: 14px;
+    margin: 0 0 16px;
+    line-height: 1.55;
+  }
+
+  .app-card .badge-estado {
+    background: var(--superficie-alt);
+    color: var(--tinta-silenciada);
+  }
+
+  /* ============== CTA final ============== */
+  .cta-final {
+    text-align: center;
+    padding: 88px 24px;
+    background: var(--verde-suave);
+    border-radius: var(--radio-xl);
+    margin: 0 24px;
+  }
+
+  .cta-final h2 { margin-bottom: 14px; }
+  .cta-final p {
+    max-width: 540px;
+    margin: 0 auto 28px;
+    color: var(--tinta-silenciada);
+    font-size: 17px;
+  }
+
+  /* ============== Footer ============== */
+  .footer {
+    background: var(--tinta);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 56px 0 32px;
+    margin-top: 80px;
+  }
+
+  .footer__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 36px;
+    padding-bottom: 36px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  @media (min-width: 720px) {
+    .footer__grid {
+      grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      gap: 48px;
+    }
+  }
+
+  .footer .wordmark { color: #FFFFFF; margin-bottom: 12px; }
+
+  .footer__lema {
+    font-size: 14px;
+    line-height: 1.55;
+    margin: 0 0 16px;
+    max-width: 280px;
+  }
+
+  .footer__columna h4 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #FFFFFF;
+    margin: 0 0 14px;
+  }
+
+  .footer__columna ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer__columna li {
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  .footer__columna a {
+    color: rgba(255, 255, 255, 0.7);
+    transition: color 0.15s ease;
+  }
+  .footer__columna a:hover { color: var(--verde); }
+
+  .footer__base {
+    padding-top: 28px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    font-size: 13px;
+  }
+
+  .footer__base a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .footer__base a:hover { color: #FFFFFF; }
+</style>
+</head>
+<body>
+
+<!-- ============== Navbar ============== -->
+<nav class="nav" role="navigation" aria-label="Principal">
+  <div class="contenedor nav__contenedor">
+    <a href="#" class="wordmark">Rap<span>i</span>x</a>
+    <div class="nav__links">
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#para-quien">Para quién</a>
+      <a href="#caracteristicas">Características</a>
+      <a href="#precios">Precios</a>
+      <a href="#apps">Aplicaciones</a>
+    </div>
+    <a href="#contacto" class="nav__cta">Hablar con ventas</a>
+  </div>
+</nav>
+
+<!-- ============== Hero ============== -->
+<section class="hero">
+  <div class="contenedor hero__grid">
+    <div>
+      <div class="hero__pill">Plataforma operativa en El Salvador</div>
+      <h1>Logística simple para tu negocio. <span class="acento">Sin complicaciones.</span></h1>
+      <p class="hero__lead">
+        Rapix coordina vendedores, repartidores y clientes en un solo lugar. Recolectamos por zonas, redistribuimos por un punto de intercambio central y entregamos con foto y firma. Cobertura, control y trazabilidad en tiempo real.
+      </p>
+      <div class="botones">
+        <a href="#contacto" class="btn btn--primario">
+          Comenzar ahora
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a href="#como-funciona" class="btn btn--secundario">Ver cómo funciona</a>
+      </div>
+
+      <div class="hero__stats">
+        <div class="hero__stat">
+          <strong>$3.00</strong>
+          <span>Por envío individual</span>
+        </div>
+        <div class="hero__stat">
+          <strong>100</strong>
+          <span>Envíos por paquete</span>
+        </div>
+        <div class="hero__stat">
+          <strong>24/7</strong>
+          <span>Seguimiento en vivo</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__visual" aria-hidden="true">
+      <div class="panel panel--principal">
+        <div class="panel__head">
+          <div class="panel__dot"></div>
+          <div>
+            <div class="panel__titulo">Pedido #RX-2841</div>
+            <div class="panel__sub">Ruta optimizada · Zona A → Zona C</div>
+          </div>
+        </div>
+        <div class="ruta">
+          <div class="ruta__paso">
+            <div class="ruta__nodo">1</div>
+            <div class="ruta__contenido">
+              <div class="ruta__titulo">Recolección en tienda</div>
+              <div class="ruta__detalle">San Salvador · Zona A · 10:24 AM</div>
+            </div>
+          </div>
+          <div class="ruta__paso">
+            <div class="ruta__nodo">2</div>
+            <div class="ruta__contenido">
+              <div class="ruta__titulo">Punto de intercambio</div>
+              <div class="ruta__detalle">Centro de distribución · 11:08 AM</div>
+            </div>
+          </div>
+          <div class="ruta__paso">
+            <div class="ruta__nodo">3</div>
+            <div class="ruta__contenido">
+              <div class="ruta__titulo">Entrega al cliente</div>
+              <div class="ruta__detalle">Foto + firma capturadas</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel--mini-2">
+        <div class="panel__sub" style="margin-bottom: 4px;">Estado actual</div>
+        <span class="badge-estado">EN_REPARTO</span>
+        <div class="mini__fila">
+          <span class="panel__sub">ETA</span>
+          <span class="mini__valor">18 min</span>
+        </div>
+      </div>
+
+      <div class="panel panel--mini">
+        <div class="panel__sub">Envíos este mes</div>
+        <div class="mini__fila">
+          <span class="mini__valor">348</span>
+          <span class="mini__delta">+12%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== Confianza / stack ============== -->
+<section class="confianza" aria-label="Tecnología que usamos">
+  <div class="contenedor">
+    <p class="confianza__titulo">Construido sobre tecnología confiable</p>
+    <div class="confianza__lista">
+      <span class="confianza__item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Mapbox
+      </span>
+      <span class="confianza__item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
+        Firebase Push
+      </span>
+      <span class="confianza__item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        WhatsApp Cloud
+      </span>
+      <span class="confianza__item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="2" y1="9" x2="22" y2="9"/></svg>
+        Stack moderno
+      </span>
+      <span class="confianza__item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Datos seguros
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- ============== Cómo funciona ============== -->
+<section class="seccion" id="como-funciona">
+  <div class="contenedor">
+    <div class="seccion__encabezado">
+      <span class="etiqueta-seccion">Cómo funciona</span>
+      <h2>Cuatro pasos. Cero fricción.</h2>
+      <p class="subtitulo">Diseñamos un flujo de recolección y redistribución por zonas que reduce tiempos muertos y maximiza la eficiencia de cada repartidor.</p>
+    </div>
+
+    <div class="pasos">
+      <div class="paso">
+        <div class="paso__num">1</div>
+        <h3>El vendedor crea el pedido</h3>
+        <p>Desde la app o el panel web, el vendedor ingresa los datos del cliente y la mercancía. El sistema valida zona y disponibilidad automáticamente.</p>
+      </div>
+      <div class="paso">
+        <div class="paso__num">2</div>
+        <h3>Recolección en zona de origen</h3>
+        <p>Un repartidor asignado por algoritmo recoge el paquete en el establecimiento del vendedor. Notificaciones push y por WhatsApp en cada paso.</p>
+      </div>
+      <div class="paso">
+        <div class="paso__num">3</div>
+        <h3>Redistribución por punto central</h3>
+        <p>Los paquetes confluyen en el punto de intercambio. Allí cambian de manos al repartidor de la zona de destino, optimizando trayectos.</p>
+      </div>
+      <div class="paso">
+        <div class="paso__num">4</div>
+        <h3>Entrega con foto y firma</h3>
+        <p>El cliente recibe su paquete. Capturamos foto y firma digital como respaldo de la entrega — auditable desde la consola admin.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== Para quién ============== -->
+<section class="seccion audiencias" id="para-quien">
+  <div class="contenedor">
+    <div class="seccion__encabezado">
+      <span class="etiqueta-seccion">Para quién es Rapix</span>
+      <h2>Una plataforma, tres experiencias.</h2>
+      <p class="subtitulo">Cada rol tiene una aplicación pensada para sus tareas: vendedores que envían, repartidores que cumplen rutas, y clientes que reciben sin sorpresas.</p>
+    </div>
+
+    <div class="audiencias__grid">
+      <article class="tarjeta">
+        <div class="tarjeta__icono">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <h3>Vendedores</h3>
+        <p>Tiendas, comercios y emprendedores que necesitan enviar pedidos sin contratar a un repartidor propio.</p>
+        <ul class="tarjeta__lista">
+          <li>Crear pedidos en segundos</li>
+          <li>Pagos por envío o paquetes prepago</li>
+          <li>Notificaciones de saldo bajo</li>
+          <li>Reportes de envíos y consumo</li>
+        </ul>
+      </article>
+
+      <article class="tarjeta">
+        <div class="tarjeta__icono">
+          <svg viewBox="0 0 24 24"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6h5l1 4-3 1-2-3-1-2z"/><path d="M9 17.5h6"/><path d="M5.5 14 8 8h4l-1 6"/></svg>
+        </div>
+        <h3>Repartidores</h3>
+        <p>Riders con vehículo que quieren rutas asignadas, pagos claros y herramientas profesionales en su celular.</p>
+        <ul class="tarjeta__lista">
+          <li>Asignaciones por zona</li>
+          <li>Navegación con Mapbox</li>
+          <li>Captura de foto y firma</li>
+          <li>Cierre financiero diario simple</li>
+        </ul>
+      </article>
+
+      <article class="tarjeta">
+        <div class="tarjeta__icono">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <h3>Clientes finales</h3>
+        <p>Reciben paquetes con visibilidad total: del momento en que se crea el pedido hasta el último metro.</p>
+        <ul class="tarjeta__lista">
+          <li>Seguimiento por link público</li>
+          <li>Notificaciones por WhatsApp</li>
+          <li>Tiempo estimado actualizado</li>
+          <li>Sin necesidad de instalar app</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============== Características ============== -->
+<section class="seccion" id="caracteristicas">
+  <div class="contenedor">
+    <div class="seccion__encabezado">
+      <span class="etiqueta-seccion">Características</span>
+      <h2>Todo lo que necesitas. Nada que no.</h2>
+      <p class="subtitulo">Pensado para operaciones reales: trazabilidad, control financiero, comunicación multicanal y herramientas administrativas serias.</p>
+    </div>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature__icono">
+          <svg viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+        </div>
+        <h3>Optimización de rutas</h3>
+        <p>Integración con Mapbox para calcular tiempos, distancias y la mejor secuencia de paradas en cada zona.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature__icono">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <h3>Seguimiento en tiempo real</h3>
+        <p>El cliente, el vendedor y el administrador ven el estado del pedido y la posición del repartidor en vivo.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature__icono">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </div>
+        <h3>Comunicación multicanal</h3>
+        <p>Notificaciones por push, WhatsApp y correo electrónico — el cliente recibe avisos por donde le sea más cómodo.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature__icono">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="15" x2="15" y2="15"/><line x1="9" y1="12" x2="15" y2="12"/></svg>
+        </div>
+        <h3>Cierre financiero diario</h3>
+        <p>Cada repartidor reporta los montos recaudados al finalizar el día, con comprobante adjunto. Admin valida y aprueba.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature__icono">
+          <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </div>
+        <h3>Foto y firma de entrega</h3>
+        <p>Cada entrega queda respaldada con foto del paquete y firma digital del cliente. Auditable desde admin.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature__icono">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>Roles y permisos</h3>
+        <p>Cuatro roles bien definidos —admin, vendedor, repartidor, cliente— con accesos protegidos por JWT y zonas asignables.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== Operación: cómo opera Rapix ============== -->
+<section class="seccion">
+  <div class="contenedor">
+    <div class="operacion">
+      <div class="operacion__grid">
+        <div>
+          <span class="etiqueta-seccion" style="background: rgba(255,255,255,0.15); color: #FFFFFF;">Modelo operativo</span>
+          <h2 style="margin-top: 16px;">Zonas de origen, punto central, zonas de destino.</h2>
+          <p class="subtitulo">A diferencia de un delivery clásico de punto a punto, Rapix consolida los paquetes en un punto de intercambio. Eso significa rutas más cortas, repartidores más productivos y costos predecibles.</p>
+          <ul class="operacion__lista">
+            <li>Repartidores asignados por zona, no por pedido suelto.</li>
+            <li>Algoritmo FIFO para consumo de paquetes prepago.</li>
+            <li>Mapa de zonas con PostGIS — soporta polígonos personalizados.</li>
+            <li>Reasignación automática si un repartidor no responde.</li>
+          </ul>
+        </div>
+
+        <div class="operacion__visual" aria-hidden="true">
+          <div class="zonas">
+            <div class="zona"><strong>A</strong><span>Origen</span></div>
+            <div class="zona"><strong>B</strong><span>Origen</span></div>
+            <div class="zona"><strong>C</strong><span>Origen</span></div>
+          </div>
+          <div class="flecha-flow">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+            Consolidación
+          </div>
+          <div class="intercambio">Punto de Intercambio</div>
+          <div class="flecha-flow">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+            Redistribución
+          </div>
+          <div class="zonas">
+            <div class="zona"><strong>X</strong><span>Destino</span></div>
+            <div class="zona"><strong>Y</strong><span>Destino</span></div>
+            <div class="zona"><strong>Z</strong><span>Destino</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== Precios ============== -->
+<section class="seccion precios" id="precios">
+  <div class="contenedor">
+    <div class="seccion__encabezado">
+      <span class="etiqueta-seccion">Precios</span>
+      <h2>Paga solo por lo que envías.</h2>
+      <p class="subtitulo">Sin mensualidades. Sin sorpresas. Elige el modelo que mejor se adapte al volumen de tu operación.</p>
+    </div>
+
+    <div class="precios__grid">
+      <article class="plan">
+        <p class="plan__nombre">Por envío</p>
+        <p class="plan__precio"><strong>$3.00</strong><span>USD por paquete</span></p>
+        <p class="plan__desc">Ideal si estás empezando o tu volumen es variable.</p>
+        <ul class="plan__beneficios">
+          <li>Pago individual por cada envío</li>
+          <li>Sin contratos ni mensualidades</li>
+          <li>Cobro contra entrega disponible</li>
+          <li>Seguimiento y notificaciones incluidos</li>
+        </ul>
+        <a href="#contacto" class="btn btn--secundario">Comenzar a enviar</a>
+      </article>
+
+      <article class="plan plan--destacado">
+        <span class="plan__tag">Más popular</span>
+        <p class="plan__nombre">Paquete prepago</p>
+        <p class="plan__precio"><strong>$250</strong><span>USD por 100 envíos</span></p>
+        <p class="plan__desc">Ahorras hasta <strong>$50 USD</strong> respecto al precio individual.</p>
+        <ul class="plan__beneficios">
+          <li>100 envíos por solo $2.50 c/u</li>
+          <li>Descuento automático al crear cada pedido</li>
+          <li>Sin fecha límite mensual</li>
+          <li>Alertas de saldo bajo y agotamiento</li>
+          <li>Reembolso si cancelas antes de la recolección</li>
+        </ul>
+        <a href="#contacto" class="btn btn--primario">Adquirir paquete</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============== Aplicaciones disponibles ============== -->
+<section class="seccion" id="apps" style="background: var(--superficie-alt);">
+  <div class="contenedor">
+    <div class="seccion__encabezado">
+      <span class="etiqueta-seccion">Aplicaciones</span>
+      <h2>Una app para cada rol.</h2>
+      <p class="subtitulo">Vendedores y clientes desde una misma app móvil. Repartidores en su app dedicada. Administradores desde una consola web completa.</p>
+    </div>
+
+    <div class="apps__grid">
+      <div class="app-card">
+        <p class="app-card__plataforma">App móvil · Android & iOS</p>
+        <h3>Rapix Clientes</h3>
+        <p>Pensada para vendedores y clientes finales. Crear pedidos, consultar estado, comprar paquetes prepago y recibir notificaciones.</p>
+        <span class="badge-estado">Flutter</span>
+      </div>
+
+      <div class="app-card">
+        <p class="app-card__plataforma">App móvil · Android & iOS</p>
+        <h3>Rapix Riders</h3>
+        <p>App dedicada a repartidores. Ver asignaciones, navegar con Mapbox, capturar entregas y realizar cierre financiero diario.</p>
+        <span class="badge-estado">Flutter</span>
+      </div>
+
+      <div class="app-card">
+        <p class="app-card__plataforma">Consola web</p>
+        <h3>Rapix Admin</h3>
+        <p>Gestión total: usuarios, zonas, tarifas, pedidos, aprobación de cierres financieros y reportes operativos.</p>
+        <span class="badge-estado">Angular</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== CTA Final ============== -->
+<section class="seccion" id="contacto">
+  <div class="cta-final">
+    <span class="etiqueta-seccion">Empieza hoy</span>
+    <h2 style="margin-top: 16px;">¿Listo para mover tus envíos con Rapix?</h2>
+    <p>Cuéntanos sobre tu operación y te ayudamos a integrarte. Sin compromiso, sin contratos largos.</p>
+    <div class="botones" style="justify-content: center;">
+      <a href="mailto:devrelex@gmail.com?subject=Quiero%20conocer%20Rapix" class="btn btn--primario">
+        Escríbenos
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      </a>
+      <a href="terminos-y-condiciones.html" class="btn btn--secundario">Leer Términos y Condiciones</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============== Footer ============== -->
+<footer class="footer">
+  <div class="contenedor">
+    <div class="footer__grid">
+      <div>
+        <div class="wordmark">Rap<span style="color: var(--verde);">i</span>x</div>
+        <p class="footer__lema">Plataforma de coordinación logística para vendedores, repartidores y clientes en El Salvador.</p>
+      </div>
+
+      <div class="footer__columna">
+        <h4>Plataforma</h4>
+        <ul>
+          <li><a href="#como-funciona">Cómo funciona</a></li>
+          <li><a href="#para-quien">Para quién es</a></li>
+          <li><a href="#caracteristicas">Características</a></li>
+          <li><a href="#apps">Aplicaciones</a></li>
+        </ul>
+      </div>
+
+      <div class="footer__columna">
+        <h4>Comercial</h4>
+        <ul>
+          <li><a href="#precios">Precios</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+          <li><a href="mailto:devrelex@gmail.com">Soporte</a></li>
+        </ul>
+      </div>
+
+      <div class="footer__columna">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="terminos-y-condiciones.html">Términos y Condiciones</a></li>
+          <li><a href="politica-de-privacidad.html">Política de Privacidad</a></li>
+          <li><a href="terminos-y-condiciones.html#s13">Uso aceptable</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__base">
+      <span>&copy; 2026 Reynaldo Alexander Ruiz Rosales · NIT 051754733 · El Salvador</span>
+      <span>Contacto: <a href="mailto:devrelex@gmail.com">devrelex@gmail.com</a></span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

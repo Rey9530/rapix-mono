@@ -792,7 +792,7 @@ class _CardCuenta extends StatelessWidget {
     final t = tokens(context);
     final filas = <_CuentaFila>[
       _CuentaFila(etiqueta: 'Correo', valor: usuario.email),
-      _CuentaFila(etiqueta: 'Teléfono', valor: usuario.telefono),
+      _CuentaFila(etiqueta: 'Teléfono', valor: usuario.telefono ?? '—'),
       const _CuentaFila(etiqueta: 'Contraseña', valor: '••••••••'),
     ];
 

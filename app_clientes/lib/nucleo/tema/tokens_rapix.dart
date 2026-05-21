@@ -10,23 +10,23 @@ class TokensRapix {
   TokensRapix._();
 
   // Color marca
-  static const Color verde = Color(0xFF25B276);
-  static const Color verdeOscuro = Color(0xFF1A8F5D);
-  static const Color verdeSuave = Color(0xFFE6F6EE);
-  static const Color verdeTinta = Color(0xFF0D3A26);
+  static const Color verde = Color(0xFF3AAA35);
+  static const Color verdeOscuro = Color(0xFF006633);
+  static const Color verdeSuave = Color(0xFFEAF6E9);
+  static const Color verdeTinta = Color(0xFF006633);
 
-  // Superficies (warm-neutral)
-  static const Color fondo = Color(0xFFFBFAF7);
+  // Superficies (paleta oficial: blanco + grises neutros)
+  static const Color fondo = Color(0xFFFFFFFF);
   static const Color superficie = Color(0xFFFFFFFF);
-  static const Color superficieAlt = Color(0xFFF4F2EE);
-  static const Color superficieHundida = Color(0xFFEFECE6);
-  static const Color contorno = Color(0xFFE2DFD8);
-  static const Color contornoSuave = Color(0xFFEEEBE4);
+  static const Color superficieAlt = Color(0xFFE8E8E8);
+  static const Color superficieHundida = Color(0xFFE0E0E0);
+  static const Color contorno = Color(0xFFE8E8E8);
+  static const Color contornoSuave = Color(0xFFF0F0F0);
 
-  // Texto
-  static const Color tinta = Color(0xFF13140F);
-  static const Color tintaSilenciada = Color(0xFF5A5B54);
-  static const Color tintaSuave = Color(0xFF8B8C84);
+  // Texto (derivado de #333333 para 3 niveles de jerarquia)
+  static const Color tinta = Color(0xFF333333);
+  static const Color tintaSilenciada = Color(0xFF666666);
+  static const Color tintaSuave = Color(0xFF999999);
 
   // Estados destructivos
   static const Color peligro = Color(0xFFDC2626);
@@ -151,22 +151,22 @@ class EstadoColores {
 class TokensRapixOscuro {
   TokensRapixOscuro._();
 
-  // Superficies (warm-neutral oscuro)
-  static const Color fondo = Color(0xFF111210);
-  static const Color superficie = Color(0xFF1A1B18);
-  static const Color superficieAlt = Color(0xFF22231F);
-  static const Color superficieHundida = Color(0xFF2A2B27);
-  static const Color contorno = Color(0xFF35362F);
-  static const Color contornoSuave = Color(0xFF2A2B25);
+  // Superficies (paleta inversa: derivadas desde #333333)
+  static const Color fondo = Color(0xFF1A1A1A);
+  static const Color superficie = Color(0xFF2A2A2A);
+  static const Color superficieAlt = Color(0xFF333333);
+  static const Color superficieHundida = Color(0xFF222222);
+  static const Color contorno = Color(0xFF444444);
+  static const Color contornoSuave = Color(0xFF3A3A3A);
 
-  // Texto
-  static const Color tinta = Color(0xFFF4F2EC);
-  static const Color tintaSilenciada = Color(0xFFB0B1A8);
-  static const Color tintaSuave = Color(0xFF7E7F76);
+  // Texto (paleta oficial invertida)
+  static const Color tinta = Color(0xFFFFFFFF);
+  static const Color tintaSilenciada = Color(0xFFE8E8E8);
+  static const Color tintaSuave = Color(0xFF999999);
 
   // Variantes para chips informativos en dark
-  static const Color verdeSuave = Color(0xFF153A2A);
-  static const Color verdeTinta = Color(0xFFB7E8CB);
+  static const Color verdeSuave = Color(0xFF0F2E1A);
+  static const Color verdeTinta = Color(0xFF3AAA35);
   static const Color peligroSuave = Color(0xFF3A1414);
 }
 

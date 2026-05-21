@@ -8,6 +8,7 @@ import '../../datos/repositorios/tokens_dispositivo_repositorio.dart';
 import '../../datos/repositorios/usuarios_repositorio.dart';
 import '../../nucleo/almacenamiento/almacenamiento_seguro.dart';
 import '../../nucleo/notificaciones/servicio_notificaciones.dart';
+import 'servicios/google_sign_in_servicio.dart';
 
 class AutenticacionEstado {
   AutenticacionEstado({
@@ -53,6 +54,7 @@ class AutenticacionControlador extends StateNotifier<AutenticacionEstado> {
     required this.almacen,
     required this.servicioNotificaciones,
     required this.tokensRepositorio,
+    required this.googleSignIn,
   }) : super(AutenticacionEstado());
 
   final AutenticacionRepositorio repositorio;
@@ -60,6 +62,7 @@ class AutenticacionControlador extends StateNotifier<AutenticacionEstado> {
   final AlmacenamientoSeguro almacen;
   final ServicioNotificaciones servicioNotificaciones;
   final TokensDispositivoRepositorio tokensRepositorio;
+  final GoogleSignInServicio googleSignIn;
 
   /// Verifica la sesion al arrancar la app: si hay tokenRefresco guardado,
   /// llama a /autenticacion/refrescar para renovar el par y obtener el
@@ -185,6 +188,72 @@ class AutenticacionControlador extends StateNotifier<AutenticacionEstado> {
     }
   }
 
+  /// Flujo completo de Google Sign-In:
+  /// 1) Abre el dialogo nativo de Google y obtiene idToken.
+  /// 2) Lo envia al backend POST /autenticacion/google.
+  /// 3) Persiste tokens + usuario.
+  /// 4) Sincroniza FCM solo si registroCompleto=true. Si no, lo dejamos
+  ///    para cuando complete el registro: no tiene sentido suscribir a
+  ///    notificaciones de pedidos a alguien sin negocio configurado.
+  ///
+  /// Retorna true si el flujo termino con sesion activa (con o sin
+  /// registro completo). Retorna false si el usuario cancelo el dialogo
+  /// o si hubo error (en cuyo caso state.error queda con el mensaje).
+  Future<bool> iniciarSesionConGoogle() async {
+    state = state.copia(cargando: true, limpiarError: true);
+    try {
+      final idToken = await googleSignIn.obtenerIdToken();
+      if (idToken == null) {
+        // Usuario cancelo: no es un error.
+        state = state.copia(cargando: false);
+        return false;
+      }
+      final respuesta = await repositorio.iniciarSesionConGoogle(idToken);
+      await almacen.guardarTokens(
+        tokenAcceso: respuesta.tokenAcceso,
+        tokenRefresco: respuesta.tokenRefresco,
+      );
+      await almacen.guardarUsuario(respuesta.usuario.aJsonString());
+      state = state.copia(usuario: respuesta.usuario, cargando: false);
+      if (respuesta.usuario.registroCompleto) {
+        await _sincronizarTokenPush();
+      }
+      return true;
+    } catch (e) {
+      state = state.copia(cargando: false, error: _formatearError(e));
+      return false;
+    }
+  }
+
+  /// PATCH /autenticacion/completar-registro. Tras exito sincroniza el
+  /// token FCM (ahora si tiene sentido) y actualiza el estado: el router
+  /// reaccionara y redirigira a /inicio.
+  Future<bool> completarRegistro({
+    required String telefono,
+    required String nombreNegocio,
+    required String direccion,
+    required double latitud,
+    required double longitud,
+  }) async {
+    state = state.copia(cargando: true, limpiarError: true);
+    try {
+      final usuario = await repositorio.completarRegistro(
+        telefono: telefono,
+        nombreNegocio: nombreNegocio,
+        direccion: direccion,
+        latitud: latitud,
+        longitud: longitud,
+      );
+      await almacen.guardarUsuario(usuario.aJsonString());
+      state = state.copia(usuario: usuario, cargando: false);
+      await _sincronizarTokenPush();
+      return true;
+    } catch (e) {
+      state = state.copia(cargando: false, error: _formatearError(e));
+      return false;
+    }
+  }
+
   Future<void> actualizarUsuario(Usuario usuario) async {
     await almacen.guardarUsuario(usuario.aJsonString());
     state = state.copia(usuario: usuario);
@@ -265,6 +334,9 @@ class AutenticacionControlador extends StateNotifier<AutenticacionEstado> {
         // Ignorar errores de red al cerrar sesion.
       }
     }
+    // Cierra ademas la sesion local de Google para que la proxima vez
+    // muestre el selector de cuentas. No bloquea si Google no estaba activo.
+    await googleSignIn.cerrarSesion();
     await almacen.limpiar();
     state = AutenticacionEstado(inicializado: true);
   }
@@ -327,6 +399,7 @@ final autenticacionControladorProvider =
       almacen: ref.watch(almacenamientoSeguroProvider),
       servicioNotificaciones: ref.watch(servicioNotificacionesProvider),
       tokensRepositorio: ref.watch(tokensDispositivoRepositorioProvider),
+      googleSignIn: ref.watch(googleSignInServicioProvider),
     );
   },
 );

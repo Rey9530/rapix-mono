@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Política de Privacidad y tratamiento de datos personales de la plataforma Rapix.">
+<title>Política de Privacidad · Rapix</title>
+<style>
+  :root {
+    --verde: #3AAA35;
+    --verde-oscuro: #006633;
+    --tinta: #1A1A1A;
+    --tinta-2: #444444;
+    --tinta-silenciada: #6B6B6B;
+    --tinta-suave: #9A9A9A;
+    --fondo: #FFFFFF;
+    --superficie-alt: #FAFAFA;
+    --contorno: #E8E8E8;
+    --contorno-suave: #F0F0F0;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: var(--tinta-2);
+    background: var(--fondo);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ============ Header sobrio ============ */
+  .header {
+    background: var(--fondo);
+    border-bottom: 4px solid var(--verde);
+    padding: 48px 24px 36px;
+  }
+
+  .header__inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 8px;
+  }
+
+  .header__wordmark {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--tinta);
+    margin: 0 0 18px;
+  }
+
+  .header__wordmark span { color: var(--verde); }
+
+  .header__titulo {
+    font-size: clamp(26px, 3.2vw, 34px);
+    font-weight: 700;
+    color: var(--verde-oscuro);
+    letter-spacing: -0.4px;
+    line-height: 1.25;
+    margin: 0 0 10px;
+  }
+
+  .header__meta {
+    font-size: 13px;
+    color: var(--tinta-silenciada);
+    margin: 0;
+  }
+
+  .header__meta strong { color: var(--tinta-2); font-weight: 600; }
+
+  /* ============ Layout ============ */
+  .contenedor {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  @media (min-width: 1024px) {
+    .contenedor {
+      grid-template-columns: 280px 1fr;
+      gap: 56px;
+      padding: 56px 32px 96px;
+    }
+  }
+
+  /* ============ TOC sobrio ============ */
+  .toc {
+    border-left: 2px solid var(--contorno);
+    padding: 4px 0 4px 18px;
+    font-size: 13px;
+  }
+
+  @media (min-width: 1024px) {
+    .toc {
+      position: sticky;
+      top: 24px;
+      align-self: start;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+  }
+
+  .toc__titulo {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--tinta-suave);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: toc;
+  }
+
+  .toc li { counter-increment: toc; margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 5px 0;
+    color: var(--tinta-silenciada);
+    text-decoration: none;
+    line-height: 1.45;
+    transition: color 0.15s ease;
+  }
+
+  .toc a::before {
+    content: counter(toc) ". ";
+    color: var(--tinta-suave);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .toc a:hover,
+  .toc a:focus-visible {
+    color: var(--verde-oscuro);
+    outline: none;
+  }
+
+  /* ============ Contenido ============ */
+  .contenido {
+    min-width: 0;
+    max-width: 800px;
+  }
+
+  .preambulo {
+    border-left: 3px solid var(--verde);
+    padding: 4px 18px;
+    margin-bottom: 40px;
+    color: var(--tinta-2);
+    font-size: 15px;
+  }
+
+  .preambulo p { margin: 0 0 10px; }
+  .preambulo p:last-child { margin: 0; }
+
+  section.seccion {
+    margin-bottom: 44px;
+    scroll-margin-top: 24px;
+  }
+
+  section.seccion:last-of-type { margin-bottom: 0; }
+
+  h2.seccion__titulo {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--verde-oscuro);
+    margin: 0 0 16px;
+    letter-spacing: -0.2px;
+    line-height: 1.3;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--contorno);
+  }
+
+  h3.subseccion {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: var(--tinta);
+    margin: 24px 0 8px;
+  }
+
+  h4.subsubseccion {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--tinta-2);
+    margin: 16px 0 6px;
+  }
+
+  p { margin: 0 0 14px; }
+
+  p.parrafo-cerrado { margin-bottom: 4px; }
+
+  ul, ol {
+    margin: 0 0 14px;
+    padding-left: 26px;
+  }
+
+  ul li, ol li { margin-bottom: 4px; }
+
+  strong { color: var(--tinta); font-weight: 700; }
+
+  a {
+    color: var(--verde-oscuro);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+
+  a:hover { text-decoration-thickness: 2px; }
+
+  /* ============ Cita formal ============ */
+  .cita {
+    border-left: 3px solid var(--verde);
+    padding: 4px 18px;
+    margin: 18px 0;
+    color: var(--tinta-2);
+  }
+
+  .cita p { margin: 0; }
+
+  /* ============ Tablas sobrias ============ */
+  .tabla-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--contorno);
+    margin: 16px 0 20px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: var(--fondo);
+  }
+
+  th, td {
+    text-align: left;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--contorno-suave);
+    vertical-align: top;
+    color: var(--tinta-2);
+  }
+
+  th {
+    font-weight: 700;
+    color: var(--tinta);
+    font-size: 13px;
+    border-bottom: 1px solid var(--contorno);
+    background: var(--superficie-alt);
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  /* ============ Identidad del responsable (sección 1) ============ */
+  .identidad {
+    border: 1px solid var(--contorno);
+    padding: 18px 20px;
+    margin: 14px 0 18px;
+    background: var(--superficie-alt);
+    font-size: 14.5px;
+    line-height: 1.6;
+  }
+
+  .identidad dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    row-gap: 6px;
+  }
+
+  @media (min-width: 560px) {
+    .identidad dl {
+      grid-template-columns: 180px 1fr;
+      column-gap: 16px;
+      row-gap: 4px;
+    }
+  }
+
+  .identidad dt {
+    font-weight: 700;
+    color: var(--tinta);
+  }
+
+  .identidad dd {
+    margin: 0;
+    color: var(--tinta-2);
+  }
+
+  /* ============ Inline code ============ */
+  code {
+    font-family: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, monospace;
+    background: var(--superficie-alt);
+    border: 1px solid var(--contorno);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 0.86em;
+    color: var(--verde-oscuro);
+  }
+
+  /* ============ Footer ============ */
+  .footer {
+    border-top: 1px solid var(--contorno);
+    padding: 28px 24px 36px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--tinta-silenciada);
+    background: var(--superficie-alt);
+  }
+
+  .footer p { margin: 4px 0; }
+
+  .footer a { color: var(--tinta-silenciada); }
+  .footer a:hover { color: var(--verde-oscuro); }
+
+  /* ============ Print ============ */
+  @media print {
+    .toc { display: none; }
+    .contenedor {
+      grid-template-columns: 1fr;
+      padding: 24px;
+      max-width: none;
+    }
+    section.seccion {
+      page-break-inside: avoid;
+      margin-bottom: 24px;
+    }
+    h2.seccion__titulo {
+      page-break-after: avoid;
+    }
+    .header { border-bottom: 2px solid #000; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header" role="banner">
+  <div class="header__inner">
+    <p class="header__wordmark">Rap<span>i</span>x</p>
+    <h1 class="header__titulo">Política de Privacidad y tratamiento de datos personales</h1>
+    <p class="header__meta">Versión vigente: <strong>1.0</strong> · Última actualización: <strong>18 de mayo de 2026</strong></p>
+  </div>
+</header>
+
+<div class="contenedor">
+
+  <aside class="toc" aria-label="Índice del documento">
+    <p class="toc__titulo">Contenido</p>
+    <ol>
+      <li><a href="#s1">Identificación del responsable del tratamiento</a></li>
+      <li><a href="#s2">Objeto y ámbito de aplicación</a></li>
+      <li><a href="#s3">Definiciones</a></li>
+      <li><a href="#s4">Datos personales objeto de tratamiento</a></li>
+      <li><a href="#s5">Fuentes y forma de recolección</a></li>
+      <li><a href="#s6">Finalidades del tratamiento</a></li>
+      <li><a href="#s7">Base legítima del tratamiento</a></li>
+      <li><a href="#s8">Comunicación y transferencia a terceros</a></li>
+      <li><a href="#s9">Tratamiento de datos de geolocalización</a></li>
+      <li><a href="#s10">Conservación de los datos</a></li>
+      <li><a href="#s11">Decisiones automatizadas</a></li>
+      <li><a href="#s12">Derechos del titular</a></li>
+      <li><a href="#s13">Procedimiento para el ejercicio de derechos</a></li>
+      <li><a href="#s14">Tratamiento de datos de menores</a></li>
+      <li><a href="#s15">Medidas de seguridad</a></li>
+      <li><a href="#s16">Cookies y tecnologías similares</a></li>
+      <li><a href="#s17">Comunicaciones electrónicas</a></li>
+      <li><a href="#s18">Modificaciones a la política</a></li>
+      <li><a href="#s19">Ley aplicable y autoridad de control</a></li>
+      <li><a href="#s20">Aceptación de la política</a></li>
+      <li><a href="#s21">Datos de contacto</a></li>
+    </ol>
+  </aside>
+
+  <main class="contenido" role="main">
+
+    <div class="preambulo">
+      <p>El presente documento contiene la <strong>Política de Privacidad</strong> aplicable al tratamiento de datos personales recolectados a través de la plataforma <strong>Rapix</strong>, sus sitios web y sus aplicaciones móviles, en cumplimiento de lo dispuesto por la <strong>Ley de Protección de Datos Personales</strong> de la República de El Salvador y los principios internacionales de protección de datos personales.</p>
+      <p>El titular de los datos personales declara haber leído y comprendido íntegramente las disposiciones aquí contenidas con anterioridad al acto de registro y, en consecuencia, otorga su consentimiento libre, previo, expreso, informado e inequívoco para el tratamiento de sus datos en los términos descritos.</p>
+    </div>
+
+    <section class="seccion" id="s1">
+      <h2 class="seccion__titulo">1. Identificación del responsable del tratamiento</h2>
+
+      <h3 class="subseccion">1.1 Datos del responsable</h3>
+      <p>El responsable del tratamiento de los datos personales recolectados a través de la plataforma Rapix es:</p>
+
+      <div class="identidad">
+        <dl>
+          <dt>Nombre / Razón social</dt>
+          <dd>REYNALDO ALEXANDER RUIZ ROSALES (persona natural)</dd>
+          <dt>Número de Identificación Tributaria (NIT)</dt>
+          <dd>051754733</dd>
+          <dt>País de domicilio</dt>
+          <dd>República de El Salvador</dd>
+          <dt>Correo electrónico de contacto</dt>
+          <dd><a href="mailto:devrelex@gmail.com">devrelex@gmail.com</a></dd>
+        </dl>
+      </div>
+
+      <h3 class="subseccion">1.2 Datos de contacto para asuntos de protección de datos</h3>
+      <p>El titular podrá dirigir cualquier comunicación relativa al tratamiento de sus datos personales, así como ejercer los derechos reconocidos en la sección 12 de esta política, al correo electrónico <a href="mailto:devrelex@gmail.com">devrelex@gmail.com</a>, indicando expresamente en el asunto la materia objeto de su solicitud.</p>
+      <p>A los efectos del ejercicio de derechos y de la atención de consultas de privacidad, el correo electrónico señalado constituye el medio único y oficial de contacto. Comunicaciones cursadas por canales distintos podrán no surtir efectos.</p>
+    </section>
+
+    <section class="seccion" id="s2">
+      <h2 class="seccion__titulo">2. Objeto y ámbito de aplicación</h2>
+      <p>La presente política tiene por objeto regular el tratamiento de los datos personales que el responsable lleva a cabo en el marco de la prestación de los servicios de coordinación logística y de gestión de entregas a domicilio ofrecidos a través de la plataforma Rapix, incluyendo el sitio web, las aplicaciones móviles para vendedores, repartidores y clientes, así como la consola administrativa.</p>
+      <p>Esta política resulta aplicable a toda persona natural cuyos datos personales sean tratados por el responsable, ya sea por su condición de usuario registrado, de receptor de un pedido (cliente final), de visitante del sitio web o de cualquier otro tercero cuyos datos sean comunicados al responsable en el curso de la operación.</p>
+      <p>El uso de la plataforma implica el conocimiento y aceptación íntegra de esta política, así como de los Términos y Condiciones de Uso que la complementan.</p>
+    </section>
+
+    <section class="seccion" id="s3">
+      <h2 class="seccion__titulo">3. Definiciones</h2>
+      <p>Para los efectos del presente documento, los términos siguientes tendrán el significado que se les atribuye a continuación:</p>
+      <ul>
+        <li><strong>Titular de los datos:</strong> persona natural cuyos datos personales son objeto de tratamiento.</li>
+        <li><strong>Responsable del tratamiento:</strong> persona natural o jurídica que determina los fines y los medios del tratamiento de los datos. Para los fines de esta política, el responsable es Reynaldo Alexander Ruiz Rosales.</li>
+        <li><strong>Encargado del tratamiento:</strong> persona natural o jurídica que trata datos personales por cuenta del responsable, en virtud de una relación contractual o legal.</li>
+        <li><strong>Tratamiento:</strong> cualquier operación o conjunto de operaciones efectuadas sobre datos personales, ya sea por procedimientos automatizados o no, tales como la recolección, registro, organización, conservación, modificación, consulta, utilización, comunicación, supresión o destrucción.</li>
+        <li><strong>Dato personal:</strong> toda información concerniente a una persona natural identificada o identificable.</li>
+        <li><strong>Dato sensible:</strong> aquel que revele origen racial o étnico, opiniones políticas, convicciones religiosas o filosóficas, afiliación sindical, datos genéticos o biométricos, datos relativos a la salud o datos relativos a la vida sexual o la orientación sexual.</li>
+        <li><strong>Consentimiento:</strong> manifestación libre, específica, informada e inequívoca por la que el titular acepta el tratamiento de sus datos personales.</li>
+        <li><strong>Plataforma:</strong> conjunto de aplicaciones web y móviles operadas bajo la denominación Rapix.</li>
+        <li><strong>Brecha de seguridad:</strong> incidente que ocasione la destrucción, pérdida, alteración, comunicación o acceso no autorizado a datos personales.</li>
+      </ul>
+    </section>
+
+    <section class="seccion" id="s4">
+      <h2 class="seccion__titulo">4. Datos personales objeto de tratamiento</h2>
+      <p>En el ejercicio de su actividad, el responsable trata las categorías de datos personales que a continuación se detallan, recolectados directamente del titular, generados durante el uso de la plataforma o comunicados por terceros legítimamente autorizados.</p>
+
+      <h3 class="subseccion">4.1 Datos comunes a todos los titulares</h3>
+      <p>Sin perjuicio del rol específico del titular dentro de la plataforma, son objeto de tratamiento los siguientes datos personales comunes:</p>
+      <ul>
+        <li>Nombres y apellidos completos.</li>
+        <li>Dirección de correo electrónico (con carácter único en la plataforma).</li>
+        <li>Número de teléfono móvil (con carácter único en la plataforma).</li>
+        <li>Contraseña de acceso, almacenada de forma irreversible mediante función criptográfica de hash (algoritmo <code>bcrypt</code> con factor de costo mínimo de doce).</li>
+        <li>Imagen de perfil o avatar, cuando sea provista voluntariamente por el titular.</li>
+        <li>Datos de auditoría: dirección IP de conexión, identificador del agente de usuario, fecha y hora de cada inicio de sesión, e identificador del dispositivo utilizado.</li>
+        <li>Token de notificaciones push (Firebase Cloud Messaging), cuando el titular instale la aplicación móvil en su dispositivo.</li>
+      </ul>
+
+      <h3 class="subseccion">4.2 Datos específicos del Vendedor</h3>
+      <p>Cuando el titular ostente la condición de Vendedor, serán objeto de tratamiento adicionalmente:</p>
+      <ul>
+        <li>Denominación comercial del negocio.</li>
+        <li>Número de Identificación Tributaria (NIT) o documento equivalente, cuando sea provisto.</li>
+        <li>Dirección física del establecimiento del negocio.</li>
+        <li>Coordenadas geográficas (latitud y longitud) del establecimiento, obtenidas en el momento del registro.</li>
+        <li>Logotipo del negocio, cuando sea provisto.</li>
+        <li>Datos relativos al saldo de paquetes prepagados, límite de crédito y consumo de envíos.</li>
+        <li>Información de facturación, cuando corresponda.</li>
+      </ul>
+
+      <h3 class="subseccion">4.3 Datos específicos del Repartidor</h3>
+      <p>Cuando el titular ostente la condición de Repartidor, serán objeto de tratamiento adicionalmente:</p>
+      <ul>
+        <li>Tipo y características del vehículo utilizado.</li>
+        <li>Número de placa de circulación, cuando aplique.</li>
+        <li>Número del Documento Único de Identidad (DUI) u otro documento de identificación equivalente.</li>
+        <li>Número de teléfono de contacto en caso de emergencia.</li>
+        <li>Datos de ubicación geográfica obtenidos en tiempo real durante la prestación del servicio (latitud, longitud y marca temporal).</li>
+        <li>Calificación operativa otorgada por clientes y administradores.</li>
+        <li>Historial de entregas, cierres financieros y montos recaudados.</li>
+      </ul>
+
+      <h3 class="subseccion">4.4 Datos específicos del Cliente Final</h3>
+      <p>Cuando el titular ostente la condición de Cliente Final, ya sea por registro propio o por comunicación de sus datos por parte del Vendedor que utiliza el servicio para realizar una entrega a su favor, serán objeto de tratamiento:</p>
+      <ul>
+        <li>Nombre completo.</li>
+        <li>Número de teléfono.</li>
+        <li>Dirección electrónica, cuando sea provista.</li>
+        <li>Dirección física de entrega.</li>
+        <li>Información sobre el pedido recibido (no incluye datos económicos sobre la mercancía, los cuales se limitan al registro contable entre el Vendedor y el Cliente).</li>
+      </ul>
+
+      <h3 class="subseccion">4.5 Datos operativos generados durante la prestación del servicio</h3>
+      <p>En el marco de la operación cotidiana, la plataforma genera y conserva los siguientes datos operativos:</p>
+      <ul>
+        <li>Fotografías de los paquetes en el momento de la entrega, capturadas por el Repartidor mediante la cámara del dispositivo móvil.</li>
+        <li>Firma manuscrita digital del Cliente Final, capturada en pantalla táctil.</li>
+        <li>Imagen del comprobante del cierre financiero diario del Repartidor.</li>
+        <li>Registros de cambios de estado del pedido, incluyendo marcas temporales, ubicación e identificación del usuario que ejecutó la acción.</li>
+        <li>Registros de auditoría de operaciones administrativas realizadas en la consola.</li>
+      </ul>
+
+      <h3 class="subseccion">4.6 Datos no recolectados por la plataforma</h3>
+      <p>A los fines de transparencia, el responsable declara expresamente que <strong>no recolecta ni trata</strong> las siguientes categorías de datos personales por intermedio de la plataforma:</p>
+      <ul>
+        <li>Datos genéticos o biométricos en ninguna de sus formas.</li>
+        <li>Datos relativos a la salud, condición médica o discapacidades del titular.</li>
+        <li>Opiniones políticas, convicciones religiosas o filosóficas, ni afiliación sindical.</li>
+        <li>Datos relativos a la orientación sexual o la vida sexual del titular.</li>
+        <li>Datos relativos al historial crediticio bancario o calificaciones de riesgo financiero.</li>
+        <li>Información de tarjetas de pago: las operaciones realizadas mediante tarjeta son procesadas por proveedores de pagos autorizados; el responsable no almacena en sus sistemas los datos completos de la tarjeta.</li>
+      </ul>
+
+      <h3 class="subseccion">4.7 Datos de menores de edad</h3>
+      <p>El tratamiento de datos personales de menores de edad se regula de forma específica en la sección 14 del presente documento.</p>
+    </section>
+
+    <section class="seccion" id="s5">
+      <h2 class="seccion__titulo">5. Fuentes y forma de recolección</h2>
+
+      <h3 class="subseccion">5.1 Recolección directa del titular</h3>
+      <p>La principal fuente de recolección de datos personales es el propio titular, quien los proporciona voluntariamente en el momento del registro en la plataforma, en la actualización de su perfil, en la creación de un pedido o en cualquier interacción con los formularios y campos habilitados a tal efecto.</p>
+
+      <h3 class="subseccion">5.2 Recolección automática durante el uso de la plataforma</h3>
+      <p>Determinados datos son recolectados de forma automática como consecuencia del uso de la plataforma, entre ellos los datos de auditoría (dirección IP, agente de usuario), los datos de ubicación geográfica de los Repartidores durante la operación, los registros de cambios de estado de los pedidos y las marcas temporales asociadas a cada interacción.</p>
+
+      <h3 class="subseccion">5.3 Recolección a través de terceros</h3>
+      <p>Los datos personales del Cliente Final pueden ser comunicados al responsable por parte del Vendedor que crea el pedido a su favor. El Vendedor declara, al introducir tales datos, contar con autorización suficiente del Cliente Final para su comunicación al responsable, así como con título legítimo para hacerlo. El responsable no asumirá consecuencia alguna derivada de la falta de dicha autorización por parte del Vendedor, sin perjuicio de las acciones que el Cliente Final pudiera ejercer contra él.</p>
+    </section>
+
+    <section class="seccion" id="s6">
+      <h2 class="seccion__titulo">6. Finalidades del tratamiento</h2>
+
+      <h3 class="subseccion">6.1 Finalidades primarias</h3>
+      <p>El responsable trata los datos personales con las siguientes finalidades primarias, las cuales son esenciales para la prestación del servicio:</p>
+      <ul>
+        <li>Permitir el registro, autenticación y acceso del titular a la plataforma.</li>
+        <li>Ejecutar la prestación del servicio de coordinación logística: creación, asignación, recolección, transporte y entrega de pedidos.</li>
+        <li>Gestionar el cobro de tarifas, el consumo de paquetes prepagados y los cierres financieros diarios.</li>
+        <li>Comunicar al titular el estado de sus pedidos por los canales habilitados (notificaciones push, mensajería WhatsApp y correo electrónico).</li>
+        <li>Optimizar las rutas y la asignación de Repartidores mediante la consulta de los servicios cartográficos de terceros.</li>
+        <li>Acreditar la realización de la entrega mediante la conservación de fotografía y firma.</li>
+        <li>Atender consultas, reclamaciones y solicitudes formuladas por el titular.</li>
+        <li>Cumplir con las obligaciones legales y reglamentarias aplicables al responsable.</li>
+      </ul>
+
+      <h3 class="subseccion">6.2 Finalidades secundarias</h3>
+      <p>El responsable podrá tratar los datos personales para las siguientes finalidades secundarias, las cuales no resultan estrictamente necesarias para la ejecución del contrato pero contribuyen a la mejora del servicio y a la integridad de la operación:</p>
+      <ul>
+        <li>Análisis estadístico agregado y disociado de la operación.</li>
+        <li>Prevención, detección e investigación de fraudes y actividades ilícitas.</li>
+        <li>Mejora continua de los algoritmos de asignación, optimización de rutas y predicción de tiempos de entrega.</li>
+        <li>Auditoría interna y aseguramiento de la calidad del servicio.</li>
+        <li>Defensa de los derechos del responsable en sede judicial o administrativa, cuando corresponda.</li>
+      </ul>
+
+      <h3 class="subseccion">6.3 Comunicaciones comerciales</h3>
+      <p>El envío de comunicaciones comerciales, promocionales o publicitarias requiere el consentimiento separado, expreso y revocable del titular. La sola creación de una cuenta en la plataforma <strong>no constituye consentimiento</strong> para la recepción de tales comunicaciones, las cuales se rigen por lo dispuesto en la sección 17 del presente documento.</p>
+    </section>
+
+    <section class="seccion" id="s7">
+      <h2 class="seccion__titulo">7. Base legítima del tratamiento</h2>
+      <p>El tratamiento de los datos personales se sustenta, según la finalidad concreta, en las siguientes bases legítimas:</p>
+
+      <h3 class="subseccion">7.1 Ejecución contractual</h3>
+      <p>La principal base legítima del tratamiento es la ejecución del contrato de prestación de servicios suscrito entre el titular y el responsable, así como la aplicación de las medidas precontractuales adoptadas a solicitud del titular. Sin el tratamiento de los datos personales identificados como necesarios, no es posible la prestación del servicio.</p>
+
+      <h3 class="subseccion">7.2 Consentimiento expreso del titular</h3>
+      <p>Para finalidades que excedan la ejecución contractual —tales como las comunicaciones comerciales o la recolección de datos de geolocalización en segundo plano— el tratamiento se sustenta en el consentimiento libre, previo, expreso, informado e inequívoco del titular.</p>
+
+      <h3 class="subseccion">7.3 Interés legítimo del responsable</h3>
+      <p>Determinadas finalidades secundarias, como la prevención del fraude, la mejora del servicio mediante análisis estadísticos agregados o la defensa de derechos en sede judicial, se sustentan en el interés legítimo del responsable, previa ponderación con los derechos del titular.</p>
+
+      <h3 class="subseccion">7.4 Cumplimiento de obligaciones legales</h3>
+      <p>La conservación de determinados datos durante los plazos legalmente exigidos —en particular, los datos contables, fiscales y de auditoría— se sustenta en el cumplimiento de obligaciones legales que pesan sobre el responsable.</p>
+    </section>
+
+    <section class="seccion" id="s8">
+      <h2 class="seccion__titulo">8. Comunicación y transferencia de datos a terceros</h2>
+
+      <h3 class="subseccion">8.1 Encargados del tratamiento</h3>
+      <p>Para la prestación del servicio, el responsable se vale de proveedores tecnológicos que actúan en calidad de encargados del tratamiento. La relación con cada encargado se encuentra debidamente regulada en términos contractuales que garantizan la confidencialidad y la seguridad de los datos. Los encargados son los siguientes:</p>
+
+      <div class="tabla-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Encargado</th>
+              <th>Finalidad del tratamiento</th>
+              <th>Datos comunicados</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Mapbox, Inc.</strong></td>
+              <td>Provisión de servicios cartográficos, geocodificación inversa, optimización de rutas y cálculo de distancias y tiempos.</td>
+              <td>Coordenadas geográficas de origen, destino y polígonos de zonas. No se comunican datos identificatorios del titular.</td>
+            </tr>
+            <tr>
+              <td><strong>Google LLC (Firebase Cloud Messaging)</strong></td>
+              <td>Envío de notificaciones push a los dispositivos móviles del titular.</td>
+              <td>Token de notificaciones del dispositivo, identificador interno del usuario y contenido del mensaje.</td>
+            </tr>
+            <tr>
+              <td><strong>Meta Platforms, Inc. (WhatsApp Cloud API)</strong></td>
+              <td>Envío de mensajería transaccional al Cliente Final relativa al estado del pedido.</td>
+              <td>Número telefónico del Cliente, código de seguimiento del pedido y contenido del mensaje basado en plantilla aprobada.</td>
+            </tr>
+            <tr>
+              <td><strong>Proveedor de correo electrónico (SMTP)</strong></td>
+              <td>Envío de correos electrónicos transaccionales (confirmaciones, alertas, reportes).</td>
+              <td>Dirección de correo electrónico del destinatario y contenido del mensaje.</td>
+            </tr>
+            <tr>
+              <td><strong>MinIO (almacenamiento de objetos)</strong></td>
+              <td>Almacenamiento seguro de fotografías de entrega, firmas digitales y comprobantes de cierre financiero.</td>
+              <td>Imágenes generadas durante la operación, vinculadas a identificadores internos del pedido.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="subseccion">8.2 Cesión a autoridades competentes</h3>
+      <p>El responsable comunicará los datos personales del titular a las autoridades judiciales, fiscales, administrativas o de otra naturaleza cuando exista una obligación legal de hacerlo, o cuando dicha comunicación resulte necesaria para la investigación o sanción de un delito, la defensa de derechos del responsable o la protección de derechos de terceros.</p>
+
+      <h3 class="subseccion">8.3 Transferencias internacionales</h3>
+      <p>Algunos de los encargados del tratamiento mencionados en la cláusula 8.1 tienen su sede o procesan datos fuera del territorio de la República de El Salvador, en particular en los Estados Unidos de América y en la Unión Europea. El titular, al aceptar la presente política, presta su consentimiento expreso para que sus datos personales sean transferidos a tales jurisdicciones, sin perjuicio de que el responsable adopte las medidas razonables para garantizar que los encargados sometan tales transferencias a estándares de protección equivalentes a los exigidos por la legislación salvadoreña.</p>
+    </section>
+
+    <section class="seccion" id="s9">
+      <h2 class="seccion__titulo">9. Tratamiento de datos de geolocalización</h2>
+      <p>Atendida la sensibilidad de los datos de ubicación, el responsable describe a continuación su tratamiento de manera específica.</p>
+
+      <h3 class="subseccion">9.1 Datos del Repartidor</h3>
+      <p>La aplicación móvil del Repartidor recolecta su ubicación geográfica de forma continua en segundo plano mientras existan pedidos activos asignados. Tal recolección persigue las finalidades de asignación óptima de rutas, supervisión operativa por parte del responsable y comunicación del avance del pedido al Cliente Final. La activación del seguimiento requiere consentimiento expreso del Repartidor durante el proceso de instalación y configuración inicial de la aplicación.</p>
+
+      <h3 class="subseccion">9.2 Datos del Vendedor</h3>
+      <p>El responsable recolecta y almacena la ubicación geográfica del establecimiento del Vendedor con carácter estático, esto es, sin seguimiento en tiempo real. Tales coordenadas se utilizan exclusivamente para determinar la zona de origen del pedido y para calcular distancias y tiempos.</p>
+
+      <h3 class="subseccion">9.3 Datos del Cliente Final</h3>
+      <p>El responsable <strong>no recolecta ni rastrea la ubicación geográfica del Cliente Final</strong>. El Cliente podrá visualizar la ubicación del Repartidor asignado a su pedido mediante un enlace público de seguimiento, sin que ello implique recolección de su propia ubicación.</p>
+
+      <h3 class="subseccion">9.4 Revocación del consentimiento de geolocalización</h3>
+      <p>El titular podrá revocar en cualquier momento el permiso de acceso a su ubicación desde la configuración del sistema operativo de su dispositivo. La revocación no afectará la licitud del tratamiento basado en el consentimiento previo a su retirada. Sin perjuicio de lo anterior, la revocación del consentimiento por parte del Repartidor impedirá la prestación normal del servicio y podrá derivar en la suspensión de su cuenta, conforme a lo previsto en los Términos y Condiciones.</p>
+    </section>
+
+    <section class="seccion" id="s10">
+      <h2 class="seccion__titulo">10. Conservación de los datos</h2>
+
+      <h3 class="subseccion">10.1 Plazos generales</h3>
+      <p>Los datos personales se conservarán durante el tiempo estrictamente necesario para el cumplimiento de las finalidades para las cuales fueron recolectados, lo cual comprende, por regla general, toda la duración de la relación contractual entre el titular y el responsable.</p>
+
+      <h3 class="subseccion">10.2 Datos contables y fiscales</h3>
+      <p>Los datos personales que se incorporen a documentos contables, fiscales o de facturación se conservarán durante los plazos exigidos por el Código Tributario de la República de El Salvador, sus reglamentos y demás normativa aplicable, con un plazo no inferior a <strong>diez (10) años</strong> contados a partir de la finalización del ejercicio fiscal correspondiente.</p>
+
+      <h3 class="subseccion">10.3 Datos de auditoría y seguridad</h3>
+      <p>Los registros de auditoría, los logs de acceso y los datos asociados a la seguridad de la plataforma se conservarán durante un plazo de <strong>veinticuatro (24) meses</strong> a partir de su generación, sin perjuicio de plazos mayores cuando resulten de obligación legal o de requerimiento judicial.</p>
+
+      <h3 class="subseccion">10.4 Datos tras la terminación de la cuenta</h3>
+      <p>Una vez extinguida la relación contractual con el titular, el responsable procederá a la supresión o a la anonimización irreversible de los datos personales, salvo aquellos cuya conservación resulte obligatoria conforme a las cláusulas 10.2 y 10.3. La cuenta del titular será marcada como inactiva y sus credenciales serán inutilizadas.</p>
+    </section>
+
+    <section class="seccion" id="s11">
+      <h2 class="seccion__titulo">11. Decisiones automatizadas</h2>
+
+      <h3 class="subseccion">11.1 Asignación algorítmica de Repartidores</h3>
+      <p>El responsable utiliza procedimientos automatizados para asignar pedidos a Repartidores en función de la zona geográfica de origen, la disponibilidad y la calificación operativa del Repartidor, sin intervención humana directa en cada asignación particular. El titular tiene derecho a solicitar revisión humana de cualquier asignación cuando considere que ésta le ha causado un perjuicio significativo.</p>
+
+      <h3 class="subseccion">11.2 Cálculo automático de tarifas y consumo de paquetes prepago</h3>
+      <p>El responsable determina automáticamente la tarifa aplicable a cada pedido en función de los parámetros operativos configurados y, en su caso, descuenta de manera automática un envío del paquete prepago activo del Vendedor, siguiendo un orden cronológico de antigüedad (FIFO).</p>
+
+      <h3 class="subseccion">11.3 Derecho a la intervención humana</h3>
+      <p>El titular tiene derecho a no ser objeto de decisiones que se basen únicamente en un tratamiento automatizado y produzcan efectos jurídicos en él o le afecten significativamente, así como a obtener intervención humana, a expresar su punto de vista y a impugnar la decisión, mediante solicitud dirigida al correo electrónico señalado en la sección 1.2.</p>
+    </section>
+
+    <section class="seccion" id="s12">
+      <h2 class="seccion__titulo">12. Derechos del titular</h2>
+      <p>El titular de los datos personales tiene reconocidos, sin coste alguno, los siguientes derechos sobre los datos personales que le conciernen:</p>
+
+      <h3 class="subseccion">12.1 Derecho de acceso</h3>
+      <p>El titular tiene derecho a obtener del responsable confirmación de si se están tratando o no datos personales que le conciernen, y, en caso afirmativo, a acceder a tales datos y a la información sobre los fines del tratamiento, las categorías de datos, los destinatarios y los plazos de conservación.</p>
+
+      <h3 class="subseccion">12.2 Derecho de rectificación</h3>
+      <p>El titular tiene derecho a obtener sin dilación indebida la rectificación de los datos personales inexactos que le conciernan, así como a que se completen los datos personales incompletos.</p>
+
+      <h3 class="subseccion">12.3 Derecho de supresión</h3>
+      <p>El titular tiene derecho a obtener sin dilación indebida la supresión de los datos personales que le conciernan cuando ya no sean necesarios para los fines del tratamiento, cuando retire su consentimiento, cuando se oponga al tratamiento y no prevalezcan otros motivos legítimos, o cuando el tratamiento sea ilícito.</p>
+
+      <h3 class="subseccion">12.4 Derecho de oposición</h3>
+      <p>El titular tiene derecho a oponerse en cualquier momento, por motivos relacionados con su situación particular, al tratamiento de sus datos personales basado en el interés legítimo del responsable, así como al tratamiento con fines de mercadotecnia directa.</p>
+
+      <h3 class="subseccion">12.5 Derecho a la portabilidad</h3>
+      <p>El titular tiene derecho a recibir los datos personales que le incumban, que haya facilitado al responsable, en un formato estructurado, de uso común y lectura mecánica, y a transmitirlos a otro responsable cuando el tratamiento se base en el consentimiento o en la ejecución contractual y se efectúe por medios automatizados.</p>
+
+      <h3 class="subseccion">12.6 Derecho a la limitación del tratamiento</h3>
+      <p>El titular tiene derecho a obtener del responsable la limitación del tratamiento de sus datos personales cuando se cumpla alguno de los supuestos legalmente previstos, en particular cuando impugne la exactitud de los datos durante el plazo necesario para verificarla, o cuando el tratamiento sea ilícito y el titular se oponga a la supresión.</p>
+
+      <h3 class="subseccion">12.7 Derecho a retirar el consentimiento</h3>
+      <p>El titular tiene derecho a retirar su consentimiento en cualquier momento, sin que ello afecte la licitud del tratamiento basado en el consentimiento previo a su retirada. El retiro del consentimiento podrá implicar la imposibilidad de continuar prestando el servicio.</p>
+    </section>
+
+    <section class="seccion" id="s13">
+      <h2 class="seccion__titulo">13. Procedimiento para el ejercicio de derechos</h2>
+      <p>El titular podrá ejercer cualquiera de los derechos reconocidos en la sección 12 mediante comunicación escrita dirigida al correo electrónico <a href="mailto:devrelex@gmail.com">devrelex@gmail.com</a>, debiendo cumplir los siguientes requisitos:</p>
+      <ol>
+        <li>Identificarse plenamente mediante documento que acredite su identidad, a efectos de evitar la atención de solicitudes formuladas por terceros no legitimados.</li>
+        <li>Indicar de manera clara el derecho que pretende ejercer y los datos personales sobre los cuales recae su solicitud.</li>
+        <li>Adjuntar la documentación que, en su caso, sustente la solicitud.</li>
+        <li>Señalar un medio de contacto válido para la notificación de la respuesta.</li>
+      </ol>
+      <p>El responsable atenderá la solicitud dentro del plazo de <strong>diez (10) días hábiles</strong> contados a partir de la fecha de su recepción. Tal plazo podrá ampliarse, justificadamente, hasta veinte (20) días hábiles cuando la complejidad de la solicitud o el número de solicitudes pendientes así lo requiera, debiendo notificarse al titular dicha ampliación dentro del plazo original.</p>
+      <p>El ejercicio de los derechos es <strong>gratuito</strong>. No obstante, cuando las solicitudes sean manifiestamente infundadas o excesivas, especialmente por su carácter repetitivo, el responsable podrá negarse a actuar o cobrar un canon razonable en función de los costes administrativos, atendiendo a los criterios que en su caso resulten aplicables.</p>
+    </section>
+
+    <section class="seccion" id="s14">
+      <h2 class="seccion__titulo">14. Tratamiento de datos de menores de edad</h2>
+      <p>El acceso a la plataforma se encuentra restringido a personas que hayan cumplido los <strong>dieciocho (18) años</strong> de edad. Excepcionalmente, podrán registrarse personas a partir de los <strong>dieciséis (16) años</strong> cumplidos, siempre que cuenten con consentimiento expreso, previo y documentado del padre, madre o tutor legal, quien asumirá responsabilidad solidaria por las obligaciones derivadas del uso de la cuenta.</p>
+      <p>El registro de menores de dieciséis años queda terminantemente prohibido. En caso de que el responsable tome conocimiento del registro de un menor de dicha edad, procederá de manera inmediata a la supresión de la cuenta y de todos los datos personales asociados.</p>
+      <p>El padre, madre o tutor legal de un menor inscrito en la plataforma podrá, en cualquier momento, solicitar al responsable la supresión de los datos personales del menor, sin que sea necesaria justificación alguna.</p>
+    </section>
+
+    <section class="seccion" id="s15">
+      <h2 class="seccion__titulo">15. Medidas de seguridad</h2>
+      <p>El responsable ha implementado las medidas técnicas y organizativas apropiadas para garantizar un nivel de seguridad adecuado al riesgo, considerando el estado de la técnica, la naturaleza, el alcance, el contexto y los fines del tratamiento, así como los riesgos para los derechos y libertades del titular.</p>
+
+      <h3 class="subseccion">15.1 Medidas técnicas</h3>
+      <ul>
+        <li>Almacenamiento de contraseñas mediante función criptográfica de hash <code>bcrypt</code>, con factor de costo mínimo de doce.</li>
+        <li>Autenticación basada en tokens JSON Web Tokens (JWT) con vigencia limitada y mecanismo de refresco controlado.</li>
+        <li>Cifrado de las comunicaciones mediante TLS 1.2 o superior en todos los puntos de exposición pública.</li>
+        <li>Almacenamiento de imágenes y comprobantes en MinIO con políticas de acceso restrictivas y URLs firmadas de vigencia temporal.</li>
+        <li>Almacenamiento seguro de tokens de autenticación en los dispositivos móviles mediante el módulo <code>flutter_secure_storage</code>, que emplea las facilidades de almacenamiento cifrado provistas por el sistema operativo.</li>
+        <li>Registro de auditoría de operaciones sensibles, conservado conforme a la cláusula 10.3.</li>
+        <li>Limitación de frecuencia de solicitudes (rate limiting) para mitigar ataques de fuerza bruta y de denegación de servicio.</li>
+      </ul>
+
+      <h3 class="subseccion">15.2 Medidas organizativas</h3>
+      <ul>
+        <li>Control de acceso a sistemas internos basado en roles, con principio de mínimo privilegio.</li>
+        <li>Procedimientos internos de revisión y aprobación de cambios sobre datos personales.</li>
+        <li>Compromisos contractuales de confidencialidad con todo proveedor o colaborador que tenga acceso a datos personales.</li>
+        <li>Auditoría periódica de los accesos administrativos y de las operaciones de mayor sensibilidad.</li>
+      </ul>
+
+      <h3 class="subseccion">15.3 Notificación de brechas de seguridad</h3>
+      <p>En el supuesto de que se produzca una brecha de seguridad que afecte a los datos personales del titular y que entrañe un riesgo para sus derechos y libertades, el responsable notificará al titular afectado, así como a la autoridad de control competente, dentro de los plazos previstos en la legislación aplicable y, en cualquier caso, sin dilación indebida.</p>
+    </section>
+
+    <section class="seccion" id="s16">
+      <h2 class="seccion__titulo">16. Cookies y tecnologías similares</h2>
+
+      <h3 class="subseccion">16.1 Cookies en el sitio web</h3>
+      <p>El sitio web institucional de Rapix no utiliza cookies de seguimiento, cookies publicitarias ni tecnologías de rastreo entre sitios. El sitio se compone de páginas HTML estáticas que no requieren la generación de identificadores persistentes en el navegador del visitante. Tampoco se incorporan píxeles de seguimiento, herramientas de analítica de terceros ni mecanismos de fingerprinting.</p>
+
+      <h3 class="subseccion">16.2 Identificadores y tokens en aplicaciones móviles</h3>
+      <p>Las aplicaciones móviles de Rapix utilizan identificadores y tokens estrictamente necesarios para el funcionamiento del servicio, a saber:</p>
+      <ul>
+        <li><strong>Tokens de autenticación JWT</strong>, almacenados en el módulo de almacenamiento seguro del dispositivo. Estos tokens identifican al titular ante el servidor y permiten mantener la sesión iniciada sin necesidad de reintroducir las credenciales en cada operación.</li>
+        <li><strong>Tokens de notificaciones push</strong> emitidos por Firebase Cloud Messaging, que permiten dirigir las notificaciones al dispositivo correcto.</li>
+      </ul>
+      <p>Estos identificadores no son cookies en sentido técnico y son utilizados exclusivamente con la finalidad funcional de prestar el servicio. No se emplean para fines publicitarios ni de análisis de comportamiento ajenos a la propia operación de la plataforma.</p>
+    </section>
+
+    <section class="seccion" id="s17">
+      <h2 class="seccion__titulo">17. Comunicaciones electrónicas</h2>
+      <p>El responsable enviará al titular comunicaciones electrónicas por los canales habilitados (notificaciones push, mensajería WhatsApp y correo electrónico) con las siguientes finalidades:</p>
+      <ul>
+        <li><strong>Comunicaciones transaccionales:</strong> aquellas necesarias para la prestación del servicio, tales como confirmación del pedido, asignación de Repartidor, cambios de estado, alertas de saldo bajo y reportes. Estas comunicaciones son inherentes al servicio y no pueden desactivarse sin afectar el funcionamiento de la plataforma.</li>
+        <li><strong>Comunicaciones de servicio:</strong> aquellas relativas a cambios sustanciales en los Términos y Condiciones, en esta Política de Privacidad, o avisos de seguridad. Estas comunicaciones tienen carácter informativo necesario.</li>
+        <li><strong>Comunicaciones comerciales o promocionales:</strong> aquellas relativas a ofertas, descuentos, novedades del servicio o promociones cruzadas. Estas comunicaciones requieren consentimiento expreso, separado y específico del titular, prestado mediante mecanismo de opción positiva (opt-in), y son revocables en cualquier momento sin necesidad de justificación.</li>
+      </ul>
+    </section>
+
+    <section class="seccion" id="s18">
+      <h2 class="seccion__titulo">18. Modificaciones a la política</h2>
+      <p>El responsable se reserva el derecho de modificar la presente Política de Privacidad cuando resulte necesario para adaptarla a cambios en la legislación aplicable, en las características del servicio, en la operación de los encargados del tratamiento, o por otras razones legítimas.</p>
+      <p>Las modificaciones serán notificadas al titular por los canales electrónicos registrados, así como publicadas en el sitio web institucional con la indicación de la nueva versión y de la fecha de entrada en vigor. Salvo causa justificada, las modificaciones entrarán en vigor transcurridos <strong>quince (15) días calendario</strong> desde su notificación. Durante dicho plazo, el titular podrá manifestar su disconformidad con las nuevas condiciones, en cuyo caso podrá solicitar la baja de su cuenta.</p>
+    </section>
+
+    <section class="seccion" id="s19">
+      <h2 class="seccion__titulo">19. Ley aplicable y autoridad de control</h2>
+      <p>La presente Política de Privacidad y todo tratamiento de datos personales que en su marco se realice se rigen por las leyes de la <strong>República de El Salvador</strong>, en particular por la <strong>Ley de Protección de Datos Personales</strong> y sus reglamentos, así como por las normas internacionales que resulten de aplicación supletoria.</p>
+      <p>Sin perjuicio de la facultad del titular de acudir directamente a la jurisdicción ordinaria, el titular podrá presentar reclamación ante la autoridad de control en materia de protección de datos personales con competencia en el territorio de la República de El Salvador, conforme a la organización institucional vigente al tiempo del ejercicio.</p>
+      <p>Para cualquier controversia que pueda surgir de la aplicación o interpretación de la presente política, las partes se someten a la jurisdicción exclusiva de los tribunales competentes de la ciudad de <strong>San Salvador</strong>, con renuncia expresa a cualquier otro fuero que pudiera corresponderles.</p>
+    </section>
+
+    <section class="seccion" id="s20">
+      <h2 class="seccion__titulo">20. Aceptación de la política</h2>
+      <p>Al registrarse en la plataforma, utilizar cualquiera de sus aplicaciones, o continuar utilizándolas tras la entrada en vigor de una nueva versión de esta política, el titular manifiesta de forma libre, expresa, informada e inequívoca su aceptación íntegra de las disposiciones aquí contenidas, así como de los Términos y Condiciones de Uso que la complementan.</p>
+      <p>En caso de no estar de acuerdo con cualquier disposición de la presente política, el titular deberá abstenerse de registrarse o de continuar utilizando la plataforma. La utilización de la plataforma con posterioridad al conocimiento de esta política se considera, a todos los efectos, expresión inequívoca de aceptación.</p>
+    </section>
+
+    <section class="seccion" id="s21">
+      <h2 class="seccion__titulo">21. Datos de contacto del responsable</h2>
+      <p>Para todo asunto relacionado con la presente Política de Privacidad, el ejercicio de los derechos reconocidos al titular o cualquier consulta en materia de protección de datos personales, el titular podrá dirigirse al responsable a través del siguiente medio único de contacto:</p>
+
+      <div class="identidad">
+        <dl>
+          <dt>Responsable del tratamiento</dt>
+          <dd>REYNALDO ALEXANDER RUIZ ROSALES</dd>
+          <dt>Número de Identificación Tributaria</dt>
+          <dd>NIT 051754733</dd>
+          <dt>País de domicilio</dt>
+          <dd>República de El Salvador</dd>
+          <dt>Correo electrónico</dt>
+          <dd><a href="mailto:devrelex@gmail.com">devrelex@gmail.com</a></dd>
+        </dl>
+      </div>
+
+      <div class="cita">
+        <p><strong>Nota:</strong> El presente documento ha sido redactado a partir de la operación documentada de la plataforma Rapix y no constituye, en ningún caso, asesoramiento jurídico. Se recomienda al responsable someter este texto a la revisión de un profesional del derecho debidamente habilitado en la República de El Salvador con anterioridad a su uso en entornos de producción.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="footer" role="contentinfo">
+  <p><strong>Rapix</strong> · Reynaldo Alexander Ruiz Rosales · NIT 051754733</p>
+  <p>Copyright &copy; 2026 · Todos los derechos reservados</p>
+  <p><a href="index.html">Volver al inicio</a> · <a href="terminos-y-condiciones.html">Términos y Condiciones</a></p>
+</footer>
+
+</body>
+</html>

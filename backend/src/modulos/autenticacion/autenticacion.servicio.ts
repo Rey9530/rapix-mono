@@ -14,11 +14,14 @@ import {
 } from '../../comun/utiles/contrasena.js';
 import { PrismaServicio } from '../../prisma/prisma.servicio.js';
 import { CerrarSesionDto } from './dto/cerrar-sesion.dto.js';
+import { CompletarRegistroDto } from './dto/completar-registro.dto.js';
+import { GoogleSignInDto } from './dto/google-sign-in.dto.js';
 import { IniciarSesionDto } from './dto/iniciar-sesion.dto.js';
 import { RefrescarDto } from './dto/refrescar.dto.js';
 import { RegistrarDto, RolRegistrable } from './dto/registrar.dto.js';
 import { RespuestaAutenticacionDto } from './dto/respuesta-autenticacion.dto.js';
 import { UsuarioPublicoDto } from './dto/usuario-publico.dto.js';
+import { GoogleVerificadorServicio } from './google-verificador.servicio.js';
 import { RecuperacionContrasenaServicio } from './recuperacion-contrasena.servicio.js';
 import { VerificacionCorreoServicio } from './verificacion-correo.servicio.js';
 
@@ -41,6 +44,7 @@ export class AutenticacionServicio {
     private readonly jwtService: JwtService,
     private readonly verificacionCorreo: VerificacionCorreoServicio,
     private readonly recuperacionContrasena: RecuperacionContrasenaServicio,
+    private readonly googleVerificador: GoogleVerificadorServicio,
   ) {}
 
   async registrar(
@@ -139,6 +143,10 @@ export class AutenticacionServicio {
     const usuario = await this.prisma.usuario.findUnique({ where: { email: dto.email } });
     if (!usuario) throw new UnauthorizedException('Credenciales inválidas');
 
+    // Cuentas creadas vía Google no tienen hashContrasena: no permitir login
+    // local. Mensaje genérico para no filtrar el método de registro.
+    if (!usuario.hashContrasena) throw new UnauthorizedException('Credenciales inválidas');
+
     const coincide = await compararContrasena(dto.contrasena, usuario.hashContrasena);
     if (!coincide) throw new UnauthorizedException('Credenciales inválidas');
 
@@ -153,6 +161,166 @@ export class AutenticacionServicio {
     });
 
     return this.emitirPar(actualizado, contexto);
+  }
+
+  /**
+   * Autentica con un idToken de Google y emite par de tokens.
+   *
+   * Reglas de auto-enlace (anti-secuestro):
+   *  A. No existe usuario con ese email → se crea (sin telefono, sin password,
+   *     correoVerificadoEn=now, registroCompleto=false, rol=VENDEDOR).
+   *  B. Existe por email, googleId null y correoVerificadoEn null → se enlaza
+   *     y se purga la contrasena. Justificación: el método local nunca se
+   *     verificó; Google sí. Quien creó la cuenta local pierde acceso.
+   *  C. Existe por email, googleId null y correoVerificadoEn != null → se
+   *     enlaza sin purgar. Ambos métodos quedan válidos.
+   *  D. Existe por googleId con mismo sub → se usa directamente.
+   *  E. Existe por email pero googleId != null && googleId !== sub → 409.
+   */
+  async iniciarSesionConGoogle(
+    dto: GoogleSignInDto,
+    contexto: ContextoPeticion = {},
+  ): Promise<RespuestaAutenticacionDto> {
+    const payload = await this.googleVerificador.verificar(dto.idToken);
+
+    if (!payload.emailVerificado) {
+      throw new UnauthorizedException('Correo no verificado en Google');
+    }
+
+    // Buscar primero por googleId (camino D), luego por email.
+    let usuario = await this.prisma.usuario.findUnique({
+      where: { googleId: payload.sub },
+    });
+
+    if (!usuario) {
+      usuario = await this.prisma.usuario.findUnique({
+        where: { email: payload.email },
+      });
+
+      if (usuario) {
+        // Caso E: email asociado a otra cuenta de Google.
+        if (usuario.googleId && usuario.googleId !== payload.sub) {
+          throw new ConflictException(
+            'Este correo ya está asociado a otra cuenta de Google',
+          );
+        }
+
+        // Caso B: enlazar y purgar contraseña.
+        // Caso C: enlazar sin purgar.
+        if (!usuario.googleId) {
+          const correoVerificadoEnPrevio = usuario.correoVerificadoEn;
+          const debePurgar = correoVerificadoEnPrevio === null;
+          usuario = await this.prisma.usuario.update({
+            where: { id: usuario.id },
+            data: {
+              googleId: payload.sub,
+              correoVerificadoEn: correoVerificadoEnPrevio ?? new Date(),
+              estado: 'ACTIVO',
+              urlAvatar: usuario.urlAvatar ?? payload.urlFoto,
+              ...(debePurgar ? { hashContrasena: null } : {}),
+            },
+          });
+          if (debePurgar) {
+            // Revoca cualquier sesion previa abierta con el método local.
+            await this.prisma.tokenRefresco.updateMany({
+              where: { usuarioId: usuario.id, revocadoEn: null },
+              data: { revocadoEn: new Date() },
+            });
+          }
+        }
+      } else {
+        // Caso A: crear usuario nuevo. Si dispara P2002 (race con doble tap)
+        // recuperamos el usuario existente y reintentamos los caminos D/B/C.
+        try {
+          usuario = await this.prisma.usuario.create({
+            data: {
+              email: payload.email,
+              googleId: payload.sub,
+              nombreCompleto: payload.nombre,
+              urlAvatar: payload.urlFoto,
+              rol: 'VENDEDOR',
+              estado: 'ACTIVO',
+              correoVerificadoEn: new Date(),
+              registroCompleto: false,
+              hashContrasena: null,
+              telefono: null,
+            },
+          });
+        } catch (e) {
+          this.logger.warn(
+            `Race detectado al crear usuario Google ${payload.email}, reintentando`,
+          );
+          usuario = await this.prisma.usuario.findUnique({
+            where: { googleId: payload.sub },
+          });
+          if (!usuario) {
+            throw e;
+          }
+        }
+      }
+    }
+
+    // Actualizar ultimoIngresoEn (sin esperar al refresh subsiguiente).
+    usuario = await this.prisma.usuario.update({
+      where: { id: usuario.id },
+      data: { ultimoIngresoEn: new Date() },
+      include: { perfilAdmin: true, perfilVendedor: true, perfilRepartidor: true },
+    });
+
+    return this.emitirPar(usuario, contexto);
+  }
+
+  /**
+   * Completa el registro de un usuario creado vía OAuth. Setea telefono +
+   * crea/actualiza PerfilVendedor y pone registroCompleto=true. Idempotente
+   * gracias al upsert sobre PerfilVendedor.
+   */
+  async completarRegistro(
+    usuarioId: string,
+    dto: CompletarRegistroDto,
+  ): Promise<UsuarioPublicoDto> {
+    const telefonoCompleto = `+503${dto.telefono}`;
+
+    // const colision = await this.prisma.usuario.findUnique({
+    //   where: { telefono: telefonoCompleto },
+    // });
+    // if (colision && colision.id !== usuarioId) {
+    //   throw new ConflictException('El teléfono ya está registrado');
+    // }
+
+    const actualizado = await this.prisma.$transaction(async (tx) => {
+      await tx.usuario.update({
+        where: { id: usuarioId },
+        data: {
+          telefono: telefonoCompleto,
+          registroCompleto: true,
+        },
+      });
+
+      await tx.perfilVendedor.upsert({
+        where: { usuarioId },
+        create: {
+          usuarioId,
+          nombreNegocio: dto.nombreNegocio,
+          direccion: dto.direccion,
+          latitud: dto.latitud,
+          longitud: dto.longitud,
+        },
+        update: {
+          nombreNegocio: dto.nombreNegocio,
+          direccion: dto.direccion,
+          latitud: dto.latitud,
+          longitud: dto.longitud,
+        },
+      });
+
+      return tx.usuario.findUniqueOrThrow({
+        where: { id: usuarioId },
+        include: { perfilVendedor: true },
+      });
+    });
+
+    return UsuarioPublicoDto.desde(actualizado);
   }
 
   async refrescar(

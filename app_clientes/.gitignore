@@ -47,3 +47,8 @@ app.*.map.json
 # Firebase config (no commitear; distribuir por canal seguro)
 /android/app/google-services.json
 /ios/Runner/GoogleService-Info.plist
+
+# Firma de release Android (no commitear nunca; respaldar fuera del repo)
+/android/key.properties
+**/*.jks
+**/*.keystore

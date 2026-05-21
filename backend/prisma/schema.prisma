@@ -198,11 +198,13 @@ enum EtapaConversacionEntrega {
 model Usuario {
   id                 String        @id @default(uuid())
   email              String        @unique
-  telefono           String        @unique
-  hashContrasena     String
+  telefono           String?       @unique
+  hashContrasena     String?
+  googleId           String?       @unique
   nombreCompleto     String
   rol                RolUsuario
   estado             EstadoUsuario @default(PENDIENTE_VERIFICACION)
+  registroCompleto   Boolean       @default(false)
   urlAvatar          String?
   ultimoIngresoEn    DateTime?
   correoVerificadoEn DateTime?

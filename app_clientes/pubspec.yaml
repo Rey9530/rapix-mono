@@ -44,6 +44,11 @@ dependencies:
   # Tipografia
   google_fonts: ^6.2.1
 
+  # Autenticacion con Google. Mantener en 6.x; la version 7.x introduce
+  # cambios de ruptura (authenticate() en vez de signIn(), singleton, etc.)
+  # — migrar requiere reescribir el wrapper en google_sign_in_servicio.dart.
+  google_sign_in: ^6.2.1
+
   # Modelos
   freezed_annotation: ^2.4.4
   json_annotation: ^4.9.0
@@ -58,5 +63,20 @@ dev_dependencies:
   freezed: ^2.5.7
   json_serializable: ^6.8.0
 
+  # Generacion de iconos de launcher para Android e iOS
+  flutter_launcher_icons: ^0.14.4
+
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/logo_rapix.png
+
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/icono.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/icono.png"

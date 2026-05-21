@@ -192,6 +192,25 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
     return asincrono.value;
   }
 
+  void _limpiarFormulario() {
+    _formulario.currentState?.reset();
+    _nombreCliente.clear();
+    _telefonoCliente.clear();
+    _direccionDestino.clear();
+    _urlMapsDestino.clear();
+    _descripcion.clear();
+    _montoContraEntrega.clear();
+    _notasDestino.clear();
+    setState(() {
+      _metodoPago = 'CONTRA_ENTREGA';
+      _foto = null;
+      _fechaEntrega = DateTime.now().add(const Duration(days: 1));
+      _latDestino = null;
+      _lngDestino = null;
+      _direccionElegidaDelBuscador = null;
+    });
+  }
+
   Future<void> _enviar() async {
     if (!_formulario.currentState!.validate()) return;
 
@@ -256,6 +275,7 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
       );
       if (!mounted) return;
       ref.invalidate(pedidosListadoProvider);
+      _limpiarFormulario();
       context.go('/pedidos/${pedido.id}');
     } on DioException catch (e) {
       if (!mounted) return;
@@ -288,7 +308,12 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
       telefono: usuario.telefono,
       nombreCompleto: usuario.nombreCompleto,
       rol: usuario.rol,
+      registroCompleto: usuario.registroCompleto,
       estado: usuario.estado,
+      urlAvatar: usuario.urlAvatar,
+      creadoEn: usuario.creadoEn,
+      correoVerificadoEn: usuario.correoVerificadoEn,
+      estadisticas: usuario.estadisticas,
       perfilVendedor: PerfilVendedor(
         nombreNegocio: ctx.nombreNegocio,
         rfc: perfilActual?.rfc,

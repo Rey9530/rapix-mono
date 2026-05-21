@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Rapix · Plataforma de delivery con recolección y redistribución por zonas. Coordinación de vendedores, repartidores y clientes en El Salvador.">
+<title>Rapix · Logística simple para tu negocio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #25b276;
+    --green-dark: #1a8f5d;
+    --green-soft: #e6f6ee;
+    --green-ink: #0d3a26;
+
+    --bg: #fbfaf7;
+    --surface: #ffffff;
+    --surface-alt: #f4f2ee;
+    --surface-sunken: #efece6;
+    --outline: #e2dfd8;
+    --outline-soft: #eeebe4;
+
+    --ink: #13140f;
+    --ink-muted: #5a5b54;
+    --ink-soft: #8b8c84;
+
+    --danger: #dc2626;
+    --warning: #d97706;
+    --info: #2563eb;
+    --purple: #7c3aed;
+
+    --r-sm: 8px;
+    --r-md: 12px;
+    --r-lg: 16px;
+    --r-xl: 20px;
+    --r-2xl: 28px;
+
+    --shadow-sm: 0 1px 2px rgba(19, 20, 15, 0.05);
+    --shadow-md: 0 4px 12px rgba(19, 20, 15, 0.06), 0 2px 4px rgba(19, 20, 15, 0.04);
+    --shadow-lg: 0 12px 32px rgba(19, 20, 15, 0.08), 0 4px 12px rgba(19, 20, 15, 0.05);
+    --shadow-xl: 0 24px 60px rgba(19, 20, 15, 0.14), 0 8px 20px rgba(19, 20, 15, 0.08);
+    --shadow-green: 0 8px 24px rgba(37, 178, 118, 0.28);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'ss01', 'cv11';
+  }
+  a { color: inherit; text-decoration: none; }
+  img, svg { display: block; max-width: 100%; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  .section { padding: 96px 0; }
+  @media (max-width: 720px) { .section { padding: 64px 0; } }
+
+  .section__head { text-align: center; max-width: 720px; margin: 0 auto 56px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 700; letter-spacing: 1.6px;
+    text-transform: uppercase; color: var(--green-dark);
+    padding: 6px 12px 6px 10px; background: var(--green-soft);
+    border-radius: 999px; margin-bottom: 18px;
+  }
+  .eyebrow::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 3px rgba(37, 178, 118, 0.18);
+  }
+  h1, h2, h3 { color: var(--ink); letter-spacing: -0.6px; line-height: 1.1; margin: 0; }
+  h2 { font-size: clamp(32px, 4.5vw, 48px); font-weight: 800; margin-bottom: 14px; letter-spacing: -1.4px; }
+  h2 em { color: var(--green); font-style: normal; }
+  h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .lede { color: var(--ink-muted); font-size: 17px; line-height: 1.6; margin: 0; }
+
+  /* ============== Wordmark ============== */
+  .wordmark {
+    font-weight: 800; font-size: 22px; letter-spacing: -0.7px;
+    color: var(--ink); line-height: 1;
+  }
+  .wordmark__dot { color: var(--green); }
+
+  /* ============== Navbar ============== */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(251, 250, 247, 0.88);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid var(--outline);
+  }
+  .nav__inner {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 68px;
+  }
+  .nav__links {
+    display: none; gap: 4px;
+    font-size: 14px; font-weight: 500;
+  }
+  @media (min-width: 920px) { .nav__links { display: flex; } }
+  .nav__links a {
+    padding: 8px 14px; border-radius: 8px;
+    color: var(--ink-muted);
+    transition: background 0.15s, color 0.15s;
+  }
+  .nav__links a:hover { background: var(--surface-alt); color: var(--ink); }
+
+  .nav__actions { display: flex; align-items: center; gap: 8px; }
+  .nav__signin {
+    display: none; padding: 8px 14px; border-radius: 8px;
+    font-size: 14px; font-weight: 600; color: var(--ink-muted);
+    transition: color 0.15s;
+  }
+  .nav__signin:hover { color: var(--ink); }
+  @media (min-width: 720px) { .nav__signin { display: inline-flex; } }
+
+  .nav__cta {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--ink); color: #fff;
+    padding: 10px 16px; border-radius: 999px;
+    font-size: 13px; font-weight: 600;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .nav__cta:hover { background: var(--green-dark); }
+  .nav__cta:active { transform: scale(0.97); }
+
+  /* ============== Buttons ============== */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 14px 22px; border-radius: 14px;
+    font-size: 15px; font-weight: 700; letter-spacing: -0.1px;
+    border: 1.5px solid transparent;
+    transition: transform 0.12s, box-shadow 0.15s, background 0.15s, color 0.15s, border-color 0.15s;
+    white-space: nowrap; cursor: pointer;
+    font-family: inherit;
+  }
+  .btn--primary { background: var(--green); color: #fff; box-shadow: var(--shadow-green); }
+  .btn--primary:hover { background: var(--green-dark); transform: translateY(-1px); }
+  .btn--primary:active { transform: translateY(0); }
+
+  .btn--secondary {
+    background: var(--surface); color: var(--ink);
+    border-color: var(--outline);
+  }
+  .btn--secondary:hover { border-color: var(--ink); transform: translateY(-1px); }
+
+  .btn--dark { background: var(--ink); color: #fff; }
+  .btn--dark:hover { background: var(--green-dark); transform: translateY(-1px); }
+
+  /* ============== Hero ============== */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 72px 0 120px;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(800px 500px at 95% -20%, rgba(37, 178, 118, 0.14), transparent 70%),
+      radial-gradient(700px 400px at -10% 110%, rgba(37, 178, 118, 0.08), transparent 70%);
+    pointer-events: none;
+  }
+  .hero__grid {
+    position: relative;
+    display: grid; grid-template-columns: 1fr; gap: 64px;
+    align-items: center;
+  }
+  @media (min-width: 1000px) { .hero__grid { grid-template-columns: 1.08fr 1fr; gap: 80px; } }
+
+  .hero__title {
+    font-size: clamp(40px, 6.5vw, 68px);
+    font-weight: 800; line-height: 0.98; letter-spacing: -2.4px;
+    color: var(--ink); margin: 18px 0 22px;
+  }
+  .hero__title em { color: var(--green); font-style: normal; }
+  .hero__title .strike {
+    position: relative; display: inline-block;
+    color: var(--ink-soft); font-weight: 700;
+  }
+  .hero__title .strike::after {
+    content: ''; position: absolute; left: -4px; right: -4px; top: 56%;
+    height: 4px; background: var(--green); border-radius: 2px;
+    transform: rotate(-2deg);
+  }
+
+  .hero__lede {
+    font-size: 18px; color: var(--ink-muted); line-height: 1.6;
+    max-width: 540px; margin: 0 0 32px;
+  }
+  .hero__buttons { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .hero__trust {
+    margin-top: 16px; display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--ink-muted); font-weight: 500;
+  }
+  .hero__trust .avatars { display: flex; }
+  .hero__trust .avatars span {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--green); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+    border: 2px solid var(--bg); margin-left: -8px;
+  }
+  .hero__trust .avatars span:first-child { margin-left: 0; }
+  .hero__trust .avatars span:nth-child(2) { background: var(--ink); }
+  .hero__trust .avatars span:nth-child(3) { background: var(--green-dark); }
+
+  .hero__stats {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 0; margin-top: 48px; padding-top: 32px;
+    border-top: 1px solid var(--outline);
+    max-width: 540px;
+  }
+  .hero__stat { padding-right: 16px; border-right: 1px solid var(--outline); }
+  .hero__stat:last-child { border-right: none; padding-right: 0; padding-left: 16px; }
+  .hero__stat:nth-child(2) { padding-left: 16px; }
+  .hero__stat strong {
+    display: block; font-size: 32px; font-weight: 800;
+    color: var(--ink); letter-spacing: -1px; line-height: 1; margin-bottom: 6px;
+  }
+  .hero__stat strong .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.85em; color: var(--green); }
+  .hero__stat span { font-size: 12px; color: var(--ink-muted); font-weight: 500; }
+
+  /* ============== Hero visual: phone mockup ============== */
+  .hero__visual {
+    position: relative;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 600px;
+  }
+  .phone {
+    position: relative;
+    width: 320px; height: 640px;
+    background: var(--ink);
+    border-radius: 44px; padding: 10px;
+    box-shadow: var(--shadow-xl);
+    z-index: 2;
+  }
+  .phone__screen {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    border-radius: 36px; overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .phone__status {
+    height: 30px; padding: 0 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; font-weight: 600;
+  }
+  .phone__notch {
+    position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #0a0a0a;
+  }
+  .phone__map {
+    flex: 1;
+    background:
+      linear-gradient(135deg, #d8e6db 0%, #c2d6c8 100%);
+    position: relative; overflow: hidden;
+  }
+  .phone__map svg.streets { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .phone__map .route {
+    fill: none; stroke: var(--green); stroke-width: 4;
+    stroke-dasharray: 8 5; stroke-linecap: round;
+  }
+  .phone__map .pin {
+    position: absolute; transform: translate(-50%, -100%);
+  }
+  .phone__map .driver {
+    position: absolute; width: 44px; height: 44px; border-radius: 22px;
+    background: var(--green); border: 3px solid #fff;
+    box-shadow: 0 4px 12px rgba(37, 178, 118, 0.4);
+    display: flex; align-items: center; justify-content: center;
+    transform: translate(-50%, -50%);
+  }
+  .phone__map .driver::after {
+    content: ''; position: absolute; inset: -8px;
+    border-radius: 50%; border: 2px solid var(--green);
+    opacity: 0.4; animation: pulse 2s ease-out infinite;
+  }
+  @keyframes pulse {
+    0% { transform: scale(0.9); opacity: 0.5; }
+    100% { transform: scale(1.5); opacity: 0; }
+  }
+  .phone__sheet {
+    background: var(--bg);
+    border-radius: 28px 28px 0 0; padding: 14px 18px 20px;
+    margin-top: -20px; position: relative; z-index: 2;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.05);
+  }
+  .phone__sheet .handle {
+    width: 36px; height: 4px; border-radius: 2px;
+    background: var(--outline); margin: 0 auto 14px;
+  }
+  .phone__sheet .code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 600; color: var(--ink-soft);
+    margin-bottom: 4px;
+  }
+  .phone__sheet .eta {
+    display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px;
+  }
+  .phone__sheet .eta strong {
+    font-size: 38px; font-weight: 800; letter-spacing: -1.5px;
+    color: var(--ink); line-height: 1;
+  }
+  .phone__sheet .eta span { font-size: 14px; color: var(--ink-muted); font-weight: 500; }
+  .phone__sheet .destino { font-size: 12px; color: var(--ink-muted); }
+
+  /* Floating cards */
+  .float-card {
+    position: absolute;
+    background: var(--surface);
+    border: 1px solid var(--outline);
+    border-radius: 16px;
+    padding: 14px 16px;
+    box-shadow: var(--shadow-lg);
+    z-index: 3;
+  }
+  .float-card--code {
+    top: 80px; left: -20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .float-card--code .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+  }
+  .float-card--code .mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 600; color: var(--ink);
+  }
+  .float-card--code .label { font-size: 11px; color: var(--ink-muted); font-weight: 500; }
+
+  .float-card--stat {
+    bottom: 100px; right: -30px;
+    width: 200px;
+  }
+  .float-card--stat .label {
+    font-size: 11px; color: var(--ink-muted); font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;
+  }
+  .float-card--stat .value {
+    font-size: 28px; font-weight: 800; color: var(--ink);
+    letter-spacing: -0.5px; line-height: 1; margin-bottom: 4px;
+  }
+  .float-card--stat .delta {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; font-weight: 700; color: var(--green-dark);
+    background: var(--green-soft); padding: 2px 8px; border-radius: 999px;
+  }
+
+  .float-card--check {
+    top: 320px; left: -40px;
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+  }
+  .float-card--check .check {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--green-soft); color: var(--green-dark);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .float-card--check .label { font-size: 12px; font-weight: 600; color: var(--ink); }
+  .float-card--check .sub { font-size: 11px; color: var(--ink-muted); }
+
+  @media (max-width: 1000px) {
+    .hero__visual { min-height: 540px; transform: scale(0.92); }
+  }
+  @media (max-width: 520px) {
+    .hero__visual { display: none; }
+    .hero { padding: 48px 0 64px; }
+  }
+
+  /* ============== Trust strip ============== */
+  .trust {
+    padding: 28px 0;
+    border-top: 1px solid var(--outline);
+    border-bottom: 1px solid var(--outline);
+    background: var(--surface-alt);
+  }
+  .trust__title {
+    text-align: center; font-size: 11px; font-weight: 700;
+    letter-spacing: 1.6px; text-transform: uppercase;
+    color: var(--ink-soft); margin: 0 0 18px;
+  }
+  .trust__list {
+    display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+    gap: 36px;
+  }
+  .trust__item {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--ink-muted); font-size: 14px; font-weight: 600;
+  }
+  .trust__item svg { color: var(--ink-soft); }
+
+  /* ============== Steps ============== */
+  .steps {
+    display: grid; grid-template-columns: 1fr; gap: 16px;
+    counter-reset: step;
+  }
+  @media (min-width: 720px) {
+    .steps { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .steps { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  }
+  .step {
+    background: var(--surface);
+    border: 1px solid var(--outline);
+    border-radius: var(--r-lg);
+    padding: 28px 24px;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    counter-increment: step;
+    position: relative;
+  }
+  .step:hover {
+    transform: translateY(-3px); border-color: var(--green);
+    box-shadow: var(--shadow-md);
+  }
+  .step__num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; font-weight: 600; color: var(--green);
+    margin-bottom: 12px; letter-spacing: 0.5px;
+  }
+  .step__num::before { content: counter(step, decimal-leading-zero); }
+  .step__icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: var(--green-soft); color: var(--green-dark);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 18px;
+  }
+  .step h3 { font-size: 16px; margin-bottom: 8px; }
+  .step p {
+    margin: 0; font-size: 14px; color: var(--ink-muted); line-height: 1.55;
+  }
+
+  /* ============== Audiences ============== */
+  .audiences { background: var(--surface-alt); }
+  .audiences__grid {
+    display: grid; grid-template-columns: 1fr; gap: 20px;
+  }
+  @media (min-width: 880px) {
+    .audiences__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .audience {
+    background: var(--surface);
+    border: 1px solid var(--outline);
+    border-radius: var(--r-xl);
+    padding: 32px 28px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex; flex-direction: column;
+  }
+  .audience:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  .audience__icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    background: var(--green-soft); color: var(--green-dark);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+  }
+  .audience h3 { font-size: 20px; margin-bottom: 10px; letter-spacing: -0.3px; }
+  .audience > p {
+    color: var(--ink-muted); font-size: 14.5px; margin: 0 0 18px;
+    line-height: 1.6;
+  }
+  .audience__list { list-style: none; padding: 0; margin: auto 0 0; font-size: 14px; }
+  .audience__list li {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 8px 0; color: var(--ink);
+    border-top: 1px solid var(--outline-soft);
+  }
+  .audience__list li:first-child { border-top: none; }
+  .audience__list li svg {
+    flex-shrink: 0; margin-top: 3px; color: var(--green);
+  }
+
+  /* ============== Features ============== */
+  .features {
+    display: grid; grid-template-columns: 1fr; gap: 16px;
+  }
+  @media (min-width: 720px) { .features { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .features { grid-template-columns: repeat(3, 1fr); } }
+  .feature {
+    padding: 28px;
+    border-radius: var(--r-lg);
+    border: 1px solid var(--outline);
+    background: var(--surface);
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .feature:hover { transform: translateY(-2px); border-color: var(--green); }
+  .feature__icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--ink); color: var(--green);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 18px;
+  }
+  .feature h3 { font-size: 16px; margin-bottom: 8px; }
+  .feature p {
+    margin: 0; font-size: 14px; color: var(--ink-muted); line-height: 1.55;
+  }
+
+  /* ============== Operation (dark band) ============== */
+  .operation__inner {
+    background: var(--ink);
+    color: #fff;
+    border-radius: var(--r-2xl);
+    overflow: hidden;
+    padding: 64px 40px;
+    position: relative;
+  }
+  .operation__inner::before {
+    content: ''; position: absolute; top: -100px; right: -100px;
+    width: 400px; height: 400px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(37, 178, 118, 0.18), transparent 70%);
+  }
+  .operation__grid {
+    position: relative;
+    display: grid; grid-template-columns: 1fr; gap: 40px;
+    align-items: center;
+  }
+  @media (min-width: 880px) { .operation__grid { grid-template-columns: 1fr 1fr; gap: 56px; } }
+  .operation .eyebrow { background: rgba(255, 255, 255, 0.1); color: var(--green); }
+  .operation .eyebrow::before { background: var(--green); box-shadow: 0 0 0 3px rgba(37, 178, 118, 0.25); }
+  .operation h2 { color: #fff; margin-top: 18px; }
+  .operation .lede { color: rgba(255, 255, 255, 0.75); }
+  .operation__list {
+    list-style: none; padding: 0; margin: 28px 0 0;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .operation__list li {
+    display: flex; align-items: flex-start; gap: 12px;
+    font-size: 15px; color: rgba(255, 255, 255, 0.92); line-height: 1.5;
+    padding: 6px 0;
+  }
+  .operation__list li svg {
+    flex-shrink: 0; margin-top: 3px; color: var(--green);
+  }
+
+  /* Flow diagram */
+  .flow {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--r-lg);
+    padding: 24px;
+  }
+  .flow__row {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .zone {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 14px 8px;
+    text-align: center;
+  }
+  .zone strong {
+    display: block; font-size: 24px; font-weight: 800;
+    color: #fff; letter-spacing: -0.5px; margin-bottom: 2px;
+  }
+  .zone span {
+    font-size: 10px; color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase; letter-spacing: 0.6px;
+  }
+  .flow__arrow {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 14px 0; font-size: 11px; font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .flow__hub {
+    background: var(--green);
+    color: #fff;
+    border-radius: 12px;
+    padding: 18px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.2px;
+    box-shadow: 0 8px 24px rgba(37, 178, 118, 0.3);
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+
+  /* ============== Pricing ============== */
+  .pricing__grid {
+    display: grid; grid-template-columns: 1fr; gap: 20px;
+    max-width: 900px; margin: 0 auto;
+  }
+  @media (min-width: 720px) { .pricing__grid { grid-template-columns: 1fr 1fr; align-items: stretch; } }
+  .plan {
+    background: var(--surface);
+    border: 1px solid var(--outline);
+    border-radius: var(--r-xl);
+    padding: 36px 32px;
+    position: relative;
+    display: flex; flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .plan:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  .plan--featured {
+    background: var(--ink);
+    color: #fff;
+    border-color: var(--ink);
+    box-shadow: var(--shadow-xl);
+  }
+  .plan--featured:hover { transform: translateY(-5px); }
+
+  .plan__tag {
+    position: absolute; top: -14px; left: 32px;
+    background: var(--green); color: #fff;
+    font-size: 11px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 6px 12px; border-radius: 999px;
+    box-shadow: var(--shadow-green);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .plan__name {
+    font-size: 13px; font-weight: 700;
+    color: var(--green-dark);
+    text-transform: uppercase; letter-spacing: 1.4px;
+    margin: 0 0 12px;
+  }
+  .plan--featured .plan__name { color: var(--green); }
+  .plan__price {
+    display: flex; align-items: baseline; gap: 8px;
+    margin: 0 0 6px;
+  }
+  .plan__price strong {
+    font-size: 56px; font-weight: 800;
+    letter-spacing: -2.4px; line-height: 1;
+  }
+  .plan__price span {
+    font-size: 14px; color: var(--ink-muted); font-weight: 500;
+  }
+  .plan--featured .plan__price span { color: rgba(255, 255, 255, 0.65); }
+  .plan__sub {
+    font-size: 14px; color: var(--ink-muted);
+    margin: 0 0 4px;
+  }
+  .plan--featured .plan__sub { color: rgba(255, 255, 255, 0.7); }
+  .plan__savings {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--green-soft); color: var(--green-dark);
+    font-size: 12px; font-weight: 700;
+    padding: 4px 10px; border-radius: 999px;
+    margin: 8px 0 20px;
+  }
+  .plan--featured .plan__savings {
+    background: rgba(37, 178, 118, 0.18); color: var(--green);
+  }
+  .plan__benefits {
+    list-style: none; padding: 0; margin: 16px 0 28px;
+    flex: 1;
+  }
+  .plan__benefits li {
+    display: flex; gap: 10px; padding: 8px 0;
+    font-size: 14px; align-items: flex-start;
+    border-top: 1px solid var(--outline-soft);
+  }
+  .plan--featured .plan__benefits li { border-top-color: rgba(255, 255, 255, 0.08); }
+  .plan__benefits li:first-child { border-top: none; }
+  .plan__benefits li svg {
+    flex-shrink: 0; margin-top: 3px; color: var(--green);
+  }
+  .plan .btn { width: 100%; }
+  .plan--featured .btn--primary { background: var(--green); }
+
+  /* ============== Apps section ============== */
+  .apps__grid {
+    display: grid; grid-template-columns: 1fr; gap: 20px;
+  }
+  @media (min-width: 880px) { .apps__grid { grid-template-columns: repeat(3, 1fr); } }
+  .app-card {
+    background: var(--surface);
+    border: 1px solid var(--outline);
+    border-radius: var(--r-xl);
+    padding: 28px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .app-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  .app-card__icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: var(--green-soft); color: var(--green-dark);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .app-card__platform {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 600;
+    color: var(--ink-soft); letter-spacing: 0.5px;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .app-card__platform::before {
+    content: ''; width: 5px; height: 5px; border-radius: 50%;
+    background: var(--green);
+  }
+  .app-card h3 { font-size: 19px; margin-bottom: 4px; letter-spacing: -0.3px; }
+  .app-card p {
+    color: var(--ink-muted); font-size: 14px; margin: 0;
+    line-height: 1.55; flex: 1;
+  }
+  .app-card__tech {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px;
+    background: var(--surface-alt);
+    font-size: 11px; font-weight: 600;
+    color: var(--ink); font-family: 'JetBrains Mono', monospace;
+    align-self: flex-start;
+  }
+  .app-card__tech::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--purple);
+  }
+
+  /* ============== CTA Final ============== */
+  .cta-wrap { padding: 48px 24px 96px; }
+  .cta-final {
+    text-align: center;
+    padding: 80px 32px;
+    background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
+    border-radius: var(--r-2xl);
+    color: #fff;
+    max-width: 1100px; margin: 0 auto;
+    position: relative; overflow: hidden;
+  }
+  .cta-final::before, .cta-final::after {
+    content: ''; position: absolute; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .cta-final::before { top: -80px; right: -80px; width: 280px; height: 280px; }
+  .cta-final::after { bottom: -80px; left: -80px; width: 240px; height: 240px; }
+  .cta-final > * { position: relative; }
+  .cta-final .eyebrow { background: rgba(255, 255, 255, 0.16); color: #fff; }
+  .cta-final .eyebrow::before { background: #fff; box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3); }
+  .cta-final h2 { color: #fff; margin: 18px 0 14px; }
+  .cta-final p {
+    max-width: 560px; margin: 0 auto 32px;
+    color: rgba(255, 255, 255, 0.9); font-size: 17px;
+  }
+  .cta-final .btn--primary {
+    background: #fff; color: var(--ink); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+  .cta-final .btn--primary:hover { background: var(--ink); color: #fff; }
+  .cta-final .btn--secondary {
+    background: transparent; border-color: rgba(255, 255, 255, 0.4); color: #fff;
+  }
+  .cta-final .btn--secondary:hover { border-color: #fff; }
+
+  /* ============== Footer ============== */
+  .footer {
+    background: var(--ink);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 64px 0 32px;
+  }
+  .footer__grid {
+    display: grid; grid-template-columns: 1fr; gap: 36px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  @media (min-width: 720px) {
+    .footer__grid { grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 48px; }
+  }
+  .footer .wordmark { color: #fff; }
+  .footer .wordmark__dot { color: var(--green); }
+  .footer__tagline {
+    font-size: 14px; line-height: 1.55;
+    margin: 14px 0 20px; max-width: 300px;
+    color: rgba(255, 255, 255, 0.6);
+  }
+  .footer__newsletter {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 6px 6px 6px 14px;
+    display: flex; align-items: center; gap: 8px;
+    max-width: 320px;
+  }
+  .footer__newsletter input {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: #fff; font-family: inherit; font-size: 13px;
+    padding: 8px 0;
+  }
+  .footer__newsletter input::placeholder { color: rgba(255, 255, 255, 0.4); }
+  .footer__newsletter button {
+    background: var(--green); color: #fff; border: none;
+    padding: 8px 14px; border-radius: 8px;
+    font-size: 12px; font-weight: 700; cursor: pointer;
+    font-family: inherit;
+  }
+  .footer__newsletter button:hover { background: var(--green-dark); }
+
+  .footer__col h4 {
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.4px;
+    color: #fff; margin: 0 0 14px;
+  }
+  .footer__col ul { list-style: none; padding: 0; margin: 0; }
+  .footer__col li { margin-bottom: 10px; font-size: 14px; }
+  .footer__col a { color: rgba(255, 255, 255, 0.65); transition: color 0.15s; }
+  .footer__col a:hover { color: var(--green); }
+
+  .footer__bottom {
+    padding-top: 24px;
+    display: flex; flex-wrap: wrap; justify-content: space-between;
+    align-items: center; gap: 12px;
+    font-size: 12px; color: rgba(255, 255, 255, 0.5);
+  }
+  .footer__bottom a { color: rgba(255, 255, 255, 0.65); }
+  .footer__bottom a:hover { color: #fff; }
+  .footer__socials { display: flex; gap: 8px; }
+  .footer__socials a {
+    width: 32px; height: 32px; border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255, 255, 255, 0.6);
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .footer__socials a:hover {
+    background: rgba(255, 255, 255, 0.06); color: var(--green);
+    border-color: var(--green);
+  }
+</style>
+</head>
+<body>
+
+<!-- ============== Navbar ============== -->
+<nav class="nav" role="navigation" aria-label="Principal">
+  <div class="container nav__inner">
+    <a href="#top" class="wordmark">rapix<span class="wordmark__dot">.</span></a>
+    <div class="nav__links">
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#para-quien">Para quién</a>
+      <a href="#caracteristicas">Características</a>
+      <a href="#precios">Precios</a>
+      <a href="#apps">Apps</a>
+    </div>
+    <div class="nav__actions">
+      <a href="#" class="nav__signin">Iniciar sesión</a>
+      <a href="#contacto" class="nav__cta">
+        Comenzar
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============== Hero ============== -->
+<section class="hero" id="top">
+  <div class="container hero__grid">
+    <div>
+      <span class="eyebrow">Operando en El Salvador</span>
+      <h1 class="hero__title">
+        Tus envíos.<br>
+        Sin <em>fricciones</em>.
+      </h1>
+      <p class="hero__lede">
+        Rapix coordina vendedores, repartidores y clientes en una sola plataforma. Recolección por zonas, redistribución por punto central, entrega con foto y firma — todo trazable en tiempo real.
+      </p>
+
+      <div class="hero__buttons">
+        <a href="#contacto" class="btn btn--primary">
+          Comenzar gratis
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a href="#como-funciona" class="btn btn--secondary">Ver cómo funciona</a>
+      </div>
+
+      <div class="hero__trust">
+        <div class="avatars">
+          <span>AM</span><span>JR</span><span>PC</span>
+        </div>
+        Más de 200 vendedores ya envían con Rapix
+      </div>
+
+      <div class="hero__stats">
+        <div class="hero__stat">
+          <strong><span class="mono">$</span>3.00</strong>
+          <span>Por envío individual</span>
+        </div>
+        <div class="hero__stat">
+          <strong>100</strong>
+          <span>Envíos por paquete</span>
+        </div>
+        <div class="hero__stat">
+          <strong>24/7</strong>
+          <span>Seguimiento en vivo</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__visual" aria-hidden="true">
+      <div class="phone">
+        <div class="phone__notch"></div>
+        <div class="phone__screen">
+          <div class="phone__status">
+            <span>9:41</span>
+            <div style="display: flex; gap: 4px;">
+              <svg width="16" height="11" viewBox="0 0 16 11"><rect x="0" y="7" width="3" height="4" rx="0.5" fill="currentColor"/><rect x="4.5" y="5" width="3" height="6" rx="0.5" fill="currentColor"/><rect x="9" y="3" width="3" height="8" rx="0.5" fill="currentColor"/><rect x="13.5" y="0" width="3" height="11" rx="0.5" fill="currentColor"/></svg>
+              <svg width="22" height="11" viewBox="0 0 22 11"><rect x="0.5" y="0.5" width="18" height="10" rx="2" fill="none" stroke="currentColor"/><rect x="2" y="2" width="13" height="7" rx="1" fill="currentColor"/></svg>
+            </div>
+          </div>
+
+          <div class="phone__map">
+            <svg class="streets" preserveAspectRatio="xMidYMid slice" viewBox="0 0 320 360">
+              <path d="M-20 100 L340 130" stroke="#fff" stroke-width="18" opacity="0.7"/>
+              <path d="M60 -10 L120 380" stroke="#fff" stroke-width="14" opacity="0.7"/>
+              <path d="M220 -10 L280 380" stroke="#fff" stroke-width="14" opacity="0.7"/>
+              <path d="M-20 230 L340 250" stroke="#fff" stroke-width="10" opacity="0.5"/>
+              <path d="M-20 60 L340 70" stroke="#fff" stroke-width="6" opacity="0.4"/>
+              <path class="route" d="M70 250 Q 150 200 200 160 T 280 80"/>
+            </svg>
+            <div class="driver" style="left: 38%; top: 60%;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            </div>
+            <div class="pin" style="left: 78%; top: 32%;">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="#dc2626"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+            </div>
+          </div>
+
+          <div class="phone__sheet">
+            <div class="handle"></div>
+            <div class="code">RPX-7K2M9 · EN REPARTO</div>
+            <div class="eta">
+              <strong>8</strong>
+              <span>min para llegar</span>
+            </div>
+            <div class="destino">Av. La Capilla #142, Escalón</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="float-card float-card--code">
+        <div class="dot"></div>
+        <div>
+          <div class="label">Código</div>
+          <div class="mono">RPX-7K2M9</div>
+        </div>
+      </div>
+
+      <div class="float-card float-card--check">
+        <div class="check">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div>
+          <div class="label">Entrega confirmada</div>
+          <div class="sub">Foto + firma capturadas</div>
+        </div>
+      </div>
+
+      <div class="float-card float-card--stat">
+        <div class="label">Envíos este mes</div>
+        <div class="value">348</div>
+        <span class="delta">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="6 9 12 3 18 9"/></svg>
+          +12%
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== Trust strip ============== -->
+<section class="trust">
+  <div class="container">
+    <p class="trust__title">Construido sobre tecnología confiable</p>
+    <div class="trust__list">
+      <span class="trust__item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+        Mapas
+      </span>
+      <span class="trust__item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Firebase Push
+      </span>
+      <span class="trust__item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        WhatsApp Cloud
+      </span>
+      <span class="trust__item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
+        PostGIS
+      </span>
+      <span class="trust__item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Datos seguros
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- ============== Cómo funciona ============== -->
+<section class="section" id="como-funciona">
+  <div class="container">
+    <div class="section__head">
+      <span class="eyebrow">Cómo funciona</span>
+      <h2>Tres pasos. <em>Cero fricción</em>.</h2>
+      <p class="lede">Un flujo de recolección y redistribución por zonas que reduce tiempos muertos y maximiza la eficiencia de cada repartidor.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step__num"></div>
+        <div class="step__icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16l-1 4a2 2 0 0 1-4 0 2 2 0 0 1-4 0 2 2 0 0 1-4 0 2 2 0 0 1-4 0L4 7Zm1 5v8h14v-8M9 20v-5h6v5"/></svg>
+        </div>
+        <h3>El vendedor crea el pedido</h3>
+        <p>Desde la app o el panel web, ingresa los datos del cliente y la mercancía. El sistema valida zona y disponibilidad al instante.</p>
+      </div>
+      <div class="step">
+        <div class="step__num"></div>
+        <div class="step__icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </div>
+        <h3>Recolección en zona</h3>
+        <p>Un repartidor asignado por algoritmo recoge el paquete. Notificaciones push y WhatsApp en cada estado.</p>
+      </div>
+      <div class="step">
+        <div class="step__num"></div>
+        <div class="step__icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </div>
+        <h3>Entrega con evidencia</h3>
+        <p>Foto y firma digital capturadas en sitio. Toda la cadena auditable desde la consola admin.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== Audiencias ============== -->
+<section class="section audiences" id="para-quien">
+  <div class="container">
+    <div class="section__head">
+      <span class="eyebrow">Para quién es Rapix</span>
+      <h2>Una plataforma, <em>tres experiencias</em>.</h2>
+      <p class="lede">Cada rol tiene una aplicación pensada para sus tareas: vendedores que envían, repartidores que cumplen rutas, y clientes que reciben sin sorpresas.</p>
+    </div>
+
+    <div class="audiences__grid">
+      <article class="audience">
+        <div class="audience__icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16l-1 4a2 2 0 0 1-4 0 2 2 0 0 1-4 0 2 2 0 0 1-4 0 2 2 0 0 1-4 0L4 7Zm1 5v8h14v-8M9 20v-5h6v5"/></svg>
+        </div>
+        <h3>Vendedores</h3>
+        <p>Tiendas, comercios y emprendedores que necesitan enviar sin contratar a un repartidor propio.</p>
+        <ul class="audience__list">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Crear pedidos en segundos</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Pago por envío o paquetes prepago</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Alertas de saldo bajo</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Reportes de envíos y consumo</li>
+        </ul>
+      </article>
+
+      <article class="audience">
+        <div class="audience__icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </div>
+        <h3>Repartidores</h3>
+        <p>Riders con vehículo que quieren rutas asignadas, pagos claros y herramientas profesionales.</p>
+        <ul class="audience__list">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Asignaciones por zona</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Navegación con mapas</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Captura de foto y firma</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Cierre financiero diario simple</li>
+        </ul>
+      </article>
+
+      <article class="audience">
+        <div class="audience__icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <h3>Clientes finales</h3>
+        <p>Reciben paquetes con visibilidad total, del momento del pedido hasta el último metro.</p>
+        <ul class="audience__list">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Seguimiento por link público</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Notificaciones por WhatsApp</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Tiempo estimado actualizado</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Sin necesidad de instalar app</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============== Características ============== -->
+<section class="section" id="caracteristicas">
+  <div class="container">
+    <div class="section__head">
+      <span class="eyebrow">Características</span>
+      <h2>Todo lo que necesitas. <em>Nada que no</em>.</h2>
+      <p class="lede">Pensado para operaciones reales: trazabilidad, control financiero, comunicación multicanal y herramientas administrativas serias.</p>
+    </div>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature__icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+        </div>
+        <h3>Optimización de rutas</h3>
+        <p>Integración con mapas para calcular tiempos, distancias y la mejor secuencia de paradas en cada zona.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature__icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <h3>Seguimiento en vivo</h3>
+        <p>Cliente, vendedor y admin ven el estado del pedido y la posición del repartidor en tiempo real.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature__icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h3>Comunicación multicanal</h3>
+        <p>Push, WhatsApp y correo electrónico — el cliente recibe avisos por donde le sea más cómodo.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature__icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="15" x2="15" y2="15"/><line x1="9" y1="12" x2="15" y2="12"/></svg>
+        </div>
+        <h3>Cierre financiero diario</h3>
+        <p>Cada repartidor reporta los montos al finalizar el día con comprobante. Admin valida y aprueba.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature__icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </div>
+        <h3>Foto y firma de entrega</h3>
+        <p>Cada entrega queda respaldada con foto del paquete y firma digital. Auditable desde admin.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature__icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>Roles y permisos</h3>
+        <p>Cuatro roles definidos —admin, vendedor, repartidor, cliente— con accesos protegidos por JWT y zonas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== Operación ============== -->
+<section class="section operation">
+  <div class="container">
+    <div class="operation__inner">
+      <div class="operation__grid">
+        <div>
+          <span class="eyebrow">Modelo operativo</span>
+          <h2>Zonas de origen,<br>punto central,<br>zonas de destino.</h2>
+          <p class="lede">A diferencia de un delivery clásico de punto a punto, Rapix consolida paquetes en un punto de intercambio. Eso significa rutas más cortas, repartidores más productivos y costos predecibles.</p>
+          <ul class="operation__list">
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Repartidores asignados por zona, no por pedido suelto</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Algoritmo FIFO para consumo de paquetes prepago</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Mapa de zonas con PostGIS — polígonos personalizados</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Reasignación automática si un repartidor no responde</li>
+          </ul>
+        </div>
+
+        <div class="flow" aria-hidden="true">
+          <div class="flow__row">
+            <div class="zone"><strong>A</strong><span>Origen</span></div>
+            <div class="zone"><strong>B</strong><span>Origen</span></div>
+            <div class="zone"><strong>C</strong><span>Origen</span></div>
+          </div>
+          <div class="flow__arrow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+            Consolidación
+          </div>
+          <div class="flow__hub">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            Punto de Intercambio
+          </div>
+          <div class="flow__arrow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+            Redistribución
+          </div>
+          <div class="flow__row">
+            <div class="zone"><strong>X</strong><span>Destino</span></div>
+            <div class="zone"><strong>Y</strong><span>Destino</span></div>
+            <div class="zone"><strong>Z</strong><span>Destino</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== Precios ============== -->
+<section class="section" id="precios">
+  <div class="container">
+    <div class="section__head">
+      <span class="eyebrow">Precios</span>
+      <h2>Paga <em>solo</em> por lo que envías.</h2>
+      <p class="lede">Sin mensualidades. Sin sorpresas. Elige el modelo que mejor se adapte al volumen de tu operación.</p>
+    </div>
+
+    <div class="pricing__grid">
+      <article class="plan">
+        <p class="plan__name">Por envío</p>
+        <div class="plan__price">
+          <strong>$3.00</strong>
+          <span>USD / paquete</span>
+        </div>
+        <p class="plan__sub">Ideal si estás empezando o tu volumen es variable.</p>
+
+        <ul class="plan__benefits">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Pago individual por cada envío</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Sin contratos ni mensualidades</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Cobro contra entrega disponible</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Seguimiento y notificaciones</li>
+        </ul>
+        <a href="#contacto" class="btn btn--secondary">Comenzar a enviar</a>
+      </article>
+
+      <article class="plan plan--featured">
+        <span class="plan__tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Más popular
+        </span>
+        <p class="plan__name">Paquete prepago</p>
+        <div class="plan__price">
+          <strong>$250</strong>
+          <span>USD / 100 envíos</span>
+        </div>
+        <p class="plan__sub">$2.50 por envío. Activación inmediata.</p>
+        <span class="plan__savings">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 2l1.6 6.4L20 10l-6.4 1.6L12 18l-1.6-6.4L4 10l6.4-1.6L12 2z"/></svg>
+          Ahorras $50 USD frente al precio individual
+        </span>
+
+        <ul class="plan__benefits">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>100 envíos por $2.50 c/u</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Descuento automático al crear pedido</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Sin fecha límite mensual</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Alertas de saldo bajo y agotamiento</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Reembolso si cancelas antes de recolección</li>
+        </ul>
+        <a href="#contacto" class="btn btn--primary">Adquirir paquete</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============== Apps ============== -->
+<section class="section" id="apps" style="background: var(--surface-alt);">
+  <div class="container">
+    <div class="section__head">
+      <span class="eyebrow">Aplicaciones</span>
+      <h2>Una app <em>para cada rol</em>.</h2>
+      <p class="lede">Vendedores y clientes desde una misma app móvil. Repartidores en su app dedicada. Administradores desde una consola web completa.</p>
+    </div>
+
+    <div class="apps__grid">
+      <div class="app-card">
+        <div class="app-card__icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        </div>
+        <span class="app-card__platform">Android & iOS</span>
+        <h3>Rapix Clientes</h3>
+        <p>Para vendedores y clientes finales. Crear pedidos, consultar estado, comprar paquetes prepago y recibir notificaciones.</p>
+        <span class="app-card__tech">Flutter</span>
+      </div>
+
+      <div class="app-card">
+        <div class="app-card__icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </div>
+        <span class="app-card__platform">Android & iOS</span>
+        <h3>Rapix Riders</h3>
+        <p>Dedicada a repartidores. Ver asignaciones, navegar con mapas, capturar entregas y realizar cierre financiero diario.</p>
+        <span class="app-card__tech">Flutter</span>
+      </div>
+
+      <div class="app-card">
+        <div class="app-card__icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <span class="app-card__platform">Consola web</span>
+        <h3>Rapix Admin</h3>
+        <p>Gestión total: usuarios, zonas, tarifas, pedidos, aprobación de cierres financieros y reportes operativos.</p>
+        <span class="app-card__tech">Angular</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== CTA Final ============== -->
+<section class="cta-wrap" id="contacto">
+  <div class="cta-final">
+    <span class="eyebrow">Empieza hoy</span>
+    <h2>¿Listo para mover tus envíos con Rapix?</h2>
+    <p>Cuéntanos sobre tu operación y te ayudamos a integrarte. Sin compromiso, sin contratos largos.</p>
+    <div class="hero__buttons" style="justify-content: center;">
+      <a href="mailto:devrelex@gmail.com?subject=Quiero%20conocer%20Rapix" class="btn btn--primary">
+        Escríbenos
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+      <a href="terminos/" class="btn btn--secondary">Términos y Condiciones</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============== Footer ============== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div>
+        <a href="#top" class="wordmark">rapix<span class="wordmark__dot">.</span></a>
+        <p class="footer__tagline">Plataforma de coordinación logística para vendedores, repartidores y clientes en El Salvador.</p>
+        <form class="footer__newsletter" onsubmit="event.preventDefault();">
+          <input type="email" placeholder="tu@correo.com" aria-label="Correo">
+          <button type="submit">Suscribirme</button>
+        </form>
+      </div>
+
+      <div class="footer__col">
+        <h4>Plataforma</h4>
+        <ul>
+          <li><a href="#como-funciona">Cómo funciona</a></li>
+          <li><a href="#para-quien">Para quién es</a></li>
+          <li><a href="#caracteristicas">Características</a></li>
+          <li><a href="#apps">Aplicaciones</a></li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h4>Comercial</h4>
+        <ul>
+          <li><a href="#precios">Precios</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+          <li><a href="mailto:devrelex@gmail.com">Soporte</a></li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="terminos/">Términos y Condiciones</a></li>
+          <li><a href="privacidad/">Política de Privacidad</a></li>
+          <li><a href="terminos/index.html#s13">Uso aceptable</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>© 2026 Reynaldo Alexander Ruiz Rosales · NIT 051754733 · El Salvador</span>
+      <div class="footer__socials">
+        <a href="#" aria-label="Twitter"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></svg></a>
+        <a href="#" aria-label="LinkedIn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg></a>
+        <a href="mailto:devrelex@gmail.com" aria-label="Correo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

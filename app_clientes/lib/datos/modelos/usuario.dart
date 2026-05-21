@@ -9,7 +9,9 @@ class Usuario {
     required this.telefono,
     required this.nombreCompleto,
     required this.rol,
+    required this.registroCompleto,
     this.estado,
+    this.urlAvatar,
     this.creadoEn,
     this.correoVerificadoEn,
     this.perfilVendedor,
@@ -18,10 +20,12 @@ class Usuario {
 
   final String id;
   final String email;
-  final String telefono;
+  final String? telefono;
   final String nombreCompleto;
   final String rol;
+  final bool registroCompleto;
   final String? estado;
+  final String? urlAvatar;
   final DateTime? creadoEn;
   final DateTime? correoVerificadoEn;
   final PerfilVendedor? perfilVendedor;
@@ -35,10 +39,12 @@ class Usuario {
     return Usuario(
       id: json['id'] as String,
       email: json['email'] as String,
-      telefono: json['telefono'] as String,
+      telefono: json['telefono'] as String?,
       nombreCompleto: json['nombreCompleto'] as String,
       rol: json['rol'] as String,
+      registroCompleto: json['registroCompleto'] as bool? ?? false,
       estado: json['estado'] as String?,
+      urlAvatar: json['urlAvatar'] as String?,
       creadoEn: _parseFecha(json['creadoEn']),
       correoVerificadoEn: _parseFecha(json['correoVerificadoEn']),
       perfilVendedor:
@@ -54,7 +60,9 @@ class Usuario {
         'telefono': telefono,
         'nombreCompleto': nombreCompleto,
         'rol': rol,
+        'registroCompleto': registroCompleto,
         'estado': estado,
+        'urlAvatar': urlAvatar,
         'creadoEn': creadoEn?.toIso8601String(),
         'correoVerificadoEn': correoVerificadoEn?.toIso8601String(),
         'perfilVendedor': perfilVendedor?.aJson(),

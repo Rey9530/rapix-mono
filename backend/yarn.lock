@@ -5282,6 +5282,7 @@ __metadata:
     firebase-admin: "npm:^13.8.0"
     form-data: "npm:^4.0.5"
     globals: "npm:^17.0.0"
+    google-auth-library: "npm:^10.6.2"
     helmet: "npm:^8.1.0"
     ioredis: "npm:^5.10.1"
     jest: "npm:^30.0.0"
@@ -7466,7 +7467,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-auth-library@npm:^10.6.1":
+"google-auth-library@npm:^10.6.1, google-auth-library@npm:^10.6.2":
   version: 10.6.2
   resolution: "google-auth-library@npm:10.6.2"
   dependencies:

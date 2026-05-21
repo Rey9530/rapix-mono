@@ -5,6 +5,7 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mb;
 
 import '../../caracteristicas/autenticacion/autenticacion_controlador.dart';
 import '../notificaciones/servicio_notificaciones.dart';
+import '../../caracteristicas/autenticacion/completar_registro_pantalla.dart';
 import '../../caracteristicas/autenticacion/confirmar_recuperacion_pantalla.dart';
 import '../../caracteristicas/autenticacion/iniciar_sesion_pantalla.dart';
 import '../../caracteristicas/autenticacion/recuperar_contrasena_pantalla.dart';
@@ -39,6 +40,9 @@ final enrutadorAppProvider = Provider<GoRouter>((ref) {
     if (ruta == null || ruta.isEmpty) return;
     final auth = ref.read(autenticacionControladorProvider);
     if (!auth.autenticado) return;
+    // Mientras el registro no este completo, los deep links no deben
+    // saltarse el muro de /completar-registro.
+    if (!(auth.usuario?.registroCompleto ?? false)) return;
     enrutador.go(ruta);
     servicio.deepLinkPendiente.value = null;
   }
@@ -59,6 +63,23 @@ final enrutadorAppProvider = Provider<GoRouter>((ref) {
         return ruta == '/splash' ? null : '/splash';
       }
 
+      // Muro de registro: si el usuario esta autenticado pero no ha
+      // completado los datos obligatorios, forzar /completar-registro.
+      // Se evalua ANTES de cualquier otra regla para que el cliente no
+      // pueda saltarse el muro navegando por su cuenta.
+      // Excepcion: /seleccionar-ubicacion es una sub-pantalla auxiliar
+      // que la propia pantalla de completar-registro abre para que el
+      // usuario marque la ubicacion del negocio en el mapa.
+      if (auth.autenticado &&
+          auth.usuario != null &&
+          !auth.usuario!.registroCompleto) {
+        if (ruta == '/completar-registro' ||
+            ruta.startsWith('/seleccionar-ubicacion')) {
+          return null;
+        }
+        return '/completar-registro';
+      }
+
       final esPublica = ruta == '/splash' ||
           ruta.startsWith('/iniciar-sesion') ||
           ruta.startsWith('/registrar') ||
@@ -70,7 +91,9 @@ final enrutadorAppProvider = Provider<GoRouter>((ref) {
         return '/iniciar-sesion';
       }
       if (auth.autenticado &&
-          (ruta == '/iniciar-sesion' || ruta == '/registrar')) {
+          (ruta == '/iniciar-sesion' ||
+              ruta == '/registrar' ||
+              ruta == '/completar-registro')) {
         return '/inicio';
       }
       return null;
@@ -87,6 +110,11 @@ final enrutadorAppProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/registrar',
         builder: (_, _) => const RegistrarPantalla(),
+      ),
+      // Fuera del StatefulShellRoute: la pantalla no debe mostrar bottom-nav.
+      GoRoute(
+        path: '/completar-registro',
+        builder: (_, _) => const CompletarRegistroPantalla(),
       ),
       GoRoute(
         path: '/recuperar-contrasena',
@@ -243,7 +271,9 @@ class _NotifierAuth extends ChangeNotifier {
   _NotifierAuth(this.ref) {
     ref.listen(autenticacionControladorProvider, (anterior, actual) {
       if (anterior?.autenticado != actual.autenticado ||
-          anterior?.inicializado != actual.inicializado) {
+          anterior?.inicializado != actual.inicializado ||
+          anterior?.usuario?.registroCompleto !=
+              actual.usuario?.registroCompleto) {
         notifyListeners();
       }
     });

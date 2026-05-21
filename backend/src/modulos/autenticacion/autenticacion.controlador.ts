@@ -5,6 +5,7 @@ import {
   Header,
   HttpCode,
   HttpStatus,
+  Patch,
   Post,
   Query,
   Req,
@@ -25,12 +26,15 @@ import { UsuarioActual } from '../../comun/decoradores/usuario-actual.decorador.
 import type { Usuario } from '../../generated/prisma/client.js';
 import { AutenticacionServicio } from './autenticacion.servicio.js';
 import { CerrarSesionDto } from './dto/cerrar-sesion.dto.js';
+import { CompletarRegistroDto } from './dto/completar-registro.dto.js';
 import { ConfirmarRecuperacionContrasenaDto } from './dto/confirmar-recuperacion-contrasena.dto.js';
+import { GoogleSignInDto } from './dto/google-sign-in.dto.js';
 import { IniciarSesionDto } from './dto/iniciar-sesion.dto.js';
 import { RefrescarDto } from './dto/refrescar.dto.js';
 import { RegistrarDto } from './dto/registrar.dto.js';
 import { RespuestaAutenticacionDto } from './dto/respuesta-autenticacion.dto.js';
 import { SolicitarRecuperacionContrasenaDto } from './dto/solicitar-recuperacion-contrasena.dto.js';
+import { UsuarioPublicoDto } from './dto/usuario-publico.dto.js';
 
 @ApiTags('Autenticacion')
 @Controller('autenticacion')
@@ -59,6 +63,36 @@ export class AutenticacionControlador {
     @Req() peticion: Request,
   ): Promise<RespuestaAutenticacionDto> {
     return this.servicio.iniciarSesion(dto, this.contextoDe(peticion));
+  }
+
+  @Publico()
+  @Post('google')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary:
+      'Autentica con un idToken de Google: crea o enlaza la cuenta y emite par de tokens. Si registroCompleto=false, la app debe llevar al usuario a completar registro.',
+  })
+  @ApiOkResponse({ type: RespuestaAutenticacionDto })
+  iniciarSesionConGoogle(
+    @Body() dto: GoogleSignInDto,
+    @Req() peticion: Request,
+  ): Promise<RespuestaAutenticacionDto> {
+    return this.servicio.iniciarSesionConGoogle(dto, this.contextoDe(peticion));
+  }
+
+  @ApiBearerAuth('autenticacion-jwt')
+  @Patch('completar-registro')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary:
+      'Completa el registro de un usuario creado vía OAuth: setea teléfono y datos del negocio (PerfilVendedor), marca registroCompleto=true.',
+  })
+  @ApiOkResponse({ type: UsuarioPublicoDto })
+  completarRegistro(
+    @UsuarioActual() usuario: Usuario,
+    @Body() dto: CompletarRegistroDto,
+  ): Promise<UsuarioPublicoDto> {
+    return this.servicio.completarRegistro(usuario.id, dto);
   }
 
   @Publico()

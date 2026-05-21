@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Términos y Condiciones de Uso de la plataforma Rapix.">
+<title>Términos y Condiciones · Rapix</title>
+<style>
+  :root {
+    --verde: #3AAA35;
+    --verde-oscuro: #006633;
+    --verde-suave: #EAF6E9;
+    --tinta: #333333;
+    --tinta-silenciada: #666666;
+    --tinta-suave: #999999;
+    --fondo: #FFFFFF;
+    --superficie-alt: #F7F7F7;
+    --contorno: #E8E8E8;
+    --contorno-suave: #F0F0F0;
+    --peligro: #DC2626;
+    --peligro-suave: #FEE2E2;
+    --ambar: #FBBF24;
+    --ambar-suave: #FEF3C7;
+    --radio-sm: 8px;
+    --radio-md: 12px;
+    --radio-lg: 16px;
+    --sombra-sm: 0 1px 2px rgba(19, 20, 15, 0.06);
+    --sombra-md: 0 4px 12px rgba(19, 20, 15, 0.08);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--tinta);
+    background: var(--fondo);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ============ Header ============ */
+  .header {
+    background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde) 100%);
+    color: #FFFFFF;
+    padding: 56px 24px 48px;
+    text-align: center;
+    box-shadow: var(--sombra-md);
+  }
+
+  .header__wordmark {
+    display: inline-block;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin: 0 0 8px;
+  }
+
+  .header__wordmark span {
+    color: var(--verde-suave);
+  }
+
+  .header__titulo {
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 700;
+    margin: 16px 0 12px;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+
+  .header__meta {
+    font-size: 14px;
+    opacity: 0.85;
+    margin: 0;
+  }
+
+  .header__identidad {
+    margin: 24px auto 0;
+    max-width: 560px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: var(--radio-md);
+    padding: 14px 18px;
+    font-size: 13px;
+    line-height: 1.55;
+    text-align: left;
+  }
+
+  .header__identidad strong {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+
+  .header__identidad a {
+    color: #FFFFFF;
+    text-decoration: underline;
+  }
+
+  /* ============ Layout ============ */
+  .contenedor {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  @media (min-width: 1024px) {
+    .contenedor {
+      grid-template-columns: 280px 1fr;
+      gap: 56px;
+      padding: 64px 32px 96px;
+    }
+  }
+
+  /* ============ TOC ============ */
+  .toc {
+    background: var(--superficie-alt);
+    border: 1px solid var(--contorno);
+    border-radius: var(--radio-lg);
+    padding: 24px 20px;
+    font-size: 14px;
+  }
+
+  @media (min-width: 1024px) {
+    .toc {
+      position: sticky;
+      top: 24px;
+      align-self: start;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+    }
+  }
+
+  .toc__titulo {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--verde-oscuro);
+    margin: 0 0 14px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: toc;
+  }
+
+  .toc li {
+    counter-increment: toc;
+    margin: 0;
+  }
+
+  .toc a {
+    display: flex;
+    gap: 8px;
+    padding: 7px 0;
+    color: var(--tinta-silenciada);
+    text-decoration: none;
+    line-height: 1.4;
+    border-bottom: 1px solid var(--contorno-suave);
+    transition: color 0.15s ease;
+  }
+
+  .toc li:last-child a {
+    border-bottom: none;
+  }
+
+  .toc a::before {
+    content: counter(toc) ".";
+    flex-shrink: 0;
+    width: 22px;
+    font-weight: 700;
+    color: var(--verde);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .toc a:hover,
+  .toc a:focus-visible {
+    color: var(--verde-oscuro);
+    outline: none;
+  }
+
+  /* ============ Contenido ============ */
+  .contenido {
+    min-width: 0;
+    max-width: 800px;
+  }
+
+  .intro {
+    background: var(--verde-suave);
+    border-left: 4px solid var(--verde);
+    border-radius: var(--radio-md);
+    padding: 20px 24px;
+    margin-bottom: 40px;
+    font-size: 15px;
+    color: var(--verde-oscuro);
+  }
+
+  .intro p {
+    margin: 0;
+  }
+
+  section.seccion {
+    margin-bottom: 48px;
+    scroll-margin-top: 24px;
+  }
+
+  section.seccion:last-of-type {
+    margin-bottom: 0;
+  }
+
+  h2.seccion__titulo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--verde-oscuro);
+    margin: 0 0 20px;
+    letter-spacing: -0.3px;
+    line-height: 1.25;
+  }
+
+  h2.seccion__titulo::before {
+    content: attr(data-num);
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    background: var(--verde);
+    color: #FFFFFF;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
+  h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--tinta);
+    margin: 28px 0 12px;
+    letter-spacing: -0.2px;
+  }
+
+  h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--tinta);
+    margin: 20px 0 8px;
+  }
+
+  p, ul, ol {
+    margin: 0 0 14px;
+  }
+
+  ul, ol {
+    padding-left: 22px;
+  }
+
+  ul li, ol li {
+    margin-bottom: 6px;
+  }
+
+  strong {
+    color: var(--tinta);
+    font-weight: 700;
+  }
+
+  a {
+    color: var(--verde-oscuro);
+    text-decoration: underline;
+    text-decoration-color: var(--verde);
+    text-underline-offset: 3px;
+  }
+
+  a:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  /* ============ Callouts ============ */
+  .callout {
+    border-radius: var(--radio-md);
+    padding: 16px 20px;
+    margin: 18px 0;
+    font-size: 14.5px;
+    line-height: 1.6;
+  }
+
+  .callout--info {
+    background: var(--verde-suave);
+    border-left: 4px solid var(--verde);
+    color: #134B26;
+  }
+
+  .callout--importante {
+    background: var(--peligro-suave);
+    border-left: 4px solid var(--peligro);
+    color: #7F1D1D;
+  }
+
+  .callout--aviso {
+    background: var(--ambar-suave);
+    border-left: 4px solid var(--ambar);
+    color: #78350F;
+  }
+
+  .callout strong {
+    color: inherit;
+  }
+
+  .callout__etiqueta {
+    display: block;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+
+  /* ============ Tablas ============ */
+  .tabla-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--contorno);
+    border-radius: var(--radio-md);
+    margin: 18px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: var(--fondo);
+  }
+
+  th, td {
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--contorno-suave);
+    vertical-align: top;
+  }
+
+  th {
+    background: var(--superficie-alt);
+    font-weight: 700;
+    color: var(--tinta);
+    font-size: 13px;
+    letter-spacing: 0.2px;
+    border-bottom: 2px solid var(--contorno);
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* ============ Badges de estado ============ */
+  .badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: var(--radio-sm);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    font-family: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, monospace;
+  }
+
+  .badge--pendiente { background: #FFF4E6; color: #B45309; }
+  .badge--asignado  { background: #DBEAFE; color: #1D4ED8; }
+  .badge--recogido  { background: #EDE9FE; color: #6D28D9; }
+  .badge--transito  { background: #E9E3FD; color: #5B21B6; }
+  .badge--punto     { background: #E0E7FF; color: #3730A3; }
+  .badge--reparto   { background: #DBEAFE; color: #1E40AF; }
+  .badge--entregado { background: #DCFCE7; color: #15803D; }
+  .badge--fallido   { background: #FEE2E2; color: #B91C1C; }
+  .badge--devuelto  { background: #FEF3C7; color: #92400E; }
+  .badge--cancelado { background: #F1F5F9; color: #475569; }
+
+  /* ============ Inline code ============ */
+  code {
+    font-family: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, monospace;
+    background: var(--superficie-alt);
+    border: 1px solid var(--contorno);
+    border-radius: 5px;
+    padding: 1px 6px;
+    font-size: 0.88em;
+    color: var(--verde-oscuro);
+  }
+
+  /* ============ Footer ============ */
+  .footer {
+    border-top: 1px solid var(--contorno);
+    margin-top: 64px;
+    padding: 32px 24px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--tinta-silenciada);
+    background: var(--superficie-alt);
+  }
+
+  .footer p {
+    margin: 4px 0;
+  }
+
+  /* ============ Volver arriba ============ */
+  .volver-arriba {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--verde-oscuro);
+    color: #FFFFFF;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 700;
+    box-shadow: var(--sombra-md);
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+
+  .volver-arriba:hover {
+    background: var(--verde);
+    transform: translateY(-2px);
+    text-decoration: none;
+  }
+
+  .volver-arriba:focus-visible {
+    outline: 3px solid var(--verde-suave);
+    outline-offset: 2px;
+  }
+
+  /* ============ Print ============ */
+  @media print {
+    .header {
+      background: var(--verde-oscuro);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .toc, .volver-arriba {
+      display: none;
+    }
+    .contenedor {
+      grid-template-columns: 1fr;
+      padding: 24px;
+      max-width: none;
+    }
+    section.seccion {
+      page-break-inside: avoid;
+      margin-bottom: 24px;
+    }
+    h2.seccion__titulo {
+      page-break-after: avoid;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header class="header" role="banner">
+  <h1 class="header__wordmark">Rap<span>i</span>x</h1>
+  <p class="header__titulo">Términos y Condiciones de Uso</p>
+  <p class="header__meta">Última actualización: 18 de mayo de 2026</p>
+  <div class="header__identidad">
+    <strong>Titular de la plataforma</strong>
+    Reynaldo Alexander Ruiz Rosales · NIT 051754733<br>
+    Contacto: <a href="mailto:devrelex@gmail.com">devrelex@gmail.com</a>
+  </div>
+</header>
+
+<div class="contenedor">
+
+  <aside class="toc" aria-label="Índice del documento">
+    <p class="toc__titulo">Contenido</p>
+    <ol>
+      <li><a href="#s1">Aceptación de los términos</a></li>
+      <li><a href="#s2">Descripción del servicio</a></li>
+      <li><a href="#s3">Definiciones</a></li>
+      <li><a href="#s4">Registro y cuentas</a></li>
+      <li><a href="#s5">Roles y obligaciones</a></li>
+      <li><a href="#s6">Pedidos y operaciones</a></li>
+      <li><a href="#s7">Pagos, tarifas y reembolsos</a></li>
+      <li><a href="#s8">Comprobantes y entregas</a></li>
+      <li><a href="#s9">Geolocalización y tracking</a></li>
+      <li><a href="#s10">Comunicaciones y notificaciones</a></li>
+      <li><a href="#s11">Privacidad y datos personales</a></li>
+      <li><a href="#s12">Propiedad intelectual</a></li>
+      <li><a href="#s13">Conducta prohibida</a></li>
+      <li><a href="#s14">Limitación de responsabilidad</a></li>
+      <li><a href="#s15">Modificaciones a los términos</a></li>
+      <li><a href="#s16">Terminación de la relación</a></li>
+      <li><a href="#s17">Ley aplicable y jurisdicción</a></li>
+      <li><a href="#s18">Contacto</a></li>
+    </ol>
+  </aside>
+
+  <main class="contenido" role="main">
+
+    <div class="intro">
+      <p>Bienvenido a <strong>Rapix</strong>. Los presentes Términos y Condiciones (en adelante, los <strong>"Términos"</strong>) regulan el acceso y uso de la plataforma tecnológica de coordinación logística operada por <strong>Reynaldo Alexander Ruiz Rosales</strong>. Al registrarse o utilizar Rapix, usted manifiesta haber leído, comprendido y aceptado íntegramente estos Términos.</p>
+    </div>
+
+    <section class="seccion" id="s1">
+      <h2 class="seccion__titulo" data-num="1">Aceptación de los términos</h2>
+      <p>El uso de la plataforma Rapix —incluyendo el sitio web, las aplicaciones móviles para clientes, vendedores y repartidores, así como la consola de administración— implica la aceptación expresa de estos Términos. Si usted no está de acuerdo con cualquiera de las cláusulas aquí contenidas, deberá abstenerse de usar la plataforma.</p>
+      <p>El registro de una cuenta constituye un acto inequívoco de aceptación. La aceptación se renueva con cada inicio de sesión y con cada operación realizada en la plataforma. La continuidad en el uso luego de modificaciones a estos Términos implica también la aceptación de las versiones actualizadas, conforme a la cláusula 15.</p>
+    </section>
+
+    <section class="seccion" id="s2">
+      <h2 class="seccion__titulo" data-num="2">Descripción del servicio</h2>
+      <p>Rapix es una plataforma tecnológica que coordina servicios de entrega a domicilio mediante un modelo de <strong>recolección y redistribución por zonas geográficas</strong>. La plataforma conecta a tres tipos de usuarios operativos —Vendedores, Repartidores y Clientes finales— bajo la supervisión de Administradores.</p>
+      <p>El flujo operativo estándar consiste en:</p>
+      <ol>
+        <li>Un <strong>Vendedor</strong> crea un pedido indicando dirección y datos del Cliente final.</li>
+        <li>Un <strong>Repartidor</strong> asignado por el sistema en la zona de origen recoge el paquete.</li>
+        <li>El paquete es trasladado a un <strong>punto de intercambio</strong> central.</li>
+        <li>Un <strong>Repartidor</strong> de la zona de destino realiza la entrega final.</li>
+        <li>La entrega se confirma con foto del paquete entregado y firma del Cliente.</li>
+      </ol>
+      <p>Rapix actúa exclusivamente como <strong>intermediario tecnológico</strong> entre las partes; no es titular de las mercancías transportadas ni participa de la relación comercial entre Vendedor y Cliente final.</p>
+    </section>
+
+    <section class="seccion" id="s3">
+      <h2 class="seccion__titulo" data-num="3">Definiciones</h2>
+      <p>Para efectos de estos Términos, los siguientes términos tendrán el significado indicado:</p>
+      <ul>
+        <li><strong>Plataforma:</strong> el conjunto de aplicaciones, sitios web y servicios provistos bajo la marca Rapix.</li>
+        <li><strong>Cliente final:</strong> persona natural que recibe un pedido entregado por Rapix.</li>
+        <li><strong>Vendedor:</strong> persona natural o jurídica que utiliza la plataforma para enviar paquetes a sus clientes.</li>
+        <li><strong>Repartidor:</strong> persona natural autorizada que realiza la recolección, transporte y entrega de paquetes.</li>
+        <li><strong>Administrador:</strong> personal autorizado por el Titular para gestionar la operación de la plataforma.</li>
+        <li><strong>Pedido:</strong> solicitud de envío creada por un Vendedor en la plataforma.</li>
+        <li><strong>Paquete prepago:</strong> bloque de envíos adquirido por anticipado por el Vendedor.</li>
+        <li><strong>Zona:</strong> área geográfica delimitada por la plataforma para fines de asignación de Repartidores.</li>
+        <li><strong>Punto de intercambio:</strong> ubicación central donde los Repartidores transfieren paquetes entre zonas.</li>
+        <li><strong>Cierre financiero:</strong> reporte diario de montos recaudados por un Repartidor.</li>
+        <li><strong>Titular:</strong> Reynaldo Alexander Ruiz Rosales, propietario y responsable legal de la plataforma.</li>
+      </ul>
+    </section>
+
+    <section class="seccion" id="s4">
+      <h2 class="seccion__titulo" data-num="4">Registro y cuentas</h2>
+
+      <h3>4.1 Edad mínima</h3>
+      <p>Para registrar una cuenta en Rapix se requiere tener al menos <strong>18 años cumplidos</strong>. Excepcionalmente, se permite el registro a partir de los <strong>16 años</strong> siempre que el solicitante presente <strong>consentimiento expreso y documentado del padre, madre o tutor legal</strong>, quien asumirá responsabilidad solidaria por las obligaciones derivadas del uso de la cuenta.</p>
+
+      <div class="callout callout--importante">
+        <span class="callout__etiqueta">Importante</span>
+        Los menores de 16 años no podrán registrarse ni utilizar la plataforma bajo ninguna circunstancia. Si detectamos una cuenta perteneciente a un menor de 16 años, será suspendida de forma inmediata y los datos personales asociados serán eliminados.
+      </div>
+
+      <h3>4.2 Información veraz</h3>
+      <p>El usuario se obliga a proporcionar información <strong>veraz, exacta, actualizada y completa</strong> al momento del registro: nombre completo, correo electrónico, número telefónico, y según el rol, datos adicionales como dirección del negocio, documento de identidad o tipo de vehículo. La plataforma se reserva el derecho de verificar dicha información y suspender cuentas con datos falsos.</p>
+
+      <h3>4.3 Estados de la cuenta</h3>
+      <p>Una cuenta puede encontrarse en alguno de los siguientes estados:</p>
+      <ul>
+        <li><code>PENDIENTE_VERIFICACION</code> — registrada pero no verificada todavía.</li>
+        <li><code>ACTIVO</code> — habilitada para operar.</li>
+        <li><code>INACTIVO</code> — deshabilitada por el propio usuario o por inactividad prolongada.</li>
+        <li><code>SUSPENDIDO</code> — bloqueada por la plataforma por incumplimiento de estos Términos.</li>
+      </ul>
+
+      <h3>4.4 Credenciales y seguridad</h3>
+      <p>El usuario es el único responsable de la custodia de sus credenciales de acceso (correo y contraseña). Toda actividad realizada con la cuenta se presume legítima salvo prueba en contrario. En caso de uso no autorizado, el usuario deberá notificarlo de inmediato al correo de contacto. La plataforma no será responsable por daños derivados de la negligencia del usuario en la custodia de sus credenciales.</p>
+
+      <h3>4.5 Suspensión y cancelación</h3>
+      <p>El Titular podrá suspender o cancelar cuentas cuando exista incumplimiento de estos Términos, fraude, comportamiento ilícito, o información falsa. La suspensión podrá ser temporal o definitiva. El usuario afectado será notificado por los canales registrados.</p>
+    </section>
+
+    <section class="seccion" id="s5">
+      <h2 class="seccion__titulo" data-num="5">Roles y obligaciones</h2>
+
+      <h3>5.1 Cliente final</h3>
+      <ul>
+        <li>Proporcionar al Vendedor una dirección de entrega <strong>precisa, completa y accesible</strong>, así como un número telefónico vigente.</li>
+        <li>Estar disponible para recibir el paquete en la ventana de entrega comunicada.</li>
+        <li>Identificarse cuando sea requerido por el Repartidor y firmar la constancia de entrega.</li>
+        <li>Tratar al Repartidor con respeto. Cualquier conducta abusiva podrá ser reportada y sancionada.</li>
+      </ul>
+
+      <h3>5.2 Vendedor</h3>
+      <ul>
+        <li>Mantener actualizada la información de su negocio: nombre comercial, dirección, teléfono y, en su caso, NIT.</li>
+        <li>Garantizar que los datos del Cliente final ingresados al crear el pedido sean correctos.</li>
+        <li>Empacar adecuadamente la mercancía para soportar el transporte.</li>
+        <li>Pagar puntualmente el costo de los envíos, ya sea por la modalidad <strong>por envío</strong> o mediante la compra de <strong>paquetes prepago</strong>.</li>
+        <li>No utilizar la plataforma para enviar mercancías cuya circulación esté prohibida (ver cláusula 13).</li>
+      </ul>
+
+      <h3>5.3 Repartidor</h3>
+      <ul>
+        <li>Recoger los paquetes en la zona de origen y transportarlos al punto de intercambio o destino final según corresponda.</li>
+        <li>Marcar correctamente en la aplicación cada cambio de estado del pedido.</li>
+        <li>Capturar <strong>foto del paquete entregado</strong> y obtener <strong>firma del Cliente</strong> al momento de la entrega.</li>
+        <li>Realizar el <strong>cierre financiero diario</strong>, reportando los montos recaudados y adjuntando el comprobante correspondiente.</li>
+        <li>Conducir respetando las normas viales y de seguridad. Rapix no es empleador del Repartidor: la relación es de prestación de servicios independiente.</li>
+        <li>Mantener su documento de identidad y datos de contacto actualizados.</li>
+      </ul>
+    </section>
+
+    <section class="seccion" id="s6">
+      <h2 class="seccion__titulo" data-num="6">Pedidos y operaciones</h2>
+
+      <h3>6.1 Creación del pedido</h3>
+      <p>El Vendedor crea un pedido proporcionando: dirección y datos del Cliente final, descripción de la mercancía, tarifa aplicable y método de pago. El sistema valida automáticamente la disponibilidad de Repartidores en la zona y, si corresponde, descuenta un envío del paquete prepago activo del Vendedor (en orden FIFO: primero el paquete más antiguo).</p>
+
+      <h3>6.2 Estados del pedido</h3>
+      <div class="tabla-wrap">
+        <table>
+          <thead>
+            <tr><th>Estado</th><th>Significado</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="badge badge--pendiente">PENDIENTE_ASIGNACION</span></td><td>El pedido fue creado y espera asignación de Repartidor.</td></tr>
+            <tr><td><span class="badge badge--asignado">ASIGNADO</span></td><td>Un Repartidor de la zona de origen aceptó el pedido.</td></tr>
+            <tr><td><span class="badge badge--recogido">RECOGIDO</span></td><td>El Repartidor recogió el paquete en la dirección del Vendedor.</td></tr>
+            <!-- <tr><td><span class="badge badge--transito">EN_TRANSITO</span></td><td>El paquete está en camino al punto de intercambio.</td></tr>
+            <tr><td><span class="badge badge--punto">EN_PUNTO_INTERCAMBIO</span></td><td>El paquete llegó al centro de distribución.</td></tr> -->
+            <tr><td><span class="badge badge--reparto">EN_REPARTO</span></td><td>Un Repartidor de la zona de destino tomó el paquete para entrega final.</td></tr>
+            <tr><td><span class="badge badge--entregado">ENTREGADO</span></td><td>El Cliente recibió el paquete. Se cuenta con foto y firma de respaldo.</td></tr>
+            <tr><td><span class="badge badge--fallido">FALLIDO</span></td><td>No fue posible realizar la entrega. El pedido puede reprogramarse o devolverse.</td></tr>
+            <tr><td><span class="badge badge--devuelto">DEVUELTO</span></td><td>El paquete fue retornado al Vendedor.</td></tr>
+            <tr><td><span class="badge badge--cancelado">CANCELADO</span></td><td>El pedido fue cancelado antes de ser recogido.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>6.3 Cancelaciones</h3>
+      <p>Un pedido podrá ser cancelado únicamente mientras se encuentre en estado <code>PENDIENTE_ASIGNACION</code> o <code>ASIGNADO</code>. La cancelación puede ser solicitada por el Vendedor o realizada por un Administrador. Una vez el pedido pasa a <code>RECOGIDO</code> o estados posteriores, <strong>no es posible cancelarlo</strong>.</p>
+
+      <div class="callout callout--importante">
+        <span class="callout__etiqueta">Importante — Punto sin retorno</span>
+        Después del estado <code>RECOGIDO</code>, el pedido solo podrá finalizar en <code>ENTREGADO</code>, <code>FALLIDO</code> o <code>DEVUELTO</code>. No procede ninguna cancelación ni reembolso del costo del envío.
+      </div>
+
+      <h3>6.4 Entregas fallidas y devoluciones</h3>
+      <p>Si la entrega no puede completarse (Cliente ausente, dirección incorrecta, rechazo de la mercancía u otra causa), el pedido pasará a estado <code>FALLIDO</code>. Desde ese estado podrá:</p>
+      <ul>
+        <li><strong>Reprogramarse</strong> volviendo a <code>EN_REPARTO</code> para un segundo intento, sin costo adicional inmediato.</li>
+        <li><strong>Devolverse al Vendedor</strong> pasando a <code>DEVUELTO</code>. El Vendedor asume el costo del transporte de retorno cuando la causa sea atribuible a él o al Cliente.</li>
+      </ul>
+    </section>
+
+    <section class="seccion" id="s7">
+      <h2 class="seccion__titulo" data-num="7">Pagos, tarifas y reembolsos</h2>
+
+      <h3>7.1 Modalidad por envío</h3>
+      <p>La tarifa estándar de un envío individual es de <strong>US$ 3.00 (tres dólares de los Estados Unidos de América) por paquete</strong>. Esta tarifa puede modificarse por el Titular, notificando con la anticipación prevista en la cláusula 15.</p>
+
+      <h3>7.2 Modalidad prepago (paquetes recargados)</h3>
+      <p>El Vendedor puede adquirir paquetes prepagados de <strong>100 envíos por US$ 250.00</strong>. Al crear cada pedido, el sistema descontará automáticamente un envío del paquete activo. Los paquetes recargados pueden encontrarse en los siguientes estados:</p>
+      <ul>
+        <li><code>ACTIVO</code> — paquete con envíos disponibles, en uso.</li>
+        <li><code>AGOTADO</code> — todos los envíos del paquete han sido utilizados.</li>
+        <li><code>EXPIRADO</code> — el paquete venció sin agotarse. No se reembolsan envíos no utilizados.</li>
+        <li><code>CANCELADO</code> — el paquete fue cancelado antes de su uso, sujeto a la política de reembolso aplicable.</li>
+      </ul>
+
+      <h3>7.3 Métodos de pago</h3>
+      <p>La plataforma soporta los siguientes métodos:</p>
+      <ul>
+        <li><strong>Contra entrega</strong> — el Cliente paga al Repartidor al recibir el pedido.</li>
+        <li><strong>Prepagado</strong> — pago anticipado del Vendedor mediante paquetes recargados.</li>
+        <li><strong>Tarjeta</strong> — pago electrónico mediante procesador autorizado.</li>
+        <li><strong>Transferencia</strong> — abono directo a la cuenta bancaria designada por el Titular.</li>
+      </ul>
+
+      <h3>7.4 Política de reembolsos</h3>
+      <div class="callout callout--info">
+        <span class="callout__etiqueta">Política clara</span>
+        Si el pedido se cancela antes del estado <code>RECOGIDO</code> (es decir, en <code>PENDIENTE_ASIGNACION</code> o <code>ASIGNADO</code>):
+        <ul style="margin-top: 8px; margin-bottom: 0;">
+          <li>Modalidad <strong>por envío</strong>: <strong>no se cobra</strong> al Vendedor o se reembolsa íntegramente lo cobrado.</li>
+          <li>Modalidad <strong>prepago</strong>: el envío descontado se <strong>reintegra al paquete</strong>.</li>
+        </ul>
+      </div>
+      <p>Una vez el paquete entra en estado <code>RECOGIDO</code>, el cargo es definitivo, aun cuando posteriormente el pedido finalice en <code>FALLIDO</code> o <code>DEVUELTO</code>. Lo anterior salvo que el incumplimiento sea exclusivamente atribuible a la plataforma o al Repartidor, en cuyo caso se evaluará caso por caso.</p>
+      <p>No se reembolsan paquetes prepagados con envíos parcialmente utilizados ni paquetes en estado <code>EXPIRADO</code>.</p>
+    </section>
+
+    <section class="seccion" id="s8">
+      <h2 class="seccion__titulo" data-num="8">Comprobantes y entregas</h2>
+
+      <h3>8.1 Foto de entrega</h3>
+      <p>En cada entrega, el Repartidor está obligado a tomar una <strong>fotografía del paquete en el sitio de entrega</strong>. Esta foto se almacena como respaldo de la operación y forma parte del historial del pedido. El Cliente y el Vendedor podrán solicitar acceso a esta evidencia mediante los canales de contacto.</p>
+
+      <h3>8.2 Firma del Cliente</h3>
+      <p>El Repartidor solicitará la <strong>firma digital del Cliente</strong> en la aplicación al momento de la entrega. La firma constituye constancia de la recepción conforme. La negativa injustificada a firmar podrá derivar en que el pedido se marque como <code>FALLIDO</code>.</p>
+
+      <h3>8.3 Cierre financiero del Repartidor</h3>
+      <p>Diariamente, el Repartidor deberá realizar el cierre financiero reportando los montos recaudados en efectivo y adjuntando comprobante del depósito o entrega del efectivo. La discrepancia entre lo reportado y lo recaudado podrá derivar en suspensión de la cuenta y reclamación legal.</p>
+    </section>
+
+    <section class="seccion" id="s9">
+      <h2 class="seccion__titulo" data-num="9">Geolocalización y tracking</h2>
+
+      <h3>9.1 Repartidores</h3>
+      <p>La aplicación del Repartidor utiliza geolocalización en <strong>segundo plano (background tracking)</strong> mientras existan pedidos activos. Esto permite optimizar rutas, mostrar al Cliente la ubicación del Repartidor y supervisar la operación. Al instalar la app, el Repartidor otorga consentimiento expreso para esta recolección de datos.</p>
+
+      <h3>9.2 Vendedores</h3>
+      <p>Se recolecta la <strong>ubicación geográfica del negocio</strong> (latitud y longitud estáticas) para determinar la zona y calcular distancias. No hay tracking continuo del Vendedor.</p>
+
+      <h3>9.3 Clientes finales</h3>
+      <p>El Cliente puede visualizar la ubicación del Repartidor a través de un enlace público de seguimiento. No se recolecta ni rastrea la ubicación del Cliente final.</p>
+
+      <div class="callout callout--aviso">
+        <span class="callout__etiqueta">Revocación del consentimiento</span>
+        El Repartidor puede revocar en cualquier momento el permiso de ubicación desde la configuración del sistema operativo. La revocación, sin embargo, impedirá el uso normal de la aplicación de reparto y podrá derivar en la suspensión de la cuenta.
+      </div>
+    </section>
+
+    <section class="seccion" id="s10">
+      <h2 class="seccion__titulo" data-num="10">Comunicaciones y notificaciones</h2>
+      <p>Al registrarse, el usuario consiente recibir comunicaciones transaccionales relacionadas con la operación de la plataforma por los siguientes canales:</p>
+      <ul>
+        <li><strong>Notificaciones push</strong> en la aplicación móvil.</li>
+        <li><strong>WhatsApp</strong> (mensajes transaccionales sobre estado de pedidos).</li>
+        <li><strong>Correo electrónico</strong> (confirmaciones, reportes, alertas de saldo).</li>
+      </ul>
+      <p>Las comunicaciones promocionales o de marketing requerirán un consentimiento adicional y podrán ser canceladas en cualquier momento. Las notificaciones transaccionales son inherentes al servicio y no pueden desactivarse sin afectar el funcionamiento normal de la plataforma.</p>
+
+      <h3>Eventos típicos que generan notificación</h3>
+      <div class="tabla-wrap">
+        <table>
+          <thead>
+            <tr><th>Evento</th><th>Vendedor</th><th>Repartidor</th><th>Cliente</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Pedido creado</td><td>Email</td><td>—</td><td>WhatsApp</td></tr>
+            <tr><td>Pedido asignado</td><td>Push</td><td>Push</td><td>—</td></tr>
+            <tr><td>Pedido recogido</td><td>Push</td><td>—</td><td>WhatsApp + Push</td></tr>
+            <tr><td>Pedido entregado</td><td>Push + Email</td><td>—</td><td>Email</td></tr>
+            <tr><td>Pedido fallido</td><td>Push</td><td>—</td><td>WhatsApp</td></tr>
+            <tr><td>Saldo bajo de paquete</td><td>Push + Email</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="seccion" id="s11">
+      <h2 class="seccion__titulo" data-num="11">Privacidad y datos personales</h2>
+
+      <h3>11.1 Datos que recolectamos</h3>
+      <p>La plataforma recolecta los siguientes datos personales, según el rol del usuario:</p>
+      <ul>
+        <li><strong>Todos los usuarios:</strong> nombre completo, correo electrónico, número telefónico, contraseña (almacenada como hash), dirección IP, identificador de dispositivo y datos de auditoría de inicios de sesión.</li>
+        <li><strong>Vendedor:</strong> nombre del negocio, NIT (opcional), dirección, coordenadas geográficas del negocio, logotipo.</li>
+        <li><strong>Repartidor:</strong> tipo de vehículo, placa (opcional), número de documento de identidad (DUI o equivalente), teléfono de emergencia, ubicación en tiempo real durante operación, calificación.</li>
+        <li><strong>Cliente final:</strong> dirección de entrega, teléfono y correo (cuando son provistos por el Vendedor).</li>
+        <li><strong>Operativos:</strong> fotografías de entrega, firmas digitales, comprobantes de pago, montos recaudados.</li>
+        <li><strong>Tokens de notificación:</strong> identificadores otorgados por Firebase Cloud Messaging para envío de push.</li>
+      </ul>
+
+      <h3>11.2 Servicios de terceros</h3>
+      <p>Para operar la plataforma, compartimos datos estrictamente necesarios con los siguientes proveedores. El uso de Rapix implica el consentimiento para dicha transferencia.</p>
+      <div class="tabla-wrap">
+        <table>
+          <thead>
+            <tr><th>Proveedor</th><th>Propósito</th><th>Datos compartidos</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Mapbox</strong></td><td>Mapas, geocodificación, optimización de rutas.</td><td>Coordenadas geográficas (origen, destino, zonas).</td></tr>
+            <tr><td><strong>Google · Firebase Cloud Messaging</strong></td><td>Envío de notificaciones push a dispositivos móviles.</td><td>Token FCM del dispositivo, contenido de la notificación.</td></tr>
+            <tr><td><strong>Meta · WhatsApp Cloud API</strong></td><td>Mensajería transaccional al Cliente final.</td><td>Número telefónico del Cliente, código de pedido.</td></tr>
+            <tr><td><strong>Proveedor SMTP</strong></td><td>Envío de correos electrónicos transaccionales.</td><td>Correo electrónico y contenido del mensaje.</td></tr>
+            <tr><td><strong>MinIO (almacenamiento)</strong></td><td>Almacenamiento de fotos, firmas y comprobantes.</td><td>Imágenes generadas durante la operación.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>11.3 Almacenamiento, retención y seguridad</h3>
+      <p>Los datos personales se almacenan en servidores con medidas de seguridad técnicas y organizativas apropiadas. Las contraseñas se almacenan únicamente como hash criptográfico (bcrypt con factor de costo mínimo 12) y nunca en texto plano. La retención se realiza por el tiempo necesario para cumplir con los fines del tratamiento y con las obligaciones legales y contables aplicables.</p>
+
+      <h3>11.4 Derechos del titular de los datos</h3>
+      <p>El usuario podrá ejercer en todo momento sus derechos de <strong>acceso, rectificación, supresión, oposición y portabilidad</strong> sobre sus datos personales, enviando una solicitud al correo <a href="mailto:devrelex@gmail.com">devrelex@gmail.com</a>, identificándose adecuadamente. Las solicitudes serán atendidas dentro de los plazos razonables y conforme a la legislación salvadoreña aplicable, incluyendo la Ley de Protección de Datos Personales vigente.</p>
+    </section>
+
+    <section class="seccion" id="s12">
+      <h2 class="seccion__titulo" data-num="12">Propiedad intelectual</h2>
+      <p>La marca <strong>Rapix</strong>, sus logotipos, el código fuente, las bases de datos, la documentación técnica, los diseños de interfaz, los textos publicados y todo material relacionado son propiedad exclusiva de <strong>Reynaldo Alexander Ruiz Rosales</strong>, quien se reserva todos los derechos no expresamente otorgados.</p>
+      <p>El usuario recibe únicamente una <strong>licencia personal, limitada, no exclusiva, intransferible y revocable</strong> para usar la plataforma conforme a estos Términos. Queda prohibido:</p>
+      <ul>
+        <li>Copiar, modificar, distribuir, vender o sublicenciar cualquier parte de la plataforma.</li>
+        <li>Realizar ingeniería inversa, descompilar o intentar extraer el código fuente.</li>
+        <li>Utilizar las marcas o signos distintivos de Rapix sin autorización escrita previa.</li>
+        <li>Crear obras derivadas basadas en la plataforma.</li>
+      </ul>
+    </section>
+
+    <section class="seccion" id="s13">
+      <h2 class="seccion__titulo" data-num="13">Conducta prohibida</h2>
+
+      <h3>13.1 Mercancía no permitida</h3>
+      <p>Queda terminantemente prohibido utilizar la plataforma para enviar:</p>
+      <ul>
+        <li>Drogas o sustancias controladas sin la autorización legal correspondiente.</li>
+        <li>Armas de fuego, municiones, explosivos o material peligroso.</li>
+        <li>Productos robados, falsificados o de procedencia ilícita.</li>
+        <li>Dinero en efectivo no declarado ni amparado por documentación legal.</li>
+        <li>Material que infrinja derechos de propiedad intelectual de terceros.</li>
+        <li>Mercancías perecederas sin embalaje adecuado que ponga en riesgo la integridad del paquete o la salud pública.</li>
+        <li>Material pornográfico, violento o que atente contra la dignidad humana.</li>
+        <li>Cualquier otra mercancía cuya circulación esté restringida o prohibida por la legislación salvadoreña.</li>
+      </ul>
+
+      <div class="callout callout--importante">
+        <span class="callout__etiqueta">Importante</span>
+        El Vendedor es exclusivamente responsable del contenido de los paquetes que envía. Rapix se reserva el derecho de denunciar ante las autoridades competentes cualquier sospecha de envío de material prohibido y de retener la mercancía como prueba.
+      </div>
+
+      <h3>13.2 Conducta prohibida del usuario</h3>
+      <ul>
+        <li><strong>Suplantación de identidad</strong> de otra persona o entidad.</li>
+        <li><strong>Fraude</strong> en cierres financieros, comprobantes o reportes operativos.</li>
+        <li>Manipulación, hacking o ingeniería inversa de la plataforma.</li>
+        <li>Acoso, amenazas o cualquier conducta abusiva contra otros usuarios o personal de la plataforma.</li>
+        <li>Uso de la plataforma para actividades ilícitas o contrarias a la moral y las buenas costumbres.</li>
+        <li>Crear cuentas múltiples para evadir suspensiones o manipular el sistema.</li>
+      </ul>
+      <p>El incumplimiento de cualquiera de las disposiciones anteriores faculta al Titular para suspender o cancelar la cuenta del usuario, retener pagos pendientes a su favor cuando sea legalmente procedente, y ejercer las acciones civiles y penales que correspondan.</p>
+    </section>
+
+    <section class="seccion" id="s14">
+      <h2 class="seccion__titulo" data-num="14">Limitación de responsabilidad</h2>
+      <p>Rapix es una plataforma tecnológica de intermediación. Su responsabilidad se limita estrictamente al correcto funcionamiento del software de coordinación. En consecuencia:</p>
+      <ul>
+        <li>No es responsable por el contenido de las mercancías enviadas por el Vendedor.</li>
+        <li>No es responsable por daños causados durante el transporte cuando estos sean atribuibles a embalaje deficiente, declaración falsa del Vendedor o conducta del Cliente.</li>
+        <li>En caso de pérdida total del paquete imputable a la plataforma o al Repartidor, la responsabilidad máxima del Titular se limita al <strong>valor declarado del envío</strong> al momento de la creación del pedido, con un tope equivalente a <strong>US$ 100.00</strong> salvo que se haya contratado una cobertura adicional por escrito.</li>
+        <li>No es responsable por interrupciones del servicio causadas por terceros (proveedores de telecomunicaciones, energía, servicios en la nube, etc.), <strong>caso fortuito o fuerza mayor</strong> (desastres naturales, conflictos sociales, pandemias, decisiones de autoridad).</li>
+        <li>No garantiza tiempos de entrega absolutos: los plazos comunicados son estimaciones operativas que pueden variar por causas ajenas a la plataforma.</li>
+      </ul>
+      <p>En ningún caso el Titular será responsable por daños indirectos, incidentales, consecuenciales, lucro cesante o pérdida de oportunidad.</p>
+    </section>
+
+    <section class="seccion" id="s15">
+      <h2 class="seccion__titulo" data-num="15">Modificaciones a los términos</h2>
+      <p>El Titular podrá modificar estos Términos en cualquier momento. Las modificaciones serán notificadas al usuario por correo electrónico y/o notificación push, y publicadas en este documento con la nueva fecha de actualización.</p>
+      <p>Las modificaciones entrarán en vigor <strong>quince (15) días calendario</strong> después de su notificación. Durante ese plazo, el usuario podrá rechazar las nuevas condiciones cancelando su cuenta. La continuidad en el uso de la plataforma tras la entrada en vigor implica aceptación tácita de la nueva versión.</p>
+    </section>
+
+    <section class="seccion" id="s16">
+      <h2 class="seccion__titulo" data-num="16">Terminación de la relación</h2>
+
+      <h3>16.1 Por iniciativa del usuario</h3>
+      <p>El usuario podrá dar de baja su cuenta en cualquier momento solicitándolo al correo de contacto. Las obligaciones pendientes (pagos, pedidos en curso, cierres financieros) deberán cumplirse previamente.</p>
+
+      <h3>16.2 Por iniciativa de la plataforma</h3>
+      <p>El Titular podrá terminar la relación con un usuario:</p>
+      <ul>
+        <li>Por incumplimiento grave o reiterado de estos Términos.</li>
+        <li>Por fraude, conducta ilícita o riesgo para la operación.</li>
+        <li>Por inactividad prolongada superior a doce (12) meses.</li>
+        <li>Por decisión comercial del Titular, en cuyo caso se notificará con al menos quince (15) días de anticipación.</li>
+      </ul>
+
+      <h3>16.3 Consecuencias de la terminación</h3>
+      <p>La terminación de la cuenta implica la pérdida del acceso a la plataforma y al historial operativo. Los datos personales se conservarán por el tiempo requerido legalmente para fines contables, fiscales y de auditoría. Las obligaciones contractuales pendientes subsistirán a la terminación.</p>
+    </section>
+
+    <section class="seccion" id="s17">
+      <h2 class="seccion__titulo" data-num="17">Ley aplicable y jurisdicción</h2>
+      <p>Estos Términos se rigen e interpretan conforme a las leyes de la <strong>República de El Salvador</strong>. Cualquier controversia derivada de la interpretación, cumplimiento o terminación de la relación entre el usuario y el Titular se someterá a la jurisdicción exclusiva de los <strong>tribunales competentes de la ciudad de San Salvador</strong>, renunciando las partes a cualquier otro fuero que pudiera corresponderles por razón de domicilio presente o futuro.</p>
+      <p>Si alguna disposición de estos Términos fuese declarada nula o inaplicable por un tribunal competente, dicha nulidad no afectará la validez de las demás disposiciones, las cuales mantendrán plena vigencia.</p>
+    </section>
+
+    <section class="seccion" id="s18">
+      <h2 class="seccion__titulo" data-num="18">Contacto</h2>
+      <p>Para cualquier consulta, reclamo, ejercicio de derechos sobre datos personales o notificación legal, el usuario podrá dirigirse al siguiente medio de contacto:</p>
+      <div class="callout callout--info">
+        <strong>Titular:</strong> Reynaldo Alexander Ruiz Rosales<br>
+        <strong>NIT:</strong> 051754733<br>
+        <strong>Correo electrónico:</strong> <a href="mailto:devrelex@gmail.com">devrelex@gmail.com</a><br>
+        <strong>País:</strong> República de El Salvador
+      </div>
+      <p>Las comunicaciones dirigidas al Titular se considerarán recibidas a partir del acuse o, en su defecto, dentro de los tres (3) días hábiles siguientes a su envío.</p>
+
+      <div class="callout callout--aviso" style="margin-top: 32px;">
+        <span class="callout__etiqueta">Nota legal</span>
+        Este documento ha sido redactado a partir de la operación documentada de la plataforma Rapix y no sustituye la asesoría jurídica especializada. Antes de utilizar este texto en producción se recomienda una revisión por un profesional del derecho con habilitación en la República de El Salvador.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="footer" role="contentinfo">
+  <p><strong>Rapix</strong> · Plataforma de coordinación logística</p>
+  <p>Copyright &copy; 2026 Reynaldo Alexander Ruiz Rosales · Todos los derechos reservados</p>
+</footer>
+
+<a href="#" class="volver-arriba" aria-label="Volver arriba" title="Volver arriba">&uarr;</a>
+
+</body>
+</html>
