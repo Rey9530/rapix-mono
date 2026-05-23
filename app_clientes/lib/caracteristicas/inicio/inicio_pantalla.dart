@@ -95,7 +95,9 @@ class InicioPantalla extends ConsumerWidget {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
             children: [
-              const _SaldoTarjeta(),
+              const _HeroNuevoPedido(),
+              const SizedBox(height: 12),
+              const _SaldoStrip(),
               const SizedBox(height: 14),
               const _GridMetricas(),
               const SizedBox(height: 14),
@@ -103,14 +105,6 @@ class InicioPantalla extends ConsumerWidget {
               const SizedBox(height: 8),
               _AccionesRapidas(
                 acciones: [
-                  _AccionRapida(
-                    icono: Icons.add_box_outlined,
-                    titulo: 'Nuevo pedido',
-                    subtitulo: 'Crea un envío para tus clientes',
-                    fondoIcono: tokens(context).verdeSuave,
-                    colorIcono: TokensRapix.verdeOscuro,
-                    alTocar: () => context.push('/pedidos/nuevo'),
-                  ),
                   _AccionRapida(
                     icono: Icons.shopping_bag_outlined,
                     titulo: 'Comprar paquetes',
@@ -237,8 +231,86 @@ class _AppBarInicio extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-class _SaldoTarjeta extends ConsumerWidget {
-  const _SaldoTarjeta();
+class _HeroNuevoPedido extends StatelessWidget {
+  const _HeroNuevoPedido();
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(TokensRapix.radioXl),
+        boxShadow: TokensRapix.sombraSm,
+      ),
+      child: Material(
+        color: TokensRapix.verde,
+        borderRadius: BorderRadius.circular(TokensRapix.radioXl),
+        child: InkWell(
+          onTap: () => context.push('/pedidos/nuevo'),
+          borderRadius: BorderRadius.circular(TokensRapix.radioXl),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: const Color(0x33FFFFFF),
+                    borderRadius: BorderRadius.circular(TokensRapix.radioMd),
+                  ),
+                  alignment: Alignment.center,
+                  child: const Icon(
+                    Icons.add_box_rounded,
+                    size: 28,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Nuevo pedido',
+                        style: GoogleFonts.inter(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          letterSpacing: -0.3,
+                          height: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Crea un envío para tus clientes',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xD9FFFFFF),
+                          height: 1.3,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Icon(
+                  Icons.arrow_forward_rounded,
+                  color: Colors.white,
+                  size: 22,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SaldoStrip extends ConsumerWidget {
+  const _SaldoStrip();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -247,212 +319,176 @@ class _SaldoTarjeta extends ConsumerWidget {
     return Container(
       decoration: BoxDecoration(
         color: tokens(context).superficie,
-        borderRadius: BorderRadius.circular(TokensRapix.radioXl),
+        borderRadius: BorderRadius.circular(TokensRapix.radioMd),
         border: Border.all(color: tokens(context).contorno),
-        boxShadow: TokensRapix.sombraSm,
       ),
-      padding: const EdgeInsets.all(18),
+      clipBehavior: Clip.antiAlias,
       child: saldo.when(
-        data: (s) => _SaldoContenido(
+        data: (s) => _SaldoStripFila(
           envios: s.saldoRecargado,
           paquetesActivos: s.paquetesActivos,
+          alTocarStrip: () => context.push('/paquetes'),
           alRecargar: () => context.push('/paquetes/tienda'),
-          alVerPaquetes: () => context.push('/paquetes'),
         ),
-        loading: () => const Padding(
-          padding: EdgeInsets.symmetric(vertical: 12),
-          child: Center(
-            child: SizedBox(
-              width: 22,
-              height: 22,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
-          ),
-        ),
-        error: (_, _) => Row(
-          children: [
-            const Icon(
-              Icons.error_outline,
-              color: TokensRapix.peligro,
-              size: 20,
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                'No se pudo cargar el saldo',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  color: tokens(context).tintaSilenciada,
+        loading: () => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          child: Row(
+            children: [
+              Icon(
+                Icons.account_balance_wallet_outlined,
+                size: 18,
+                color: tokens(context).tintaSilenciada,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Container(
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: tokens(context).superficieHundida,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
                 ),
               ),
+            ],
+          ),
+        ),
+        error: (_, _) => InkWell(
+          onTap: () => ref.invalidate(saldoProvider),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.error_outline,
+                  size: 18,
+                  color: TokensRapix.peligro,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Saldo no disponible',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      color: tokens(context).tintaSilenciada,
+                    ),
+                  ),
+                ),
+                Text(
+                  'Reintentar',
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: TokensRapix.verde,
+                  ),
+                ),
+              ],
             ),
-            TextButton(
-              onPressed: () => ref.invalidate(saldoProvider),
-              child: const Text('Reintentar'),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _SaldoContenido extends StatelessWidget {
-  const _SaldoContenido({
+class _SaldoStripFila extends StatelessWidget {
+  const _SaldoStripFila({
     required this.envios,
     required this.paquetesActivos,
+    required this.alTocarStrip,
     required this.alRecargar,
-    required this.alVerPaquetes,
   });
 
   final int envios;
   final int paquetesActivos;
+  final VoidCallback alTocarStrip;
   final VoidCallback alRecargar;
-  final VoidCallback alVerPaquetes;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
+    final envioTxt = envios == 1 ? 'envío' : 'envíos';
+    final paqueteTxt = paquetesActivos == 1 ? 'paquete' : 'paquetes';
+
+    return InkWell(
+      onTap: alTocarStrip,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: Row(
           children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: tokens(context).verdeSuave,
-                borderRadius: BorderRadius.circular(TokensRapix.radioMd),
-              ),
-              alignment: Alignment.center,
-              child: const Icon(
-                Icons.account_balance_wallet_outlined,
-                size: 20,
-                color: TokensRapix.verdeOscuro,
-              ),
+            const Icon(
+              Icons.account_balance_wallet_outlined,
+              size: 18,
+              color: TokensRapix.verdeOscuro,
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Saldo de envíos',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: tokens(context).tintaSilenciada,
+              child: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '$envios ',
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: tokens(context).tinta,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '$paquetesActivos ${paquetesActivos == 1 ? 'paquete activo' : 'paquetes activos'}',
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      color: tokens(context).tintaSuave,
+                    TextSpan(
+                      text: '$envioTxt · ',
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: tokens(context).tintaSilenciada,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
-          children: [
-            Text(
-              '$envios',
-              style: GoogleFonts.inter(
-                fontSize: 38,
-                fontWeight: FontWeight.w700,
-                letterSpacing: -1.5,
-                color: tokens(context).tinta,
-                height: 1,
-              ),
-            ),
-            const SizedBox(width: 6),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Text(
-                'envíos disponibles',
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: tokens(context).tintaSilenciada,
+                    TextSpan(
+                      text: '$paquetesActivos ',
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: tokens(context).tinta,
+                      ),
+                    ),
+                    TextSpan(
+                      text: paqueteTxt,
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: tokens(context).tintaSilenciada,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _BotonSaldo(
-                etiqueta: 'Recargar',
-                fondo: TokensRapix.verde,
-                color: Colors.white,
-                alPresionar: alRecargar,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             const SizedBox(width: 8),
-            _BotonSaldo(
-              etiqueta: 'Ver paquetes',
-              icono: Icons.inventory_2_outlined,
-              fondo: tokens(context).superficieAlt,
-              color: tokens(context).tinta,
-              alPresionar: alVerPaquetes,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _BotonSaldo extends StatelessWidget {
-  const _BotonSaldo({
-    required this.etiqueta,
-    required this.fondo,
-    required this.color,
-    required this.alPresionar,
-    this.icono,
-  });
-
-  final String etiqueta;
-  final Color fondo;
-  final Color color;
-  final VoidCallback alPresionar;
-  final IconData? icono;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: alPresionar,
-      borderRadius: BorderRadius.circular(TokensRapix.radioMd),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: fondo,
-          borderRadius: BorderRadius.circular(TokensRapix.radioMd),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (icono != null) ...[
-              Icon(icono, size: 16, color: color),
-              const SizedBox(width: 6),
-            ],
-            Text(
-              etiqueta,
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: color,
+            InkWell(
+              onTap: alRecargar,
+              borderRadius: BorderRadius.circular(TokensRapix.radioSm),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 6,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Recargar',
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: TokensRapix.verde,
+                      ),
+                    ),
+                    const SizedBox(width: 2),
+                    const Icon(
+                      Icons.arrow_forward_rounded,
+                      size: 14,
+                      color: TokensRapix.verde,
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

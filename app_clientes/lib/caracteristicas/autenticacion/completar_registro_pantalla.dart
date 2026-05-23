@@ -4,10 +4,14 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mb;
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../nucleo/tema/tokens_rapix.dart';
 import 'autenticacion_controlador.dart';
 import 'widgets/campos_autenticacion.dart';
+
+const _urlTerminos = 'https://rapixapp.com/terminos/';
+const _urlPrivacidad = 'https://rapixapp.com/privacidad/';
 
 /// Pantalla mostrada cuando el usuario inicio sesion via Google pero aun
 /// no tiene `registroCompleto = true`. Pide los datos obligatorios que
@@ -37,6 +41,14 @@ class _CompletarRegistroPantallaEstado
     _negocioCtrl.dispose();
     _direccionCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _abrirEnlace(String url) async {
+    final uri = Uri.parse(url);
+    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!ok && mounted) {
+      _avisar('No se pudo abrir el enlace');
+    }
   }
 
   Future<void> _elegirUbicacion() async {
@@ -291,6 +303,31 @@ class _CompletarRegistroPantallaEstado
                 ubicacion: _ubicacionTienda,
                 alPresionar: _elegirUbicacion,
               ),
+              const SizedBox(height: 22),
+              Text(
+                'Al completar tu registro aceptas los términos y la política de privacidad de Rapix.',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: tokens(context).tintaSilenciada,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _BotonEnlaceLegal(
+                    etiqueta: 'Ver términos',
+                    alPresionar: () => _abrirEnlace(_urlTerminos),
+                  ),
+                  const SizedBox(width: 8),
+                  _BotonEnlaceLegal(
+                    etiqueta: 'Ver privacidad',
+                    alPresionar: () => _abrirEnlace(_urlPrivacidad),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -479,6 +516,34 @@ class _PieCompletar extends StatelessWidget {
                     ],
                   ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BotonEnlaceLegal extends StatelessWidget {
+  const _BotonEnlaceLegal({required this.etiqueta, required this.alPresionar});
+
+  final String etiqueta;
+  final VoidCallback alPresionar;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton.icon(
+      onPressed: alPresionar,
+      style: TextButton.styleFrom(
+        foregroundColor: TokensRapix.verde,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        minimumSize: const Size(0, 36),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+      icon: const Icon(Icons.open_in_new, size: 16),
+      label: Text(
+        etiqueta,
+        style: GoogleFonts.inter(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

@@ -4,9 +4,14 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mb;
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../nucleo/tema/tokens_rapix.dart';
 import 'autenticacion_controlador.dart';
+import 'widgets/botones_oauth.dart';
+
+const _urlTerminos = 'https://rapixapp.com/terminos/';
+const _urlPrivacidad = 'https://rapixapp.com/privacidad/';
 
 class RegistrarPantalla extends ConsumerStatefulWidget {
   const RegistrarPantalla({super.key});
@@ -209,6 +214,78 @@ class _RegistrarPantallaEstado extends ConsumerState<RegistrarPantalla> {
       ..showSnackBar(SnackBar(content: Text(mensaje)));
   }
 
+  Future<void> _abrirEnlace(String url) async {
+    final uri = Uri.parse(url);
+    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!ok && mounted) {
+      _avisar('No se pudo abrir el enlace');
+    }
+  }
+
+  Future<void> _iniciarConGoogle() async {
+    final ok = await ref
+        .read(autenticacionControladorProvider.notifier)
+        .iniciarSesionConGoogle();
+    if (!mounted) return;
+    if (ok) {
+      // El router decide entre /inicio (registroCompleto=true) o
+      // /completar-registro (registroCompleto=false) automaticamente.
+      context.go('/inicio');
+    } else {
+      final error = ref.read(autenticacionControladorProvider).error;
+      if (error != null) _avisar(error);
+    }
+  }
+
+  void _mostrarProximamente(String funcionalidad) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('$funcionalidad — próximamente')),
+    );
+  }
+
+  List<Widget> _seccionOauthRegistro({required bool cargando}) {
+    final plataforma = Theme.of(context).platform;
+    final String proveedor;
+    final Widget boton;
+    switch (plataforma) {
+      case TargetPlatform.android:
+        proveedor = 'Google';
+        boton = BotonOAuth(
+          etiqueta: 'Registrar con Google',
+          iconoAsset: 'assets/google_logo.svg',
+          cargando: cargando,
+          alPresionar: cargando ? null : _iniciarConGoogle,
+        );
+        break;
+      case TargetPlatform.iOS:
+        proveedor = 'Apple';
+        boton = BotonOAuth(
+          etiqueta: 'Registrar con Apple',
+          cargando: false,
+          alPresionar: () => _mostrarProximamente('Registro con Apple'),
+        );
+        break;
+      default:
+        return const [];
+    }
+    return [
+      boton,
+      const SizedBox(height: 10),
+      Text(
+        'Al registrarte con $proveedor aceptas automáticamente los términos y la política de privacidad de Rapix.',
+        textAlign: TextAlign.center,
+        style: GoogleFonts.inter(
+          fontSize: 11,
+          color: tokens(context).tintaSilenciada,
+          height: 1.4,
+        ),
+      ),
+      const SizedBox(height: 22),
+      const DivisorOContinua(),
+      const SizedBox(height: 22),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final estado = ref.watch(autenticacionControladorProvider);
@@ -249,6 +326,7 @@ class _RegistrarPantallaEstado extends ConsumerState<RegistrarPantalla> {
           children: [
             const _Bienvenida(),
             const SizedBox(height: 22),
+            ..._seccionOauthRegistro(cargando: estado.cargando),
             const _TituloSeccion(
               titulo: 'Tus datos',
               descripcion: 'Usaremos estos datos para tu cuenta de vendedor.',
@@ -362,6 +440,23 @@ class _RegistrarPantallaEstado extends ConsumerState<RegistrarPantalla> {
             _CheckboxTerminos(
               valor: _aceptaTerminos,
               alCambiar: (v) => setState(() => _aceptaTerminos = v),
+            ),
+            const SizedBox(height: 4),
+            Padding(
+              padding: const EdgeInsets.only(left: 32),
+              child: Row(
+                children: [
+                  _BotonEnlaceLegal(
+                    etiqueta: 'Ver términos',
+                    alPresionar: () => _abrirEnlace(_urlTerminos),
+                  ),
+                  const SizedBox(width: 8),
+                  _BotonEnlaceLegal(
+                    etiqueta: 'Ver privacidad',
+                    alPresionar: () => _abrirEnlace(_urlPrivacidad),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -821,40 +916,44 @@ class _CheckboxTerminos extends StatelessWidget {
                   : null,
             ),
             Expanded(
-              child: Text.rich(
-                TextSpan(
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: tokens(context).tintaSilenciada,
-                    height: 1.5,
-                  ),
-                  children: [
-                    const TextSpan(text: 'Acepto los '),
-                    TextSpan(
-                      text: 'términos',
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: TokensRapix.verde,
-                        height: 1.5,
-                      ),
-                    ),
-                    const TextSpan(text: ' y la '),
-                    TextSpan(
-                      text: 'política de privacidad',
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: TokensRapix.verde,
-                        height: 1.5,
-                      ),
-                    ),
-                    const TextSpan(text: ' de Rapix.'),
-                  ],
+              child: Text(
+                'Acepto los términos y la política de privacidad de Rapix.',
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: tokens(context).tintaSilenciada,
+                  height: 1.5,
                 ),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BotonEnlaceLegal extends StatelessWidget {
+  const _BotonEnlaceLegal({required this.etiqueta, required this.alPresionar});
+
+  final String etiqueta;
+  final VoidCallback alPresionar;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton.icon(
+      onPressed: alPresionar,
+      style: TextButton.styleFrom(
+        foregroundColor: TokensRapix.verde,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        minimumSize: const Size(0, 36),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+      icon: const Icon(Icons.open_in_new, size: 16),
+      label: Text(
+        etiqueta,
+        style: GoogleFonts.inter(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

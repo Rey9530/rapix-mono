@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -11,14 +10,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../../datos/modelos/usuario.dart';
-import '../../datos/repositorios/geocoding_repositorio.dart';
 import '../../datos/repositorios/pedidos_repositorio.dart';
 import '../../nucleo/tema/tokens_rapix.dart';
 import '../autenticacion/autenticacion_controlador.dart';
 import 'pedidos_listado_controlador.dart';
 
-final _regexUrlMapsCorta =
-    RegExp(r'^https://maps\.app\.goo\.gl/[A-Za-z0-9_-]+/?$');
+final _regexUrlMapsCorta = RegExp(
+  r'^https://maps\.app\.goo\.gl/[A-Za-z0-9_-]+/?$',
+);
 
 class CrearPedidoPantalla extends ConsumerStatefulWidget {
   const CrearPedidoPantalla({super.key});
@@ -44,40 +43,9 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
   final _selectorImagen = ImagePicker();
 
   DateTime _fechaEntrega = DateTime.now().add(const Duration(days: 1));
-  double? _latDestino;
-  double? _lngDestino;
-
-  @override
-  void initState() {
-    super.initState();
-    _direccionDestino.addListener(_invalidarCoordsSiDireccionEditada);
-  }
-
-  void _invalidarCoordsSiDireccionEditada() {
-    if (_direccionElegidaDelBuscador != null &&
-        _direccionDestino.text.trim() != _direccionElegidaDelBuscador) {
-      setState(() {
-        _latDestino = null;
-        _lngDestino = null;
-        _direccionElegidaDelBuscador = null;
-      });
-    }
-  }
-
-  String? _direccionElegidaDelBuscador;
-
-  void _aplicarResultadoGeocoding(ResultadoGeocoding resultado) {
-    setState(() {
-      _direccionDestino.text = resultado.direccion;
-      _direccionElegidaDelBuscador = resultado.direccion;
-      _latDestino = resultado.latitud;
-      _lngDestino = resultado.longitud;
-    });
-  }
 
   @override
   void dispose() {
-    _direccionDestino.removeListener(_invalidarCoordsSiDireccionEditada);
     _nombreCliente.dispose();
     _telefonoCliente.dispose();
     _direccionDestino.dispose();
@@ -155,9 +123,7 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
   }
 
   void _mostrarSnack(String texto) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(texto)),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(texto)));
   }
 
   void _mostrarSnackConAccion(
@@ -168,10 +134,7 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(texto),
-        action: SnackBarAction(
-          label: etiquetaAccion,
-          onPressed: alPresionar,
-        ),
+        action: SnackBarAction(label: etiquetaAccion, onPressed: alPresionar),
       ),
     );
   }
@@ -205,9 +168,6 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
       _metodoPago = 'CONTRA_ENTREGA';
       _foto = null;
       _fechaEntrega = DateTime.now().add(const Duration(days: 1));
-      _latDestino = null;
-      _lngDestino = null;
-      _direccionElegidaDelBuscador = null;
     });
   }
 
@@ -224,24 +184,23 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
       );
       return;
     }
-    if (!ctx.tieneUbicacion ||
-        ctx.latitud == null ||
-        ctx.longitud == null) {
+    if (!ctx.tieneUbicacion || ctx.latitud == null || ctx.longitud == null) {
       _mostrarSnack(
         'Tu cuenta no tiene ubicación de tienda. Actualiza tu perfil.',
       );
       return;
     }
 
-    final preview = ref.read(previewCostoEnvioProvider).value;
+    final previewAsync = ref.read(previewCostoEnvioProvider);
     final montoEntrega = _metodoPago == 'CONTRA_ENTREGA'
         ? double.tryParse(_montoContraEntrega.text)
         : null;
 
     final confirmado = await _mostrarConfirmacion(
       direccion: _direccionDestino.text.trim(),
-      montoEntrega: montoEntrega,
-      preview: preview,
+      metodoPago: _metodoPago,
+      monto: montoEntrega ?? 0,
+      previewAsync: previewAsync,
     );
     if (!confirmado) return;
     if (!mounted) return;
@@ -259,8 +218,6 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
           longitudOrigen: ctx.longitud!,
           direccionDestino: _direccionDestino.text.trim(),
           urlMapasDestino: urlMaps.isEmpty ? null : urlMaps,
-          latitudDestino: _latDestino,
-          longitudDestino: _lngDestino,
           programadoPara: _fechaEntrega,
           metodoPago: _metodoPago,
           descripcionPaquete: _descripcion.text.trim().isEmpty
@@ -295,7 +252,8 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
     final usuario = auth.usuario;
     if (usuario == null) return;
     final perfilActual = usuario.perfilVendedor;
-    final mismo = perfilActual != null &&
+    final mismo =
+        perfilActual != null &&
         perfilActual.direccion == ctx.direccion &&
         perfilActual.latitud == ctx.latitud &&
         perfilActual.longitud == ctx.longitud &&
@@ -330,32 +288,15 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
 
   Future<bool> _mostrarConfirmacion({
     required String direccion,
-    required double? montoEntrega,
-    required PreviewCostoEnvio? preview,
+    required String metodoPago,
+    required double monto,
+    required AsyncValue<PreviewCostoEnvio> previewAsync,
   }) async {
     final fechaFmt = DateFormat('EEEE d MMM y', 'es').format(_fechaEntrega);
-    final monedaFmt = NumberFormat.currency(
-      locale: 'es',
-      symbol: r'$',
-      decimalDigits: 2,
-    );
     final filas = <_FilaResumen>[
       _FilaResumen('Cliente', _nombreCliente.text.trim()),
-      _FilaResumen(
-        'Dirección',
-        direccion.isEmpty ? '—' : direccion,
-      ),
+      _FilaResumen('Dirección', direccion.isEmpty ? '—' : direccion),
       _FilaResumen('Fecha de entrega', fechaFmt),
-      if (montoEntrega != null)
-        _FilaResumen(
-          'Monto a cobrar al cliente',
-          monedaFmt.format(montoEntrega),
-        ),
-      if (preview != null && preview.debeMostrarse)
-        _FilaResumen(
-          'Costo de envío a pagar al entregar',
-          monedaFmt.format(preview.costoEnvio),
-        ),
     ];
 
     final ok = await showDialog<bool>(
@@ -399,6 +340,12 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
               ),
               const SizedBox(height: 6),
             ],
+            if (metodoPago == 'CONTRA_ENTREGA') ...[
+              const SizedBox(height: 8),
+              Container(height: 1, color: tokens(ctx).contorno),
+              const SizedBox(height: 12),
+              _ResumenCostoEnvio(monto: monto, preview: previewAsync),
+            ],
           ],
         ),
         actions: [
@@ -430,7 +377,8 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
             'Verifica el enlace.';
       }
       if (mensaje is String && mensaje.isNotEmpty) return mensaje;
-      if (mensaje is List && mensaje.isNotEmpty) return mensaje.first.toString();
+      if (mensaje is List && mensaje.isNotEmpty)
+        return mensaje.first.toString();
     }
     return 'No se pudo crear el pedido. Intenta de nuevo.';
   }
@@ -443,13 +391,13 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
     // vivos durante la vida de la pantalla.
     ref.watch(contextoVendedorProvider);
     // Sincronizar la cache local cuando llega un contexto valido.
-    ref.listen<AsyncValue<ContextoVendedor>>(
-      contextoVendedorProvider,
-      (_, next) {
-        final ctx = next.value;
-        if (ctx != null) _sincronizarCacheUsuario(ctx);
-      },
-    );
+    ref.listen<AsyncValue<ContextoVendedor>>(contextoVendedorProvider, (
+      _,
+      next,
+    ) {
+      final ctx = next.value;
+      if (ctx != null) _sincronizarCacheUsuario(ctx);
+    });
     return Scaffold(
       backgroundColor: tokens(context).fondo,
       appBar: AppBar(
@@ -477,9 +425,8 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
                       icono: Icons.person_outline,
                       controlador: _nombreCliente,
                       capitalizacion: TextCapitalization.words,
-                      validador: (v) => (v == null || v.trim().isEmpty)
-                          ? 'Requerido'
-                          : null,
+                      validador: (v) =>
+                          (v == null || v.trim().isEmpty) ? 'Requerido' : null,
                     ),
                     _CampoFormulario(
                       etiqueta: 'TELÉFONO',
@@ -502,39 +449,38 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
                   numero: '2',
                   titulo: 'DESTINO',
                   hijos: [
-                    _BuscadorDireccion(
-                      alSeleccionar: _aplicarResultadoGeocoding,
-                    ),
                     _CampoFormulario(
                       etiqueta: 'DIRECCIÓN',
                       icono: Icons.place_outlined,
                       controlador: _direccionDestino,
                       hint: 'Calle, colonia, referencias',
-                      validador: (v) => (v == null || v.trim().isEmpty)
-                          ? 'Requerido'
-                          : null,
+                      validador: (v) =>
+                          (v == null || v.trim().isEmpty) ? 'Requerido' : null,
                     ),
-                    _BarraChipsAccion(
-                      chips: [
-                        _ChipAccion(
-                          icono: Icons.content_paste_outlined,
-                          etiqueta: 'Pegar link',
-                          alPresionar: _pegarLink,
-                        ),
-                        _ChipAccion(
-                          icono: Icons.my_location,
-                          etiqueta: 'Mi ubicación',
-                          alPresionar: () =>
-                              _mostrarProximamente('Selección por GPS'),
-                        ),
-                      ],
-                    ),
+                    // _BarraChipsAccion(
+                    //   chips: [
+                    //     _ChipAccion(
+                    //       icono: Icons.content_paste_outlined,
+                    //       etiqueta: 'Pegar link',
+                    //       alPresionar: _pegarLink,
+                    //     ),
+                    //     _ChipAccion(
+                    //       icono: Icons.my_location,
+                    //       etiqueta: 'Mi ubicación',
+                    //       alPresionar: () =>
+                    //           _mostrarProximamente('Selección por GPS'),
+                    //     ),
+                    //   ],
+                    // ),
                     _CampoFormulario(
                       etiqueta: 'URL DE GOOGLE MAPS (OPCIONAL)',
                       icono: Icons.link,
                       controlador: _urlMapsDestino,
                       teclado: TextInputType.url,
                       hint: 'https://maps.app.goo.gl/...',
+                      ayuda:
+                          'Pega aquí la ubicación exacta del cliente compartida '
+                          'desde Google Maps para mejorar la precisión de la entrega.',
                       validador: (v) {
                         final t = v?.trim() ?? '';
                         if (t.isEmpty) return null;
@@ -588,8 +534,7 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
                                 child: _OpcionPago(
                                   etiqueta: 'Contra entrega',
                                   icono: Icons.payments_outlined,
-                                  seleccionado:
-                                      _metodoPago == 'CONTRA_ENTREGA',
+                                  seleccionado: _metodoPago == 'CONTRA_ENTREGA',
                                   alPresionar: () => setState(
                                     () => _metodoPago = 'CONTRA_ENTREGA',
                                   ),
@@ -601,9 +546,8 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
                                   etiqueta: 'Prepagado',
                                   icono: Icons.credit_card,
                                   seleccionado: _metodoPago == 'PREPAGADO',
-                                  alPresionar: () => setState(
-                                    () => _metodoPago = 'PREPAGADO',
-                                  ),
+                                  alPresionar: () =>
+                                      setState(() => _metodoPago = 'PREPAGADO'),
                                 ),
                               ),
                             ],
@@ -724,6 +668,7 @@ class _CampoFormulario extends StatelessWidget {
     required this.controlador,
     this.teclado,
     this.hint,
+    this.ayuda,
     this.multilinea = false,
     this.capitalizacion,
     this.validador,
@@ -735,6 +680,7 @@ class _CampoFormulario extends StatelessWidget {
   final TextEditingController controlador;
   final TextInputType? teclado;
   final String? hint;
+  final String? ayuda;
   final bool multilinea;
   final TextCapitalization? capitalizacion;
   final String? Function(String?)? validador;
@@ -746,9 +692,7 @@ class _CampoFormulario extends StatelessWidget {
       decoration: BoxDecoration(
         border: ultimo
             ? null
-            : Border(
-                bottom: BorderSide(color: tokens(context).contornoSuave),
-              ),
+            : Border(bottom: BorderSide(color: tokens(context).contornoSuave)),
       ),
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
       child: Row(
@@ -780,8 +724,7 @@ class _CampoFormulario extends StatelessWidget {
                 TextFormField(
                   controller: controlador,
                   keyboardType: teclado,
-                  textCapitalization:
-                      capitalizacion ?? TextCapitalization.none,
+                  textCapitalization: capitalizacion ?? TextCapitalization.none,
                   maxLines: multilinea ? 3 : 1,
                   minLines: multilinea ? 1 : 1,
                   validator: validador,
@@ -812,6 +755,18 @@ class _CampoFormulario extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (ayuda != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    ayuda!,
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w400,
+                      color: tokens(context).tintaSilenciada,
+                      height: 1.35,
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -821,208 +776,8 @@ class _CampoFormulario extends StatelessWidget {
   }
 }
 
-class _BuscadorDireccion extends ConsumerStatefulWidget {
-  const _BuscadorDireccion({required this.alSeleccionar});
-
-  final void Function(ResultadoGeocoding) alSeleccionar;
-
-  @override
-  ConsumerState<_BuscadorDireccion> createState() =>
-      _BuscadorDireccionEstado();
-}
-
-class _BuscadorDireccionEstado extends ConsumerState<_BuscadorDireccion> {
-  final _consulta = TextEditingController();
-  Timer? _debounce;
-  bool _cargando = false;
-  List<ResultadoGeocoding> _resultados = const [];
-  String? _error;
-
-  @override
-  void dispose() {
-    _debounce?.cancel();
-    _consulta.dispose();
-    super.dispose();
-  }
-
-  void _alCambiarTexto(String texto) {
-    _debounce?.cancel();
-    final consulta = texto.trim();
-    if (consulta.length < 3) {
-      setState(() {
-        _resultados = const [];
-        _error = null;
-        _cargando = false;
-      });
-      return;
-    }
-    _debounce = Timer(const Duration(milliseconds: 400), () => _buscar(consulta));
-  }
-
-  Future<void> _buscar(String consulta) async {
-    setState(() {
-      _cargando = true;
-      _error = null;
-    });
-    try {
-      final repo = ref.read(geocodingRepositorioProvider);
-      final lista = await repo.buscar(consulta);
-      if (!mounted) return;
-      setState(() {
-        _resultados = lista;
-        _cargando = false;
-        _error = lista.isEmpty ? 'Sin resultados' : null;
-      });
-    } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _resultados = const [];
-        _cargando = false;
-        _error = 'No se pudo buscar. Intenta de nuevo.';
-      });
-    }
-  }
-
-  void _seleccionar(ResultadoGeocoding resultado) {
-    widget.alSeleccionar(resultado);
-    setState(() {
-      _consulta.text = resultado.direccion;
-      _resultados = const [];
-    });
-    FocusScope.of(context).unfocus();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: tokens(context).contornoSuave),
-        ),
-      ),
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          TextField(
-            controller: _consulta,
-            onChanged: _alCambiarTexto,
-            textInputAction: TextInputAction.search,
-            decoration: InputDecoration(
-              prefixIcon: Icon(
-                Icons.search,
-                size: 18,
-                color: tokens(context).tintaSilenciada,
-              ),
-              suffixIcon: _cargando
-                  ? const Padding(
-                      padding: EdgeInsets.all(12),
-                      child: SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    )
-                  : (_consulta.text.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.close, size: 18),
-                          onPressed: () {
-                            _consulta.clear();
-                            _alCambiarTexto('');
-                          },
-                        )
-                      : null),
-              hintText: 'Buscar dirección…',
-              hintStyle: GoogleFonts.inter(
-                fontSize: 13,
-                color: tokens(context).tintaSilenciada,
-              ),
-              isDense: true,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(TokensRapix.radioMd),
-                borderSide: BorderSide(color: tokens(context).contorno),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(TokensRapix.radioMd),
-                borderSide: BorderSide(color: tokens(context).contorno),
-              ),
-            ),
-          ),
-          if (_error != null && _resultados.isEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Text(
-                _error!,
-                style: GoogleFonts.inter(
-                  fontSize: 12,
-                  color: tokens(context).tintaSilenciada,
-                ),
-              ),
-            ),
-          if (_resultados.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: tokens(context).superficie,
-                  borderRadius: BorderRadius.circular(TokensRapix.radioMd),
-                  border: Border.all(color: tokens(context).contorno),
-                ),
-                child: Column(
-                  children: [
-                    for (var i = 0; i < _resultados.length; i++)
-                      InkWell(
-                        onTap: () => _seleccionar(_resultados[i]),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            border: i < _resultados.length - 1
-                                ? Border(
-                                    bottom: BorderSide(
-                                      color: tokens(context).contornoSuave,
-                                    ),
-                                  )
-                                : null,
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.place_outlined,
-                                size: 16,
-                                color: tokens(context).tintaSilenciada,
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  _resultados[i].direccion,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 13,
-                                    color: tokens(context).tinta,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
 class _FilaFechaEntrega extends StatelessWidget {
-  const _FilaFechaEntrega({
-    required this.fecha,
-    required this.alElegir,
-  });
+  const _FilaFechaEntrega({required this.fecha, required this.alElegir});
 
   final DateTime fecha;
   final void Function(DateTime) alElegir;
@@ -1033,8 +788,11 @@ class _FilaFechaEntrega extends StatelessWidget {
     return InkWell(
       onTap: () async {
         final ahora = DateTime.now();
-        final manana = DateTime(ahora.year, ahora.month, ahora.day)
-            .add(const Duration(days: 1));
+        final manana = DateTime(
+          ahora.year,
+          ahora.month,
+          ahora.day,
+        ).add(const Duration(days: 1));
         final seleccionada = await showDatePicker(
           context: context,
           initialDate: fecha.isBefore(manana) ? manana : fecha,
@@ -1046,9 +804,7 @@ class _FilaFechaEntrega extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          border: Border(
-            top: BorderSide(color: tokens(context).contornoSuave),
-          ),
+          border: Border(top: BorderSide(color: tokens(context).contornoSuave)),
         ),
         padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
         child: Row(
@@ -1108,11 +864,7 @@ class _BarraChipsAccion extends StatelessWidget {
         ),
       ),
       padding: const EdgeInsets.fromLTRB(14, 8, 14, 12),
-      child: Wrap(
-        spacing: 6,
-        runSpacing: 6,
-        children: chips,
-      ),
+      child: Wrap(spacing: 6, runSpacing: 6, children: chips),
     );
   }
 }
@@ -1238,10 +990,7 @@ class _FilaFoto extends StatelessWidget {
                 icon: const Icon(Icons.close, size: 18),
                 color: tokens(context).tintaSilenciada,
                 padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(
-                  minWidth: 32,
-                  minHeight: 32,
-                ),
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
               )
             else
               Icon(
@@ -1321,8 +1070,7 @@ class _OpcionPago extends StatelessWidget {
               etiqueta,
               style: GoogleFonts.inter(
                 fontSize: 12,
-                fontWeight:
-                    seleccionado ? FontWeight.w700 : FontWeight.w600,
+                fontWeight: seleccionado ? FontWeight.w700 : FontWeight.w600,
                 color: seleccionado
                     ? TokensRapix.verdeOscuro
                     : tokens(context).tintaSilenciada,
@@ -1336,10 +1084,7 @@ class _OpcionPago extends StatelessWidget {
 }
 
 class _CampoMonto extends StatelessWidget {
-  const _CampoMonto({
-    required this.controlador,
-    required this.validador,
-  });
+  const _CampoMonto({required this.controlador, required this.validador});
 
   final TextEditingController controlador;
   final String? Function(String?)? validador;
@@ -1427,9 +1172,7 @@ class _BarraInferiorCrear extends ConsumerWidget {
     return Container(
       decoration: BoxDecoration(
         color: tokens(context).superficie,
-        border: Border(
-          top: BorderSide(color: tokens(context).contorno),
-        ),
+        border: Border(top: BorderSide(color: tokens(context).contorno)),
       ),
       child: SafeArea(
         top: false,
@@ -1444,10 +1187,7 @@ class _BarraInferiorCrear extends ConsumerWidget {
                   valueListenable: controladorMonto,
                   builder: (context, valor, _) {
                     final monto = double.tryParse(valor.text) ?? 0;
-                    return _ResumenCostoEnvio(
-                      monto: monto,
-                      preview: preview,
-                    );
+                    return _ResumenCostoEnvio(monto: monto, preview: preview);
                   },
                 ),
                 const SizedBox(height: 12),
@@ -1488,10 +1228,7 @@ class _BarraInferiorCrear extends ConsumerWidget {
 }
 
 class _ResumenCostoEnvio extends StatelessWidget {
-  const _ResumenCostoEnvio({
-    required this.monto,
-    required this.preview,
-  });
+  const _ResumenCostoEnvio({required this.monto, required this.preview});
 
   final double monto;
   final AsyncValue<PreviewCostoEnvio> preview;
@@ -1514,10 +1251,7 @@ class _ResumenCostoEnvio extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _FilaResumenCosto(
-          etiqueta: 'Paquete',
-          valor: formato.format(monto),
-        ),
+        _FilaResumenCosto(etiqueta: 'Paquete', valor: formato.format(monto)),
         if (envioAplica || cargandoEnvio || errorEnvio) ...[
           const SizedBox(height: 6),
           _FilaResumenCosto(
@@ -1525,10 +1259,14 @@ class _ResumenCostoEnvio extends StatelessWidget {
             valor: cargandoEnvio
                 ? 'Calculando…'
                 : errorEnvio
-                    ? 'No disponible'
-                    : formato.format(costoEnvio),
+                ? 'No disponible'
+                : formato.format(costoEnvio),
             silenciado: cargandoEnvio || errorEnvio,
           ),
+        ],
+        if (envioAplica) ...[
+          const SizedBox(height: 10),
+          const _NotaEnvioAlRecoger(),
         ],
         const SizedBox(height: 8),
         Container(height: 1, color: tokens(context).contorno),
@@ -1584,6 +1322,41 @@ class _FilaResumenCosto extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _NotaEnvioAlRecoger extends StatelessWidget {
+  const _NotaEnvioAlRecoger();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: TokensRapix.ambar.withValues(alpha: 0.12),
+        border: Border.all(color: TokensRapix.ambar.withValues(alpha: 0.5)),
+        borderRadius: BorderRadius.circular(TokensRapix.radioMd),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.info_outline, size: 16, color: TokensRapix.ambar),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'El envío lo cancelás al recoger. Te lo reembolsamos al '
+              'cobrarle al cliente.',
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: tokens(context).tinta,
+                height: 1.35,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

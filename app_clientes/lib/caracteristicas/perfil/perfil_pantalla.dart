@@ -997,7 +997,34 @@ Future<void> _confirmarCerrarSesion(BuildContext context, WidgetRef ref) async {
     ),
   );
   if (confirmado != true) return;
-  await ref.read(autenticacionControladorProvider.notifier).cerrarSesion();
-  await ref.read(temaControladorProvider.notifier).cambiar(ThemeMode.light);
+  if (!context.mounted) return;
+
+  showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (_) => const PopScope(
+      canPop: false,
+      child: Center(
+        child: SizedBox(
+          width: 48,
+          height: 48,
+          child: CircularProgressIndicator(
+            strokeWidth: 3,
+            color: TokensRapix.verde,
+          ),
+        ),
+      ),
+    ),
+  );
+
+  try {
+    await ref.read(autenticacionControladorProvider.notifier).cerrarSesion();
+    await ref.read(temaControladorProvider.notifier).cambiar(ThemeMode.light);
+  } finally {
+    if (context.mounted) {
+      Navigator.of(context, rootNavigator: true).pop();
+    }
+  }
+
   if (context.mounted) context.go('/iniciar-sesion');
 }
