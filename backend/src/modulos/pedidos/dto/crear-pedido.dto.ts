@@ -75,7 +75,7 @@ export class CrearPedidoDto {
   })
   @IsOptional()
   @IsString()
-  @Matches(/^https:\/\/maps\.app\.goo\.gl\/[A-Za-z0-9_-]+\/?$/, {
+  @Matches(/^https:\/\/maps\.app\.goo\.gl\/[A-Za-z0-9_-]+\/?(\?.*)?$/, {
     message: 'urlMapasDestino debe ser una URL corta de Google Maps (maps.app.goo.gl)',
   })
   urlMapasDestino?: string;

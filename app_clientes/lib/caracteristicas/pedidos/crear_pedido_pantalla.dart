@@ -16,7 +16,7 @@ import '../autenticacion/autenticacion_controlador.dart';
 import 'pedidos_listado_controlador.dart';
 
 final _regexUrlMapsCorta = RegExp(
-  r'^https://maps\.app\.goo\.gl/[A-Za-z0-9_-]+/?$',
+  r'^https://maps\.app\.goo\.gl/[A-Za-z0-9_-]+/?(\?.*)?$',
 );
 
 class CrearPedidoPantalla extends ConsumerStatefulWidget {

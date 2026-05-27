@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { EventosDominio } from '../../../eventos/eventos-dominio.js';
 import { PedidoActualizadoEvento } from '../../../eventos/pedido-actualizado.evento.js';
-import { PedidoCreadoEvento } from '../../../eventos/pedido-creado.evento.js';
 import { PedidoEstadoCambiadoEvento } from '../../../eventos/pedido-estado-cambiado.evento.js';
 import { PedidoRepartidorReasignadoEvento } from '../../../eventos/pedido-repartidor-reasignado.evento.js';
 import { PrismaServicio } from '../../../prisma/prisma.servicio.js';
@@ -32,19 +31,10 @@ export class PedidoEventosManejador {
     private readonly prisma: PrismaServicio,
   ) {}
 
-  @OnEvent(EventosDominio.PedidoCreado, { async: true })
-  async alCrear(evento: PedidoCreadoEvento): Promise<void> {
-    const pedido = await this.cargarPedido(evento.pedidoId);
-    if (!pedido) return;
-
-    // Vendedor → EMAIL
-    await this.enviarPlantilla('PEDIDO_CREADO_VENDEDOR', pedido.vendedor.usuario.id, ['EMAIL'], [
-      pedido.codigoSeguimiento,
-    ]);
-
-    // El cliente final no recibe notificacion al crear: la unica notificacion
-    // automatica al cliente arranca al pasar a RECOGIDO (ConfirmacionEntregaModulo).
-  }
+  // Nota: no se notifica al crear el pedido. El correo PEDIDO_CREADO_VENDEDOR
+  // al vendedor se eliminó deliberadamente. El primer contacto automático al
+  // vendedor ocurre al pasar a ASIGNADO (PUSH), y al cliente al pasar a
+  // RECOGIDO (ConfirmacionEntregaModulo).
 
   @OnEvent(EventosDominio.PedidoEstadoCambiado, { async: true })
   async alCambiarEstado(evento: PedidoEstadoCambiadoEvento): Promise<void> {

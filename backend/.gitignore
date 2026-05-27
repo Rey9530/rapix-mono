@@ -5,7 +5,7 @@
 
 # Prisma 7 — cliente generado
 /src/generated
-
+/graphify-out
 # Yarn 4 Berry
 .yarn/*
 !.yarn/patches

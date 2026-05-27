@@ -6,6 +6,7 @@ import {
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import type { PerfilRepartidor } from '../../generated/prisma/client.js';
 import { PrismaServicio } from '../../prisma/prisma.servicio.js';
+import { rangoDelDiaElSalvador } from '../../comun/utiles/fechas.js';
 import { ActualizarUbicacionDto } from './dto/actualizar-ubicacion.dto.js';
 import { CrearPerfilRepartidorDto } from './dto/crear-perfil-repartidor.dto.js';
 
@@ -200,8 +201,13 @@ export class RepartidoresServicio {
   ) {
     const perfil = await this.perfilDeUsuario(usuarioId);
     if (tipo === 'recogidas-pendientes') {
+      const { inicio, fin } = rangoDelDiaElSalvador();
       return this.prisma.pedido.findMany({
-        where: { repartidorRecogidaId: perfil.id, estado: 'ASIGNADO' },
+        where: {
+          repartidorRecogidaId: perfil.id,
+          estado: 'ASIGNADO',
+          programadoPara: { gte: inicio, lte: fin },
+        },
         include: { vendedor: { select: { id: true, nombreNegocio: true } } },
         orderBy: [{ vendedorId: 'asc' }, { creadoEn: 'asc' }],
       });

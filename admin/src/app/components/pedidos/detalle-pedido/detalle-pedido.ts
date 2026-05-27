@@ -8,6 +8,7 @@ import { PedidosServicio } from "../../../nucleo/datos/pedidos.servicio";
 import { PedidoDetalle } from "../../../nucleo/modelos/pedido.modelo";
 import { ImagenPedidoModal } from "./imagen-pedido.modal";
 import { MapaPedidoModal } from "./mapa-pedido.modal";
+import { PedidoFormularioModal } from "./pedido-formulario.modal";
 
 @Component({
   selector: "app-detalle-pedido",
@@ -25,12 +26,17 @@ export class DetallePedido implements OnInit {
   readonly error = signal<string | null>(null);
 
   ngOnInit(): void {
+    this.recargar();
+  }
+
+  private recargar(): void {
     const id = this.ruta.snapshot.paramMap.get("id");
     if (!id) {
       this.error.set("ID de pedido no provisto.");
       this.cargando.set(false);
       return;
     }
+    this.cargando.set(true);
     this.servicio.obtenerPorId(id).subscribe({
       next: (p) => {
         this.pedido.set(p);
@@ -40,6 +46,20 @@ export class DetallePedido implements OnInit {
         this.error.set(e?.error?.mensaje ?? "No se pudo cargar el pedido.");
         this.cargando.set(false);
       },
+    });
+  }
+
+  abrirEditar(): void {
+    const p = this.pedido();
+    if (!p) return;
+    const ref = this.modalServicio.open(PedidoFormularioModal, {
+      size: "lg",
+      centered: true,
+      scrollable: true,
+    });
+    ref.componentInstance.pedido = p;
+    ref.closed.subscribe((res) => {
+      if (res === "actualizado") this.recargar();
     });
   }
 

@@ -26,6 +26,7 @@ import { BilleteraServicio } from '../billetera/billetera.servicio.js';
 import { PaqueteAgotadoException } from '../paquetes-recargados/excepciones/paquete-agotado.excepcion.js';
 import { FacturacionServicio } from '../paquetes-recargados/facturacion.servicio.js';
 import { GeoServicio } from '../zonas/geo.servicio.js';
+import { AsignacionServicio } from './asignacion.servicio.js';
 import { CodigoSeguimientoServicio } from './codigo-seguimiento.servicio.js';
 import { GoogleMapsServicio } from './google-maps.servicio.js';
 import { ActualizarPedidoDto } from './dto/actualizar-pedido.dto.js';
@@ -62,6 +63,7 @@ export class PedidosServicio {
     private readonly eventos: EventEmitter2,
     private readonly googleMaps: GoogleMapsServicio,
     private readonly billetera: BilleteraServicio,
+    private readonly asignacion: AsignacionServicio,
   ) {}
 
   // ──────────────────────────────────────────────────
@@ -291,11 +293,10 @@ export class PedidosServicio {
         const ext = mimeExt(foto.mimetype);
         const key = ArchivosServicio.armarKeyPaquete(resultado.pedido.id, ext);
         const { url } = await this.archivos.subir(foto.buffer, key, foto.mimetype);
-        const actualizado = await this.prisma.pedido.update({
+        await this.prisma.pedido.update({
           where: { id: resultado.pedido.id },
           data: { urlFotoPaquete: url },
         });
-        return actualizado;
       } catch (error) {
         this.logger.warn(
           `Pedido ${resultado.pedido.id} creado pero la foto no pudo subirse: ${(error as Error).message}`,
@@ -303,7 +304,28 @@ export class PedidosServicio {
       }
     }
 
-    return resultado.pedido;
+    // Auto-asignación al crear (best-effort: nunca debe romper la creación).
+    // Recogida: rider de la zona ORIGEN -> transiciona a ASIGNADO y notifica
+    // (vendedor + rider de recogida) vía el evento existente.
+    // Entrega: si hay zona DESTINO, pre-asigna en silencio el rider de esa
+    // zona (sin notificar a nadie). Si no hay rider con capacidad en alguna
+    // zona, el pedido queda en PENDIENTE_ASIGNACION para asignación posterior.
+    try {
+      await this.asignacion.asignar(resultado.pedido.id, usuario.id);
+      if (resultado.pedido.zonaDestinoId) {
+        await this.asignacion.asignarEntregaAuto(resultado.pedido.id);
+      }
+    } catch (error) {
+      this.logger.warn(
+        `Auto-asignación falló para pedido ${resultado.pedido.id}: ${(error as Error).message}`,
+      );
+    }
+
+    // Relectura para devolver estado y repartidores ya actualizados.
+    const final = await this.prisma.pedido.findUnique({
+      where: { id: resultado.pedido.id },
+    });
+    return final ?? resultado.pedido;
   }
 
   async listar(
@@ -401,13 +423,33 @@ export class PedidosServicio {
   async actualizar(usuario: Usuario, id: string, dto: ActualizarPedidoDto) {
     const pedido = await this.prisma.pedido.findUnique({ where: { id } });
     if (!pedido) throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
-    if (PedidoMaquinaEstados.esTerminal(pedido.estado)) {
+
+    const esAdmin = usuario.rol === 'ADMIN';
+    // El ADMIN puede editar pedidos en estado terminal (corrección retroactiva);
+    // el resto (VENDEDOR) sigue bloqueado.
+    if (!esAdmin && PedidoMaquinaEstados.esTerminal(pedido.estado)) {
       throw new ConflictException({
         codigo: 'PEDIDO_NO_EDITABLE',
         mensaje: `Pedido en estado terminal no es editable (estado actual: ${pedido.estado})`,
       });
     }
     await this.garantizarEdicionVendedor(usuario, pedido);
+
+    // Campos sensibles: solo ADMIN puede editarlos.
+    const camposAdmin = [
+      'estado',
+      'repartidorRecogidaId',
+      'repartidorEntregaId',
+      'costoEnvio',
+      'modoFacturacion',
+    ] as const;
+    if (!esAdmin && camposAdmin.some((c) => dto[c] !== undefined)) {
+      throw new ForbiddenException({
+        codigo: 'PEDIDO_CAMPO_SOLO_ADMIN',
+        mensaje:
+          'Solo un ADMIN puede editar estado, repartidores, costoEnvio o modoFacturacion',
+      });
+    }
 
     // Validación cruzada metodoPago/montoContraEntrega — replica la regla de crear().
     const metodoEfectivo = dto.metodoPago ?? pedido.metodoPago;
@@ -425,7 +467,10 @@ export class PedidosServicio {
     const cambios = this.detectarCambiosPedido(dto, pedido);
     if (cambios.length === 0) return pedido;
 
-    const datos: Prisma.PedidoUpdateInput = { ...dto };
+    // Las FKs escalares de repartidor no existen en PedidoUpdateInput: se manejan
+    // aparte con connect/disconnect.
+    const { repartidorRecogidaId, repartidorEntregaId, ...resto } = dto;
+    const datos: Prisma.PedidoUpdateInput = { ...resto };
     if (dto.telefonoCliente !== undefined) {
       datos.telefonoCliente = `+503${dto.telefonoCliente}`;
     }
@@ -447,12 +492,43 @@ export class PedidosServicio {
       datos.montoContraEntrega = null;
     }
 
+    // Reasignación de repartidores (ADMIN): UUID = connect; null = disconnect.
+    if (repartidorRecogidaId !== undefined) {
+      if (repartidorRecogidaId === null) {
+        datos.repartidorRecogida = { disconnect: true };
+      } else {
+        await this.requerirRepartidorExiste(repartidorRecogidaId);
+        datos.repartidorRecogida = { connect: { id: repartidorRecogidaId } };
+      }
+    }
+    if (repartidorEntregaId !== undefined) {
+      if (repartidorEntregaId === null) {
+        datos.repartidorEntrega = { disconnect: true };
+      } else {
+        await this.requerirRepartidorExiste(repartidorEntregaId);
+        datos.repartidorEntrega = { connect: { id: repartidorEntregaId } };
+      }
+    }
+
+    // Override de estado (ADMIN): salta la máquina de estados. Setea el timestamp
+    // de la transición si aún está vacío. NO ejecuta efectos financieros.
+    const cambiaEstado = dto.estado != null && dto.estado !== pedido.estado;
+    if (cambiaEstado) {
+      const ahora = new Date();
+      if (dto.estado === 'RECOGIDO' && !pedido.recogidoEn) datos.recogidoEn = ahora;
+      if (dto.estado === 'EN_PUNTO_INTERCAMBIO' && !pedido.enIntercambioEn)
+        datos.enIntercambioEn = ahora;
+      if (dto.estado === 'ENTREGADO' && !pedido.entregadoEn) datos.entregadoEn = ahora;
+      if (dto.estado === 'CANCELADO' && !pedido.canceladoEn) datos.canceladoEn = ahora;
+    }
+
+    const estadoEvento = dto.estado ?? pedido.estado;
     const actualizado = await this.prisma.$transaction(async (tx) => {
       const p = await tx.pedido.update({ where: { id }, data: datos });
       await tx.eventoPedido.create({
         data: {
           pedidoId: id,
-          estado: pedido.estado,
+          estado: estadoEvento,
           actorId: usuario.id,
           notas: `Pedido actualizado: ${cambios.join(', ')}`,
         },
@@ -464,8 +540,24 @@ export class PedidosServicio {
       EventosDominio.PedidoActualizado,
       new PedidoActualizadoEvento(id, cambios, usuario.id),
     );
+    if (cambiaEstado) {
+      this.emitirCambio(id, pedido.estado, actualizado.estado, usuario.id);
+    }
 
     return actualizado;
+  }
+
+  private async requerirRepartidorExiste(repartidorId: string) {
+    const existe = await this.prisma.perfilRepartidor.findUnique({
+      where: { id: repartidorId },
+      select: { id: true },
+    });
+    if (!existe) {
+      throw new BadRequestException({
+        codigo: 'PEDIDO_REPARTIDOR_INEXISTENTE',
+        mensaje: `No existe un repartidor con id ${repartidorId}`,
+      });
+    }
   }
 
   // Detecta qué campos del DTO difieren del pedido actual.
@@ -488,6 +580,11 @@ export class PedidosServicio {
       ['valorDeclarado', 'valor declarado'],
       ['montoContraEntrega', 'monto contra entrega'],
       ['metodoPago', 'método de pago'],
+      ['estado', 'estado'],
+      ['costoEnvio', 'costo envío'],
+      ['modoFacturacion', 'modo facturación'],
+      ['repartidorRecogidaId', 'repartidor recogida'],
+      ['repartidorEntregaId', 'repartidor entrega'],
     ];
     for (const [campo, label] of camposSimples) {
       const nuevo = dto[campo];

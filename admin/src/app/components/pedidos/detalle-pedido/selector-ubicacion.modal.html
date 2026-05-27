@@ -1,0 +1,42 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ titulo }}</h5>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Cerrar"
+    (click)="modal.dismiss()"
+  ></button>
+</div>
+<div class="modal-body p-0">
+  @if (tokenAusente) {
+    <div class="alert alert-warning m-3 mb-0">
+      Token de Mapbox no configurado. No se puede mostrar el mapa.
+    </div>
+  } @else {
+    <div class="alert alert-info rounded-0 m-0 small">
+      Haz clic en el mapa o arrastra el marcador para fijar la ubicación.
+    </div>
+    <div #contenedor class="contenedor-mapa"></div>
+  }
+</div>
+<div class="modal-footer flex-wrap">
+  <small class="text-muted me-auto">
+    @if (latActual != null && lngActual != null) {
+      <span class="badge bg-primary me-1">Seleccionado</span>
+      {{ latActual | number: "1.6-6" }}, {{ lngActual | number: "1.6-6" }}
+    } @else {
+      Sin ubicación seleccionada
+    }
+  </small>
+  <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">
+    Cancelar
+  </button>
+  <button
+    type="button"
+    class="btn btn-primary"
+    [disabled]="tokenAusente || latActual == null || lngActual == null"
+    (click)="confirmar()"
+  >
+    Usar esta ubicación
+  </button>
+</div>

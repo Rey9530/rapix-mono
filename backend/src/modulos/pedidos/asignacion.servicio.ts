@@ -42,27 +42,8 @@ export class AsignacionServicio {
       return { asignado: false, motivo: 'Pedido sin zona de origen' };
     }
 
-    // Candidatos: repartidores primarios de la zona origen, disponibles,
-    // con carga activa < 15. Orden: menor carga, mejor calificación.
-    const candidatos = await this.prisma.$queryRawUnsafe<
-      Array<{ id: string; calificacion: number; carga: bigint }>
-    >(
-      `SELECT pr.id, pr.calificacion,
-              (SELECT COUNT(*)
-                 FROM pedidos p
-                 WHERE (p."repartidorRecogidaId" = pr.id OR p."repartidorEntregaId" = pr.id)
-                   AND p.estado IN ('ASIGNADO','RECOGIDO','EN_TRANSITO','EN_PUNTO_INTERCAMBIO','EN_REPARTO')
-              ) AS carga
-       FROM perfiles_repartidor pr
-       INNER JOIN zonas_repartidor zr ON zr."repartidorId" = pr.id
-       WHERE zr."zonaId" = $1
-         AND pr.disponible = true
-       ORDER BY carga ASC, pr.calificacion DESC
-       LIMIT 10`,
-      pedido.zonaOrigenId,
-    );
-
-    const elegido = candidatos.find((c) => Number(c.carga) < CAPACIDAD_MAX);
+    // Mejor repartidor de la zona origen (disponible, con capacidad).
+    const elegido = await this.mejorRiderDisponible(pedido.zonaOrigenId);
     if (!elegido) {
       return { asignado: false, motivo: 'Sin repartidores con capacidad' };
     }
@@ -102,6 +83,62 @@ export class AsignacionServicio {
       carga: Number(elegido.carga),
       pedido: actualizado,
     };
+  }
+
+  /**
+   * Mejor repartidor `disponible` de la zona dada: menor carga activa
+   * (< CAPACIDAD_MAX), desempate por calificación descendente. Devuelve el
+   * candidato elegido o null si ninguno tiene capacidad.
+   */
+  private async mejorRiderDisponible(
+    zonaId: string,
+  ): Promise<{ id: string; calificacion: number; carga: bigint } | null> {
+    const candidatos = await this.prisma.$queryRawUnsafe<
+      Array<{ id: string; calificacion: number; carga: bigint }>
+    >(
+      `SELECT pr.id, pr.calificacion,
+              (SELECT COUNT(*)
+                 FROM pedidos p
+                 WHERE (p."repartidorRecogidaId" = pr.id OR p."repartidorEntregaId" = pr.id)
+                   AND p.estado IN ('ASIGNADO','RECOGIDO','EN_TRANSITO','EN_PUNTO_INTERCAMBIO','EN_REPARTO')
+              ) AS carga
+       FROM perfiles_repartidor pr
+       INNER JOIN zonas_repartidor zr ON zr."repartidorId" = pr.id
+       WHERE zr."zonaId" = $1
+         AND pr.disponible = true
+       ORDER BY carga ASC, pr.calificacion DESC
+       LIMIT 10`,
+      zonaId,
+    );
+    return candidatos.find((c) => Number(c.carga) < CAPACIDAD_MAX) ?? null;
+  }
+
+  /**
+   * Pre-asigna el rider de ENTREGA al crear el pedido, usando la zona de
+   * destino. Silencioso: NO transiciona estado ni emite eventos/notificaciones
+   * (decisión de producto). Best-effort: devuelve { asignado:false } si no hay
+   * zona de destino, ya tiene rider de entrega, o no hay rider con capacidad.
+   */
+  async asignarEntregaAuto(pedidoId: string) {
+    const pedido = await this.prisma.pedido.findUnique({ where: { id: pedidoId } });
+    if (!pedido) return { asignado: false, motivo: 'Pedido no encontrado' };
+    if (!pedido.zonaDestinoId) {
+      return { asignado: false, motivo: 'Pedido sin zona de destino' };
+    }
+    if (pedido.repartidorEntregaId) {
+      return { asignado: false, motivo: 'Ya tiene rider de entrega' };
+    }
+
+    const elegido = await this.mejorRiderDisponible(pedido.zonaDestinoId);
+    if (!elegido) {
+      return { asignado: false, motivo: 'Sin repartidores de entrega con capacidad' };
+    }
+
+    await this.prisma.pedido.update({
+      where: { id: pedidoId },
+      data: { repartidorEntregaId: elegido.id },
+    });
+    return { asignado: true, repartidorId: elegido.id };
   }
 
   async asignarManual(usuario: Usuario, pedidoId: string, dto: AsignarPedidoDto) {

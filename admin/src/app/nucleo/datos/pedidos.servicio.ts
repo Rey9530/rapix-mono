@@ -4,7 +4,14 @@ import { Injectable, inject } from "@angular/core";
 import { Observable } from "rxjs";
 
 import { environment } from "../../../environments/environment";
-import { FiltrosPedido, Pedido, PedidoDetalle } from "../modelos/pedido.modelo";
+import {
+  EstadoPedido,
+  FiltrosPedido,
+  MetodoPago,
+  ModoFacturacion,
+  Pedido,
+  PedidoDetalle,
+} from "../modelos/pedido.modelo";
 import { RespuestaPaginada } from "../modelos/respuesta-paginada.modelo";
 
 export interface AsignarManualPayload {
@@ -28,6 +35,35 @@ export interface RespuestaAsignarMultiple {
   fallidos: Array<{ pedidoId: string; motivo: string }>;
 }
 
+// Todos los campos son opcionales (PATCH parcial). Los campos solo-ADMIN
+// (estado, repartidores, costoEnvio, modoFacturacion) los rechaza el backend
+// para roles distintos de ADMIN.
+export interface ActualizarPedidoPayload {
+  nombreCliente?: string;
+  telefonoCliente?: string;
+  emailCliente?: string;
+  direccionOrigen?: string;
+  latitudOrigen?: number;
+  longitudOrigen?: number;
+  notasOrigen?: string;
+  direccionDestino?: string;
+  latitudDestino?: number;
+  longitudDestino?: number;
+  notasDestino?: string;
+  descripcionPaquete?: string;
+  pesoPaqueteKg?: number;
+  valorDeclarado?: number;
+  montoContraEntrega?: number;
+  metodoPago?: MetodoPago;
+  programadoPara?: string;
+  // Solo ADMIN
+  estado?: EstadoPedido;
+  modoFacturacion?: ModoFacturacion;
+  costoEnvio?: number;
+  repartidorRecogidaId?: string | null;
+  repartidorEntregaId?: string | null;
+}
+
 @Injectable({ providedIn: "root" })
 export class PedidosServicio {
   private readonly http = inject(HttpClient);
@@ -45,6 +81,13 @@ export class PedidosServicio {
 
   obtenerPorId(id: string): Observable<PedidoDetalle> {
     return this.http.get<PedidoDetalle>(`${this.base}/${id}`);
+  }
+
+  actualizar(
+    id: string,
+    payload: ActualizarPedidoPayload,
+  ): Observable<Pedido> {
+    return this.http.patch<Pedido>(`${this.base}/${id}`, payload);
   }
 
   asignarAutomatico(): Observable<{
