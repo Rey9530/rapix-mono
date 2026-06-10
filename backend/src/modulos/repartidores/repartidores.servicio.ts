@@ -201,12 +201,14 @@ export class RepartidoresServicio {
   ) {
     const perfil = await this.perfilDeUsuario(usuarioId);
     if (tipo === 'recogidas-pendientes') {
-      const { inicio, fin } = rangoDelDiaElSalvador();
+      // Día en curso y anteriores: solo se acota el límite superior al fin
+      // del día SV para excluir pedidos programados a futuro.
+      const { fin } = rangoDelDiaElSalvador();
       return this.prisma.pedido.findMany({
         where: {
           repartidorRecogidaId: perfil.id,
           estado: 'ASIGNADO',
-          programadoPara: { gte: inicio, lte: fin },
+          programadoPara: { lte: fin },
         },
         include: { vendedor: { select: { id: true, nombreNegocio: true } } },
         orderBy: [{ vendedorId: 'asc' }, { creadoEn: 'asc' }],

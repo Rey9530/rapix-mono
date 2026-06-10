@@ -44,3 +44,13 @@ Este repositorio lo consumen tanto **Claude Code** como **Gemini** (y eventualme
 - **Cualquier documentación dentro de una carpeta** (p. ej. `docs/`, `admin-template/`, `backend/`, `admin/`, futuros módulos, etc.) **debe llamarse `README.md`**. No crear archivos `CLAUDE.md` dentro de subcarpetas.
 - Al **buscar o documentar** algo específico de una carpeta: leer/escribir el `README.md` de esa carpeta, nunca un `CLAUDE.md`.
 - Motivo: `README.md` es el nombre estándar que entienden todos los agentes y herramientas (GitHub, Gemini, IDEs). `CLAUDE.md` solo sobrevive en la raíz porque es el archivo que Claude Code carga automáticamente como instrucciones del proyecto.
+
+## graphify
+
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+Rules:
+- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
