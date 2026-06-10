@@ -59,6 +59,14 @@ export const content: Routes = [
       ),
   },
   {
+    path: "configuracion",
+    data: { title: "Configuración", breadcrumb: "Configuración" },
+    loadChildren: () =>
+      import("../../components/configuracion/configuracion.routes").then(
+        (r) => r.configuracionRoutes,
+      ),
+  },
+  {
     path: "whatsapp",
     data: { title: "WhatsApp", breadcrumb: "WhatsApp" },
     loadChildren: () =>

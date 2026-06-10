@@ -11,6 +11,7 @@ import '../../caracteristicas/autenticacion/iniciar_sesion_pantalla.dart';
 import '../../caracteristicas/autenticacion/recuperar_contrasena_pantalla.dart';
 import '../../caracteristicas/autenticacion/registrar_pantalla.dart';
 import '../../caracteristicas/autenticacion/selector_ubicacion_pantalla.dart';
+import '../../caracteristicas/actualizacion/actualizacion_requerida_pantalla.dart';
 import '../../caracteristicas/cobros/cobro_detalle_pantalla.dart';
 import '../../caracteristicas/cobros/cobros_pantalla.dart';
 import '../../caracteristicas/inicio/inicio_pantalla.dart';
@@ -74,13 +75,15 @@ final enrutadorAppProvider = Provider<GoRouter>((ref) {
           auth.usuario != null &&
           !auth.usuario!.registroCompleto) {
         if (ruta == '/completar-registro' ||
-            ruta.startsWith('/seleccionar-ubicacion')) {
+            ruta.startsWith('/seleccionar-ubicacion') ||
+            ruta == '/actualizacion-requerida') {
           return null;
         }
         return '/completar-registro';
       }
 
       final esPublica = ruta == '/splash' ||
+          ruta == '/actualizacion-requerida' ||
           ruta.startsWith('/iniciar-sesion') ||
           ruta.startsWith('/registrar') ||
           ruta.startsWith('/recuperar-contrasena') ||
@@ -102,6 +105,10 @@ final enrutadorAppProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/splash',
         builder: (_, _) => const SplashPantalla(),
+      ),
+      GoRoute(
+        path: '/actualizacion-requerida',
+        builder: (_, _) => const ActualizacionRequeridaPantalla(),
       ),
       GoRoute(
         path: '/iniciar-sesion',

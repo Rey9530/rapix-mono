@@ -951,3 +951,21 @@ model ConfirmacionEntregaIntercambio {
   @@index([conversacionId, creadoEn])
   @@map("confirmacion_entrega_intercambios")
 }
+
+// ============================================================
+// MODELOS — Configuracion global del sistema
+// ============================================================
+
+enum AplicacionMovil {
+  CLIENTES
+  REPARTIDORES
+}
+
+model VersionApp {
+  id            String          @id @default(uuid())
+  aplicacion    AplicacionMovil @unique
+  versionMinima String
+  actualizadoEn DateTime        @updatedAt
+
+  @@map("versiones_app")
+}

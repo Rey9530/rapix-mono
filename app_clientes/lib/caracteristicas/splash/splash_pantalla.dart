@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../datos/repositorios/configuracion_repositorio.dart';
 import '../../nucleo/tema/tokens_rapix.dart';
 import '../../widgets/wordmark_rapix.dart';
 import '../autenticacion/autenticacion_controlador.dart';
@@ -19,9 +20,14 @@ class SplashPantalla extends ConsumerStatefulWidget {
 }
 
 class _SplashPantallaState extends ConsumerState<SplashPantalla> {
+  /// Verificación de versión mínima contra el backend; corre en paralelo
+  /// con la inicialización de sesión. Es fail-open (nunca lanza).
+  late final Future<bool> _actualizacionRequerida;
+
   @override
   void initState() {
     super.initState();
+    _actualizacionRequerida = ref.read(actualizacionRequeridaProvider.future);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(autenticacionControladorProvider.notifier).inicializarSesion();
     });
@@ -34,9 +40,13 @@ class _SplashPantallaState extends ConsumerState<SplashPantalla> {
   @override
   Widget build(BuildContext context) {
     ref.listen<AutenticacionEstado>(autenticacionControladorProvider,
-        (anterior, actual) {
+        (anterior, actual) async {
       if (!actual.inicializado || actual.cargando || actual.errorRed) return;
-      if (actual.autenticado) {
+      final requiereActualizar = await _actualizacionRequerida;
+      if (!context.mounted) return;
+      if (requiereActualizar) {
+        context.go('/actualizacion-requerida');
+      } else if (actual.autenticado) {
         context.go('/inicio');
       } else {
         context.go('/iniciar-sesion');

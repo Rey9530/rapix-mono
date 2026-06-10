@@ -28,6 +28,7 @@ import { NotificacionesModulo } from './modulos/notificaciones/notificaciones.mo
 import { MapasModulo } from './modulos/mapas/mapas.modulo.js';
 import { WhatsappModulo } from './modulos/whatsapp/whatsapp.modulo.js';
 import { ConfirmacionEntregaModulo } from './modulos/confirmacion-entrega/confirmacion-entrega.modulo.js';
+import { ConfiguracionModulo } from './modulos/configuracion/configuracion.modulo.js';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { ConfirmacionEntregaModulo } from './modulos/confirmacion-entrega/confir
     ReportesModulo,
     WhatsappModulo,
     ConfirmacionEntregaModulo,
+    ConfiguracionModulo,
   ],
   providers: [
     // Orden: Throttler primero, JWT, luego Roles.

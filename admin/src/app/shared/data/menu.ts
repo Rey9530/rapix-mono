@@ -65,6 +65,13 @@ export const menuItems: IMenu[] = [
     path: "/reglas-tarifa",
     level: 1,
   },
+  {
+    title: "Configuración",
+    icon: "knowledgebase",
+    type: "link",
+    path: "/configuracion",
+    level: 1,
+  },
 ];
 
 // Array

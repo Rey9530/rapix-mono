@@ -19,6 +19,20 @@ final _regexUrlMapsCorta = RegExp(
   r'^https://maps\.app\.goo\.gl/[A-Za-z0-9_-]+/?(\?.*)?$',
 );
 
+/// Hora límite (7:50 am) para aceptar entregas el mismo día.
+const _horaCorte = 7;
+const _minutoCorte = 50;
+
+/// Fecha mínima de entrega: hoy si aún no son las 7:50 am, mañana si ya pasó.
+DateTime _fechaMinimaEntrega() {
+  final ahora = DateTime.now();
+  final hoy = DateTime(ahora.year, ahora.month, ahora.day);
+  final corte = hoy.add(
+    const Duration(hours: _horaCorte, minutes: _minutoCorte),
+  );
+  return ahora.isBefore(corte) ? hoy : hoy.add(const Duration(days: 1));
+}
+
 class CrearPedidoPantalla extends ConsumerStatefulWidget {
   const CrearPedidoPantalla({super.key});
 
@@ -42,7 +56,7 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
   bool _enviando = false;
   final _selectorImagen = ImagePicker();
 
-  DateTime _fechaEntrega = DateTime.now().add(const Duration(days: 1));
+  DateTime _fechaEntrega = _fechaMinimaEntrega();
 
   @override
   void dispose() {
@@ -167,12 +181,24 @@ class _CrearPedidoPantallaEstado extends ConsumerState<CrearPedidoPantalla> {
     setState(() {
       _metodoPago = 'CONTRA_ENTREGA';
       _foto = null;
-      _fechaEntrega = DateTime.now().add(const Duration(days: 1));
+      _fechaEntrega = _fechaMinimaEntrega();
     });
   }
 
   Future<void> _enviar() async {
     if (!_formulario.currentState!.validate()) return;
+
+    // Revalidar la fecha por si se pasó la hora de corte con la pantalla
+    // abierta (p. ej. eligió "hoy" a las 7:45 y envía a las 8:05).
+    final minima = _fechaMinimaEntrega();
+    if (_fechaEntrega.isBefore(minima)) {
+      setState(() => _fechaEntrega = minima);
+      _mostrarSnack(
+        'Ya pasó la hora límite (7:50 am) para entregas de hoy. '
+        'La fecha de entrega se cambió a mañana.',
+      );
+      return;
+    }
 
     final ctx = await _resolverContextoVendedor();
     if (!mounted) return;
@@ -787,17 +813,12 @@ class _FilaFechaEntrega extends StatelessWidget {
     final etiqueta = DateFormat('EEEE d MMM y', 'es').format(fecha);
     return InkWell(
       onTap: () async {
-        final ahora = DateTime.now();
-        final manana = DateTime(
-          ahora.year,
-          ahora.month,
-          ahora.day,
-        ).add(const Duration(days: 1));
+        final minima = _fechaMinimaEntrega();
         final seleccionada = await showDatePicker(
           context: context,
-          initialDate: fecha.isBefore(manana) ? manana : fecha,
-          firstDate: manana,
-          lastDate: manana.add(const Duration(days: 365)),
+          initialDate: fecha.isBefore(minima) ? minima : fecha,
+          firstDate: minima,
+          lastDate: minima.add(const Duration(days: 365)),
           locale: const Locale('es'),
         );
         if (seleccionada != null) alElegir(seleccionada);

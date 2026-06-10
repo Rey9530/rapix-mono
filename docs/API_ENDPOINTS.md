@@ -463,11 +463,27 @@ Proxy a Mapbox Geocoding (evita exponer la API key).
 
 ---
 
+## ⚙️ Configuración
+
+### `GET /configuracion/version-app/:aplicacion`
+Público. Versión mínima requerida de una app móvil (`aplicacion`: `CLIENTES` | `REPARTIDORES`). Si nunca se ha configurado responde `0.0.0` (no bloquea). Las apps lo consultan en el splash: si la versión instalada es menor, muestran pantalla bloqueante con enlace a Play Store.
+```json
+{ "aplicacion": "CLIENTES", "versionMinima": "1.0.2" }
+```
+
+### `PATCH /configuracion/version-app/:aplicacion` 🔒 `ADMIN`
+Actualiza (upsert) la versión mínima. Subirla solo cuando la nueva versión ya esté disponible al 100% en Play Store.
+```json
+{ "versionMinima": "1.0.2" }
+```
+
+---
+
 ## 📑 Resumen de Endpoints por Rol
 
 | Rol | Endpoints principales |
 |-----|----------------------|
-| **Público** | `/autenticacion/*`, `/pedidos/seguimiento/:codigo`, `/salud` |
+| **Público** | `/autenticacion/*`, `/pedidos/seguimiento/:codigo`, `/salud`, `/configuracion/version-app/:aplicacion` (GET) |
 | **VENDEDOR** | Crear/consultar pedidos, paquetes recargados, reportes propios |
 | **REPARTIDOR** | Flujo de recolección/entrega, cierre financiero, ubicación |
 | **ADMIN** | Gestión total |

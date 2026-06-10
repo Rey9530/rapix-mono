@@ -1,0 +1,77 @@
+<div class="container-fluid">
+  <div class="page-title d-flex justify-content-between align-items-center mb-3">
+    <h3 class="m-0">Configuración</h3>
+  </div>
+
+  @if (mensajeError(); as err) {
+    <div class="alert alert-danger">{{ err }}</div>
+  }
+
+  <div class="card">
+    <div class="card-header">
+      <h5 class="m-0">Versión mínima de las apps</h5>
+      <p class="text-muted mb-0 mt-1">
+        Al subir la versión mínima, toda app instalada con una versión menor
+        mostrará una pantalla de actualización obligatoria al abrirse.
+        Súbela solo cuando la nueva versión ya esté disponible al 100% en
+        Play Store.
+      </p>
+    </div>
+    <div class="card-body">
+      @for (fila of filas(); track fila.aplicacion) {
+        <div class="row g-3 align-items-end border-bottom py-3">
+          <div class="col-md-5">
+            <div class="fw-semibold">{{ fila.etiqueta }}</div>
+            <div class="text-muted small">{{ fila.descripcion }}</div>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small text-muted mb-1">Versión actual</label>
+            <div>
+              @if (fila.cargando) {
+                <div class="spinner-border spinner-border-sm text-primary"></div>
+              } @else {
+                <span class="badge bg-light text-dark fs-6">
+                  {{ fila.versionMinima === "0.0.0" ? "Sin configurar" : fila.versionMinima }}
+                </span>
+              }
+            </div>
+            @if (fila.actualizadoEn) {
+              <div class="text-muted small mt-1">
+                {{ fila.actualizadoEn | date: "dd/MM/yyyy HH:mm" }}
+              </div>
+            }
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small text-muted mb-1">Nueva versión mínima</label>
+            <input
+              class="form-control"
+              type="text"
+              placeholder="1.0.2"
+              [disabled]="fila.cargando || fila.guardando"
+              [ngModel]="fila.versionEditada"
+              (ngModelChange)="alEditar(fila.aplicacion, $event)"
+              [class.is-invalid]="
+                fila.versionEditada && !versionValida(fila.versionEditada)
+              "
+            />
+            <div class="invalid-feedback">Formato x.y.z (ej. 1.0.2)</div>
+          </div>
+          <div class="col-md-2">
+            <button
+              class="btn btn-primary w-100"
+              [disabled]="
+                fila.cargando ||
+                fila.guardando ||
+                !versionValida(fila.versionEditada) ||
+                fila.versionEditada.trim() === fila.versionMinima
+              "
+              (click)="guardar(fila.aplicacion)"
+            >
+              {{ fila.guardando ? "Guardando..." : "Guardar" }}
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>
