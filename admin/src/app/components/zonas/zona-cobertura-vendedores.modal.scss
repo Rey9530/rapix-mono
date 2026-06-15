@@ -1,0 +1,114 @@
+.contenedor-mapa-wrapper {
+  width: 100%;
+  height: calc(100vh - 200px);
+  min-height: 480px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.cobertura-layout {
+  align-items: stretch;
+}
+
+// flex 4 : 1 da 80% / 20% exacto descontando el gap-3 entre ambos.
+.cobertura-mapa {
+  flex: 4 1 0;
+  min-width: 0;
+}
+
+.cobertura-lista {
+  flex: 1 1 0;
+  min-width: 240px;
+}
+
+.overlay-cargando,
+.overlay-vacio {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.85);
+  pointer-events: none;
+  text-align: center;
+  padding: 1rem;
+}
+
+.contenedor-mapa {
+  width: 100%;
+  height: 100%;
+}
+
+::ng-deep .marcador-vendedor {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-estado, #6c757d);
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  transition: transform 0.12s ease;
+
+  &:hover {
+    transform: scale(1.15);
+  }
+
+  &.fuera {
+    background: transparent !important;
+    box-shadow:
+      0 0 0 2px #fff,
+      0 0 0 4px var(--color-estado, #6c757d);
+  }
+}
+
+::ng-deep .marcador-punto-intercambio {
+  width: 26px;
+  height: 26px;
+  background: #0d6efd;
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+
+.punto-leyenda {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--c, #6c757d);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+  margin-right: 4px;
+  vertical-align: middle;
+
+  &.fuera {
+    background: transparent;
+    box-shadow: 0 0 0 2px var(--c, #6c757d);
+  }
+}
+
+.lista-vendedores {
+  max-height: calc(100vh - 320px);
+  min-height: 320px;
+  overflow-y: auto;
+}
+
+.vendedor-item {
+  cursor: default;
+}
+
+.min-w-0 {
+  min-width: 0;
+}
+
+.leyenda {
+  line-height: 1.8;
+}

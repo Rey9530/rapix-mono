@@ -94,6 +94,17 @@ export class ZonasControlador {
 
   @ApiBearerAuth('autenticacion-jwt')
   @Roles('ADMIN')
+  @Get(':id/cobertura-vendedores')
+  @ApiOperation({
+    summary:
+      'Cobertura de la zona con ubicacion de vendedores (ADMIN). Calcula si cada vendedor cae dentro del poligono y su distancia al centro.',
+  })
+  coberturaVendedores(@Param('id', ParseUUIDPipe) id: string) {
+    return this.servicio.obtenerCoberturaVendedores(id);
+  }
+
+  @ApiBearerAuth('autenticacion-jwt')
+  @Roles('ADMIN')
   @Post(':id/repartidores')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Asignar repartidores a la zona (reemplaza/actualiza)' })

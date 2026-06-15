@@ -8,6 +8,7 @@ import { RepartidorDeZona } from "../modelos/repartidor.modelo";
 import {
   ActualizarZonaPayload,
   AsignarRepartidoresPayload,
+  CoberturaVendedores,
   CrearZonaPayload,
   RespuestaAsignacionRepartidores,
   Zona,
@@ -54,5 +55,11 @@ export class ZonasServicio {
 
   repartidoresPorZona(id: string): Observable<RepartidorDeZona[]> {
     return this.http.get<RepartidorDeZona[]>(`${this.base}/${id}/repartidores`);
+  }
+
+  coberturaVendedores(id: string): Observable<CoberturaVendedores> {
+    return this.http.get<CoberturaVendedores>(
+      `${this.base}/${id}/cobertura-vendedores`,
+    );
   }
 }

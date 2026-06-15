@@ -5,9 +5,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
+import type { EstadoUsuario } from '../../generated/prisma/client.js';
 import { PrismaServicio } from '../../prisma/prisma.servicio.js';
 import { ActualizarZonaDto } from './dto/actualizar-zona.dto.js';
 import { AsignarRepartidoresAZonaDto } from './dto/asignar-repartidores.dto.js';
+import {
+  CoberturaVendedoresDto,
+  PuntoIntercambioEnCoberturaDto,
+  VendedorEnCoberturaDto,
+} from './dto/cobertura-vendedores.dto.js';
 import { CrearZonaDto } from './dto/crear-zona.dto.js';
 import { PuntoGeoDto } from './dto/punto-geo.dto.js';
 import { ZonaDto } from './dto/zona.dto.js';
@@ -246,5 +252,68 @@ export class ZonasServicio {
     });
 
     return { asignados: dto.repartidorIds.length };
+  }
+
+  /**
+   * Devuelve la zona junto con la lista de vendedores y, para cada uno,
+   * si su ubicación cae dentro del polígono y a cuántos metros está del
+   * centro de la zona. Útil para diagnóstico operativo.
+   *
+   * Si la zona no tiene polígono definido devuelve la zona con un array
+   * vacío (no es un error; la cobertura no es aplicable).
+   */
+  async obtenerCoberturaVendedores(
+    zonaId: string,
+  ): Promise<CoberturaVendedoresDto> {
+    const zona = await this.obtenerPorId(zonaId);
+
+    if (!zona.poligono || zona.poligono.length < 3) {
+      return { zona, vendedores: [], puntoIntercambio: null };
+    }
+
+    // PostGIS calcula dentroDeZona y distanciaAlCentroMetros.
+    // - ST_MakePoint(x, y) espera (longitud, latitud).
+    // - ST_Transform(..., 3857) proyecta a Web Mercator para que
+    //   ST_Distance devuelva metros directamente.
+    const filas = await this.prisma.$queryRawUnsafe<VendedorEnCoberturaDto[]>(
+      `SELECT
+         u.id                              AS "usuarioId",
+         pv.id                             AS "perfilVendedorId",
+         u."nombreCompleto"                AS "nombreCompleto",
+         u.email                           AS "email",
+         u.telefono                        AS "telefono",
+         u.estado                          AS "estado",
+         pv."nombreNegocio"                AS "nombreNegocio",
+         pv.direccion                      AS "direccion",
+         pv.latitud                        AS "latitud",
+         pv.longitud                       AS "longitud",
+         ST_Contains(
+           z.poligono,
+           ST_SetSRID(ST_MakePoint(pv.longitud, pv.latitud), 4326)
+         )                                 AS "dentroDeZona",
+         ST_Distance(
+           ST_Transform(ST_SetSRID(ST_MakePoint(pv.longitud, pv.latitud), 4326), 3857),
+           ST_Transform(ST_SetSRID(ST_MakePoint(z."longitudCentro", z."latitudCentro"), 4326), 3857)
+         )                                 AS "distanciaAlCentroMetros"
+       FROM zonas z
+       CROSS JOIN perfiles_vendedor pv
+       INNER JOIN usuarios u ON u.id = pv."usuarioId"
+       WHERE z.id = $1
+         AND u.rol = 'VENDEDOR'
+       ORDER BY "dentroDeZona" DESC, "distanciaAlCentroMetros" ASC`,
+      zonaId,
+    );
+
+    // Enriquecer el punto de intercambio (consulta barata, una fila).
+    let puntoIntercambio: PuntoIntercambioEnCoberturaDto | null = null;
+    if (zona.puntoIntercambioId) {
+      const p = await this.prisma.puntoIntercambio.findUnique({
+        where: { id: zona.puntoIntercambioId },
+        select: { id: true, nombre: true, latitud: true, longitud: true },
+      });
+      if (p) puntoIntercambio = p;
+    }
+
+    return { zona, vendedores: filas, puntoIntercambio };
   }
 }

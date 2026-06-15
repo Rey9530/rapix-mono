@@ -8,6 +8,7 @@ import { Subject, debounceTime } from "rxjs";
 import Swal from "sweetalert2";
 
 import { ZonaAsignarRepartidoresModal } from "./zona-asignar-repartidores.modal";
+import { ZonaCoberturaVendedoresModal } from "./zona-cobertura-vendedores.modal";
 import { ZonaDetalleModal } from "./zona-detalle.modal";
 import { ZonaFormularioModal } from "./zona-formulario.modal";
 import { ZonasServicio } from "../../nucleo/datos/zonas.servicio";
@@ -120,6 +121,14 @@ export class Zonas implements OnInit {
     });
     ref.componentInstance.zonaId = zona.id;
     ref.componentInstance.codigoZona = zona.codigo;
+  }
+
+  abrirCoberturaVendedores(zona: Zona): void {
+    const ref = this.modal.open(ZonaCoberturaVendedoresModal, {
+      size: "fullscreen",
+      scrollable: true,
+    });
+    ref.componentInstance.zonaId = zona.id;
   }
 
   async eliminar(zona: Zona): Promise<void> {

@@ -1,3 +1,5 @@
+import type { EstadoUsuario } from "./usuario.modelo";
+
 export interface PuntoGeo {
   lat: number;
   lng: number;
@@ -44,4 +46,36 @@ export interface AsignarRepartidoresPayload {
 
 export interface RespuestaAsignacionRepartidores {
   asignados: number;
+}
+
+// ============================================================
+// Cobertura de zona con vendedores
+// ============================================================
+
+export interface VendedorEnCobertura {
+  usuarioId: string;
+  perfilVendedorId: string;
+  nombreCompleto: string;
+  email: string;
+  telefono: string | null;
+  estado: EstadoUsuario;
+  nombreNegocio: string;
+  direccion: string;
+  latitud: number;
+  longitud: number;
+  dentroDeZona: boolean;
+  distanciaAlCentroMetros: number;
+}
+
+export interface PuntoIntercambioEnCobertura {
+  id: string;
+  nombre: string;
+  latitud: number;
+  longitud: number;
+}
+
+export interface CoberturaVendedores {
+  zona: Zona;
+  vendedores: VendedorEnCobertura[];
+  puntoIntercambio: PuntoIntercambioEnCobertura | null;
 }

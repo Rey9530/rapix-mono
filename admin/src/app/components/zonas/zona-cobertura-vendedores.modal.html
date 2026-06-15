@@ -1,0 +1,186 @@
+<div class="modal-header">
+  <h5 class="modal-title">
+    Cobertura · vendedores en zona
+    @if (cobertura(); as c) {
+      <span class="badge bg-info ms-2">{{ c.zona.codigo }}</span>
+      <span class="ms-2">{{ c.zona.nombre }}</span>
+      @if (c.zona.activa) {
+        <span class="badge bg-success ms-1">Activa</span>
+      } @else {
+        <span class="badge bg-secondary ms-1">Inactiva</span>
+      }
+    }
+  </h5>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Cerrar"
+    (click)="cerrar()"
+  ></button>
+</div>
+
+<div class="modal-body">
+  @if (error(); as err) {
+    <div class="alert alert-danger">{{ err }}</div>
+  } @else {
+    <div class="d-flex gap-3 cobertura-layout">
+      <div class="cobertura-mapa">
+        <div class="contenedor-mapa-wrapper position-relative">
+          <!--
+            El #contenedor del mapa vive SIEMPRE en el DOM para que el
+            ViewChild esté disponible en ngAfterViewInit. Los estados de
+            carga/vacío se muestran con overlays absolutos encima.
+          -->
+          <div #contenedor class="contenedor-mapa"></div>
+
+          @if (cargando()) {
+            <div class="overlay-cargando">
+              <div class="spinner-border text-primary"></div>
+            </div>
+          } @else if (cobertura() && !tienePoligono(cobertura()!.zona)) {
+            <div class="overlay-vacio text-muted small">
+              Esta zona no tiene un polígono definido.
+            </div>
+          } @else if (tokenAusente) {
+            <div class="overlay-vacio text-muted small">
+              Token de Mapbox no configurado.
+            </div>
+          }
+        </div>
+
+        <div class="small text-muted mt-2 leyenda">
+          <span class="me-3">
+            <span
+              class="punto-leyenda"
+              [style.--c]="colorEstado('ACTIVO')"
+            ></span>
+            Activo
+          </span>
+          <span class="me-3">
+            <span
+              class="punto-leyenda"
+              [style.--c]="colorEstado('INACTIVO')"
+            ></span>
+            Inactivo
+          </span>
+          <span class="me-3">
+            <span
+              class="punto-leyenda"
+              [style.--c]="colorEstado('SUSPENDIDO')"
+            ></span>
+            Suspendido
+          </span>
+          <span class="me-3">
+            <span
+              class="punto-leyenda"
+              [style.--c]="colorEstado('PENDIENTE_VERIFICACION')"
+            ></span>
+            Pendiente
+          </span>
+          <span class="me-3">
+            <span
+              class="punto-leyenda fuera"
+              [style.--c]="colorEstado('ACTIVO')"
+            ></span>
+            Fuera de la zona
+          </span>
+        </div>
+      </div>
+
+      <div class="cobertura-lista">
+        @if (cobertura(); as c) {
+          <div class="card mb-2">
+            <div class="card-body py-2 px-3">
+              <div class="d-flex justify-content-between align-items-center small">
+                <span class="fw-semibold">
+                  {{ vendedoresFiltrados().length }} vendedor(es)
+                </span>
+                <span>
+                  <span class="badge bg-success">{{ countDentro() }} dentro</span>
+                  <span class="badge bg-danger ms-1">{{ countFuera() }} fuera</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex flex-wrap gap-1 mb-2">
+            @for (f of filtrosDisponibles; track f) {
+              <button
+                type="button"
+                class="btn btn-sm"
+                [class.btn-primary]="filtroEstado() === f"
+                [class.btn-outline-secondary]="filtroEstado() !== f"
+                (click)="cambiarFiltro(f)"
+              >
+                {{ f === "PENDIENTE_VERIFICACION" ? "Pendiente" : f === "TODOS" ? "Todos" : (f | titlecase) }}
+              </button>
+            }
+          </div>
+
+          <div class="lista-vendedores">
+            @if (vendedoresFiltrados().length === 0) {
+              <div class="alert alert-warning small mb-0">
+                @if (c.vendedores.length === 0) {
+                  Esta zona no tiene vendedores con perfil cargado.
+                } @else {
+                  Ningún vendedor coincide con el filtro seleccionado.
+                }
+              </div>
+            } @else {
+              @for (v of vendedoresFiltrados(); track v.usuarioId) {
+                <div class="card mb-2 vendedor-item">
+                  <div class="card-body p-2">
+                    <div class="d-flex justify-content-between align-items-start gap-2">
+                      <div class="flex-grow-1 min-w-0">
+                        <div class="fw-semibold text-truncate" [title]="v.nombreNegocio">
+                          {{ v.nombreNegocio }}
+                        </div>
+                        <div class="small text-muted text-truncate" [title]="v.nombreCompleto">
+                          {{ v.nombreCompleto }}
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-secondary flex-shrink-0"
+                        title="Centrar mapa en este vendedor"
+                        (click)="centrarEnVendedor(v)"
+                      >
+                        ⌖
+                      </button>
+                    </div>
+                    <div class="d-flex flex-wrap gap-1 mt-1">
+                      <span class="badge" [ngClass]="badgeEstadoClass(v.estado)">
+                        {{ v.estado }}
+                      </span>
+                      @if (v.dentroDeZona) {
+                        <span class="badge bg-success">Dentro</span>
+                      } @else {
+                        <span class="badge bg-danger">Fuera</span>
+                      }
+                      <span class="badge bg-light text-dark">
+                        {{ formatearDistancia(v.distanciaAlCentroMetros) }}
+                      </span>
+                    </div>
+                    <div class="small text-muted mt-1 text-truncate" [title]="v.direccion">
+                      {{ v.direccion }}
+                    </div>
+                  </div>
+                </div>
+              }
+            }
+          </div>
+        } @else if (!cargando()) {
+          <div class="alert alert-warning small mb-0">
+            No se pudo cargar la información de cobertura.
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="cerrar()">
+    Cerrar
+  </button>
+</div>
