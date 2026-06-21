@@ -13,7 +13,14 @@ class PantallaListaEntregas extends ConsumerWidget {
     final asincrono = ref.watch(entregasPendientesProveedor);
 
     return RefreshIndicator(
-      onRefresh: () async => ref.invalidate(entregasPendientesProveedor),
+      onRefresh: () async {
+        try {
+          final future = ref.refresh(entregasPendientesProveedor.future);
+          await future;
+        } catch (_) {
+          // Si el refresh falla, el bloque `error:` del `.when` muestra feedback.
+        }
+      },
       child: asincrono.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => ListView(

@@ -38,6 +38,12 @@ export class PedidoEventosManejador {
 
   @OnEvent(EventosDominio.PedidoEstadoCambiado, { async: true })
   async alCambiarEstado(evento: PedidoEstadoCambiadoEvento): Promise<void> {
+    if (evento.silencioso) {
+      this.logger.debug(
+        `Cambio de estado silencioso ${evento.desde} -> ${evento.hacia} para pedido ${evento.pedidoId} (sin notificaciones)`,
+      );
+      return;
+    }
     const pedido = await this.cargarPedido(evento.pedidoId);
     if (!pedido) return;
     const cs = pedido.codigoSeguimiento;

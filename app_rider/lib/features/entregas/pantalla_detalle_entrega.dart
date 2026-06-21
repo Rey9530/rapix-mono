@@ -82,6 +82,8 @@ class _Cuerpo extends ConsumerWidget {
         ),
         if (TarjetaPaquete.aplicaPara(pedido)) TarjetaPaquete(pedido: pedido),
         TarjetaCobro(pedido: pedido),
+        if (TarjetaTotalEntrega.aplicaPara(pedido))
+          TarjetaTotalEntrega(pedido: pedido),
         if (TarjetaLineaTiempo.aplicaPara(pedido))
           TarjetaLineaTiempo(pedido: pedido),
         const SizedBox(height: 16),

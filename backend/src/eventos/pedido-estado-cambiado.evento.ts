@@ -7,5 +7,6 @@ export class PedidoEstadoCambiadoEvento {
     public readonly hacia: EstadoPedido,
     public readonly actorId: string | null,
     public readonly ts: Date,
+    public readonly silencioso: boolean = false,
   ) {}
 }

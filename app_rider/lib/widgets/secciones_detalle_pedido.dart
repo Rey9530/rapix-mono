@@ -475,6 +475,111 @@ class TarjetaCobro extends StatelessWidget {
   }
 }
 
+class TarjetaTotalEntrega extends StatelessWidget {
+  final Pedido pedido;
+  const TarjetaTotalEntrega({super.key, required this.pedido});
+
+  static bool aplicaPara(Pedido p) =>
+      p.costoEnvio != null ||
+      p.valorDeclarado != null ||
+      p.montoContraEntrega != null;
+
+  @override
+  Widget build(BuildContext context) {
+    final fmt = NumberFormat.currency(symbol: r'$', decimalDigits: 2);
+    final envio = _aDouble(pedido.costoEnvio);
+    final valorDeclarado = _aDouble(pedido.valorDeclarado);
+    final contraEntrega = _aDouble(pedido.montoContraEntrega);
+    final total = envio + valorDeclarado + contraEntrega;
+
+    final filas = <Widget>[];
+    if (envio > 0) {
+      filas.add(FilaInfo(etiqueta: 'Envío', valor: fmt.format(envio)));
+    }
+    if (valorDeclarado > 0) {
+      if (filas.isNotEmpty) filas.add(const SizedBox(height: 4));
+      filas.add(FilaInfo(etiqueta: 'Valor del paquete', valor: fmt.format(valorDeclarado)));
+    }
+    if (contraEntrega > 0) {
+      if (filas.isNotEmpty) filas.add(const SizedBox(height: 4));
+      filas.add(FilaInfo(etiqueta: 'Contra entrega', valor: fmt.format(contraEntrega)));
+    }
+
+    return TarjetaSeccion(
+      titulo: 'Total de la entrega',
+      icono: Icons.receipt_long,
+      hijos: [
+        ...filas,
+        const Divider(height: 24),
+        Row(
+          children: [
+            const Text(
+              'Total a cobrar',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+            ),
+            const Spacer(),
+            Text(
+              fmt.format(total),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
+          ],
+        ),
+        ..._buildNotaPago(),
+      ],
+    );
+  }
+
+  double _aDouble(String? s) {
+    if (s == null || s.isEmpty) return 0.0;
+    return double.tryParse(s) ?? 0.0;
+  }
+
+  List<Widget> _buildNotaPago() {
+    final nota = switch (pedido.metodoPago) {
+      'PREPAGADO' => (
+        texto: 'Pagado por el cliente',
+        color: Colors.green.shade700,
+        icono: Icons.check_circle_outline,
+      ),
+      'CONTRA_ENTREGA' => (
+        texto: 'A cobrar al cliente',
+        color: Colors.orange.shade800,
+        icono: Icons.payments_outlined,
+      ),
+      'PAGADO_ORIGEN' => (
+        texto: 'Pagado en origen',
+        color: Colors.blueGrey.shade700,
+        icono: Icons.store_outlined,
+      ),
+      _ => null,
+    };
+    if (nota == null) return const [];
+    return [
+      const SizedBox(height: 12),
+      Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: nota.color.withValues(alpha: 0.10),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: nota.color.withValues(alpha: 0.4)),
+        ),
+        child: Row(
+          children: [
+            Icon(nota.icono, size: 18, color: nota.color),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                nota.texto,
+                style: TextStyle(color: nota.color, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ];
+  }
+}
+
 class TarjetaLineaTiempo extends StatelessWidget {
   final Pedido pedido;
   const TarjetaLineaTiempo({super.key, required this.pedido});

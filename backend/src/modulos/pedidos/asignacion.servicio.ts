@@ -32,7 +32,7 @@ export class AsignacionServicio {
    *   - carga activa < 15 pedidos
    *   - menor carga primero, desempate por calificación descendente
    */
-  async asignar(pedidoId: string, actorId: string) {
+  async asignar(pedidoId: string, actorId: string, silencioso: boolean = false) {
     const pedido = await this.prisma.pedido.findUnique({ where: { id: pedidoId } });
     if (!pedido) throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
     if (pedido.estado !== 'PENDIENTE_ASIGNACION') {
@@ -74,6 +74,7 @@ export class AsignacionServicio {
         'ASIGNADO',
         actorId,
         new Date(),
+        silencioso,
       ),
     );
 

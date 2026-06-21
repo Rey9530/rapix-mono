@@ -305,13 +305,15 @@ export class PedidosServicio {
     }
 
     // Auto-asignación al crear (best-effort: nunca debe romper la creación).
-    // Recogida: rider de la zona ORIGEN -> transiciona a ASIGNADO y notifica
-    // (vendedor + rider de recogida) vía el evento existente.
+    // Recogida: rider de la zona ORIGEN -> transiciona a ASIGNADO. La
+    // transición se emite como silenciosa para no enviar PUSH al vendedor ni
+    // al rider en el alta del pedido (decisión de producto: el primer
+    // contacto automático es en RECOGIDO / EN_REPARTO).
     // Entrega: si hay zona DESTINO, pre-asigna en silencio el rider de esa
     // zona (sin notificar a nadie). Si no hay rider con capacidad en alguna
     // zona, el pedido queda en PENDIENTE_ASIGNACION para asignación posterior.
     try {
-      await this.asignacion.asignar(resultado.pedido.id, usuario.id);
+      await this.asignacion.asignar(resultado.pedido.id, usuario.id, true);
       if (resultado.pedido.zonaDestinoId) {
         await this.asignacion.asignarEntregaAuto(resultado.pedido.id);
       }
@@ -1003,10 +1005,11 @@ export class PedidosServicio {
     desde: EstadoPedido,
     hacia: EstadoPedido,
     actorId: string | null,
+    silencioso: boolean = false,
   ) {
     this.eventos.emit(
       EventosDominio.PedidoEstadoCambiado,
-      new PedidoEstadoCambiadoEvento(pedidoId, desde, hacia, actorId, new Date()),
+      new PedidoEstadoCambiadoEvento(pedidoId, desde, hacia, actorId, new Date(), silencioso),
     );
   }
 
