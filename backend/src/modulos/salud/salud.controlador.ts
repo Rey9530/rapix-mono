@@ -40,7 +40,9 @@ export class SaludControlador {
   @ApiBearerAuth('autenticacion-jwt')
   @Get('operativa')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Health check extendido (ADMIN): entorno, versión, dependencias' })
+  @ApiOperation({
+    summary: 'Health check extendido (ADMIN): entorno, versión, dependencias',
+  })
   async obtenerEstadoOperativo(): Promise<RespuestaSaludOperativa> {
     const base = await this.estadoBase();
     return {
@@ -52,10 +54,7 @@ export class SaludControlador {
   }
 
   private async estadoBase(): Promise<RespuestaSalud> {
-    const [bd, redis] = await Promise.all([
-      this.pingBd(),
-      this.redis.ping(),
-    ]);
+    const [bd, redis] = await Promise.all([this.pingBd(), this.redis.ping()]);
     const degradado = !bd || !redis;
     return {
       estado: degradado ? 'degradado' : 'ok',

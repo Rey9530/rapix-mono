@@ -51,7 +51,9 @@ export class AutenticacionServicio {
     dto: RegistrarDto,
     contexto: ContextoPeticion = {},
   ): Promise<RespuestaAutenticacionDto> {
-    const emailExiste = await this.prisma.usuario.findUnique({ where: { email: dto.email } });
+    const emailExiste = await this.prisma.usuario.findUnique({
+      where: { email: dto.email },
+    });
     if (emailExiste) throw new ConflictException('El email ya está registrado');
 
     const telefonoCompleto = `+503${dto.telefono}`;
@@ -59,7 +61,8 @@ export class AutenticacionServicio {
     const telefonoExiste = await this.prisma.usuario.findUnique({
       where: { telefono: telefonoCompleto },
     });
-    if (telefonoExiste) throw new ConflictException('El teléfono ya está registrado');
+    if (telefonoExiste)
+      throw new ConflictException('El teléfono ya está registrado');
 
     if (dto.rol === RolRegistrable.VENDEDOR) {
       if (
@@ -141,14 +144,20 @@ export class AutenticacionServicio {
     dto: IniciarSesionDto,
     contexto: ContextoPeticion = {},
   ): Promise<RespuestaAutenticacionDto> {
-    const usuario = await this.prisma.usuario.findUnique({ where: { email: dto.email } });
+    const usuario = await this.prisma.usuario.findUnique({
+      where: { email: dto.email },
+    });
     if (!usuario) throw new UnauthorizedException('Credenciales inválidas');
 
     // Cuentas creadas vía Google no tienen hashContrasena: no permitir login
     // local. Mensaje genérico para no filtrar el método de registro.
-    if (!usuario.hashContrasena) throw new UnauthorizedException('Credenciales inválidas');
+    if (!usuario.hashContrasena)
+      throw new UnauthorizedException('Credenciales inválidas');
 
-    const coincide = await compararContrasena(dto.contrasena, usuario.hashContrasena);
+    const coincide = await compararContrasena(
+      dto.contrasena,
+      usuario.hashContrasena,
+    );
     if (!coincide) throw new UnauthorizedException('Credenciales inválidas');
 
     if (usuario.estado === 'SUSPENDIDO' || usuario.estado === 'INACTIVO') {
@@ -158,7 +167,11 @@ export class AutenticacionServicio {
     const actualizado = await this.prisma.usuario.update({
       where: { id: usuario.id },
       data: { ultimoIngresoEn: new Date() },
-      include: { perfilAdmin: true, perfilVendedor: true, perfilRepartidor: true },
+      include: {
+        perfilAdmin: true,
+        perfilVendedor: true,
+        perfilRepartidor: true,
+      },
     });
 
     return this.emitirPar(actualizado, contexto);
@@ -265,7 +278,11 @@ export class AutenticacionServicio {
     usuario = await this.prisma.usuario.update({
       where: { id: usuario.id },
       data: { ultimoIngresoEn: new Date() },
-      include: { perfilAdmin: true, perfilVendedor: true, perfilRepartidor: true },
+      include: {
+        perfilAdmin: true,
+        perfilVendedor: true,
+        perfilRepartidor: true,
+      },
     });
 
     return this.emitirPar(usuario, contexto);
@@ -330,9 +347,12 @@ export class AutenticacionServicio {
   ): Promise<RespuestaAutenticacionDto> {
     let payload: PayloadRefresco;
     try {
-      payload = await this.jwtService.verifyAsync<PayloadRefresco>(dto.tokenRefresco, {
-        secret: process.env.JWT_REFRESH_SECRET as string,
-      });
+      payload = await this.jwtService.verifyAsync<PayloadRefresco>(
+        dto.tokenRefresco,
+        {
+          secret: process.env.JWT_REFRESH_SECRET as string,
+        },
+      );
     } catch {
       throw new UnauthorizedException('Token de refresco inválido');
     }
@@ -347,8 +367,14 @@ export class AutenticacionServicio {
       throw new UnauthorizedException('Token de refresco inválido');
     }
 
-    const usuario = await this.prisma.usuario.findUnique({ where: { id: payload.sub } });
-    if (!usuario || usuario.estado === 'SUSPENDIDO' || usuario.estado === 'INACTIVO') {
+    const usuario = await this.prisma.usuario.findUnique({
+      where: { id: payload.sub },
+    });
+    if (
+      !usuario ||
+      usuario.estado === 'SUSPENDIDO' ||
+      usuario.estado === 'INACTIVO'
+    ) {
       throw new UnauthorizedException('Usuario no autorizado');
     }
 
@@ -384,7 +410,8 @@ export class AutenticacionServicio {
       { sub: usuario.id, rol: usuario.rol },
       {
         secret: process.env.JWT_ACCESS_SECRET as string,
-        expiresIn: (process.env.JWT_ACCESS_EXPIRES ?? '15m') as unknown as number,
+        expiresIn: (process.env.JWT_ACCESS_EXPIRES ??
+          '15m') as unknown as number,
       },
     );
 
@@ -393,11 +420,14 @@ export class AutenticacionServicio {
       { sub: usuario.id, jti },
       {
         secret: process.env.JWT_REFRESH_SECRET as string,
-        expiresIn: (process.env.JWT_REFRESH_EXPIRES ?? '30d') as unknown as number,
+        expiresIn: (process.env.JWT_REFRESH_EXPIRES ??
+          '30d') as unknown as number,
       },
     );
 
-    const expiraEn = this.calcularExpiracion(process.env.JWT_REFRESH_EXPIRES ?? '30d');
+    const expiraEn = this.calcularExpiracion(
+      process.env.JWT_REFRESH_EXPIRES ?? '30d',
+    );
 
     await this.prisma.tokenRefresco.create({
       data: {
@@ -430,7 +460,12 @@ export class AutenticacionServicio {
       return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
     }
     const valor = Number(match[1]);
-    const factores = { s: 1_000, m: 60_000, h: 3_600_000, d: 86_400_000 } as const;
+    const factores = {
+      s: 1_000,
+      m: 60_000,
+      h: 3_600_000,
+      d: 86_400_000,
+    } as const;
     const factor = factores[match[2] as keyof typeof factores];
     return new Date(Date.now() + valor * factor);
   }

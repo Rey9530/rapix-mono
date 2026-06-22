@@ -44,6 +44,7 @@ Update notificaciones.estado = ENVIADO | FALLIDO
 |--------|----------|------------|---------------|-------|
 | `PEDIDO_CREADO` | EMAIL | — | WHATSAPP (link seguimiento) | — |
 | `PEDIDO_ASIGNADO` | PUSH | PUSH | — | — |
+| `PEDIDO_RIDER_EN_TIENDA` | PUSH | — | — | — |
 | `PEDIDO_RECOGIDO` | PUSH | — | WHATSAPP + PUSH | — |
 | `PEDIDO_EN_TRANSITO` | — | — | PUSH/WHATSAPP | — |
 | `PEDIDO_EN_REPARTO` | PUSH | — | WHATSAPP + PUSH | — |

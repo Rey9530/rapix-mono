@@ -24,26 +24,36 @@ export class PaqueteEventosManejador {
     if (evento.estado !== 'ACTIVO') return;
     const usuarioId = await this.usuarioVendedor(evento.vendedorId);
     if (!usuarioId) return;
-    await this.enviarPlantilla('PAQUETE_COMPRADO_VENDEDOR', usuarioId, ['PUSH', 'EMAIL'], [
-      evento.enviosTotales,
-      evento.precio,
-    ]);
+    await this.enviarPlantilla(
+      'PAQUETE_COMPRADO_VENDEDOR',
+      usuarioId,
+      ['PUSH', 'EMAIL'],
+      [evento.enviosTotales, evento.precio],
+    );
   }
 
   @OnEvent(EventosDominio.PaqueteAgotado, { async: true })
   async alAgotar(evento: PaqueteAgotadoEvento): Promise<void> {
     const usuarioId = await this.usuarioVendedor(evento.vendedorId);
     if (!usuarioId) return;
-    await this.enviarPlantilla('PAQUETE_AGOTADO_VENDEDOR', usuarioId, ['PUSH', 'EMAIL'], []);
+    await this.enviarPlantilla(
+      'PAQUETE_AGOTADO_VENDEDOR',
+      usuarioId,
+      ['PUSH', 'EMAIL'],
+      [],
+    );
   }
 
   @OnEvent(EventosDominio.PaqueteSaldoBajo, { async: true })
   async alSaldoBajo(evento: PaqueteSaldoBajoEvento): Promise<void> {
     const usuarioId = await this.usuarioVendedor(evento.vendedorId);
     if (!usuarioId) return;
-    await this.enviarPlantilla('PAQUETE_SALDO_BAJO_VENDEDOR', usuarioId, ['PUSH', 'EMAIL'], [
-      evento.enviosRestantes,
-    ]);
+    await this.enviarPlantilla(
+      'PAQUETE_SALDO_BAJO_VENDEDOR',
+      usuarioId,
+      ['PUSH', 'EMAIL'],
+      [evento.enviosRestantes],
+    );
   }
 
   @OnEvent(EventosDominio.PaqueteAutorizado, { async: true })
@@ -74,7 +84,9 @@ export class PaqueteEventosManejador {
   // Helpers
   // ──────────────────────────────────────────────────
 
-  private async usuarioVendedor(perfilVendedorId: string): Promise<string | null> {
+  private async usuarioVendedor(
+    perfilVendedorId: string,
+  ): Promise<string | null> {
     const perfil = await this.prisma.perfilVendedor.findUnique({
       where: { id: perfilVendedorId },
       select: { usuarioId: true },

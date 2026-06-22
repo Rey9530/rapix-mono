@@ -56,7 +56,9 @@ export class AutenticacionControlador {
   @Publico()
   @Post('iniciar-sesion')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Autentica con email/contraseña y emite par de tokens' })
+  @ApiOperation({
+    summary: 'Autentica con email/contraseña y emite par de tokens',
+  })
   @ApiOkResponse({ type: RespuestaAutenticacionDto })
   iniciarSesion(
     @Body() dto: IniciarSesionDto,

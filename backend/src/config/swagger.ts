@@ -10,7 +10,10 @@ export function configurarSwagger(app: INestApplication): void {
     )
     .setVersion('1.0.0')
     .setContact('Equipo Rapix', '', 'soporte@delivery.com')
-    .addServer(`http://localhost:${process.env.PORT ?? 3000}`, 'Desarrollo local')
+    .addServer(
+      `http://localhost:${process.env.PORT ?? 3000}`,
+      'Desarrollo local',
+    )
     .addBearerAuth(
       {
         type: 'http',

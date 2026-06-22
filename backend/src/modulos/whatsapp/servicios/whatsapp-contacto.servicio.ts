@@ -25,7 +25,10 @@ export class WhatsappContactoServicio {
     });
   }
 
-  async asegurarPorJid(jid: string, nombre?: string | null): Promise<ContactoWhatsapp> {
+  async asegurarPorJid(
+    jid: string,
+    nombre?: string | null,
+  ): Promise<ContactoWhatsapp> {
     return this.prisma.contactoWhatsapp.upsert({
       where: { jid },
       create: {

@@ -28,11 +28,17 @@ export class PushAdaptador implements CanalAdaptador, OnModuleInit {
       this.app = admin.apps.length
         ? admin.app()
         : admin.initializeApp({
-            credential: admin.credential.cert({ projectId, privateKey, clientEmail }),
+            credential: admin.credential.cert({
+              projectId,
+              privateKey,
+              clientEmail,
+            }),
           });
       this.logger.log('Firebase Admin SDK inicializado.');
     } catch (error) {
-      this.logger.error(`No se pudo inicializar Firebase: ${(error as Error).message}`);
+      this.logger.error(
+        `No se pudo inicializar Firebase: ${(error as Error).message}`,
+      );
     }
   }
 
@@ -99,7 +105,8 @@ export class PushAdaptador implements CanalAdaptador, OnModuleInit {
 }
 
 function aplanarDatos(datos: unknown): Record<string, string> {
-  if (datos === null || datos === undefined || typeof datos !== 'object') return {};
+  if (datos === null || datos === undefined || typeof datos !== 'object')
+    return {};
   const salida: Record<string, string> = {};
   for (const [k, v] of Object.entries(datos as Record<string, unknown>)) {
     salida[k] = typeof v === 'string' ? v : JSON.stringify(v);

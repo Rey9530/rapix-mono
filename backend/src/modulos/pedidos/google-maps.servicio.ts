@@ -26,8 +26,7 @@ export class GoogleMapsServicio {
       );
       throw new BadRequestException({
         codigo: 'PEDIDO_URL_MAPAS_INVALIDA',
-        mensaje:
-          'No se pudieron extraer coordenadas de la URL de Google Maps',
+        mensaje: 'No se pudieron extraer coordenadas de la URL de Google Maps',
       });
     }
     return coords;
@@ -46,8 +45,7 @@ export class GoogleMapsServicio {
       }
       throw new BadRequestException({
         codigo: 'PEDIDO_URL_MAPAS_INVALIDA',
-        mensaje:
-          'La URL de Google Maps no devolvió una redirección esperada',
+        mensaje: 'La URL de Google Maps no devolvió una redirección esperada',
       });
     } catch (error) {
       if (error instanceof BadRequestException) throw error;
@@ -62,9 +60,7 @@ export class GoogleMapsServicio {
     }
   }
 
-  private extraerCoordenadas(
-    url: string,
-  ): { lat: number; lng: number } | null {
+  private extraerCoordenadas(url: string): { lat: number; lng: number } | null {
     const decodificada = decodeURIComponent(url);
     for (const patron of PATRONES_COORDENADAS) {
       const match = decodificada.match(patron);

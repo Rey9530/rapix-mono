@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, type RegistroAuditoria } from '../../generated/prisma/client.js';
+import {
+  Prisma,
+  type RegistroAuditoria,
+} from '../../generated/prisma/client.js';
 import { PrismaServicio } from '../../prisma/prisma.servicio.js';
 
 export interface RegistroAuditoriaInput {

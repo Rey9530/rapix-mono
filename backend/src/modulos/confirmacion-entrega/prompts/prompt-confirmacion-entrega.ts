@@ -60,7 +60,8 @@ export function componerMensajeInicial(params: {
   nombreCliente: string;
   nombreNegocio: string;
 }): string {
-  const primer = params.nombreCliente.trim().split(/\s+/)[0] || params.nombreCliente;
+  const primer =
+    params.nombreCliente.trim().split(/\s+/)[0] || params.nombreCliente;
   return (
     `Hola ${primer}, soy el asistente de Rapix. ${params.nombreNegocio} envio un pedido para ti y el repartidor ya va en camino.\n\n` +
     `Podras recibirlo en los proximos minutos? Si tienes alguna indicacion (por ejemplo, dejarlo en porteria), respondeme con ella.`
@@ -76,7 +77,8 @@ export function componerMensajePedirDireccion(params: {
   nombreCliente: string;
   nombreNegocio: string;
 }): string {
-  const primer = params.nombreCliente.trim().split(/\s+/)[0] || params.nombreCliente;
+  const primer =
+    params.nombreCliente.trim().split(/\s+/)[0] || params.nombreCliente;
   return (
     `Hola ${primer}, soy el asistente de Rapix. ${params.nombreNegocio} envio un pedido para ti y el repartidor ya va en camino.\n\n` +
     `Aun no tenemos la ubicacion exacta de entrega. Por favor, respondeme con:\n` +

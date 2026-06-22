@@ -32,7 +32,9 @@ export interface ParamsEnviarNotificacion {
 @Injectable()
 export class NotificacionesServicio {
   private readonly logger = new Logger(NotificacionesServicio.name);
-  private readonly limiteHora = Number(process.env.NOTIFICACIONES_LIMITE_HORA ?? 20);
+  private readonly limiteHora = Number(
+    process.env.NOTIFICACIONES_LIMITE_HORA ?? 20,
+  );
 
   constructor(
     private readonly prisma: PrismaServicio,
@@ -63,7 +65,9 @@ export class NotificacionesServicio {
           canal: params.canal,
           titulo: params.titulo,
           cuerpo: params.cuerpo,
-          datos: params.datos ? (params.datos as Prisma.InputJsonValue) : Prisma.JsonNull,
+          datos: params.datos
+            ? (params.datos as Prisma.InputJsonValue)
+            : Prisma.JsonNull,
           destino: params.destino ?? null,
           estado: 'FALLIDO',
           mensajeError: 'RATE_LIMIT_EXCEDIDO',
@@ -77,14 +81,18 @@ export class NotificacionesServicio {
         canal: params.canal,
         titulo: params.titulo,
         cuerpo: params.cuerpo,
-        datos: params.datos ? (params.datos as Prisma.InputJsonValue) : Prisma.JsonNull,
+        datos: params.datos
+          ? (params.datos as Prisma.InputJsonValue)
+          : Prisma.JsonNull,
         destino: params.destino ?? null,
         estado: 'PENDIENTE',
       },
     });
 
     const usuario = params.usuarioId
-      ? await this.prisma.usuario.findUnique({ where: { id: params.usuarioId } })
+      ? await this.prisma.usuario.findUnique({
+          where: { id: params.usuarioId },
+        })
       : null;
 
     try {
@@ -155,7 +163,8 @@ export class NotificacionesServicio {
 
   async marcarComoLeida(usuario: Usuario, id: string): Promise<Notificacion> {
     const notif = await this.prisma.notificacion.findUnique({ where: { id } });
-    if (!notif) throw new NotFoundException({ codigo: 'NOTIFICACION_NO_ENCONTRADA' });
+    if (!notif)
+      throw new NotFoundException({ codigo: 'NOTIFICACION_NO_ENCONTRADA' });
     if (notif.usuarioId !== usuario.id) {
       throw new ForbiddenException({ codigo: 'NOTIFICACION_NO_AUTORIZADA' });
     }
@@ -187,7 +196,9 @@ export class NotificacionesServicio {
    * en Redis sobre clave `notif:cuota:<usuarioId>`. Si Redis no está
    * disponible, deja pasar (fail-open) y registra warning.
    */
-  private async intentarConsumirCuota(usuarioId: string | null): Promise<boolean> {
+  private async intentarConsumirCuota(
+    usuarioId: string | null,
+  ): Promise<boolean> {
     if (!usuarioId) return true;
     try {
       const clave = `notif:cuota:${usuarioId}`;

@@ -1,29 +1,45 @@
-import { IsDateString, IsEnum, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
+import {
+  IsDateString,
+  IsEnum,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+} from 'class-validator';
 import { EstadoPedido } from '../../../generated/prisma/client.js';
 import { PaginacionDto } from '../../../comun/dto/paginacion.dto.js';
 
 export class FiltrosPedidoDto extends PaginacionDto {
-  @IsOptional() @IsEnum(EstadoPedido)
+  @IsOptional()
+  @IsEnum(EstadoPedido)
   estado?: EstadoPedido;
 
-  @IsOptional() @IsUUID()
+  @IsOptional()
+  @IsUUID()
   zonaId?: string;
 
-  @IsOptional() @IsUUID()
+  @IsOptional()
+  @IsUUID()
   zonaDestinoId?: string;
 
-  @IsOptional() @IsUUID()
+  @IsOptional()
+  @IsUUID()
   vendedorId?: string;
 
-  @IsOptional() @IsUUID()
+  @IsOptional()
+  @IsUUID()
   repartidorId?: string;
 
-  @IsOptional() @IsDateString()
+  @IsOptional()
+  @IsDateString()
   desde?: string;
 
-  @IsOptional() @IsDateString()
+  @IsOptional()
+  @IsDateString()
   hasta?: string;
 
-  @IsOptional() @IsString() @MaxLength(120)
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
   busqueda?: string;
 }

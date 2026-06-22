@@ -80,8 +80,18 @@ export class WhatsappChatServicio {
       ...(filtros.busqueda
         ? {
             OR: [
-              { nombre: { contains: filtros.busqueda, mode: 'insensitive' as const } },
-              { jid: { contains: filtros.busqueda, mode: 'insensitive' as const } },
+              {
+                nombre: {
+                  contains: filtros.busqueda,
+                  mode: 'insensitive' as const,
+                },
+              },
+              {
+                jid: {
+                  contains: filtros.busqueda,
+                  mode: 'insensitive' as const,
+                },
+              },
             ],
           }
         : {}),

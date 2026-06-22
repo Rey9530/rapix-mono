@@ -44,7 +44,10 @@ export class VerificacionCorreoManejador {
       /\/$/,
       '',
     );
-    const prefijo = (process.env.API_PREFIX ?? 'api/v1').replace(/^\/|\/$/g, '');
+    const prefijo = (process.env.API_PREFIX ?? 'api/v1').replace(
+      /^\/|\/$/g,
+      '',
+    );
     return `${base}/${prefijo}/autenticacion/verificar-correo?token=${tokenClaro}`;
   }
 }

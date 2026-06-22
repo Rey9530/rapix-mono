@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/network/excepciones_api.dart';
+import '../../core/proveedores_globales.dart';
 import '../../data/modelos/pedido.dart';
 import '../../widgets/tarjeta_pedido.dart';
 import 'proveedor_recogidas.dart';
@@ -82,6 +85,7 @@ class PantallaListaRecogidas extends ConsumerWidget {
               return _GrupoVendedor(
                 nombre: grupo.nombre,
                 pedidos: grupo.pedidos,
+                vendedorId: grupo.vendedorId,
                 onTapPedido: (id) => context.go('/inicio/recogidas/$id'),
               );
             },
@@ -101,6 +105,7 @@ class PantallaListaRecogidas extends ConsumerWidget {
         indicePorVendedor[clave] = grupos.length;
         grupos.add(_GrupoRecogidas(
           nombre: pedido.nombreVendedor ?? 'Sin vendedor',
+          vendedorId: pedido.vendedorId,
           pedidos: [pedido],
         ));
       } else {
@@ -113,43 +118,151 @@ class PantallaListaRecogidas extends ConsumerWidget {
 
 class _GrupoRecogidas {
   final String nombre;
+  final String? vendedorId;
   final List<Pedido> pedidos;
 
-  _GrupoRecogidas({required this.nombre, required this.pedidos});
+  _GrupoRecogidas({
+    required this.nombre,
+    required this.vendedorId,
+    required this.pedidos,
+  });
 }
 
-class _GrupoVendedor extends StatelessWidget {
+class _GrupoVendedor extends ConsumerStatefulWidget {
   final String nombre;
+  final String? vendedorId;
   final List<Pedido> pedidos;
   final void Function(String id) onTapPedido;
 
   const _GrupoVendedor({
     required this.nombre,
+    required this.vendedorId,
     required this.pedidos,
     required this.onTapPedido,
   });
 
   @override
+  ConsumerState<_GrupoVendedor> createState() => _GrupoVendedorEstado();
+}
+
+class _GrupoVendedorEstado extends ConsumerState<_GrupoVendedor> {
+  bool _enviando = false;
+
+  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final avisos = ref.watch(avisosEnviadosPorVendedor);
+    final vendedorKey = widget.vendedorId ?? '__sin_vendedor__';
+    final enCooldown = vendedorEnCooldown(avisos, vendedorKey);
+    final primerPedido = widget.pedidos.first;
+    final puedeAvisar = primerPedido.estado == EstadoPedido.ASIGNADO;
+
     return Theme(
-      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+      data: theme.copyWith(dividerColor: Colors.transparent),
       child: ExpansionTile(
         initiallyExpanded: true,
         tilePadding: const EdgeInsets.symmetric(horizontal: 16),
         childrenPadding: EdgeInsets.zero,
         title: Text(
-          '$nombre (${pedidos.length})',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+          '${widget.nombre} (${widget.pedidos.length})',
+          style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
         ),
-        children: pedidos
-            .map((p) => TarjetaPedido(
-                  pedido: p,
-                  onTap: () => onTapPedido(p.id),
-                ))
-            .toList(),
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: (_enviando || enCooldown || !puedeAvisar)
+                        ? null
+                        : () => _avisarLlegada(),
+                    icon: Icon(
+                      enCooldown ? Icons.check_circle : Icons.storefront,
+                      size: 18,
+                    ),
+                    label: Text(
+                      enCooldown
+                          ? 'Aviso enviado'
+                          : 'Avísale que estoy aquí',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(44),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ...widget.pedidos.map(
+            (p) => TarjetaPedido(
+              pedido: p,
+              onTap: () => widget.onTapPedido(p.id),
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Future<void> _avisarLlegada() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final repo = ref.read(pedidosRepositorioProveedor);
+    final vendedorKey = widget.vendedorId ?? '__sin_vendedor__';
+    final primerPedido = widget.pedidos.first;
+
+    setState(() => _enviando = true);
+    try {
+      Position? pos;
+      try {
+        pos = await _ubicacionActual();
+      } catch (_) {
+        // continúa sin geo
+      }
+      await repo.avisarLlegadaTienda(
+        primerPedido.id,
+        lat: pos?.latitude,
+        lng: pos?.longitude,
+      );
+      final actuales = ref.read(avisosEnviadosPorVendedor);
+      ref.read(avisosEnviadosPorVendedor.notifier).state = {
+        ...actuales,
+        vendedorKey: DateTime.now(),
+      };
+      if (!mounted) return;
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('Aviso enviado a ${widget.nombre}'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } on ExcepcionApi catch (e) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(e.mensaje),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _enviando = false);
+    }
+  }
+
+  Future<Position?> _ubicacionActual() async {
+    final habilitado = await Geolocator.isLocationServiceEnabled();
+    if (!habilitado) return null;
+    var permiso = await Geolocator.checkPermission();
+    if (permiso == LocationPermission.denied) {
+      permiso = await Geolocator.requestPermission();
+      if (permiso == LocationPermission.denied) return null;
+    }
+    if (permiso == LocationPermission.deniedForever) return null;
+    return Geolocator.getCurrentPosition(
+      locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
     );
   }
 }

@@ -29,7 +29,8 @@ export class ActualizarPaqueteAsignadoDto {
   estado?: EstadoPaquete;
 
   @ApiPropertyOptional({
-    description: 'Fecha de expiración. Si se envía null se elimina el vencimiento.',
+    description:
+      'Fecha de expiración. Si se envía null se elimina el vencimiento.',
     nullable: true,
   })
   @IsOptional()

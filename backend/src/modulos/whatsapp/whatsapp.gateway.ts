@@ -64,11 +64,7 @@ export class WhatsappGateway
         where: { id: payload.sub },
         select: { rol: true, estado: true },
       });
-      if (
-        !usuario ||
-        usuario.rol !== 'ADMIN' ||
-        usuario.estado !== 'ACTIVO'
-      ) {
+      if (!usuario || usuario.rol !== 'ADMIN' || usuario.estado !== 'ACTIVO') {
         this.logger.warn(
           `WS rechazado (rol=${usuario?.rol ?? 'n/a'}, estado=${usuario?.estado ?? 'n/a'}).`,
         );
@@ -106,12 +102,16 @@ export class WhatsappGateway
 
   @OnEvent(EventosDominio.WhatsappEstadoCambiado, { async: true })
   alCambiarEstado(payload: { sesion: SesionWhatsapp }): void {
-    this.servidor.to(SALA_ADMINS).emit('sesion:estado', sesionADto(payload.sesion));
+    this.servidor
+      .to(SALA_ADMINS)
+      .emit('sesion:estado', sesionADto(payload.sesion));
   }
 
   @OnEvent(EventosDominio.WhatsappQrDisponible, { async: true })
   alGenerarseQr(payload: { sesion: SesionWhatsapp }): void {
-    this.servidor.to(SALA_ADMINS).emit('sesion:estado', sesionADto(payload.sesion));
+    this.servidor
+      .to(SALA_ADMINS)
+      .emit('sesion:estado', sesionADto(payload.sesion));
   }
 
   @OnEvent(EventosDominio.WhatsappChatActualizado, { async: true })
@@ -124,7 +124,9 @@ export class WhatsappGateway
     mensaje: MensajeWhatsapp;
     chat: ChatWhatsapp;
   }): void {
-    this.servidor.to(SALA_ADMINS).emit('mensaje:nuevo', mensajeADto(payload.mensaje));
+    this.servidor
+      .to(SALA_ADMINS)
+      .emit('mensaje:nuevo', mensajeADto(payload.mensaje));
   }
 
   @OnEvent(EventosDominio.WhatsappMensajeEstado, { async: true })
@@ -153,9 +155,7 @@ export class WhatsappGateway
   // ──────────────────────────────────────────────────
 
   private extraerToken(cliente: Socket): string | null {
-    const auth = cliente.handshake.auth as
-      | { token?: unknown }
-      | undefined;
+    const auth = cliente.handshake.auth as { token?: unknown } | undefined;
     if (auth && typeof auth.token === 'string' && auth.token.trim() !== '') {
       return auth.token;
     }

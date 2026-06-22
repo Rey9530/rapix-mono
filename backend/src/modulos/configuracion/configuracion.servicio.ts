@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import type { AplicacionMovil, VersionApp } from '../../generated/prisma/client.js';
+import type {
+  AplicacionMovil,
+  VersionApp,
+} from '../../generated/prisma/client.js';
 import { PrismaServicio } from '../../prisma/prisma.servicio.js';
 import { ActualizarVersionAppDto } from './dto/actualizar-version-app.dto.js';
 

@@ -76,7 +76,8 @@ export class CrearPedidoDto {
   @IsOptional()
   @IsString()
   @Matches(/^https:\/\/maps\.app\.goo\.gl\/[A-Za-z0-9_-]+\/?(\?.*)?$/, {
-    message: 'urlMapasDestino debe ser una URL corta de Google Maps (maps.app.goo.gl)',
+    message:
+      'urlMapasDestino debe ser una URL corta de Google Maps (maps.app.goo.gl)',
   })
   urlMapasDestino?: string;
 
@@ -93,7 +94,8 @@ export class CrearPedidoDto {
 
   @ApiProperty({
     required: false,
-    description: 'Longitud del destino (opcional). Tiene prioridad sobre urlMapasDestino.',
+    description:
+      'Longitud del destino (opcional). Tiene prioridad sobre urlMapasDestino.',
   })
   @IsOptional()
   @Type(() => Number)
@@ -131,14 +133,19 @@ export class CrearPedidoDto {
   @IsEnum(MetodoPago)
   metodoPago!: MetodoPago;
 
-  @ApiProperty({ required: false, description: 'Requerido si metodoPago=CONTRA_ENTREGA' })
+  @ApiProperty({
+    required: false,
+    description: 'Requerido si metodoPago=CONTRA_ENTREGA',
+  })
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
   @IsPositive()
   montoContraEntrega?: number;
 
-  @ApiProperty({ description: 'Fecha de entrega programada (ISO 8601). Obligatorio.' })
+  @ApiProperty({
+    description: 'Fecha de entrega programada (ISO 8601). Obligatorio.',
+  })
   @IsDateString()
   @IsNotEmpty()
   programadoPara!: string;

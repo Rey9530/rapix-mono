@@ -35,7 +35,11 @@ export class CrearZonaDto {
   @MaxLength(240)
   descripcion?: string;
 
-  @ApiProperty({ type: [PuntoGeoDto], description: 'Mínimo 3 puntos. Si no está cerrado, se cierra automáticamente.' })
+  @ApiProperty({
+    type: [PuntoGeoDto],
+    description:
+      'Mínimo 3 puntos. Si no está cerrado, se cierra automáticamente.',
+  })
   @IsArray()
   @ArrayMinSize(3)
   @ValidateNested({ each: true })

@@ -112,7 +112,10 @@ export class PaquetesRecargadosServicio {
     let comprobanteSubidoEn: Date | null = null;
     if (comprobante) {
       const ext = mimeExt(comprobante.mimetype);
-      const key = ArchivosServicio.armarKeyComprobantePaquete(perfilVendedor.id, ext);
+      const key = ArchivosServicio.armarKeyComprobantePaquete(
+        perfilVendedor.id,
+        ext,
+      );
       const { url } = await this.archivos.subir(
         comprobante.buffer,
         key,
@@ -179,7 +182,9 @@ export class PaquetesRecargadosServicio {
     return RespuestaPaginada.de(filas, total, filtros.pagina, filtros.limite);
   }
 
-  async saldo(usuario: Usuario): Promise<{ saldoRecargado: number; paquetesActivos: number }> {
+  async saldo(
+    usuario: Usuario,
+  ): Promise<{ saldoRecargado: number; paquetesActivos: number }> {
     const perfil = await this.requerirPerfilVendedor(usuario);
     const agregado = await this.prisma.paqueteRecargado.aggregate({
       where: { vendedorId: perfil.id, estado: 'ACTIVO' },
@@ -196,7 +201,9 @@ export class PaquetesRecargadosServicio {
   // Listado y mutación admin
   // ──────────────────────────────────────────────────
 
-  async listarAdmin(filtros: FiltrosPaqueteDto): Promise<RespuestaPaginada<PaqueteRecargado>> {
+  async listarAdmin(
+    filtros: FiltrosPaqueteDto,
+  ): Promise<RespuestaPaginada<PaqueteRecargado>> {
     const where: Prisma.PaqueteRecargadoWhereInput = {};
     if (filtros.estado) where.estado = filtros.estado;
     if (filtros.vendedorId) where.vendedorId = filtros.vendedorId;
@@ -215,8 +222,13 @@ export class PaquetesRecargadosServicio {
     return RespuestaPaginada.de(filas, total, filtros.pagina, filtros.limite);
   }
 
-  async cambiarEstado(id: string, dto: ActualizarPaqueteDto): Promise<PaqueteRecargado> {
-    const paquete = await this.prisma.paqueteRecargado.findUnique({ where: { id } });
+  async cambiarEstado(
+    id: string,
+    dto: ActualizarPaqueteDto,
+  ): Promise<PaqueteRecargado> {
+    const paquete = await this.prisma.paqueteRecargado.findUnique({
+      where: { id },
+    });
     if (!paquete) {
       throw new NotFoundException({ codigo: 'PAQUETE_NO_ENCONTRADO' });
     }

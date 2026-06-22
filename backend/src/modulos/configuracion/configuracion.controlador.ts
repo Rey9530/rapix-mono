@@ -8,7 +8,12 @@ import {
   ParseEnumPipe,
   Patch,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Publico } from '../../comun/decoradores/publico.decorador.js';
 import { Roles } from '../../comun/decoradores/roles.decorador.js';
 import { AplicacionMovil } from '../../generated/prisma/client.js';

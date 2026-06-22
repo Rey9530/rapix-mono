@@ -15,7 +15,9 @@ export class EmailAdaptador implements CanalAdaptador, OnModuleInit {
     const host = process.env.SMTP_HOST;
     const port = Number(process.env.SMTP_PORT ?? 1025);
     if (!host) {
-      this.logger.warn('SMTP no configurado (falta SMTP_HOST); email deshabilitado.');
+      this.logger.warn(
+        'SMTP no configurado (falta SMTP_HOST); email deshabilitado.',
+      );
       return;
     }
     const usuario = process.env.SMTP_USER;

@@ -24,14 +24,21 @@ export class ReglasTarifaServicio {
     private readonly auditoria: AuditoriaServicio,
   ) {}
 
-  async crear(dto: CrearReglaTarifaDto, usuarioId: string): Promise<ReglaTarifa> {
+  async crear(
+    dto: CrearReglaTarifaDto,
+    usuarioId: string,
+  ): Promise<ReglaTarifa> {
     this.validarCoherencia(dto.modoFacturacion, {
       precioPorEnvio: dto.precioPorEnvio,
       tamanoPaquete: dto.tamanoPaquete,
       precioPaquete: dto.precioPaquete,
     });
 
-    if (dto.validaDesde && dto.validaHasta && dto.validaHasta < dto.validaDesde) {
+    if (
+      dto.validaDesde &&
+      dto.validaHasta &&
+      dto.validaHasta < dto.validaDesde
+    ) {
       throw new BadRequestException({
         codigo: 'REGLA_TARIFA_VIGENCIA_INVALIDA',
         mensaje: 'validaHasta debe ser posterior a validaDesde',
@@ -43,10 +50,15 @@ export class ReglasTarifaServicio {
         nombre: dto.nombre,
         modoFacturacion: dto.modoFacturacion,
         precioPorEnvio:
-          dto.modoFacturacion === 'POR_ENVIO' ? dto.precioPorEnvio!.toFixed(2) : null,
-        tamanoPaquete: dto.modoFacturacion === 'PAQUETE' ? dto.tamanoPaquete! : null,
+          dto.modoFacturacion === 'POR_ENVIO'
+            ? dto.precioPorEnvio!.toFixed(2)
+            : null,
+        tamanoPaquete:
+          dto.modoFacturacion === 'PAQUETE' ? dto.tamanoPaquete! : null,
         precioPaquete:
-          dto.modoFacturacion === 'PAQUETE' ? dto.precioPaquete!.toFixed(2) : null,
+          dto.modoFacturacion === 'PAQUETE'
+            ? dto.precioPaquete!.toFixed(2)
+            : null,
         activa: dto.activa ?? true,
         validaDesde: dto.validaDesde ?? new Date(),
         validaHasta: dto.validaHasta ?? null,
@@ -58,7 +70,10 @@ export class ReglasTarifaServicio {
       accion: 'REGLA_TARIFA_CREADA',
       tipoEntidad: TIPO_ENTIDAD,
       entidadId: regla.id,
-      metadatos: { nombre: regla.nombre, modoFacturacion: regla.modoFacturacion },
+      metadatos: {
+        nombre: regla.nombre,
+        modoFacturacion: regla.modoFacturacion,
+      },
     });
 
     return regla;
@@ -68,7 +83,8 @@ export class ReglasTarifaServicio {
     filtros: FiltrosReglaTarifaDto,
   ): Promise<RespuestaPaginada<ReglaTarifa>> {
     const where: Prisma.ReglaTarifaWhereInput = {};
-    if (filtros.modoFacturacion) where.modoFacturacion = filtros.modoFacturacion;
+    if (filtros.modoFacturacion)
+      where.modoFacturacion = filtros.modoFacturacion;
     if (filtros.activa !== undefined) where.activa = filtros.activa;
     if (filtros.busqueda) {
       where.nombre = { contains: filtros.busqueda, mode: 'insensitive' };
@@ -142,12 +158,15 @@ export class ReglasTarifaServicio {
 
     const datos: Prisma.ReglaTarifaUpdateInput = {};
     if (dto.nombre !== undefined) datos.nombre = dto.nombre;
-    if (dto.modoFacturacion !== undefined) datos.modoFacturacion = dto.modoFacturacion;
+    if (dto.modoFacturacion !== undefined)
+      datos.modoFacturacion = dto.modoFacturacion;
 
     // Sincronizar campos según modoFinal: limpiar los que no aplican.
     if (modoFinal === 'POR_ENVIO') {
       datos.precioPorEnvio =
-        precioPorEnvioFinal !== undefined ? precioPorEnvioFinal.toFixed(2) : null;
+        precioPorEnvioFinal !== undefined
+          ? precioPorEnvioFinal.toFixed(2)
+          : null;
       datos.tamanoPaquete = null;
       datos.precioPaquete = null;
     } else {
@@ -224,10 +243,14 @@ export class ReglasTarifaServicio {
     },
   ): void {
     if (modo === 'POR_ENVIO') {
-      if (valores.precioPorEnvio === undefined || valores.precioPorEnvio === null) {
+      if (
+        valores.precioPorEnvio === undefined ||
+        valores.precioPorEnvio === null
+      ) {
         throw new BadRequestException({
           codigo: 'REGLA_TARIFA_PRECIO_POR_ENVIO_REQUERIDO',
-          mensaje: 'precioPorEnvio es requerido cuando modoFacturacion = POR_ENVIO',
+          mensaje:
+            'precioPorEnvio es requerido cuando modoFacturacion = POR_ENVIO',
         });
       }
       return;

@@ -57,13 +57,15 @@ export class MailgunAdaptador implements CanalAdaptador, OnModuleInit {
     }
     const region = process.env.MAILGUN_REGION ?? 'us';
     const url =
-      region === 'eu' ? 'https://api.eu.mailgun.net' : 'https://api.mailgun.net';
+      region === 'eu'
+        ? 'https://api.eu.mailgun.net'
+        : 'https://api.mailgun.net';
     const mailgun = new Mailgun(formData);
     this.cliente = mailgun.client({
       username: 'api',
       key: apiKey,
       url,
-    }) as unknown as ClienteMailgun;
+    });
     this.dominio = dominio;
     this.remitente = remitente;
     this.logger.log(
@@ -103,7 +105,10 @@ export class MailgunAdaptador implements CanalAdaptador, OnModuleInit {
     if (plantilla) payload['v:plantilla'] = plantilla;
 
     try {
-      const resultado = await this.cliente.messages.create(this.dominio, payload);
+      const resultado = await this.cliente.messages.create(
+        this.dominio,
+        payload,
+      );
       this.logger.log(
         `email enviado dest=${enmascararEmail(destino)} subject="${notificacion.titulo}" mailgunId=${resultado.id ?? 'desconocido'}`,
       );

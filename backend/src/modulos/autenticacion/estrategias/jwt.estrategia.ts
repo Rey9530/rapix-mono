@@ -24,7 +24,11 @@ export class JwtEstrategia extends PassportStrategy(Strategy, 'jwt') {
       where: { id: payload.sub },
       include: { perfilVendedor: true },
     });
-    if (!usuario || usuario.estado === 'INACTIVO' || usuario.estado === 'SUSPENDIDO') {
+    if (
+      !usuario ||
+      usuario.estado === 'INACTIVO' ||
+      usuario.estado === 'SUSPENDIDO'
+    ) {
       throw new UnauthorizedException('Usuario no autorizado');
     }
     return usuario;

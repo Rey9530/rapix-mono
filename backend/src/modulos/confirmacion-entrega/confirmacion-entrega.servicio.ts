@@ -19,10 +19,7 @@ import { WhatsappConexionServicio } from '../whatsapp/servicios/whatsapp-conexio
 import { WhatsappMensajeServicio } from '../whatsapp/servicios/whatsapp-mensaje.servicio.js';
 import { GeoServicio } from '../zonas/geo.servicio.js';
 import { IaClasificadorServicio } from './ia-clasificador.servicio.js';
-import {
-  clasificarSiNo,
-  extraerUrlMaps,
-} from './parser-respuesta-cliente.js';
+import { clasificarSiNo, extraerUrlMaps } from './parser-respuesta-cliente.js';
 import {
   componerMensajePedirDireccion,
   componerNuevaUbicacionLejos,
@@ -84,12 +81,16 @@ export class ConfirmacionEntregaServicio {
 
   async iniciarConversacion(pedidoId: string): Promise<void> {
     // Idempotencia: si ya existe conversacion para el pedido, no recrear.
-    const previa = await this.prisma.confirmacionEntregaConversacion.findUnique({
-      where: { pedidoId },
-      select: { id: true },
-    });
+    const previa = await this.prisma.confirmacionEntregaConversacion.findUnique(
+      {
+        where: { pedidoId },
+        select: { id: true },
+      },
+    );
     if (previa) {
-      this.logger.debug(`Pedido ${pedidoId} ya tiene conversacion (${previa.id}); omito inicio.`);
+      this.logger.debug(
+        `Pedido ${pedidoId} ya tiene conversacion (${previa.id}); omito inicio.`,
+      );
       return;
     }
 
@@ -216,10 +217,11 @@ export class ConfirmacionEntregaServicio {
       }),
     ]);
 
-    const conv = await this.prisma.confirmacionEntregaConversacion.findUniqueOrThrow({
-      where: { pedidoId },
-      select: { id: true },
-    });
+    const conv =
+      await this.prisma.confirmacionEntregaConversacion.findUniqueOrThrow({
+        where: { pedidoId },
+        select: { id: true },
+      });
 
     await this.prisma.confirmacionEntregaIntercambio.create({
       data: {
@@ -293,7 +295,9 @@ export class ConfirmacionEntregaServicio {
       data: { estado: 'PROCESANDO' },
     });
     if (lock.count === 0) {
-      this.logger.debug(`Lock perdido en conv ${conv.id}; otro worker la tomo.`);
+      this.logger.debug(
+        `Lock perdido en conv ${conv.id}; otro worker la tomo.`,
+      );
       return;
     }
 
@@ -311,7 +315,11 @@ export class ConfirmacionEntregaServicio {
         select: { id: true, texto: true },
       });
       const mensajeAProcesarId = ultimoSinProcesar?.id ?? mensaje.id;
-      const textoCliente = (ultimoSinProcesar?.texto ?? mensaje.texto ?? '').trim();
+      const textoCliente = (
+        ultimoSinProcesar?.texto ??
+        mensaje.texto ??
+        ''
+      ).trim();
 
       // Persistir el turno del cliente (con clasificacion pendiente).
       await this.prisma.confirmacionEntregaIntercambio.create({
@@ -365,7 +373,10 @@ export class ConfirmacionEntregaServicio {
 
       // Notificar al vendedor si el handler lo solicita.
       if (resultado.notificarVendedor) {
-        await this.notificarTimeoutVendedor(conv.id, resultado.notificarVendedor);
+        await this.notificarTimeoutVendedor(
+          conv.id,
+          resultado.notificarVendedor,
+        );
       }
     } catch (error) {
       this.logger.error(
@@ -413,23 +424,24 @@ export class ConfirmacionEntregaServicio {
     textoCliente: string;
   }): Promise<ResultadoHandlerEtapa> {
     // Cargar contexto (turnos previos para alimentar IA).
-    const ctx = await this.prisma.confirmacionEntregaConversacion.findUniqueOrThrow({
-      where: { id: params.conversacionId },
-      select: {
-        pedido: {
-          select: {
-            codigoSeguimiento: true,
-            nombreCliente: true,
-            vendedor: { select: { nombreNegocio: true } },
+    const ctx =
+      await this.prisma.confirmacionEntregaConversacion.findUniqueOrThrow({
+        where: { id: params.conversacionId },
+        select: {
+          pedido: {
+            select: {
+              codigoSeguimiento: true,
+              nombreCliente: true,
+              vendedor: { select: { nombreNegocio: true } },
+            },
+          },
+          intercambios: {
+            orderBy: { creadoEn: 'asc' },
+            take: MAX_TURNOS_CONTEXTO,
+            select: { rol: true, texto: true },
           },
         },
-        intercambios: {
-          orderBy: { creadoEn: 'asc' },
-          take: MAX_TURNOS_CONTEXTO,
-          select: { rol: true, texto: true },
-        },
-      },
-    });
+      });
     const turnosPrevios = ctx.intercambios
       .filter((t) => t.rol === 'BOT' || t.rol === 'CLIENTE')
       .map((t) => ({
@@ -450,7 +462,10 @@ export class ConfirmacionEntregaServicio {
 
     const ahora = new Date();
 
-    if (resultado.intencion === 'CONFIRMA' || resultado.intencion === 'CONDICIONAL') {
+    if (
+      resultado.intencion === 'CONFIRMA' ||
+      resultado.intencion === 'CONDICIONAL'
+    ) {
       const intencionFinal: IntencionConfirmacion = resultado.intencion;
       const notaDefault =
         intencionFinal === 'CONFIRMA'
@@ -493,7 +508,9 @@ export class ConfirmacionEntregaServicio {
         data: {
           estado: 'INICIADA',
           etapa: 'CONFIRMANDO_RECHAZO',
-          vencimientoNotificacionEn: this.calcularVencimiento('CONFIRMANDO_RECHAZO'),
+          vencimientoNotificacionEn: this.calcularVencimiento(
+            'CONFIRMANDO_RECHAZO',
+          ),
           notificacionVendedorEnviada: false,
           latitudOriginal: pedidoActual.latitudDestino,
           longitudOriginal: pedidoActual.longitudDestino,
@@ -556,7 +573,9 @@ export class ConfirmacionEntregaServicio {
         where: { id: params.conversacionId },
         data: {
           estado: 'INICIADA',
-          vencimientoNotificacionEn: this.calcularVencimiento('ESPERANDO_DIRECCION_ORIGINAL'),
+          vencimientoNotificacionEn: this.calcularVencimiento(
+            'ESPERANDO_DIRECCION_ORIGINAL',
+          ),
         },
       });
       return { respuesta: MSG_DIRECCION_SIN_URL };
@@ -574,7 +593,9 @@ export class ConfirmacionEntregaServicio {
         where: { id: params.conversacionId },
         data: {
           estado: 'INICIADA',
-          vencimientoNotificacionEn: this.calcularVencimiento('ESPERANDO_DIRECCION_ORIGINAL'),
+          vencimientoNotificacionEn: this.calcularVencimiento(
+            'ESPERANDO_DIRECCION_ORIGINAL',
+          ),
         },
       });
       return { respuesta: MSG_URL_INVALIDA };
@@ -604,7 +625,10 @@ export class ConfirmacionEntregaServicio {
     }
 
     // Conservar la direccion escrita por el cliente como referencia (sin URL).
-    const direccionEscrita = params.textoCliente.replace(url, '').replace(/[,;\s]+$/, '').trim();
+    const direccionEscrita = params.textoCliente
+      .replace(url, '')
+      .replace(/[,;\s]+$/, '')
+      .trim();
 
     await this.prisma.$transaction([
       this.prisma.pedido.update({
@@ -623,7 +647,9 @@ export class ConfirmacionEntregaServicio {
         data: {
           estado: 'INICIADA',
           etapa: 'CONFIRMACION_INICIAL',
-          vencimientoNotificacionEn: this.calcularVencimiento('CONFIRMACION_INICIAL'),
+          vencimientoNotificacionEn: this.calcularVencimiento(
+            'CONFIRMACION_INICIAL',
+          ),
         },
       }),
     ]);
@@ -666,7 +692,9 @@ export class ConfirmacionEntregaServicio {
         data: {
           estado: 'INICIADA',
           etapa: 'CONFIRMACION_INICIAL',
-          vencimientoNotificacionEn: this.calcularVencimiento('CONFIRMACION_INICIAL'),
+          vencimientoNotificacionEn: this.calcularVencimiento(
+            'CONFIRMACION_INICIAL',
+          ),
           latitudOriginal: null,
           longitudOriginal: null,
         },
@@ -706,7 +734,11 @@ export class ConfirmacionEntregaServicio {
     if (url) {
       // Atajo: viene SI + URL en el mismo mensaje. Procesamos como nueva
       // ubicacion directamente.
-      return this.validarYAplicarNuevaUbicacion(params.conversacionId, params.pedidoId, url);
+      return this.validarYAplicarNuevaUbicacion(
+        params.conversacionId,
+        params.pedidoId,
+        url,
+      );
     }
 
     const decision = clasificarSiNo(params.textoCliente);
@@ -736,7 +768,9 @@ export class ConfirmacionEntregaServicio {
         data: {
           estado: 'INICIADA',
           etapa: 'ESPERANDO_NUEVA_UBICACION',
-          vencimientoNotificacionEn: this.calcularVencimiento('ESPERANDO_NUEVA_UBICACION'),
+          vencimientoNotificacionEn: this.calcularVencimiento(
+            'ESPERANDO_NUEVA_UBICACION',
+          ),
         },
       });
       return { respuesta: MSG_PEDIR_NUEVA_UBICACION };
@@ -764,12 +798,18 @@ export class ConfirmacionEntregaServicio {
         where: { id: params.conversacionId },
         data: {
           estado: 'INICIADA',
-          vencimientoNotificacionEn: this.calcularVencimiento('ESPERANDO_NUEVA_UBICACION'),
+          vencimientoNotificacionEn: this.calcularVencimiento(
+            'ESPERANDO_NUEVA_UBICACION',
+          ),
         },
       });
       return { respuesta: MSG_DIRECCION_SIN_URL };
     }
-    return this.validarYAplicarNuevaUbicacion(params.conversacionId, params.pedidoId, url);
+    return this.validarYAplicarNuevaUbicacion(
+      params.conversacionId,
+      params.pedidoId,
+      url,
+    );
   }
 
   /**
@@ -794,7 +834,9 @@ export class ConfirmacionEntregaServicio {
         data: {
           estado: 'INICIADA',
           etapa: 'ESPERANDO_NUEVA_UBICACION',
-          vencimientoNotificacionEn: this.calcularVencimiento('ESPERANDO_NUEVA_UBICACION'),
+          vencimientoNotificacionEn: this.calcularVencimiento(
+            'ESPERANDO_NUEVA_UBICACION',
+          ),
         },
       });
       return { respuesta: MSG_URL_INVALIDA };
@@ -803,14 +845,21 @@ export class ConfirmacionEntregaServicio {
     // Snapshot guardado al entrar a CONFIRMANDO_RECHAZO. Si no lo tenemos
     // (caso raro: reanudacion desde una etapa intermedia), cargamos del
     // pedido en ese instante para no romper.
-    const conv = await this.prisma.confirmacionEntregaConversacion.findUniqueOrThrow({
-      where: { id: conversacionId },
-      select: {
-        latitudOriginal: true,
-        longitudOriginal: true,
-        pedido: { select: { zonaDestinoId: true, latitudDestino: true, longitudDestino: true } },
-      },
-    });
+    const conv =
+      await this.prisma.confirmacionEntregaConversacion.findUniqueOrThrow({
+        where: { id: conversacionId },
+        select: {
+          latitudOriginal: true,
+          longitudOriginal: true,
+          pedido: {
+            select: {
+              zonaDestinoId: true,
+              latitudDestino: true,
+              longitudDestino: true,
+            },
+          },
+        },
+      });
     const latOrig = conv.latitudOriginal ?? conv.pedido.latitudDestino;
     const lngOrig = conv.longitudOriginal ?? conv.pedido.longitudDestino;
     const zonaOriginalId = conv.pedido.zonaDestinoId;
@@ -881,7 +930,8 @@ export class ConfirmacionEntregaServicio {
           longitudDestino: coords.lng,
           zonaDestinoId: zonaNueva.id,
           entregaConfirmada: true,
-          notaRider: 'Cliente solicito relocalizacion; nueva ubicacion validada',
+          notaRider:
+            'Cliente solicito relocalizacion; nueva ubicacion validada',
         },
       }),
       this.prisma.confirmacionEntregaConversacion.update({
@@ -942,7 +992,9 @@ export class ConfirmacionEntregaServicio {
       return;
     }
     if (conv.notificacionVendedorEnviada) {
-      this.logger.debug(`Conversacion ${conv.id} ya notifico al vendedor; omito.`);
+      this.logger.debug(
+        `Conversacion ${conv.id} ya notifico al vendedor; omito.`,
+      );
       return;
     }
 
@@ -991,7 +1043,11 @@ export class ConfirmacionEntregaServicio {
 
   private resolverPlantillaVendedor(
     motivo: MotivoNotificacionVendedor,
-    ctx: { codigoSeguimiento: string; nombreCliente: string; notaRider: string | null },
+    ctx: {
+      codigoSeguimiento: string;
+      nombreCliente: string;
+      notaRider: string | null;
+    },
   ): { clave: ClavePlantilla; params: Array<string | number> } {
     switch (motivo) {
       case 'TIMEOUT':
@@ -1007,7 +1063,10 @@ export class ConfirmacionEntregaServicio {
       case 'FALLO_ENVIO_INICIAL':
         return {
           clave: 'PEDIDO_CLIENTE_SIN_CONTACTO_VENDEDOR',
-          params: [ctx.codigoSeguimiento, 'No se pudo enviar mensaje por WhatsApp'],
+          params: [
+            ctx.codigoSeguimiento,
+            'No se pudo enviar mensaje por WhatsApp',
+          ],
         };
       case 'RECHAZADA':
         return {
@@ -1067,13 +1126,19 @@ export class ConfirmacionEntregaServicio {
   }
 
   private minutosTimeoutPorEtapa(etapa: EtapaConversacionEntrega): number {
-    const fallback = Number(process.env.CONFIRMACION_ENTREGA_TIMEOUT_MINUTOS ?? 60);
+    const fallback = Number(
+      process.env.CONFIRMACION_ENTREGA_TIMEOUT_MINUTOS ?? 60,
+    );
     const envPorEtapa: Record<EtapaConversacionEntrega, string> = {
       CONFIRMACION_INICIAL: 'CONFIRMACION_ENTREGA_TIMEOUT_MINUTOS',
-      ESPERANDO_DIRECCION_ORIGINAL: 'CONFIRMACION_ENTREGA_TIMEOUT_DIRECCION_MIN',
-      CONFIRMANDO_RECHAZO: 'CONFIRMACION_ENTREGA_TIMEOUT_DOBLE_CONFIRMACION_MIN',
-      OFRECIENDO_UBICACION_ALTERNATIVA: 'CONFIRMACION_ENTREGA_TIMEOUT_OFERTA_MIN',
-      ESPERANDO_NUEVA_UBICACION: 'CONFIRMACION_ENTREGA_TIMEOUT_NUEVA_UBICACION_MIN',
+      ESPERANDO_DIRECCION_ORIGINAL:
+        'CONFIRMACION_ENTREGA_TIMEOUT_DIRECCION_MIN',
+      CONFIRMANDO_RECHAZO:
+        'CONFIRMACION_ENTREGA_TIMEOUT_DOBLE_CONFIRMACION_MIN',
+      OFRECIENDO_UBICACION_ALTERNATIVA:
+        'CONFIRMACION_ENTREGA_TIMEOUT_OFERTA_MIN',
+      ESPERANDO_NUEVA_UBICACION:
+        'CONFIRMACION_ENTREGA_TIMEOUT_NUEVA_UBICACION_MIN',
     };
     const defaults: Record<EtapaConversacionEntrega, number> = {
       CONFIRMACION_INICIAL: fallback,
@@ -1094,5 +1159,9 @@ export class ConfirmacionEntregaServicio {
 interface ResultadoHandlerEtapa {
   respuesta: string;
   intencionClasificada?: IntencionConfirmacion;
-  notificarVendedor?: 'TIMEOUT' | 'SIN_TELEFONO' | 'FALLO_ENVIO_INICIAL' | 'RECHAZADA';
+  notificarVendedor?:
+    | 'TIMEOUT'
+    | 'SIN_TELEFONO'
+    | 'FALLO_ENVIO_INICIAL'
+    | 'RECHAZADA';
 }

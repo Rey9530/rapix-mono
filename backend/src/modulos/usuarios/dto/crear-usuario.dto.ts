@@ -22,7 +22,8 @@ export class CrearUsuarioDto {
 
   @IsString()
   @Matches(/^\+?[0-9]{8,15}$/, {
-    message: 'El teléfono debe tener 8-15 dígitos, opcionalmente con prefijo +.',
+    message:
+      'El teléfono debe tener 8-15 dígitos, opcionalmente con prefijo +.',
   })
   telefono!: string;
 

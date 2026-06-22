@@ -14,7 +14,10 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import {
+  FileFieldsInterceptor,
+  FileInterceptor,
+} from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiConsumes,
@@ -67,7 +70,9 @@ export class PedidosControlador {
   @Publico()
   @Throttle({ default: { limit: 30, ttl: 60_000 } })
   @Get('seguimiento/:codigo')
-  @ApiOperation({ summary: 'Tracking público por codigoSeguimiento (no login)' })
+  @ApiOperation({
+    summary: 'Tracking público por codigoSeguimiento (no login)',
+  })
   seguimiento(@Param('codigo') codigo: string) {
     return this.servicio.obtenerPorCodigo(codigo);
   }
@@ -155,7 +160,11 @@ export class PedidosControlador {
       usuario,
       dto,
       foto
-        ? { buffer: foto.buffer, mimetype: foto.mimetype, originalname: foto.originalname }
+        ? {
+            buffer: foto.buffer,
+            mimetype: foto.mimetype,
+            originalname: foto.originalname,
+          }
         : undefined,
     );
   }
@@ -163,21 +172,30 @@ export class PedidosControlador {
   @ApiBearerAuth('autenticacion-jwt')
   @Get()
   @ApiOperation({ summary: 'Listar pedidos (scoping por rol)' })
-  listar(@UsuarioActual() usuario: Usuario, @Query() filtros: FiltrosPedidoDto) {
+  listar(
+    @UsuarioActual() usuario: Usuario,
+    @Query() filtros: FiltrosPedidoDto,
+  ) {
     return this.servicio.listar(usuario, filtros);
   }
 
   @ApiBearerAuth('autenticacion-jwt')
   @Get(':id')
   @ApiOperation({ summary: 'Detalle + timeline + comprobantes' })
-  obtenerPorId(@UsuarioActual() usuario: Usuario, @Param('id', ParseUUIDPipe) id: string) {
+  obtenerPorId(
+    @UsuarioActual() usuario: Usuario,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
     return this.servicio.obtenerPorId(usuario, id);
   }
 
   @ApiBearerAuth('autenticacion-jwt')
   @Get(':id/eventos')
   @ApiOperation({ summary: 'Timeline paginado de eventos' })
-  eventos(@UsuarioActual() usuario: Usuario, @Param('id', ParseUUIDPipe) id: string) {
+  eventos(
+    @UsuarioActual() usuario: Usuario,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
     return this.servicio.listarEventos(usuario, id);
   }
 
@@ -266,7 +284,10 @@ export class PedidosControlador {
   @Roles('REPARTIDOR')
   @Post(':id/tomar-entrega')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'EN_PUNTO_INTERCAMBIO → EN_REPARTO (se asigna como repartidorEntrega)' })
+  @ApiOperation({
+    summary:
+      'EN_PUNTO_INTERCAMBIO → EN_REPARTO (se asigna como repartidorEntrega)',
+  })
   tomarEntrega(
     @UsuarioActual() usuario: Usuario,
     @Param('id', ParseUUIDPipe) id: string,
@@ -280,7 +301,9 @@ export class PedidosControlador {
   @Post(':id/entregar')
   @HttpCode(HttpStatus.OK)
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'EN_REPARTO → ENTREGADO (multipart con foto obligatoria)' })
+  @ApiOperation({
+    summary: 'EN_REPARTO → ENTREGADO (multipart con foto obligatoria)',
+  })
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'foto', maxCount: 1 },
@@ -291,7 +314,8 @@ export class PedidosControlador {
     @UsuarioActual() usuario: Usuario,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: EntregarPedidoDto,
-    @UploadedFiles() archivos: { foto?: ArchivoMultipart[]; firma?: ArchivoMultipart[] },
+    @UploadedFiles()
+    archivos: { foto?: ArchivoMultipart[]; firma?: ArchivoMultipart[] },
   ) {
     const foto = archivos?.foto?.[0];
     if (!foto) {
@@ -299,9 +323,17 @@ export class PedidosControlador {
     }
     const firma = archivos?.firma?.[0];
     return this.servicio.entregar(usuario, id, dto, {
-      foto: { buffer: foto.buffer, mimetype: foto.mimetype, originalname: foto.originalname },
+      foto: {
+        buffer: foto.buffer,
+        mimetype: foto.mimetype,
+        originalname: foto.originalname,
+      },
       firma: firma
-        ? { buffer: firma.buffer, mimetype: firma.mimetype, originalname: firma.originalname }
+        ? {
+            buffer: firma.buffer,
+            mimetype: firma.mimetype,
+            originalname: firma.originalname,
+          }
         : undefined,
     });
   }

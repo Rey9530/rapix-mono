@@ -20,10 +20,11 @@ export class CierreEventosManejador {
   @OnEvent(EventosDominio.CierreEnviado, { async: true })
   async alEnviar(evento: CierreEnviadoEvento): Promise<void> {
     const sufijo = evento.conDiscrepancia ? ' con discrepancia' : '';
-    await this.enviarAdmins('CIERRE_ENVIADO_ADMIN', ['PUSH', 'EMAIL'], [
-      evento.fechaCierre,
-      sufijo,
-    ]);
+    await this.enviarAdmins(
+      'CIERRE_ENVIADO_ADMIN',
+      ['PUSH', 'EMAIL'],
+      [evento.fechaCierre, sufijo],
+    );
   }
 
   @OnEvent(EventosDominio.CierreAprobado, { async: true })
@@ -35,7 +36,12 @@ export class CierreEventosManejador {
       select: { fechaCierre: true },
     });
     const fecha = cierre ? formatearFecha(cierre.fechaCierre) : '—';
-    await this.enviarPlantilla('CIERRE_APROBADO_REPARTIDOR', usuarioId, ['PUSH'], [fecha]);
+    await this.enviarPlantilla(
+      'CIERRE_APROBADO_REPARTIDOR',
+      usuarioId,
+      ['PUSH'],
+      [fecha],
+    );
   }
 
   @OnEvent(EventosDominio.CierreRechazado, { async: true })
@@ -59,7 +65,9 @@ export class CierreEventosManejador {
   // Helpers
   // ──────────────────────────────────────────────────
 
-  private async usuarioRepartidor(perfilRepartidorId: string): Promise<string | null> {
+  private async usuarioRepartidor(
+    perfilRepartidorId: string,
+  ): Promise<string | null> {
     const perfil = await this.prisma.perfilRepartidor.findUnique({
       where: { id: perfilRepartidorId },
       select: { usuarioId: true },

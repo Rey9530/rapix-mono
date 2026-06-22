@@ -9,7 +9,9 @@ import { PrismaServicio } from '../../prisma/prisma.servicio.js';
 @Injectable()
 export class VerificacionCorreoServicio {
   private readonly logger = new Logger(VerificacionCorreoServicio.name);
-  private readonly ttlHoras = Number(process.env.VERIFICACION_CORREO_TTL_HORAS ?? 24);
+  private readonly ttlHoras = Number(
+    process.env.VERIFICACION_CORREO_TTL_HORAS ?? 24,
+  );
 
   constructor(
     private readonly prisma: PrismaServicio,
@@ -57,7 +59,11 @@ export class VerificacionCorreoServicio {
     const registro = await this.prisma.tokenVerificacionCorreo.findUnique({
       where: { tokenHash },
     });
-    if (!registro || registro.usadoEn !== null || registro.expiraEn <= new Date()) {
+    if (
+      !registro ||
+      registro.usadoEn !== null ||
+      registro.expiraEn <= new Date()
+    ) {
       throw new BadRequestException('Token inválido o expirado');
     }
 

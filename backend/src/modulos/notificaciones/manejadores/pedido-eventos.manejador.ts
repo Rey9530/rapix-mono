@@ -6,10 +6,7 @@ import { PedidoEstadoCambiadoEvento } from '../../../eventos/pedido-estado-cambi
 import { PedidoRepartidorReasignadoEvento } from '../../../eventos/pedido-repartidor-reasignado.evento.js';
 import { PrismaServicio } from '../../../prisma/prisma.servicio.js';
 import { NotificacionesServicio } from '../notificaciones.servicio.js';
-import {
-  ClavePlantilla,
-  renderizarPlantilla,
-} from '../plantillas/es.js';
+import { ClavePlantilla, renderizarPlantilla } from '../plantillas/es.js';
 
 interface PedidoConDestinatarios {
   id: string;
@@ -55,7 +52,13 @@ export class PedidoEventosManejador {
     // RECOGIDO. Aqui solo notificamos a vendedor, repartidor y admin.
     switch (evento.hacia) {
       case 'ASIGNADO':
-        await this.enviarPlantilla('PEDIDO_ASIGNADO_VENDEDOR', pedido.vendedor.usuario.id, ['PUSH'], [cs], datosPedido);
+        await this.enviarPlantilla(
+          'PEDIDO_ASIGNADO_VENDEDOR',
+          pedido.vendedor.usuario.id,
+          ['PUSH'],
+          [cs],
+          datosPedido,
+        );
         if (pedido.repartidorRecogida) {
           await this.enviarPlantilla(
             'PEDIDO_ASIGNADO_REPARTIDOR',
@@ -68,7 +71,13 @@ export class PedidoEventosManejador {
         break;
 
       case 'RECOGIDO':
-        await this.enviarPlantilla('PEDIDO_RECOGIDO_VENDEDOR', pedido.vendedor.usuario.id, ['PUSH'], [cs], datosPedido);
+        await this.enviarPlantilla(
+          'PEDIDO_RECOGIDO_VENDEDOR',
+          pedido.vendedor.usuario.id,
+          ['PUSH'],
+          [cs],
+          datosPedido,
+        );
         // El contacto al cliente en RECOGIDO lo maneja ConfirmacionEntregaModulo.
         break;
 
@@ -81,7 +90,13 @@ export class PedidoEventosManejador {
         const claveVendedor: ClavePlantilla = esReintento
           ? 'PEDIDO_REINTENTANDO_VENDEDOR'
           : 'PEDIDO_EN_REPARTO_VENDEDOR';
-        await this.enviarPlantilla(claveVendedor, pedido.vendedor.usuario.id, ['PUSH'], [cs], datosPedido);
+        await this.enviarPlantilla(
+          claveVendedor,
+          pedido.vendedor.usuario.id,
+          ['PUSH'],
+          [cs],
+          datosPedido,
+        );
         break;
       }
 
@@ -113,7 +128,13 @@ export class PedidoEventosManejador {
         break;
 
       case 'CANCELADO':
-        await this.enviarPlantilla('PEDIDO_CANCELADO_VENDEDOR', pedido.vendedor.usuario.id, ['PUSH'], [cs], datosPedido);
+        await this.enviarPlantilla(
+          'PEDIDO_CANCELADO_VENDEDOR',
+          pedido.vendedor.usuario.id,
+          ['PUSH'],
+          [cs],
+          datosPedido,
+        );
         if (pedido.repartidorRecogida) {
           await this.enviarPlantilla(
             'PEDIDO_CANCELADO_REPARTIDOR',
@@ -158,7 +179,11 @@ export class PedidoEventosManejador {
 
     const cs = pedido.codigoSeguimiento;
     const cambiosStr = evento.cambios.join(', ');
-    const datos = { pedidoId: pedido.id, codigoSeguimiento: cs, cambios: cambiosStr };
+    const datos = {
+      pedidoId: pedido.id,
+      codigoSeguimiento: cs,
+      cambios: cambiosStr,
+    };
 
     const usuariosNotificados = new Set<string>();
 
@@ -204,7 +229,13 @@ export class PedidoEventosManejador {
         evento.lado === 'recogida'
           ? 'PEDIDO_ASIGNADO_REPARTIDOR'
           : 'PEDIDO_REPARTO_ASIGNADO_REPARTIDOR';
-      await this.enviarPlantilla(clave, nuevo.usuario.id, ['PUSH'], [cs], datos);
+      await this.enviarPlantilla(
+        clave,
+        nuevo.usuario.id,
+        ['PUSH'],
+        [cs],
+        datos,
+      );
     }
 
     if (evento.anteriorRepartidorId) {
@@ -228,7 +259,9 @@ export class PedidoEventosManejador {
   // Helpers
   // ──────────────────────────────────────────────────
 
-  private async cargarPedido(pedidoId: string): Promise<PedidoConDestinatarios | null> {
+  private async cargarPedido(
+    pedidoId: string,
+  ): Promise<PedidoConDestinatarios | null> {
     const pedido = await this.prisma.pedido.findUnique({
       where: { id: pedidoId },
       select: {
@@ -242,7 +275,7 @@ export class PedidoEventosManejador {
         repartidorEntrega: { select: { usuario: { select: { id: true } } } },
       },
     });
-    return pedido as PedidoConDestinatarios | null;
+    return pedido;
   }
 
   private async enviarPlantilla(

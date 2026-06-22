@@ -228,10 +228,7 @@ export class WhatsappEventoServicio {
         id?: string | null;
         name?: string | null;
         unreadCount?: number | null;
-        conversationTimestamp?:
-          | number
-          | null
-          | { toNumber: () => number };
+        conversationTimestamp?: number | null | { toNumber: () => number };
       };
       if (!c.id) continue;
       const normalizado = normalizarChat({
@@ -258,7 +255,9 @@ export class WhatsappEventoServicio {
         verifiedName?: string;
       };
       if (!contacto.id) continue;
-      const normalizado = normalizarContacto(contacto as Parameters<typeof normalizarContacto>[0]);
+      const normalizado = normalizarContacto(
+        contacto as Parameters<typeof normalizarContacto>[0],
+      );
       await this.contactos.upsertPorJid(normalizado);
       if (
         !jidEsGrupo(contacto.id) &&
@@ -273,4 +272,3 @@ export class WhatsappEventoServicio {
     }
   }
 }
-

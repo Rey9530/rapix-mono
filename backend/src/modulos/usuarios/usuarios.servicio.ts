@@ -54,7 +54,9 @@ export class UsuariosServicio {
     private readonly eventos: EventEmitter2,
   ) {}
 
-  async listar(filtros: ListarUsuariosDto): Promise<RespuestaPaginada<UsuarioPublicoDto>> {
+  async listar(
+    filtros: ListarUsuariosDto,
+  ): Promise<RespuestaPaginada<UsuarioPublicoDto>> {
     const where: Prisma.UsuarioWhereInput = {};
     if (filtros.rol) where.rol = filtros.rol;
     if (filtros.estado) where.estado = filtros.estado;
@@ -191,7 +193,12 @@ export class UsuariosServicio {
           data: { usuarioId: creado.id, permisos: dto.permisos ?? [] },
         });
       } else if (dto.rol === 'VENDEDOR') {
-        if (!dto.nombreNegocio || !dto.direccion || dto.latitud === undefined || dto.longitud === undefined) {
+        if (
+          !dto.nombreNegocio ||
+          !dto.direccion ||
+          dto.latitud === undefined ||
+          dto.longitud === undefined
+        ) {
           throw new BadRequestException(
             'Para rol VENDEDOR se requieren nombreNegocio, direccion, latitud y longitud',
           );
@@ -231,12 +238,17 @@ export class UsuariosServicio {
     return UsuarioPublicoDto.desde(usuario);
   }
 
-  async actualizar(id: string, dto: ActualizarUsuarioDto): Promise<UsuarioPublicoDto> {
+  async actualizar(
+    id: string,
+    dto: ActualizarUsuarioDto,
+  ): Promise<UsuarioPublicoDto> {
     const existente = await this.prisma.usuario.findUnique({ where: { id } });
     if (!existente) throw new NotFoundException('Usuario no encontrado');
 
     if (dto.email && dto.email !== existente.email) {
-      const otro = await this.prisma.usuario.findUnique({ where: { email: dto.email } });
+      const otro = await this.prisma.usuario.findUnique({
+        where: { email: dto.email },
+      });
       if (otro) throw new ConflictException('El email ya está registrado');
     }
     if (dto.telefono && dto.telefono !== existente.telefono) {
@@ -271,7 +283,8 @@ export class UsuariosServicio {
   async eliminar(id: string): Promise<UsuarioPublicoDto> {
     const existente = await this.prisma.usuario.findUnique({ where: { id } });
     if (!existente) throw new NotFoundException('Usuario no encontrado');
-    if (existente.estado === 'INACTIVO') return UsuarioPublicoDto.desde(existente);
+    if (existente.estado === 'INACTIVO')
+      return UsuarioPublicoDto.desde(existente);
 
     const u = await this.prisma.usuario.update({
       where: { id },
@@ -502,7 +515,11 @@ export class UsuariosServicio {
       }
       data.enviosRestantes = dto.enviosRestantes;
       // Auto-cierre si llega a 0 y aún sigue ACTIVO.
-      if (dto.enviosRestantes === 0 && !dto.estado && paquete.estado === 'ACTIVO') {
+      if (
+        dto.enviosRestantes === 0 &&
+        !dto.estado &&
+        paquete.estado === 'ACTIVO'
+      ) {
         data.estado = 'AGOTADO';
       }
     }
@@ -528,7 +545,10 @@ export class UsuariosServicio {
       },
     });
 
-    if (paquete.estado === 'PENDIENTE_PAGO' && actualizado.estado === 'ACTIVO') {
+    if (
+      paquete.estado === 'PENDIENTE_PAGO' &&
+      actualizado.estado === 'ACTIVO'
+    ) {
       this.eventos.emit(
         EventosDominio.PaqueteAutorizado,
         new PaqueteAutorizadoEvento(

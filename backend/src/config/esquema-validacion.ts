@@ -6,7 +6,9 @@ import Joi from 'joi';
 //   1.10 → REDIS_HOST, REDIS_PORT, THROTTLE_TTL, THROTTLE_LIMIT
 // Mapbox, SMTP, MinIO, Firebase, WhatsApp se añaden cuando su tarea llega.
 export const esquemaValidacionEnv = Joi.object({
-  NODE_ENV: Joi.string().valid('development', 'staging', 'production', 'test').required(),
+  NODE_ENV: Joi.string()
+    .valid('development', 'staging', 'production', 'test')
+    .required(),
   PORT: Joi.number().default(3000),
   API_PREFIX: Joi.string().default('api/v1'),
   FRONTEND_URL: Joi.string().optional().allow(''),
@@ -66,8 +68,14 @@ export const esquemaValidacionEnv = Joi.object({
   MAILGUN_SANDBOX: Joi.boolean().truthy('true').falsy('false').default(false),
 
   // Recuperación de contraseña — código corto enviado por correo (Fase 1).
-  RECUPERACION_CONTRASENA_TTL_MINUTOS: Joi.number().integer().min(1).default(15),
-  RECUPERACION_CONTRASENA_MAX_INTENTOS: Joi.number().integer().min(1).default(5),
+  RECUPERACION_CONTRASENA_TTL_MINUTOS: Joi.number()
+    .integer()
+    .min(1)
+    .default(15),
+  RECUPERACION_CONTRASENA_MAX_INTENTOS: Joi.number()
+    .integer()
+    .min(1)
+    .default(5),
 
   FIREBASE_PROJECT_ID: Joi.string().optional().allow(''),
   FIREBASE_PRIVATE_KEY: Joi.string().optional().allow(''),
@@ -75,7 +83,10 @@ export const esquemaValidacionEnv = Joi.object({
   NOTIFICACIONES_LIMITE_HORA: Joi.number().default(20),
 
   // Fase 8 — WhatsApp Baileys.
-  WHATSAPP_BAILEYS_HABILITADO: Joi.boolean().truthy('true').falsy('false').default(true),
+  WHATSAPP_BAILEYS_HABILITADO: Joi.boolean()
+    .truthy('true')
+    .falsy('false')
+    .default(true),
   WHATSAPP_BAILEYS_NAVEGADOR_NOMBRE: Joi.string().default('Rapix'),
   WHATSAPP_BAILEYS_TASA_MAX_POR_SEG: Joi.number().default(1),
   WHATSAPP_BAILEYS_RAFAGA_MAX: Joi.number().default(5),
@@ -88,5 +99,9 @@ export const esquemaValidacionEnv = Joi.object({
   // el backend levanta igual (util en dev/test).
   OPENAI_API_KEY: Joi.string().min(1).optional().allow(''),
   OPENAI_MODEL_CONFIRMACION_ENTREGA: Joi.string().default('gpt-4o-mini'),
-  CONFIRMACION_ENTREGA_TIMEOUT_MINUTOS: Joi.number().integer().min(1).max(1440).default(60),
+  CONFIRMACION_ENTREGA_TIMEOUT_MINUTOS: Joi.number()
+    .integer()
+    .min(1)
+    .max(1440)
+    .default(60),
 });

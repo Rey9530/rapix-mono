@@ -16,7 +16,8 @@ export class AsignarMultipleEntregaDto {
 
   @ApiProperty({
     format: 'uuid',
-    description: 'Repartidor que tomará la entrega (debe pertenecer a la zona de destino de cada pedido).',
+    description:
+      'Repartidor que tomará la entrega (debe pertenecer a la zona de destino de cada pedido).',
   })
   @IsUUID()
   repartidorEntregaId!: string;

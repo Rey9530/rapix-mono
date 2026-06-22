@@ -48,7 +48,8 @@ import { PedidoMaquinaEstados } from './maquina-estados/pedido-maquina-estados.j
 
 // Re-exports retro-compatibles. La verdad vive en `src/eventos/`.
 export const EVENTO_PEDIDO_CREADO = EventosDominio.PedidoCreado;
-export const EVENTO_PEDIDO_ESTADO_CAMBIADO = EventosDominio.PedidoEstadoCambiado;
+export const EVENTO_PEDIDO_ESTADO_CAMBIADO =
+  EventosDominio.PedidoEstadoCambiado;
 
 @Injectable()
 export class PedidosServicio {
@@ -150,7 +151,10 @@ export class PedidosServicio {
     }
 
     // 3.4 — resolución automática de zonas
-    const zonaOrigen = await this.geo.resolverZona(dto.latitudOrigen, dto.longitudOrigen);
+    const zonaOrigen = await this.geo.resolverZona(
+      dto.latitudOrigen,
+      dto.longitudOrigen,
+    );
     if (!zonaOrigen) {
       throw new BadRequestException({
         codigo: 'PEDIDO_ZONA_INVALIDA_ORIGEN',
@@ -167,14 +171,19 @@ export class PedidosServicio {
       latitudDestino = dto.latitudDestino;
       longitudDestino = dto.longitudDestino;
     } else if (dto.urlMapasDestino) {
-      const coords = await this.googleMaps.resolverCoordenadas(dto.urlMapasDestino);
+      const coords = await this.googleMaps.resolverCoordenadas(
+        dto.urlMapasDestino,
+      );
       latitudDestino = coords.lat;
       longitudDestino = coords.lng;
     }
 
     let zonaDestinoId: string | null = null;
     if (latitudDestino != null && longitudDestino != null) {
-      const zonaDestino = await this.geo.resolverZona(latitudDestino, longitudDestino);
+      const zonaDestino = await this.geo.resolverZona(
+        latitudDestino,
+        longitudDestino,
+      );
       if (!zonaDestino) {
         throw new BadRequestException({
           codigo: 'PEDIDO_ZONA_INVALIDA_DESTINO',
@@ -199,7 +208,10 @@ export class PedidosServicio {
 
     const resultado = await this.prisma.$transaction(async (tx) => {
       // 4.3 + 4.4 — resolver facturación y descontar paquete dentro de la transacción.
-      const billing = await this.facturacion.resolveBilling(perfilVendedor.id, tx);
+      const billing = await this.facturacion.resolveBilling(
+        perfilVendedor.id,
+        tx,
+      );
 
       let agotado = false;
       if (billing.paqueteRecargadoId) {
@@ -265,7 +277,10 @@ export class PedidosServicio {
         },
       });
 
-      return { pedido: creado, paqueteAgotadoId: agotado ? billing.paqueteRecargadoId : null };
+      return {
+        pedido: creado,
+        paqueteAgotadoId: agotado ? billing.paqueteRecargadoId : null,
+      };
     });
 
     this.eventos.emit(
@@ -280,7 +295,10 @@ export class PedidosServicio {
     if (resultado.paqueteAgotadoId) {
       this.eventos.emit(
         EventosDominio.PaqueteAgotado,
-        new PaqueteAgotadoEvento(resultado.paqueteAgotadoId, resultado.pedido.vendedorId),
+        new PaqueteAgotadoEvento(
+          resultado.paqueteAgotadoId,
+          resultado.pedido.vendedorId,
+        ),
       );
     }
 
@@ -292,7 +310,11 @@ export class PedidosServicio {
       try {
         const ext = mimeExt(foto.mimetype);
         const key = ArchivosServicio.armarKeyPaquete(resultado.pedido.id, ext);
-        const { url } = await this.archivos.subir(foto.buffer, key, foto.mimetype);
+        const { url } = await this.archivos.subir(
+          foto.buffer,
+          key,
+          foto.mimetype,
+        );
         await this.prisma.pedido.update({
           where: { id: resultado.pedido.id },
           data: { urlFotoPaquete: url },
@@ -338,12 +360,18 @@ export class PedidosServicio {
 
     // Scoping por rol
     if (usuario.rol === 'VENDEDOR') {
-      const v = await this.prisma.perfilVendedor.findUnique({ where: { usuarioId: usuario.id } });
-      if (!v) return RespuestaPaginada.de([], 0, filtros.pagina, filtros.limite);
+      const v = await this.prisma.perfilVendedor.findUnique({
+        where: { usuarioId: usuario.id },
+      });
+      if (!v)
+        return RespuestaPaginada.de([], 0, filtros.pagina, filtros.limite);
       where.vendedorId = v.id;
     } else if (usuario.rol === 'REPARTIDOR') {
-      const r = await this.prisma.perfilRepartidor.findUnique({ where: { usuarioId: usuario.id } });
-      if (!r) return RespuestaPaginada.de([], 0, filtros.pagina, filtros.limite);
+      const r = await this.prisma.perfilRepartidor.findUnique({
+        where: { usuarioId: usuario.id },
+      });
+      if (!r)
+        return RespuestaPaginada.de([], 0, filtros.pagina, filtros.limite);
       where.OR = [
         { repartidorRecogidaId: r.id },
         { repartidorEntregaId: r.id },
@@ -359,7 +387,8 @@ export class PedidosServicio {
       ];
     }
     if (filtros.zonaDestinoId) where.zonaDestinoId = filtros.zonaDestinoId;
-    if (filtros.vendedorId && usuario.rol === 'ADMIN') where.vendedorId = filtros.vendedorId;
+    if (filtros.vendedorId && usuario.rol === 'ADMIN')
+      where.vendedorId = filtros.vendedorId;
     if (filtros.repartidorId && usuario.rol === 'ADMIN') {
       where.OR = [
         ...(where.OR ?? []),
@@ -369,13 +398,20 @@ export class PedidosServicio {
     }
     if (filtros.desde || filtros.hasta) {
       where.creadoEn = {};
-      if (filtros.desde) (where.creadoEn as Prisma.DateTimeFilter).gte = new Date(filtros.desde);
-      if (filtros.hasta) (where.creadoEn as Prisma.DateTimeFilter).lte = new Date(filtros.hasta);
+      if (filtros.desde)
+        (where.creadoEn as Prisma.DateTimeFilter).gte = new Date(filtros.desde);
+      if (filtros.hasta)
+        (where.creadoEn as Prisma.DateTimeFilter).lte = new Date(filtros.hasta);
     }
     if (filtros.busqueda) {
       where.OR = [
         ...(where.OR ?? []),
-        { codigoSeguimiento: { contains: filtros.busqueda, mode: 'insensitive' } },
+        {
+          codigoSeguimiento: {
+            contains: filtros.busqueda,
+            mode: 'insensitive',
+          },
+        },
         { nombreCliente: { contains: filtros.busqueda, mode: 'insensitive' } },
         { telefonoCliente: { contains: filtros.busqueda } },
       ];
@@ -403,18 +439,24 @@ export class PedidosServicio {
         comprobantes: true,
         zonaOrigen: { select: { id: true, codigo: true, nombre: true } },
         zonaDestino: { select: { id: true, codigo: true, nombre: true } },
-        repartidorRecogida: { select: { id: true, usuario: { select: { nombreCompleto: true } } } },
-        repartidorEntrega: { select: { id: true, usuario: { select: { nombreCompleto: true } } } },
+        repartidorRecogida: {
+          select: { id: true, usuario: { select: { nombreCompleto: true } } },
+        },
+        repartidorEntrega: {
+          select: { id: true, usuario: { select: { nombreCompleto: true } } },
+        },
       },
     });
-    if (!pedido) throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
+    if (!pedido)
+      throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
     await this.garantizarVisibilidad(usuario, pedido);
     return pedido;
   }
 
   async listarEventos(usuario: Usuario, id: string) {
     const pedido = await this.prisma.pedido.findUnique({ where: { id } });
-    if (!pedido) throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
+    if (!pedido)
+      throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
     await this.garantizarVisibilidad(usuario, pedido);
     return this.prisma.eventoPedido.findMany({
       where: { pedidoId: id },
@@ -424,7 +466,8 @@ export class PedidosServicio {
 
   async actualizar(usuario: Usuario, id: string, dto: ActualizarPedidoDto) {
     const pedido = await this.prisma.pedido.findUnique({ where: { id } });
-    if (!pedido) throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
+    if (!pedido)
+      throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
 
     const esAdmin = usuario.rol === 'ADMIN';
     // El ADMIN puede editar pedidos en estado terminal (corrección retroactiva);
@@ -478,13 +521,25 @@ export class PedidosServicio {
     }
     // Si cambian coordenadas, re-resolver zonas.
     if (dto.latitudOrigen !== undefined && dto.longitudOrigen !== undefined) {
-      const z = await this.geo.resolverZona(dto.latitudOrigen, dto.longitudOrigen);
-      if (!z) throw new BadRequestException({ codigo: 'PEDIDO_ZONA_INVALIDA_ORIGEN' });
+      const z = await this.geo.resolverZona(
+        dto.latitudOrigen,
+        dto.longitudOrigen,
+      );
+      if (!z)
+        throw new BadRequestException({
+          codigo: 'PEDIDO_ZONA_INVALIDA_ORIGEN',
+        });
       datos.zonaOrigen = { connect: { id: z.id } };
     }
     if (dto.latitudDestino !== undefined && dto.longitudDestino !== undefined) {
-      const z = await this.geo.resolverZona(dto.latitudDestino, dto.longitudDestino);
-      if (!z) throw new BadRequestException({ codigo: 'PEDIDO_ZONA_INVALIDA_DESTINO' });
+      const z = await this.geo.resolverZona(
+        dto.latitudDestino,
+        dto.longitudDestino,
+      );
+      if (!z)
+        throw new BadRequestException({
+          codigo: 'PEDIDO_ZONA_INVALIDA_DESTINO',
+        });
       datos.zonaDestino = { connect: { id: z.id } };
     }
     if (dto.programadoPara) datos.programadoPara = new Date(dto.programadoPara);
@@ -517,11 +572,14 @@ export class PedidosServicio {
     const cambiaEstado = dto.estado != null && dto.estado !== pedido.estado;
     if (cambiaEstado) {
       const ahora = new Date();
-      if (dto.estado === 'RECOGIDO' && !pedido.recogidoEn) datos.recogidoEn = ahora;
+      if (dto.estado === 'RECOGIDO' && !pedido.recogidoEn)
+        datos.recogidoEn = ahora;
       if (dto.estado === 'EN_PUNTO_INTERCAMBIO' && !pedido.enIntercambioEn)
         datos.enIntercambioEn = ahora;
-      if (dto.estado === 'ENTREGADO' && !pedido.entregadoEn) datos.entregadoEn = ahora;
-      if (dto.estado === 'CANCELADO' && !pedido.canceladoEn) datos.canceladoEn = ahora;
+      if (dto.estado === 'ENTREGADO' && !pedido.entregadoEn)
+        datos.entregadoEn = ahora;
+      if (dto.estado === 'CANCELADO' && !pedido.canceladoEn)
+        datos.canceladoEn = ahora;
     }
 
     const estadoEvento = dto.estado ?? pedido.estado;
@@ -616,15 +674,17 @@ export class PedidosServicio {
   private valoresIguales(a: unknown, b: unknown): boolean {
     if (a == null && b == null) return true;
     if (a == null || b == null) return false;
-    const numA = Number(a as never);
-    const numB = Number(b as never);
-    if (!Number.isNaN(numA) && !Number.isNaN(numB) && numA === numB) return true;
+    const numA = Number(a);
+    const numB = Number(b);
+    if (!Number.isNaN(numA) && !Number.isNaN(numB) && numA === numB)
+      return true;
     return String(a) === String(b);
   }
 
   async cancelar(usuario: Usuario, id: string, dto: CancelarPedidoDto) {
     const pedido = await this.prisma.pedido.findUnique({ where: { id } });
-    if (!pedido) throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
+    if (!pedido)
+      throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
     await this.garantizarEdicionVendedor(usuario, pedido);
 
     PedidoMaquinaEstados.validarTransicion(pedido.estado, 'CANCELADO');
@@ -637,7 +697,7 @@ export class PedidosServicio {
     const motivoOriginal = dto.motivo ?? '';
     const notasFinales = cobroPrevio
       ? `[ATENCIÓN: cobro de $${cobroPrevio.monto.toString()} al vendedor no reversado] ${motivoOriginal}`.trim()
-      : (motivoOriginal || null);
+      : motivoOriginal || null;
 
     return this.transicionar({
       pedidoId: id,
@@ -679,10 +739,21 @@ export class PedidosServicio {
     return this.transicionarRider(usuario, id, 'EN_TRANSITO', 'recogida', dto);
   }
 
-  async llegarIntercambio(usuario: Usuario, id: string, dto: LlegarIntercambioPedidoDto) {
-    return this.transicionarRider(usuario, id, 'EN_PUNTO_INTERCAMBIO', 'recogida', dto, {
-      enIntercambioEn: new Date(),
-    });
+  async llegarIntercambio(
+    usuario: Usuario,
+    id: string,
+    dto: LlegarIntercambioPedidoDto,
+  ) {
+    return this.transicionarRider(
+      usuario,
+      id,
+      'EN_PUNTO_INTERCAMBIO',
+      'recogida',
+      dto,
+      {
+        enIntercambioEn: new Date(),
+      },
+    );
   }
 
   /**
@@ -692,10 +763,14 @@ export class PedidosServicio {
    */
   async tomarEntrega(usuario: Usuario, id: string, dto: TomarEntregaPedidoDto) {
     const pedido = await this.prisma.pedido.findUnique({ where: { id } });
-    if (!pedido) throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
+    if (!pedido)
+      throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
 
     const perfil = await this.requerirPerfilRepartidor(usuario);
-    if (pedido.repartidorEntregaId && pedido.repartidorEntregaId !== perfil.id) {
+    if (
+      pedido.repartidorEntregaId &&
+      pedido.repartidorEntregaId !== perfil.id
+    ) {
       throw new ForbiddenException({
         codigo: 'PEDIDO_REPARTIDOR_NO_AUTORIZADO',
         mensaje: 'El pedido ya fue tomado por otro repartidor',
@@ -725,17 +800,24 @@ export class PedidosServicio {
     },
   ) {
     const pedido = await this.prisma.pedido.findUnique({ where: { id } });
-    if (!pedido) throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
+    if (!pedido)
+      throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
 
     const perfil = await this.requerirPerfilRepartidor(usuario);
     if (pedido.repartidorEntregaId !== perfil.id) {
-      throw new ForbiddenException({ codigo: 'PEDIDO_REPARTIDOR_NO_AUTORIZADO' });
+      throw new ForbiddenException({
+        codigo: 'PEDIDO_REPARTIDOR_NO_AUTORIZADO',
+      });
     }
 
     PedidoMaquinaEstados.validarTransicion(pedido.estado, 'ENTREGADO');
 
     // Subir foto (obligatoria) y firma (opcional) a MinIO
-    const keyFoto = ArchivosServicio.armarKeyEntrega(id, 'foto', mimeExt(archivos.foto.mimetype));
+    const keyFoto = ArchivosServicio.armarKeyEntrega(
+      id,
+      'foto',
+      mimeExt(archivos.foto.mimetype),
+    );
     const resultadoFoto = await this.archivos.subir(
       archivos.foto.buffer,
       keyFoto,
@@ -744,7 +826,11 @@ export class PedidosServicio {
 
     let urlFirma: string | null = null;
     if (archivos.firma) {
-      const keyFirma = ArchivosServicio.armarKeyEntrega(id, 'firma', mimeExt(archivos.firma.mimetype));
+      const keyFirma = ArchivosServicio.armarKeyEntrega(
+        id,
+        'firma',
+        mimeExt(archivos.firma.mimetype),
+      );
       const resultadoFirma = await this.archivos.subir(
         archivos.firma.buffer,
         keyFirma,
@@ -815,8 +901,11 @@ export class PedidosServicio {
    * repartidor. Valida la transicion contra la maquina de estados.
    */
   async marcarFallidoPorSistema(pedidoId: string, motivo: string) {
-    const pedido = await this.prisma.pedido.findUnique({ where: { id: pedidoId } });
-    if (!pedido) throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
+    const pedido = await this.prisma.pedido.findUnique({
+      where: { id: pedidoId },
+    });
+    if (!pedido)
+      throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
     if (pedido.estado === 'FALLIDO') return pedido;
     PedidoMaquinaEstados.validarTransicion(pedido.estado, 'FALLIDO');
     return this.transicionar({
@@ -844,7 +933,10 @@ export class PedidosServicio {
     const pedido = await this.prisma.pedido.findUnique({
       where: { codigoSeguimiento: codigo },
       include: {
-        eventos: { orderBy: { creadoEn: 'asc' }, select: { estado: true, creadoEn: true } },
+        eventos: {
+          orderBy: { creadoEn: 'asc' },
+          select: { estado: true, creadoEn: true },
+        },
         zonaOrigen: { select: { nombre: true } },
         zonaDestino: { select: { nombre: true } },
         repartidorEntrega: {
@@ -857,17 +949,25 @@ export class PedidosServicio {
         },
       },
     });
-    if (!pedido) throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
+    if (!pedido)
+      throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
 
     const siguientePaso = this.siguientePaso(pedido.estado);
-    const enRuta = pedido.estado === 'EN_TRANSITO' || pedido.estado === 'EN_REPARTO';
+    const enRuta =
+      pedido.estado === 'EN_TRANSITO' || pedido.estado === 'EN_REPARTO';
 
     return {
       codigoSeguimiento: pedido.codigoSeguimiento,
       estado: pedido.estado,
       cliente: { nombre: pedido.nombreCliente },
-      origen: { direccion: pedido.direccionOrigen, zona: pedido.zonaOrigen?.nombre ?? null },
-      destino: { direccion: pedido.direccionDestino, zona: pedido.zonaDestino?.nombre ?? null },
+      origen: {
+        direccion: pedido.direccionOrigen,
+        zona: pedido.zonaOrigen?.nombre ?? null,
+      },
+      destino: {
+        direccion: pedido.direccionDestino,
+        zona: pedido.zonaDestino?.nombre ?? null,
+      },
       ubicacionRepartidor:
         enRuta && pedido.repartidorEntrega?.latitudActual != null
           ? {
@@ -888,15 +988,23 @@ export class PedidosServicio {
   private async garantizarVisibilidad(usuario: Usuario, pedido: Pedido) {
     if (usuario.rol === 'ADMIN') return;
     if (usuario.rol === 'VENDEDOR') {
-      const v = await this.prisma.perfilVendedor.findUnique({ where: { usuarioId: usuario.id } });
+      const v = await this.prisma.perfilVendedor.findUnique({
+        where: { usuarioId: usuario.id },
+      });
       if (!v || v.id !== pedido.vendedorId) {
         throw new ForbiddenException({ codigo: 'PEDIDO_NO_AUTORIZADO' });
       }
       return;
     }
     if (usuario.rol === 'REPARTIDOR') {
-      const r = await this.prisma.perfilRepartidor.findUnique({ where: { usuarioId: usuario.id } });
-      if (!r || (r.id !== pedido.repartidorRecogidaId && r.id !== pedido.repartidorEntregaId)) {
+      const r = await this.prisma.perfilRepartidor.findUnique({
+        where: { usuarioId: usuario.id },
+      });
+      if (
+        !r ||
+        (r.id !== pedido.repartidorRecogidaId &&
+          r.id !== pedido.repartidorEntregaId)
+      ) {
         throw new ForbiddenException({ codigo: 'PEDIDO_NO_AUTORIZADO' });
       }
     }
@@ -907,7 +1015,9 @@ export class PedidosServicio {
     if (usuario.rol !== 'VENDEDOR') {
       throw new ForbiddenException({ codigo: 'PEDIDO_NO_AUTORIZADO' });
     }
-    const v = await this.prisma.perfilVendedor.findUnique({ where: { usuarioId: usuario.id } });
+    const v = await this.prisma.perfilVendedor.findUnique({
+      where: { usuarioId: usuario.id },
+    });
     if (!v || v.id !== pedido.vendedorId) {
       throw new ForbiddenException({ codigo: 'PEDIDO_NO_AUTORIZADO' });
     }
@@ -939,11 +1049,17 @@ export class PedidosServicio {
       perfilRider: PerfilRepartidor,
     ) => Promise<void>,
   ) {
-    const pedido = await this.prisma.pedido.findUnique({ where: { id: pedidoId } });
-    if (!pedido) throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
+    const pedido = await this.prisma.pedido.findUnique({
+      where: { id: pedidoId },
+    });
+    if (!pedido)
+      throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
 
     const perfil = await this.requerirPerfilRepartidor(usuario);
-    const asignadoLado = lado === 'recogida' ? pedido.repartidorRecogidaId : pedido.repartidorEntregaId;
+    const asignadoLado =
+      lado === 'recogida'
+        ? pedido.repartidorRecogidaId
+        : pedido.repartidorEntregaId;
     if (asignadoLado !== perfil.id) {
       throw new ForbiddenException({
         codigo: 'PEDIDO_REPARTIDOR_NO_AUTORIZADO',
@@ -975,9 +1091,21 @@ export class PedidosServicio {
     longitud?: number;
     notas?: string;
     extrasUpdate?: Record<string, unknown>;
-    dentroDeTx?: (tx: Prisma.TransactionClient, pedido: Pedido) => Promise<void>;
+    dentroDeTx?: (
+      tx: Prisma.TransactionClient,
+      pedido: Pedido,
+    ) => Promise<void>;
   }) {
-    const { pedidoId, hacia, actorId, latitud, longitud, notas, extrasUpdate, dentroDeTx } = params;
+    const {
+      pedidoId,
+      hacia,
+      actorId,
+      latitud,
+      longitud,
+      notas,
+      extrasUpdate,
+      dentroDeTx,
+    } = params;
     const actualizado = await this.prisma.$transaction(async (tx) => {
       const p = await tx.pedido.update({
         where: { id: pedidoId },
@@ -1009,23 +1137,41 @@ export class PedidosServicio {
   ) {
     this.eventos.emit(
       EventosDominio.PedidoEstadoCambiado,
-      new PedidoEstadoCambiadoEvento(pedidoId, desde, hacia, actorId, new Date(), silencioso),
+      new PedidoEstadoCambiadoEvento(
+        pedidoId,
+        desde,
+        hacia,
+        actorId,
+        new Date(),
+        silencioso,
+      ),
     );
   }
 
   private siguientePaso(estado: EstadoPedido): string {
     switch (estado) {
-      case 'PENDIENTE_ASIGNACION': return 'Esperando asignación de repartidor';
-      case 'ASIGNADO': return 'El repartidor irá por tu paquete';
-      case 'RECOGIDO': return 'Paquete recogido; en camino al punto de intercambio';
-      case 'EN_TRANSITO': return 'En camino al punto de intercambio';
-      case 'EN_PUNTO_INTERCAMBIO': return 'En el punto de intercambio, esperando reparto final';
-      case 'EN_REPARTO': return 'Salió para entrega';
-      case 'ENTREGADO': return 'Entregado';
-      case 'FALLIDO': return 'Entrega fallida — en revisión';
-      case 'CANCELADO': return 'Pedido cancelado';
-      case 'DEVUELTO': return 'Devuelto al vendedor';
-      default: return '';
+      case 'PENDIENTE_ASIGNACION':
+        return 'Esperando asignación de repartidor';
+      case 'ASIGNADO':
+        return 'El repartidor irá por tu paquete';
+      case 'RECOGIDO':
+        return 'Paquete recogido; en camino al punto de intercambio';
+      case 'EN_TRANSITO':
+        return 'En camino al punto de intercambio';
+      case 'EN_PUNTO_INTERCAMBIO':
+        return 'En el punto de intercambio, esperando reparto final';
+      case 'EN_REPARTO':
+        return 'Salió para entrega';
+      case 'ENTREGADO':
+        return 'Entregado';
+      case 'FALLIDO':
+        return 'Entrega fallida — en revisión';
+      case 'CANCELADO':
+        return 'Pedido cancelado';
+      case 'DEVUELTO':
+        return 'Devuelto al vendedor';
+      default:
+        return '';
     }
   }
 }

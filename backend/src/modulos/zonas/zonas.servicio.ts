@@ -60,9 +60,12 @@ export class ZonasServicio {
     };
     const anillo = geo.coordinates[0] ?? [];
     // Soltamos el último punto (idéntico al primero) al devolver al cliente.
-    const abierto = anillo.length > 1 && anillo[0][0] === anillo[anillo.length - 1][0] && anillo[0][1] === anillo[anillo.length - 1][1]
-      ? anillo.slice(0, -1)
-      : anillo;
+    const abierto =
+      anillo.length > 1 &&
+      anillo[0][0] === anillo[anillo.length - 1][0] &&
+      anillo[0][1] === anillo[anillo.length - 1][1]
+        ? anillo.slice(0, -1)
+        : anillo;
     return {
       id: fila.id,
       codigo: fila.codigo,
@@ -105,8 +108,13 @@ export class ZonasServicio {
   }
 
   async crear(dto: CrearZonaDto): Promise<ZonaDto> {
-    const existente = await this.prisma.zona.findUnique({ where: { codigo: dto.codigo } });
-    if (existente) throw new ConflictException(`Ya existe una zona con código ${dto.codigo}`);
+    const existente = await this.prisma.zona.findUnique({
+      where: { codigo: dto.codigo },
+    });
+    if (existente)
+      throw new ConflictException(
+        `Ya existe una zona con código ${dto.codigo}`,
+      );
 
     if (dto.puntoIntercambioId) {
       const punto = await this.prisma.puntoIntercambio.findUnique({
@@ -150,10 +158,14 @@ export class ZonasServicio {
     // Campos escalares vía Prisma.
     const datosEscalares: Record<string, unknown> = {};
     if (dto.nombre !== undefined) datosEscalares.nombre = dto.nombre;
-    if (dto.descripcion !== undefined) datosEscalares.descripcion = dto.descripcion;
-    if (dto.latitudCentro !== undefined) datosEscalares.latitudCentro = dto.latitudCentro;
-    if (dto.longitudCentro !== undefined) datosEscalares.longitudCentro = dto.longitudCentro;
-    if (dto.puntoIntercambioId !== undefined) datosEscalares.puntoIntercambioId = dto.puntoIntercambioId;
+    if (dto.descripcion !== undefined)
+      datosEscalares.descripcion = dto.descripcion;
+    if (dto.latitudCentro !== undefined)
+      datosEscalares.latitudCentro = dto.latitudCentro;
+    if (dto.longitudCentro !== undefined)
+      datosEscalares.longitudCentro = dto.longitudCentro;
+    if (dto.puntoIntercambioId !== undefined)
+      datosEscalares.puntoIntercambioId = dto.puntoIntercambioId;
     if (dto.activa !== undefined) datosEscalares.activa = dto.activa;
 
     if (Object.keys(datosEscalares).length > 0) {

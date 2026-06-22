@@ -23,13 +23,28 @@ export class SesionWhatsappDto {
   })
   qrActual!: string | null;
 
-  @ApiProperty({ required: false, nullable: true, type: String, format: 'date-time' })
+  @ApiProperty({
+    required: false,
+    nullable: true,
+    type: String,
+    format: 'date-time',
+  })
   qrExpiraEn!: string | null;
 
-  @ApiProperty({ required: false, nullable: true, type: String, format: 'date-time' })
+  @ApiProperty({
+    required: false,
+    nullable: true,
+    type: String,
+    format: 'date-time',
+  })
   conectadoEn!: string | null;
 
-  @ApiProperty({ required: false, nullable: true, type: String, format: 'date-time' })
+  @ApiProperty({
+    required: false,
+    nullable: true,
+    type: String,
+    format: 'date-time',
+  })
   desconectadoEn!: string | null;
 
   @ApiProperty({ required: false, nullable: true })

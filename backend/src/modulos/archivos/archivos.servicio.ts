@@ -53,7 +53,8 @@ export class ArchivosServicio implements OnModuleInit {
 
   constructor() {
     this.bucket = process.env.MINIO_BUCKET_UPLOADS ?? 'delivery-uploads';
-    this.urlPublica = process.env.MINIO_PUBLIC_URL ?? 'http://localhost:9000/delivery-uploads';
+    this.urlPublica =
+      process.env.MINIO_PUBLIC_URL ?? 'http://localhost:9000/delivery-uploads';
     this.cliente = new S3Client({
       endpoint: process.env.MINIO_ENDPOINT ?? 'http://localhost:9000',
       region: process.env.MINIO_REGION ?? 'us-east-1',
@@ -70,10 +71,14 @@ export class ArchivosServicio implements OnModuleInit {
       await this.cliente.send(new HeadBucketCommand({ Bucket: this.bucket }));
     } catch {
       try {
-        await this.cliente.send(new CreateBucketCommand({ Bucket: this.bucket }));
+        await this.cliente.send(
+          new CreateBucketCommand({ Bucket: this.bucket }),
+        );
         this.logger.log(`Bucket '${this.bucket}' creado en MinIO.`);
       } catch (error) {
-        this.logger.warn(`No se pudo verificar/crear el bucket '${this.bucket}': ${(error as Error).message}`);
+        this.logger.warn(
+          `No se pudo verificar/crear el bucket '${this.bucket}': ${(error as Error).message}`,
+        );
       }
     }
   }
@@ -91,7 +96,11 @@ export class ArchivosServicio implements OnModuleInit {
     }
   }
 
-  async subir(buffer: Buffer, key: string, contentType: string): Promise<ResultadoSubida> {
+  async subir(
+    buffer: Buffer,
+    key: string,
+    contentType: string,
+  ): Promise<ResultadoSubida> {
     this.validar(buffer, contentType);
     try {
       await this.cliente.send(
@@ -113,17 +122,29 @@ export class ArchivosServicio implements OnModuleInit {
 
   async eliminar(key: string): Promise<void> {
     try {
-      await this.cliente.send(new DeleteObjectCommand({ Bucket: this.bucket, Key: key }));
+      await this.cliente.send(
+        new DeleteObjectCommand({ Bucket: this.bucket, Key: key }),
+      );
     } catch (error) {
-      this.logger.warn(`No se pudo eliminar '${key}': ${(error as Error).message}`);
+      this.logger.warn(
+        `No se pudo eliminar '${key}': ${(error as Error).message}`,
+      );
     }
   }
 
-  static armarKeyEntrega(pedidoId: string, tipo: 'foto' | 'firma', ext = 'jpg'): string {
+  static armarKeyEntrega(
+    pedidoId: string,
+    tipo: 'foto' | 'firma',
+    ext = 'jpg',
+  ): string {
     return `pedidos/${pedidoId}/entrega/${tipo}-${Date.now()}.${ext}`;
   }
 
-  static armarKeyCierre(repartidorId: string, fechaIso: string, ext = 'jpg'): string {
+  static armarKeyCierre(
+    repartidorId: string,
+    fechaIso: string,
+    ext = 'jpg',
+  ): string {
     return `cierres/${repartidorId}/${fechaIso}/comprobante-${Date.now()}.${ext}`;
   }
 

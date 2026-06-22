@@ -18,11 +18,16 @@ export const PLANTILLAS_ES = {
   },
   PEDIDO_CREADO_CLIENTE: {
     titulo: 'Tu pedido fue creado',
-    cuerpo: 'Hemos recibido tu pedido {{1}}. Te avisaremos cuando esté en camino.',
+    cuerpo:
+      'Hemos recibido tu pedido {{1}}. Te avisaremos cuando esté en camino.',
   },
   PEDIDO_ASIGNADO_VENDEDOR: {
     titulo: 'Pedido {{1}} asignado',
     cuerpo: 'Un repartidor irá por tu pedido {{1}}.',
+  },
+  PEDIDO_RIDER_EN_TIENDA_VENDEDOR: {
+    titulo: 'Tu rider está en el local',
+    cuerpo: 'El rider {{1}} ya está en el local por los paquetes.',
   },
   PEDIDO_ASIGNADO_REPARTIDOR: {
     titulo: 'Nuevo pedido para recoger',
@@ -34,15 +39,18 @@ export const PLANTILLAS_ES = {
   },
   PEDIDO_CLIENTE_SIN_RESPUESTA_VENDEDOR: {
     titulo: 'Cliente sin responder',
-    cuerpo: 'El cliente {{2}} del pedido {{1}} no respondió a la confirmación de entrega.',
+    cuerpo:
+      'El cliente {{2}} del pedido {{1}} no respondió a la confirmación de entrega.',
   },
   PEDIDO_CLIENTE_SIN_CONTACTO_VENDEDOR: {
     titulo: 'No pudimos contactar al cliente',
-    cuerpo: 'No pudimos contactar por WhatsApp al cliente del pedido {{1}}. Motivo: {{2}}.',
+    cuerpo:
+      'No pudimos contactar por WhatsApp al cliente del pedido {{1}}. Motivo: {{2}}.',
   },
   PEDIDO_CLIENTE_RECHAZO_VENDEDOR: {
     titulo: 'Cliente rechazó la entrega',
-    cuerpo: 'El cliente del pedido {{1}} no podrá recibir el envío. Motivo: {{2}}.',
+    cuerpo:
+      'El cliente del pedido {{1}} no podrá recibir el envío. Motivo: {{2}}.',
   },
   PEDIDO_EN_TRANSITO_CLIENTE: {
     titulo: 'Pedido {{1}} en tránsito',
@@ -70,7 +78,8 @@ export const PLANTILLAS_ES = {
   },
   PEDIDO_FALLIDO_CLIENTE: {
     titulo: 'No pudimos entregar tu pedido',
-    cuerpo: 'No pudimos entregar el pedido {{1}}. Te contactaremos para reagendar.',
+    cuerpo:
+      'No pudimos entregar el pedido {{1}}. Te contactaremos para reagendar.',
   },
   PEDIDO_FALLIDO_ADMIN: {
     titulo: 'Entrega fallida: {{1}}',
@@ -106,11 +115,13 @@ export const PLANTILLAS_ES = {
   },
   PEDIDO_EN_INTERCAMBIO_CLIENTE: {
     titulo: 'Pedido {{1}} en punto de intercambio',
-    cuerpo: 'Tu pedido {{1}} llegó al punto de intercambio y será reenviado pronto.',
+    cuerpo:
+      'Tu pedido {{1}} llegó al punto de intercambio y será reenviado pronto.',
   },
   PEDIDO_DEVUELTO_VENDEDOR: {
     titulo: 'Pedido {{1}} devuelto',
-    cuerpo: 'El pedido {{1}} fue devuelto. Coordina la recepción con el repartidor.',
+    cuerpo:
+      'El pedido {{1}} fue devuelto. Coordina la recepción con el repartidor.',
   },
   PEDIDO_REINTENTANDO_VENDEDOR: {
     titulo: 'Reintentando entrega del pedido {{1}}',
@@ -142,25 +153,30 @@ export const PLANTILLAS_ES = {
   },
   PAQUETE_SALDO_BAJO_VENDEDOR: {
     titulo: 'Saldo bajo en paquete',
-    cuerpo: 'Quedan solo {{1}} envíos en tu paquete activo. Considera recargar.',
+    cuerpo:
+      'Quedan solo {{1}} envíos en tu paquete activo. Considera recargar.',
   },
   PAQUETE_AGOTADO_VENDEDOR: {
     titulo: 'Paquete agotado',
-    cuerpo: 'Se agotaron los envíos de tu paquete prepago. Recarga para seguir enviando.',
+    cuerpo:
+      'Se agotaron los envíos de tu paquete prepago. Recarga para seguir enviando.',
   },
   PAQUETE_AUTORIZADO_VENDEDOR: {
     titulo: 'Pago de paquete autorizado',
-    cuerpo: 'El admin confirmó tu pago. Tu paquete de {{1}} envíos por ${{2}} ya está activo.',
+    cuerpo:
+      'El admin confirmó tu pago. Tu paquete de {{1}} envíos por ${{2}} ya está activo.',
   },
   PAQUETE_RECHAZADO_VENDEDOR: {
     titulo: 'Pago de paquete rechazado',
-    cuerpo: 'El admin no aprobó el comprobante de tu paquete por ${{1}}. Motivo: {{2}}.',
+    cuerpo:
+      'El admin no aprobó el comprobante de tu paquete por ${{1}}. Motivo: {{2}}.',
   },
 
   // ── Depósitos a vendedores ─────────────────────────────
   DEPOSITO_REGISTRADO_VENDEDOR: {
     titulo: 'Depósito registrado',
-    cuerpo: 'Se te depositó ${{1}} por {{2}} paquete(s). Revisa el comprobante en la app.',
+    cuerpo:
+      'Se te depositó ${{1}} por {{2}} paquete(s). Revisa el comprobante en la app.',
   },
 } as const satisfies Record<string, Plantilla>;
 

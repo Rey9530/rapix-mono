@@ -24,7 +24,9 @@ class EsContrasenaFuerteConstraint implements ValidatorConstraintInterface {
   }
 }
 
-export function EsContrasenaFuerte(opciones?: ValidationOptions): PropertyDecorator {
+export function EsContrasenaFuerte(
+  opciones?: ValidationOptions,
+): PropertyDecorator {
   return (objeto, propiedad) => {
     registerDecorator({
       target: objeto.constructor,

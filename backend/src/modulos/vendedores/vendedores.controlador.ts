@@ -123,9 +123,7 @@ export class VendedoresControlador {
   @ApiOperation({
     summary: 'ADMIN: detalle completo de un deposito',
   })
-  obtenerDeposito(
-    @Param('depositoId', ParseUUIDPipe) depositoId: string,
-  ) {
+  obtenerDeposito(@Param('depositoId', ParseUUIDPipe) depositoId: string) {
     return this.servicio.obtenerDepositoPorId(depositoId);
   }
 
@@ -141,9 +139,7 @@ export class VendedoresControlador {
   @Roles('ADMIN')
   @Get(':vendedorId/saldo-pendiente')
   @ApiOperation({ summary: 'ADMIN: saldo pendiente de un vendedor especifico' })
-  saldoPendienteAdmin(
-    @Param('vendedorId', ParseUUIDPipe) vendedorId: string,
-  ) {
+  saldoPendienteAdmin(@Param('vendedorId', ParseUUIDPipe) vendedorId: string) {
     return this.servicio.obtenerSaldoPendientePorVendedorId(vendedorId);
   }
 

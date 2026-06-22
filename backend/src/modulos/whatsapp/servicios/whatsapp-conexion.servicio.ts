@@ -141,7 +141,8 @@ export class WhatsappConexionServicio
 
     const navegador = process.env.WHATSAPP_BAILEYS_NAVEGADOR_NOMBRE ?? 'Rapix';
     const nivelLog =
-      (process.env.WHATSAPP_BAILEYS_LOG_LEVEL as pino.LevelWithSilent) ?? 'warn';
+      (process.env.WHATSAPP_BAILEYS_LOG_LEVEL as pino.LevelWithSilent) ??
+      'warn';
 
     const logger = pino({ level: nivelLog });
 
@@ -391,9 +392,7 @@ export class WhatsappConexionServicio
     this.timerReconexion = setTimeout(() => {
       this.timerReconexion = null;
       void this.iniciar().catch((error) => {
-        this.logger.error(
-          `Falla en reconexion: ${this.mensajeError(error)}`,
-        );
+        this.logger.error(`Falla en reconexion: ${this.mensajeError(error)}`);
       });
     }, espera);
     this.reconectandoEnMs = Math.min(espera * 2, RECONEXION_MAX_MS);

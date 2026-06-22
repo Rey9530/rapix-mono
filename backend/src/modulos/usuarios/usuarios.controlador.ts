@@ -12,7 +12,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Roles } from '../../comun/decoradores/roles.decorador.js';
 import { UsuarioActual } from '../../comun/decoradores/usuario-actual.decorador.js';
 import { PaginacionDto } from '../../comun/dto/paginacion.dto.js';
@@ -52,7 +57,9 @@ export class UsuariosControlador {
   }
 
   @Patch('yo')
-  @ApiOperation({ summary: 'Actualiza el perfil propio (telefono, nombreCompleto, urlAvatar)' })
+  @ApiOperation({
+    summary: 'Actualiza el perfil propio (telefono, nombreCompleto, urlAvatar)',
+  })
   actualizarYo(
     @UsuarioActual() usuario: Usuario,
     @Body() dto: ActualizarPerfilPropioDto,
@@ -116,7 +123,9 @@ export class UsuariosControlador {
   @ApiOperation({
     summary: 'Detalle del usuario incluyendo perfil del rol (ADMIN)',
   })
-  obtenerPorId(@Param('id', ParseUUIDPipe) id: string): Promise<UsuarioDetalleDto> {
+  obtenerPorId(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<UsuarioDetalleDto> {
     return this.servicio.obtenerPorId(id);
   }
 
@@ -177,6 +186,11 @@ export class UsuariosControlador {
     @Param('paqueteId', ParseUUIDPipe) paqueteId: string,
     @Body() dto: ActualizarPaqueteAsignadoDto,
   ) {
-    return this.servicio.actualizarPaqueteAsignado(id, paqueteId, dto, admin.id);
+    return this.servicio.actualizarPaqueteAsignado(
+      id,
+      paqueteId,
+      dto,
+      admin.id,
+    );
   }
 }

@@ -36,15 +36,17 @@ export class ConfirmacionEntregaCronServicio {
   })
   async barrerTimeouts(): Promise<void> {
     const ahora = new Date();
-    const vencidas = await this.prisma.confirmacionEntregaConversacion.findMany({
-      where: {
-        estado: { in: ['INICIADA', 'REPREGUNTADA'] },
-        notificacionVendedorEnviada: false,
-        vencimientoNotificacionEn: { lte: ahora },
+    const vencidas = await this.prisma.confirmacionEntregaConversacion.findMany(
+      {
+        where: {
+          estado: { in: ['INICIADA', 'REPREGUNTADA'] },
+          notificacionVendedorEnviada: false,
+          vencimientoNotificacionEn: { lte: ahora },
+        },
+        select: { id: true, etapa: true, pedidoId: true },
+        take: LOTE_MAX,
       },
-      select: { id: true, etapa: true, pedidoId: true },
-      take: LOTE_MAX,
-    });
+    );
     if (vencidas.length === 0) return;
 
     this.logger.log(

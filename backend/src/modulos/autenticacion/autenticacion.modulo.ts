@@ -17,7 +17,8 @@ import { VerificacionCorreoServicio } from './verificacion-correo.servicio.js';
       useFactory: () => ({
         secret: process.env.JWT_ACCESS_SECRET as string,
         signOptions: {
-          expiresIn: (process.env.JWT_ACCESS_EXPIRES ?? '15m') as unknown as number,
+          expiresIn: (process.env.JWT_ACCESS_EXPIRES ??
+            '15m') as unknown as number,
         },
       }),
     }),

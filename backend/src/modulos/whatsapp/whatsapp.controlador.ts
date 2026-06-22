@@ -62,7 +62,9 @@ export class WhatsappControlador {
   // ──────────────────────────────────────────────────
 
   @Get('sesion')
-  @ApiOperation({ summary: 'Devuelve el estado actual de la sesion de WhatsApp' })
+  @ApiOperation({
+    summary: 'Devuelve el estado actual de la sesion de WhatsApp',
+  })
   async obtenerSesion(): Promise<SesionWhatsappDto> {
     const sesion = await this.conexion.obtenerEstadoActual();
     return sesionADto(sesion);
@@ -116,7 +118,9 @@ export class WhatsappControlador {
   }
 
   @Get('chats/:chatId/mensajes')
-  @ApiOperation({ summary: 'Lista los mensajes de un chat (paginado por cursor)' })
+  @ApiOperation({
+    summary: 'Lista los mensajes de un chat (paginado por cursor)',
+  })
   async listarMensajes(
     @Param('chatId', ParseUUIDPipe) chatId: string,
     @Query() filtros: FiltrosMensajesDto,
@@ -161,7 +165,10 @@ export class WhatsappControlador {
       type: 'object',
       properties: {
         archivo: { type: 'string', format: 'binary' },
-        tipo: { type: 'string', enum: ['IMAGEN', 'VIDEO', 'AUDIO', 'DOCUMENTO'] },
+        tipo: {
+          type: 'string',
+          enum: ['IMAGEN', 'VIDEO', 'AUDIO', 'DOCUMENTO'],
+        },
         caption: { type: 'string' },
         respondeAId: { type: 'string', format: 'uuid' },
       },

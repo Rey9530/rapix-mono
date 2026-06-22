@@ -27,7 +27,9 @@ export class CuentasBancariasControlador {
   constructor(private readonly servicio: CuentasBancariasServicio) {}
 
   @Get()
-  @ApiOperation({ summary: 'Lista las cuentas bancarias del vendedor autenticado' })
+  @ApiOperation({
+    summary: 'Lista las cuentas bancarias del vendedor autenticado',
+  })
   listar(@UsuarioActual() usuario: Usuario): Promise<CuentaBancariaDto[]> {
     return this.servicio.listar(usuario);
   }

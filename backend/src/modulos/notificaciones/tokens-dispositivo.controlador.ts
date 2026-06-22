@@ -22,8 +22,13 @@ export class TokensDispositivoControlador {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Registra (upsert) un token FCM del dispositivo del usuario' })
-  registrar(@UsuarioActual() usuario: Usuario, @Body() dto: RegistrarTokenDispositivoDto) {
+  @ApiOperation({
+    summary: 'Registra (upsert) un token FCM del dispositivo del usuario',
+  })
+  registrar(
+    @UsuarioActual() usuario: Usuario,
+    @Body() dto: RegistrarTokenDispositivoDto,
+  ) {
     return this.servicio.registrar(usuario, dto);
   }
 
@@ -34,7 +39,9 @@ export class TokensDispositivoControlador {
   }
 
   @Delete(':token')
-  @ApiOperation({ summary: 'Revoca (soft-delete) un token del usuario autenticado' })
+  @ApiOperation({
+    summary: 'Revoca (soft-delete) un token del usuario autenticado',
+  })
   revocar(@UsuarioActual() usuario: Usuario, @Param('token') token: string) {
     return this.servicio.revocar(usuario, token);
   }

@@ -21,7 +21,9 @@ export class MapasServicio {
 
   constructor(private readonly redis: RedisServicio) {}
 
-  async optimizarRuta(dto: OptimizarRutaDto): Promise<RespuestaRutaOptimizadaDto> {
+  async optimizarRuta(
+    dto: OptimizarRutaDto,
+  ): Promise<RespuestaRutaOptimizadaDto> {
     const token = process.env.MAPBOX_TOKEN;
     if (!token || token === 'pk.xxxxx') {
       throw new InternalServerErrorException(
@@ -55,7 +57,12 @@ export class MapasServicio {
       });
 
       const datos = respuesta.data;
-      if (!datos || datos.code !== 'Ok' || !Array.isArray(datos.trips) || datos.trips.length === 0) {
+      if (
+        !datos ||
+        datos.code !== 'Ok' ||
+        !Array.isArray(datos.trips) ||
+        datos.trips.length === 0
+      ) {
         throw new BadGatewayException(
           `Respuesta inválida de Mapbox: ${datos?.code ?? 'desconocido'}`,
         );
@@ -77,7 +84,10 @@ export class MapasServicio {
       await this.escribirCache(claveCache, resultado);
       return resultado;
     } catch (error) {
-      if (error instanceof BadGatewayException || error instanceof InternalServerErrorException) {
+      if (
+        error instanceof BadGatewayException ||
+        error instanceof InternalServerErrorException
+      ) {
         throw error;
       }
       if (error instanceof AxiosError) {
@@ -96,26 +106,43 @@ export class MapasServicio {
     const normalizado = puntos
       .map((p) => `${p.latitud.toFixed(5)},${p.longitud.toFixed(5)}`)
       .join('|');
-    const hash = createHash('sha256').update(normalizado).digest('hex').slice(0, 16);
+    const hash = createHash('sha256')
+      .update(normalizado)
+      .digest('hex')
+      .slice(0, 16);
     return `mapas:optimizar:${hash}`;
   }
 
-  private async leerCache(clave: string): Promise<RespuestaRutaOptimizadaDto | null> {
+  private async leerCache(
+    clave: string,
+  ): Promise<RespuestaRutaOptimizadaDto | null> {
     try {
       const valor = await this.redis.instancia.get(clave);
       if (!valor) return null;
       return JSON.parse(valor) as RespuestaRutaOptimizadaDto;
     } catch (error) {
-      this.logger.warn(`No se pudo leer cache de Mapbox: ${(error as Error).message}`);
+      this.logger.warn(
+        `No se pudo leer cache de Mapbox: ${(error as Error).message}`,
+      );
       return null;
     }
   }
 
-  private async escribirCache(clave: string, valor: RespuestaRutaOptimizadaDto): Promise<void> {
+  private async escribirCache(
+    clave: string,
+    valor: RespuestaRutaOptimizadaDto,
+  ): Promise<void> {
     try {
-      await this.redis.instancia.set(clave, JSON.stringify(valor), 'EX', TTL_CACHE_SEGUNDOS);
+      await this.redis.instancia.set(
+        clave,
+        JSON.stringify(valor),
+        'EX',
+        TTL_CACHE_SEGUNDOS,
+      );
     } catch (error) {
-      this.logger.warn(`No se pudo escribir cache de Mapbox: ${(error as Error).message}`);
+      this.logger.warn(
+        `No se pudo escribir cache de Mapbox: ${(error as Error).message}`,
+      );
     }
   }
 }

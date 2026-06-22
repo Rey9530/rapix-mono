@@ -16,6 +16,7 @@ import { UsuarioActual } from '../../comun/decoradores/usuario-actual.decorador.
 import type { Usuario } from '../../generated/prisma/client.js';
 import { ActualizarDisponibilidadDto } from './dto/actualizar-disponibilidad.dto.js';
 import { ActualizarUbicacionDto } from './dto/actualizar-ubicacion.dto.js';
+import { AvisoLlegadaTiendaDto } from './dto/aviso-llegada-tienda.dto.js';
 import { RepartidoresServicio } from './repartidores.servicio.js';
 
 @ApiTags('Repartidores')
@@ -28,7 +29,9 @@ export class RepartidoresControlador {
 
   @Roles('REPARTIDOR')
   @Get('yo')
-  @ApiOperation({ summary: 'Perfil del repartidor autenticado con zonas asignadas' })
+  @ApiOperation({
+    summary: 'Perfil del repartidor autenticado con zonas asignadas',
+  })
   obtenerYo(@UsuarioActual() usuario: Usuario) {
     return this.servicio.obtenerYo(usuario.id);
   }
@@ -55,6 +58,21 @@ export class RepartidoresControlador {
     return this.servicio.actualizarUbicacion(usuario.id, dto);
   }
 
+  @Roles('REPARTIDOR')
+  @Throttle({ default: { limit: 30, ttl: 60_000 } })
+  @Post('yo/aviso-llegada-tienda')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary:
+      'Notificar al vendedor (FCM) que el rider llegó a la tienda. No cambia estado del pedido.',
+  })
+  avisarLlegadaTienda(
+    @UsuarioActual() usuario: Usuario,
+    @Body() dto: AvisoLlegadaTiendaDto,
+  ) {
+    return this.servicio.avisarLlegadaTienda(usuario.id, dto);
+  }
+
   // Listados del repartidor autenticado — reales a partir de Fase 3.
   @Roles('REPARTIDOR')
   @Get('yo/pedidos')
@@ -65,14 +83,21 @@ export class RepartidoresControlador {
 
   @Roles('REPARTIDOR')
   @Get('yo/recogidas-pendientes')
-  @ApiOperation({ summary: 'Pedidos ASIGNADOS al repartidor (recogida pendiente)' })
+  @ApiOperation({
+    summary: 'Pedidos ASIGNADOS al repartidor (recogida pendiente)',
+  })
   recogidasPendientes(@UsuarioActual() usuario: Usuario) {
-    return this.servicio.pedidosDeRepartidor(usuario.id, 'recogidas-pendientes');
+    return this.servicio.pedidosDeRepartidor(
+      usuario.id,
+      'recogidas-pendientes',
+    );
   }
 
   @Roles('REPARTIDOR')
   @Get('yo/entregas-pendientes')
-  @ApiOperation({ summary: 'Pedidos EN_REPARTO del repartidor (entrega pendiente)' })
+  @ApiOperation({
+    summary: 'Pedidos EN_REPARTO del repartidor (entrega pendiente)',
+  })
   entregasPendientes(@UsuarioActual() usuario: Usuario) {
     return this.servicio.pedidosDeRepartidor(usuario.id, 'entregas-pendientes');
   }

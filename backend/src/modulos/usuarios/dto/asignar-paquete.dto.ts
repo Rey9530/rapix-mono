@@ -52,7 +52,9 @@ export class AsignarPaqueteDto {
   @Min(0)
   precio?: number;
 
-  @ApiPropertyOptional({ description: 'Fecha de expiración (ISO 8601). Vacío = sin vencimiento.' })
+  @ApiPropertyOptional({
+    description: 'Fecha de expiración (ISO 8601). Vacío = sin vencimiento.',
+  })
   @IsOptional()
   @Type(() => Date)
   @IsDate()

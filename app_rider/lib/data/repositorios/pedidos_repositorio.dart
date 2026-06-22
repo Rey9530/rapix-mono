@@ -62,6 +62,35 @@ class PedidosRepositorio {
   Future<Pedido> recoger(String id, {double? lat, double? lng, String? notas}) =>
       _transicion(id, 'recoger', lat: lat, lng: lng, notas: notas);
 
+  /// Notifica al vendedor (vía FCM) que el rider ya está en la tienda.
+  /// No cambia el estado del pedido. Lanza `ExcepcionApi` si el backend rechaza.
+  Future<AvisoLlegadaTiendaResultado> avisarLlegadaTienda(
+    String pedidoId, {
+    double? lat,
+    double? lng,
+    String? notas,
+  }) async {
+    final body = <String, dynamic>{'pedidoId': pedidoId};
+    if (lat != null) body['latitud'] = lat;
+    if (lng != null) body['longitud'] = lng;
+    if (notas != null && notas.isNotEmpty) body['notas'] = notas;
+    try {
+      final r = await _dio.post<Map<String, dynamic>>(
+        '/repartidores/yo/aviso-llegada-tienda',
+        data: body,
+      );
+      final data = r.data ?? const <String, dynamic>{};
+      return AvisoLlegadaTiendaResultado(
+        pedidoId: data['pedidoId'] as String? ?? pedidoId,
+        vendedorId: data['vendedorId'] as String?,
+        notificacionId: data['notificacionId'] as String?,
+        estadoNotificacion: data['estadoNotificacion'] as String?,
+      );
+    } on DioException catch (e) {
+      throw _mapearError(e, 'No se pudo avisar al vendedor');
+    }
+  }
+
   Future<Pedido> enTransito(String id, {double? lat, double? lng, String? notas}) =>
       _transicion(id, 'en-transito', lat: lat, lng: lng, notas: notas);
 
@@ -171,6 +200,20 @@ class ResultadoBulk {
 
   int get total => exitosos + fallidos.length;
   bool get todoOk => fallidos.isEmpty;
+}
+
+class AvisoLlegadaTiendaResultado {
+  final String pedidoId;
+  final String? vendedorId;
+  final String? notificacionId;
+  final String? estadoNotificacion;
+
+  const AvisoLlegadaTiendaResultado({
+    required this.pedidoId,
+    this.vendedorId,
+    this.notificacionId,
+    this.estadoNotificacion,
+  });
 }
 
 class FalloBulk {

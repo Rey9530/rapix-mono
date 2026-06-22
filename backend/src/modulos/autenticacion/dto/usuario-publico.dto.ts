@@ -1,5 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { EstadoUsuario, RolUsuario, Usuario } from '../../../generated/prisma/client.js';
+import type {
+  EstadoUsuario,
+  RolUsuario,
+  Usuario,
+} from '../../../generated/prisma/client.js';
 
 export class EstadisticasUsuarioDto {
   @ApiProperty({ example: 247 })
@@ -34,7 +38,9 @@ export class UsuarioPublicoDto {
   @ApiProperty({ enum: ['ADMIN', 'VENDEDOR', 'REPARTIDOR', 'CLIENTE'] })
   rol!: RolUsuario;
 
-  @ApiProperty({ enum: ['ACTIVO', 'INACTIVO', 'SUSPENDIDO', 'PENDIENTE_VERIFICACION'] })
+  @ApiProperty({
+    enum: ['ACTIVO', 'INACTIVO', 'SUSPENDIDO', 'PENDIENTE_VERIFICACION'],
+  })
   estado!: EstadoUsuario;
 
   @ApiProperty({
@@ -52,7 +58,8 @@ export class UsuarioPublicoDto {
   @ApiProperty({
     nullable: true,
     type: Date,
-    description: 'Fecha en que el usuario verificó su correo electrónico, o null si aún no.',
+    description:
+      'Fecha en que el usuario verificó su correo electrónico, o null si aún no.',
   })
   correoVerificadoEn!: Date | null;
 
@@ -73,7 +80,10 @@ export class UsuarioPublicoDto {
   })
   estadisticas?: EstadisticasUsuarioDto;
 
-  static desde(usuario: any, estadisticas?: EstadisticasUsuarioDto): UsuarioPublicoDto {
+  static desde(
+    usuario: any,
+    estadisticas?: EstadisticasUsuarioDto,
+  ): UsuarioPublicoDto {
     const dto = new UsuarioPublicoDto();
     dto.id = usuario.id;
     dto.email = usuario.email;

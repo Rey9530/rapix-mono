@@ -2,7 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class RespuestaRutaOptimizadaDto {
   @ApiProperty({
-    description: 'Polyline codificado (precision 5) con la geometría completa de la ruta optimizada.',
+    description:
+      'Polyline codificado (precision 5) con la geometría completa de la ruta optimizada.',
     example: 'mfp_C~xshNa@}AbAcA~B}@',
   })
   geometriaPolyline!: string;

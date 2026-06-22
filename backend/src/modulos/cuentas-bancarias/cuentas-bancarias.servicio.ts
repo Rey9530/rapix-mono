@@ -127,7 +127,10 @@ export class CuentasBancariasServicio {
     if (dto.alias !== undefined) cambios.alias = dto.alias;
 
     // Lógica de esPrincipal cuando se modifica explícitamente.
-    if (dto.esPrincipal !== undefined && dto.esPrincipal !== cuenta.esPrincipal) {
+    if (
+      dto.esPrincipal !== undefined &&
+      dto.esPrincipal !== cuenta.esPrincipal
+    ) {
       if (dto.esPrincipal === false) {
         const otrasActivas = await this.prisma.cuentaBancaria.count({
           where: {

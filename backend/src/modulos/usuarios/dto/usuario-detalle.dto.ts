@@ -174,7 +174,6 @@ export type UsuarioConPerfiles = Usuario & {
 export class UsuarioDetalleDto extends UsuarioPublicoDto {
   @ApiProperty({ type: PerfilAdminDto, nullable: true })
   perfilAdmin!: PerfilAdminDto | null;
- 
 
   @ApiProperty({ type: PerfilRepartidorDto, nullable: true })
   perfilRepartidor!: PerfilRepartidorDto | null;

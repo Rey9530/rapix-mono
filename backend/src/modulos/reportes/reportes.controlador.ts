@@ -12,7 +12,9 @@ export class ReportesControlador {
 
   @Roles('ADMIN')
   @Get('consumo-paquetes')
-  @ApiOperation({ summary: 'Consumo agregado de paquetes por vendedor (ADMIN)' })
+  @ApiOperation({
+    summary: 'Consumo agregado de paquetes por vendedor (ADMIN)',
+  })
   consumoPaquetes(@Query() dto: ConsumoPaquetesDto) {
     return this.servicio.consumoPaquetes(dto);
   }

@@ -25,7 +25,10 @@ import {
 
 export class ActualizarPedidoDto {
   @ApiProperty({ required: false })
-  @IsOptional() @IsString() @MinLength(2) @MaxLength(120)
+  @IsOptional()
+  @IsString()
+  @MinLength(2)
+  @MaxLength(120)
   nombreCliente?: string;
 
   @ApiProperty({
@@ -34,69 +37,105 @@ export class ActualizarPedidoDto {
     description:
       '8 dígitos, debe iniciar con 2, 6 o 7 (El Salvador). El servidor agrega el prefijo +503.',
   })
-  @IsOptional() @IsString() @Matches(/^[267][0-9]{7}$/, {
+  @IsOptional()
+  @IsString()
+  @Matches(/^[267][0-9]{7}$/, {
     message: 'El teléfono debe tener 8 dígitos y empezar con 2, 6 o 7.',
   })
   telefonoCliente?: string;
 
   @ApiProperty({ required: false })
-  @IsOptional() @IsEmail()
+  @IsOptional()
+  @IsEmail()
   emailCliente?: string;
 
   @ApiProperty({ required: false })
-  @IsOptional() @IsString() @MaxLength(240)
+  @IsOptional()
+  @IsString()
+  @MaxLength(240)
   direccionOrigen?: string;
 
   @ApiProperty({ required: false })
-  @IsOptional() @Type(() => Number) @IsNumber() @IsLatitude()
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @IsLatitude()
   latitudOrigen?: number;
 
   @ApiProperty({ required: false })
-  @IsOptional() @Type(() => Number) @IsNumber() @IsLongitude()
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @IsLongitude()
   longitudOrigen?: number;
 
   @ApiProperty({ required: false })
-  @IsOptional() @IsString() @MaxLength(240)
+  @IsOptional()
+  @IsString()
+  @MaxLength(240)
   notasOrigen?: string;
 
   @ApiProperty({ required: false })
-  @IsOptional() @IsString() @MaxLength(240)
+  @IsOptional()
+  @IsString()
+  @MaxLength(240)
   direccionDestino?: string;
 
   @ApiProperty({ required: false })
-  @IsOptional() @Type(() => Number) @IsNumber() @IsLatitude()
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @IsLatitude()
   latitudDestino?: number;
 
   @ApiProperty({ required: false })
-  @IsOptional() @Type(() => Number) @IsNumber() @IsLongitude()
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @IsLongitude()
   longitudDestino?: number;
 
   @ApiProperty({ required: false })
-  @IsOptional() @IsString() @MaxLength(240)
+  @IsOptional()
+  @IsString()
+  @MaxLength(240)
   notasDestino?: string;
 
   @ApiProperty({ required: false })
-  @IsOptional() @IsString() @MaxLength(240)
+  @IsOptional()
+  @IsString()
+  @MaxLength(240)
   descripcionPaquete?: string;
 
   @ApiProperty({ required: false })
-  @IsOptional() @Type(() => Number) @IsNumber() @IsPositive()
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @IsPositive()
   pesoPaqueteKg?: number;
 
   @ApiProperty({ required: false })
-  @IsOptional() @Type(() => Number) @IsNumber() @IsPositive()
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @IsPositive()
   valorDeclarado?: number;
 
   @ApiProperty({ required: false })
-  @IsOptional() @Type(() => Number) @IsNumber() @IsPositive()
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @IsPositive()
   montoContraEntrega?: number;
 
   @ApiProperty({ enum: MetodoPago, required: false })
-  @IsOptional() @IsEnum(MetodoPago)
+  @IsOptional()
+  @IsEnum(MetodoPago)
   metodoPago?: MetodoPago;
 
   @ApiProperty({ required: false })
-  @IsOptional() @IsDateString()
+  @IsOptional()
+  @IsDateString()
   programadoPara?: string;
 
   // ─── Campos solo-ADMIN ────────────────────────────
@@ -108,30 +147,45 @@ export class ActualizarPedidoDto {
     description:
       'Override administrativo del estado. Salta la máquina de estados y NO ejecuta efectos financieros (cobros/comprobante). Solo ADMIN.',
   })
-  @IsOptional() @IsEnum(EstadoPedido)
+  @IsOptional()
+  @IsEnum(EstadoPedido)
   estado?: EstadoPedido;
 
-  @ApiProperty({ enum: ModoFacturacion, required: false, description: 'Solo ADMIN.' })
-  @IsOptional() @IsEnum(ModoFacturacion)
+  @ApiProperty({
+    enum: ModoFacturacion,
+    required: false,
+    description: 'Solo ADMIN.',
+  })
+  @IsOptional()
+  @IsEnum(ModoFacturacion)
   modoFacturacion?: ModoFacturacion;
 
   @ApiProperty({ required: false, description: 'Solo ADMIN.' })
-  @IsOptional() @Type(() => Number) @IsNumber() @Min(0)
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
   costoEnvio?: number;
 
   @ApiProperty({
     required: false,
     nullable: true,
-    description: 'UUID del repartidor de recogida; null para desasignar. Solo ADMIN.',
+    description:
+      'UUID del repartidor de recogida; null para desasignar. Solo ADMIN.',
   })
-  @IsOptional() @ValidateIf((_, v) => v !== null) @IsUUID()
+  @IsOptional()
+  @ValidateIf((_, v) => v !== null)
+  @IsUUID()
   repartidorRecogidaId?: string | null;
 
   @ApiProperty({
     required: false,
     nullable: true,
-    description: 'UUID del repartidor de entrega; null para desasignar. Solo ADMIN.',
+    description:
+      'UUID del repartidor de entrega; null para desasignar. Solo ADMIN.',
   })
-  @IsOptional() @ValidateIf((_, v) => v !== null) @IsUUID()
+  @IsOptional()
+  @ValidateIf((_, v) => v !== null)
+  @IsUUID()
   repartidorEntregaId?: string | null;
 }

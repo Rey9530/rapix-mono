@@ -38,7 +38,8 @@ export class CrearReglaTarifaDto {
   precioPorEnvio?: number;
 
   @ApiPropertyOptional({
-    description: 'Cantidad de envíos del paquete. Requerido si modoFacturacion = PAQUETE',
+    description:
+      'Cantidad de envíos del paquete. Requerido si modoFacturacion = PAQUETE',
     example: 50,
   })
   @IsOptional()
@@ -48,7 +49,8 @@ export class CrearReglaTarifaDto {
   tamanoPaquete?: number;
 
   @ApiPropertyOptional({
-    description: 'Precio total del paquete. Requerido si modoFacturacion = PAQUETE',
+    description:
+      'Precio total del paquete. Requerido si modoFacturacion = PAQUETE',
     example: 100,
   })
   @IsOptional()

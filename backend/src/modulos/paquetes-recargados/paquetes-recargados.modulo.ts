@@ -6,7 +6,11 @@ import { PaquetesRecargadosServicio } from './paquetes-recargados.servicio.js';
 
 @Module({
   controllers: [PaquetesRecargadosControlador],
-  providers: [PaquetesRecargadosServicio, FacturacionServicio, PaquetesCronServicio],
+  providers: [
+    PaquetesRecargadosServicio,
+    FacturacionServicio,
+    PaquetesCronServicio,
+  ],
   exports: [PaquetesRecargadosServicio, FacturacionServicio],
 })
 export class PaquetesRecargadosModulo {}

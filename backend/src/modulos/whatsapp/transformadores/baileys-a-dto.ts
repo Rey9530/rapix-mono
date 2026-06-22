@@ -98,13 +98,18 @@ export function normalizarMensaje(msg: WAMessage): MensajeNormalizado | null {
   // las conversaciones de confirmacion de entrega quedan rotas.
   const chatJid = resolverJidPreferidoPN(msg.key);
 
-  const remitenteJid = fromMe
-    ? null
-    : (msg.key.participant ?? chatJid);
+  const remitenteJid = fromMe ? null : (msg.key.participant ?? chatJid);
 
   const enviadoEn = enviadoEnDeMensaje(msg);
-  const { tipo, texto, caption, mimeMedia, bytesMedia, duracionSeg, nombreArchivo } =
-    extraerContenido(msg);
+  const {
+    tipo,
+    texto,
+    caption,
+    mimeMedia,
+    bytesMedia,
+    duracionSeg,
+    nombreArchivo,
+  } = extraerContenido(msg);
 
   // Si es solo un stub (entrada/salida de grupo, etc.) y no hay nada significativo, ignorar.
   if (tipo === 'SISTEMA' && !texto) {
@@ -266,7 +271,7 @@ function contenidoVacio(tipo: TipoMensajeWhatsapp): Contenido {
 function numeroSeguro(valor: unknown): number | null {
   if (valor === null || valor === undefined) return null;
   if (typeof valor === 'number') return Number.isFinite(valor) ? valor : null;
-  if (typeof valor === 'object' && 'toNumber' in (valor as object)) {
+  if (typeof valor === 'object' && 'toNumber' in valor) {
     try {
       const n = (valor as { toNumber: () => number }).toNumber();
       return Number.isFinite(n) ? n : null;
@@ -302,11 +307,7 @@ export function normalizarContacto(contacto: Contact): ContactoNormalizado {
     numero: contacto.phoneNumber
       ? extraerNumeroDeJid(contacto.phoneNumber)
       : extraerNumeroDeJid(contacto.id),
-    nombre:
-      contacto.name ??
-      contacto.notify ??
-      contacto.verifiedName ??
-      null,
+    nombre: contacto.name ?? contacto.notify ?? contacto.verifiedName ?? null,
   };
 }
 
@@ -318,7 +319,7 @@ function convertirTimestamp(
     typeof ts === 'number'
       ? ts
       : typeof ts === 'object' && 'toNumber' in ts
-        ? (ts as { toNumber: () => number }).toNumber()
+        ? ts.toNumber()
         : Number(ts);
   if (!Number.isFinite(num) || num <= 0) return null;
   return new Date(num * 1000);

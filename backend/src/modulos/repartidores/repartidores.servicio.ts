@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -7,7 +9,13 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import type { PerfilRepartidor } from '../../generated/prisma/client.js';
 import { PrismaServicio } from '../../prisma/prisma.servicio.js';
 import { rangoDelDiaElSalvador } from '../../comun/utiles/fechas.js';
+import { NotificacionesServicio } from '../notificaciones/notificaciones.servicio.js';
+import {
+  ClavePlantilla,
+  renderizarPlantilla,
+} from '../notificaciones/plantillas/es.js';
 import { ActualizarUbicacionDto } from './dto/actualizar-ubicacion.dto.js';
+import { AvisoLlegadaTiendaDto } from './dto/aviso-llegada-tienda.dto.js';
 import { CrearPerfilRepartidorDto } from './dto/crear-perfil-repartidor.dto.js';
 
 export const EVENTO_UBICACION = 'repartidor.ubicacion_actualizada';
@@ -24,6 +32,7 @@ export class RepartidoresServicio {
   constructor(
     private readonly prisma: PrismaServicio,
     private readonly eventos: EventEmitter2,
+    private readonly notif: NotificacionesServicio,
   ) {}
 
   async crearPerfil(
@@ -75,7 +84,11 @@ export class RepartidoresServicio {
     const repartidores = await this.prisma.perfilRepartidor.findMany({
       include: {
         usuario: true,
-        zonas: { include: { zona: { select: { id: true, codigo: true, nombre: true } } } },
+        zonas: {
+          include: {
+            zona: { select: { id: true, codigo: true, nombre: true } },
+          },
+        },
       },
       orderBy: { creadoEn: 'desc' },
     });
@@ -105,7 +118,11 @@ export class RepartidoresServicio {
       where: { id },
       include: {
         usuario: true,
-        zonas: { include: { zona: { select: { id: true, codigo: true, nombre: true } } } },
+        zonas: {
+          include: {
+            zona: { select: { id: true, codigo: true, nombre: true } },
+          },
+        },
       },
     });
     if (!r) throw new NotFoundException('Repartidor no encontrado');
@@ -131,13 +148,22 @@ export class RepartidoresServicio {
       }),
       this.prisma.pedido.count({
         where: {
-          estado: { in: ['ASIGNADO', 'RECOGIDO', 'EN_TRANSITO', 'EN_PUNTO_INTERCAMBIO', 'EN_REPARTO'] },
+          estado: {
+            in: [
+              'ASIGNADO',
+              'RECOGIDO',
+              'EN_TRANSITO',
+              'EN_PUNTO_INTERCAMBIO',
+              'EN_REPARTO',
+            ],
+          },
           OR: [{ repartidorRecogidaId: id }, { repartidorEntregaId: id }],
         },
       }),
     ]);
     const finalizados = entregados + fallidosODevueltos;
-    const tasaExito = finalizados === 0 ? null : Number((entregados / finalizados).toFixed(4));
+    const tasaExito =
+      finalizados === 0 ? null : Number((entregados / finalizados).toFixed(4));
     return {
       id: r.id,
       nombreCompleto: r.usuario.nombreCompleto,
@@ -170,7 +196,9 @@ export class RepartidoresServicio {
       where: { usuarioId },
     });
     if (!perfil) {
-      throw new NotFoundException('El usuario autenticado no tiene PerfilRepartidor');
+      throw new NotFoundException(
+        'El usuario autenticado no tiene PerfilRepartidor',
+      );
     }
     return perfil;
   }
@@ -197,7 +225,11 @@ export class RepartidoresServicio {
 
   async pedidosDeRepartidor(
     usuarioId: string,
-    tipo: 'todos' | 'recogidas-pendientes' | 'entregas-pendientes' | 'activos-en-curso',
+    tipo:
+      | 'todos'
+      | 'recogidas-pendientes'
+      | 'entregas-pendientes'
+      | 'activos-en-curso',
   ) {
     const perfil = await this.perfilDeUsuario(usuarioId);
     if (tipo === 'recogidas-pendientes') {
@@ -266,6 +298,74 @@ export class RepartidoresServicio {
       latitud: actualizado.latitudActual,
       longitud: actualizado.longitudActual,
       ultimaUbicacionEn: actualizado.ultimaUbicacionEn,
+    };
+  }
+
+  /**
+   * Notifica al vendedor (canal PUSH/FCM) que el repartidor llegó a la tienda
+   * por un pedido. No cambia el estado del pedido: es un "aviso lateral" previo
+   * a la transición ASIGNADO → RECOGIDO. Idempotencia anti-spam se delega al
+   * @Throttle del controlador y al bloqueo temporal del lado cliente.
+   */
+  async avisarLlegadaTienda(usuarioId: string, dto: AvisoLlegadaTiendaDto) {
+    const perfil = await this.perfilDeUsuario(usuarioId);
+    const [pedido, perfilConUsuario] = await Promise.all([
+      this.prisma.pedido.findUnique({
+        where: { id: dto.pedidoId },
+        select: {
+          id: true,
+          codigoSeguimiento: true,
+          estado: true,
+          repartidorRecogidaId: true,
+          vendedor: { select: { id: true, usuario: { select: { id: true } } } },
+        },
+      }),
+      this.prisma.perfilRepartidor.findUnique({
+        where: { id: perfil.id },
+        select: { usuario: { select: { nombreCompleto: true } } },
+      }),
+    ]);
+    if (!pedido) {
+      throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
+    }
+    if (pedido.repartidorRecogidaId !== perfil.id) {
+      throw new ForbiddenException({
+        codigo: 'PEDIDO_NO_ASIGNADO_A_ESTE_RIDER',
+      });
+    }
+    if (pedido.estado !== 'ASIGNADO') {
+      throw new ConflictException({
+        codigo: 'PEDIDO_ESTADO_INVALIDO',
+        mensaje: `El pedido debe estar en estado ASIGNADO (actual: ${pedido.estado}).`,
+      });
+    }
+
+    const nombreRider = perfilConUsuario?.usuario.nombreCompleto ?? 'repartidor';
+    const clave: ClavePlantilla = 'PEDIDO_RIDER_EN_TIENDA_VENDEDOR';
+    const { titulo, cuerpo } = renderizarPlantilla(clave, [nombreRider]);
+    const notificacion = await this.notif.enviar({
+      usuarioId: pedido.vendedor.usuario.id,
+      canal: 'PUSH',
+      titulo,
+      cuerpo,
+      datos: {
+        plantillaClave: clave,
+        pedidoId: pedido.id,
+        codigoSeguimiento: pedido.codigoSeguimiento,
+        tipo: 'RIDER_EN_TIENDA',
+        repartidorId: perfil.id,
+        repartidorNombre: nombreRider,
+        ...(dto.latitud != null ? { latitud: dto.latitud } : {}),
+        ...(dto.longitud != null ? { longitud: dto.longitud } : {}),
+        ...(dto.notas ? { notas: dto.notas } : {}),
+      },
+    });
+
+    return {
+      pedidoId: pedido.id,
+      vendedorId: pedido.vendedor.id,
+      notificacionId: notificacion.id,
+      estadoNotificacion: notificacion.estado,
     };
   }
 }

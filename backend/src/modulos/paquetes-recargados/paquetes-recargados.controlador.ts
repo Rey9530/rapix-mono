@@ -81,7 +81,10 @@ export class PaquetesRecargadosControlador {
   @Roles('VENDEDOR')
   @Get('yo')
   @ApiOperation({ summary: 'Paquetes del vendedor autenticado (paginado)' })
-  listarYo(@UsuarioActual() usuario: Usuario, @Query() filtros: FiltrosPaqueteDto) {
+  listarYo(
+    @UsuarioActual() usuario: Usuario,
+    @Query() filtros: FiltrosPaqueteDto,
+  ) {
     return this.servicio.listarYo(usuario, filtros);
   }
 
@@ -103,7 +106,9 @@ export class PaquetesRecargadosControlador {
 
   @Roles('ADMIN')
   @Patch(':id')
-  @ApiOperation({ summary: 'Cambiar estado del paquete (confirmar pago, cancelar)' })
+  @ApiOperation({
+    summary: 'Cambiar estado del paquete (confirmar pago, cancelar)',
+  })
   cambiarEstado(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: ActualizarPaqueteDto,

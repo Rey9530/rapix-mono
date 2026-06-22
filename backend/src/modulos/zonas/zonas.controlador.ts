@@ -44,7 +44,9 @@ export class ZonasControlador {
   // Route estática antes que /:id para no chocar.
   @Publico()
   @Get('resolver')
-  @ApiOperation({ summary: 'Resuelve la zona activa que contiene el punto (lat, lng)' })
+  @ApiOperation({
+    summary: 'Resuelve la zona activa que contiene el punto (lat, lng)',
+  })
   async resolver(@Query() q: ResolverZonaDto) {
     return this.geo.resolverZonaOFallar(q.lat, q.lng);
   }
@@ -107,7 +109,9 @@ export class ZonasControlador {
   @Roles('ADMIN')
   @Post(':id/repartidores')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Asignar repartidores a la zona (reemplaza/actualiza)' })
+  @ApiOperation({
+    summary: 'Asignar repartidores a la zona (reemplaza/actualiza)',
+  })
   asignarRepartidores(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: AsignarRepartidoresAZonaDto,

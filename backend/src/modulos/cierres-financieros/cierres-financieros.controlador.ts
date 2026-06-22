@@ -45,7 +45,9 @@ export class CierresFinancierosControlador {
 
   @Roles('REPARTIDOR')
   @Get('yo/hoy')
-  @ApiOperation({ summary: 'Resumen del día (monto esperado y pedidos contra-entrega)' })
+  @ApiOperation({
+    summary: 'Resumen del día (monto esperado y pedidos contra-entrega)',
+  })
   resumenHoy(@UsuarioActual() usuario: Usuario) {
     return this.servicio.obtenerResumenHoy(usuario);
   }
@@ -54,8 +56,12 @@ export class CierresFinancierosControlador {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Enviar cierre del día con foto de comprobante (multipart)' })
-  @UseInterceptors(FileFieldsInterceptor([{ name: 'comprobanteFoto', maxCount: 1 }]))
+  @ApiOperation({
+    summary: 'Enviar cierre del día con foto de comprobante (multipart)',
+  })
+  @UseInterceptors(
+    FileFieldsInterceptor([{ name: 'comprobanteFoto', maxCount: 1 }]),
+  )
   crear(
     @UsuarioActual() usuario: Usuario,
     @Body() dto: CrearCierreDto,
@@ -63,7 +69,9 @@ export class CierresFinancierosControlador {
   ) {
     const foto = archivos?.comprobanteFoto?.[0];
     if (!foto) {
-      throw new BadRequestException('El archivo "comprobanteFoto" es obligatorio');
+      throw new BadRequestException(
+        'El archivo "comprobanteFoto" es obligatorio',
+      );
     }
     return this.servicio.crear(usuario, dto, {
       buffer: foto.buffer,
@@ -85,7 +93,10 @@ export class CierresFinancierosControlador {
   @Roles('ADMIN', 'REPARTIDOR')
   @Get(':id')
   @ApiOperation({ summary: 'Detalle del cierre (ADMIN o repartidor dueño)' })
-  detalle(@UsuarioActual() usuario: Usuario, @Param('id', ParseUUIDPipe) id: string) {
+  detalle(
+    @UsuarioActual() usuario: Usuario,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
     return this.servicio.obtenerPorId(usuario, id);
   }
 
@@ -93,7 +104,10 @@ export class CierresFinancierosControlador {
   @Post(':id/aprobar')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Aprobar cierre (ADMIN)' })
-  aprobar(@UsuarioActual() usuario: Usuario, @Param('id', ParseUUIDPipe) id: string) {
+  aprobar(
+    @UsuarioActual() usuario: Usuario,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
     return this.servicio.aprobar(usuario, id);
   }
 

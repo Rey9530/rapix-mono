@@ -1,4 +1,7 @@
-import type { Notificacion, Usuario } from '../../../generated/prisma/client.js';
+import type {
+  Notificacion,
+  Usuario,
+} from '../../../generated/prisma/client.js';
 
 export interface ContextoEnvio {
   notificacion: Notificacion;

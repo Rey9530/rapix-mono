@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayMinSize, ArrayUnique, IsArray, IsOptional, IsUUID } from 'class-validator';
+import {
+  ArrayMinSize,
+  ArrayUnique,
+  IsArray,
+  IsOptional,
+  IsUUID,
+} from 'class-validator';
 
 export class AsignarMultiplePedidosDto {
   @ApiProperty({

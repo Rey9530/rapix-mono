@@ -16,7 +16,9 @@ export interface FilaConsumoPaquetes {
 export class ReportesServicio {
   constructor(private readonly prisma: PrismaServicio) {}
 
-  async consumoPaquetes(dto: ConsumoPaquetesDto): Promise<FilaConsumoPaquetes[]> {
+  async consumoPaquetes(
+    dto: ConsumoPaquetesDto,
+  ): Promise<FilaConsumoPaquetes[]> {
     const desde = new Date(dto.desde);
     const hasta = new Date(dto.hasta);
 

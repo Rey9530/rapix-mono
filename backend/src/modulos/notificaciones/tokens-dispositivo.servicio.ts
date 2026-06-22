@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import type { TokenDispositivo, Usuario } from '../../generated/prisma/client.js';
+import type {
+  TokenDispositivo,
+  Usuario,
+} from '../../generated/prisma/client.js';
 import { PrismaServicio } from '../../prisma/prisma.servicio.js';
 import { RegistrarTokenDispositivoDto } from './dto/registrar-token-dispositivo.dto.js';
 
@@ -12,10 +15,17 @@ export class TokensDispositivoServicio {
    * se reasigna al usuario actual y se reactiva. Esto evita acumular
    * filas duplicadas cuando un dispositivo cambia de cuenta.
    */
-  registrar(usuario: Usuario, dto: RegistrarTokenDispositivoDto): Promise<TokenDispositivo> {
+  registrar(
+    usuario: Usuario,
+    dto: RegistrarTokenDispositivoDto,
+  ): Promise<TokenDispositivo> {
     return this.prisma.tokenDispositivo.upsert({
       where: { token: dto.token },
-      update: { usuarioId: usuario.id, plataforma: dto.plataforma, activo: true },
+      update: {
+        usuarioId: usuario.id,
+        plataforma: dto.plataforma,
+        activo: true,
+      },
       create: {
         usuarioId: usuario.id,
         token: dto.token,
@@ -29,7 +39,10 @@ export class TokensDispositivoServicio {
    * Soft-delete: marca `activo = false` para preservar histórico
    * y permitir auditar tokens revocados.
    */
-  async revocar(usuario: Usuario, token: string): Promise<{ revocados: number }> {
+  async revocar(
+    usuario: Usuario,
+    token: string,
+  ): Promise<{ revocados: number }> {
     const { count } = await this.prisma.tokenDispositivo.updateMany({
       where: { token, usuarioId: usuario.id },
       data: { activo: false },

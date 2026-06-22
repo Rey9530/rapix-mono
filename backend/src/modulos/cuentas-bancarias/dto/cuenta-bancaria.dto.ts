@@ -24,7 +24,9 @@ export class CuentaBancariaDto {
   @ApiProperty({ enum: ['AHORRO', 'CORRIENTE'] })
   tipoCuenta!: TipoCuentaBancaria;
 
-  @ApiProperty({ description: 'Número de cuenta (enmascarado si no es el dueño)' })
+  @ApiProperty({
+    description: 'Número de cuenta (enmascarado si no es el dueño)',
+  })
   numeroCuenta!: string;
 
   @ApiProperty({ nullable: true })

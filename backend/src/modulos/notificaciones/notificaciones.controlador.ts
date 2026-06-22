@@ -19,7 +19,9 @@ export class NotificacionesControlador {
   constructor(private readonly servicio: NotificacionesServicio) {}
 
   @Get('yo')
-  @ApiOperation({ summary: 'Lista las notificaciones del usuario autenticado (paginado)' })
+  @ApiOperation({
+    summary: 'Lista las notificaciones del usuario autenticado (paginado)',
+  })
   listarYo(
     @UsuarioActual() usuario: Usuario,
     @Query() filtros: FiltrosNotificacionDto,

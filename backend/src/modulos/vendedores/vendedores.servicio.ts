@@ -241,10 +241,7 @@ export class VendedoresServicio {
     };
   }
 
-  async crearDeposito(
-    dto: CrearDepositoVendedorDto,
-    foto: ArchivoEntrada,
-  ) {
+  async crearDeposito(dto: CrearDepositoVendedorDto, foto: ArchivoEntrada) {
     this.archivos.validar(foto.buffer, foto.mimetype);
 
     const vendedor = await this.prisma.perfilVendedor.findUnique({

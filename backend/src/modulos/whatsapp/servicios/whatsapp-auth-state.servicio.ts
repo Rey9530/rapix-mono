@@ -58,9 +58,7 @@ export class WhatsappAuthStateServicio {
         for (const fila of filas) {
           let valor = this.deserializar(fila.valor);
           if (tipo === 'app-state-sync-key' && valor) {
-            valor = proto.Message.AppStateSyncKeyData.fromObject(
-              valor as proto.Message.IAppStateSyncKeyData,
-            );
+            valor = proto.Message.AppStateSyncKeyData.fromObject(valor);
           }
           resultado[fila.clave] = valor as SignalDataTypeMap[T];
         }

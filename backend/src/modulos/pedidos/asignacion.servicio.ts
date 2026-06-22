@@ -16,8 +16,18 @@ import { PedidoMaquinaEstados } from './maquina-estados/pedido-maquina-estados.j
 
 const CAPACIDAD_MAX = 15;
 const ESTADOS_ACTIVOS: Array<
-  'ASIGNADO' | 'RECOGIDO' | 'EN_TRANSITO' | 'EN_PUNTO_INTERCAMBIO' | 'EN_REPARTO'
-> = ['ASIGNADO', 'RECOGIDO', 'EN_TRANSITO', 'EN_PUNTO_INTERCAMBIO', 'EN_REPARTO'];
+  | 'ASIGNADO'
+  | 'RECOGIDO'
+  | 'EN_TRANSITO'
+  | 'EN_PUNTO_INTERCAMBIO'
+  | 'EN_REPARTO'
+> = [
+  'ASIGNADO',
+  'RECOGIDO',
+  'EN_TRANSITO',
+  'EN_PUNTO_INTERCAMBIO',
+  'EN_REPARTO',
+];
 
 @Injectable()
 export class AsignacionServicio {
@@ -32,11 +42,21 @@ export class AsignacionServicio {
    *   - carga activa < 15 pedidos
    *   - menor carga primero, desempate por calificación descendente
    */
-  async asignar(pedidoId: string, actorId: string, silencioso: boolean = false) {
-    const pedido = await this.prisma.pedido.findUnique({ where: { id: pedidoId } });
-    if (!pedido) throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
+  async asignar(
+    pedidoId: string,
+    actorId: string,
+    silencioso: boolean = false,
+  ) {
+    const pedido = await this.prisma.pedido.findUnique({
+      where: { id: pedidoId },
+    });
+    if (!pedido)
+      throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
     if (pedido.estado !== 'PENDIENTE_ASIGNACION') {
-      return { asignado: false, motivo: 'Pedido no está en PENDIENTE_ASIGNACION' };
+      return {
+        asignado: false,
+        motivo: 'Pedido no está en PENDIENTE_ASIGNACION',
+      };
     }
     if (!pedido.zonaOrigenId) {
       return { asignado: false, motivo: 'Pedido sin zona de origen' };
@@ -121,7 +141,9 @@ export class AsignacionServicio {
    * zona de destino, ya tiene rider de entrega, o no hay rider con capacidad.
    */
   async asignarEntregaAuto(pedidoId: string) {
-    const pedido = await this.prisma.pedido.findUnique({ where: { id: pedidoId } });
+    const pedido = await this.prisma.pedido.findUnique({
+      where: { id: pedidoId },
+    });
     if (!pedido) return { asignado: false, motivo: 'Pedido no encontrado' };
     if (!pedido.zonaDestinoId) {
       return { asignado: false, motivo: 'Pedido sin zona de destino' };
@@ -132,7 +154,10 @@ export class AsignacionServicio {
 
     const elegido = await this.mejorRiderDisponible(pedido.zonaDestinoId);
     if (!elegido) {
-      return { asignado: false, motivo: 'Sin repartidores de entrega con capacidad' };
+      return {
+        asignado: false,
+        motivo: 'Sin repartidores de entrega con capacidad',
+      };
     }
 
     await this.prisma.pedido.update({
@@ -142,16 +167,27 @@ export class AsignacionServicio {
     return { asignado: true, repartidorId: elegido.id };
   }
 
-  async asignarManual(usuario: Usuario, pedidoId: string, dto: AsignarPedidoDto) {
+  async asignarManual(
+    usuario: Usuario,
+    pedidoId: string,
+    dto: AsignarPedidoDto,
+  ) {
     if (!dto.repartidorRecogidaId && !dto.repartidorEntregaId) {
-      throw new BadRequestException('Debe indicar repartidorRecogidaId o repartidorEntregaId');
+      throw new BadRequestException(
+        'Debe indicar repartidorRecogidaId o repartidorEntregaId',
+      );
     }
-    const pedido = await this.prisma.pedido.findUnique({ where: { id: pedidoId } });
-    if (!pedido) throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
+    const pedido = await this.prisma.pedido.findUnique({
+      where: { id: pedidoId },
+    });
+    if (!pedido)
+      throw new NotFoundException({ codigo: 'PEDIDO_NO_ENCONTRADO' });
 
     const ids = [
       ...new Set(
-        [dto.repartidorRecogidaId, dto.repartidorEntregaId].filter(Boolean) as string[],
+        [dto.repartidorRecogidaId, dto.repartidorEntregaId].filter(
+          Boolean,
+        ) as string[],
       ),
     ];
     const existentes = await this.prisma.perfilRepartidor.findMany({
@@ -164,8 +200,10 @@ export class AsignacionServicio {
 
     let transicionar = false;
     const datos: Record<string, unknown> = {};
-    if (dto.repartidorRecogidaId) datos.repartidorRecogidaId = dto.repartidorRecogidaId;
-    if (dto.repartidorEntregaId) datos.repartidorEntregaId = dto.repartidorEntregaId;
+    if (dto.repartidorRecogidaId)
+      datos.repartidorRecogidaId = dto.repartidorRecogidaId;
+    if (dto.repartidorEntregaId)
+      datos.repartidorEntregaId = dto.repartidorEntregaId;
 
     if (pedido.estado === 'PENDIENTE_ASIGNACION' && dto.repartidorRecogidaId) {
       PedidoMaquinaEstados.validarTransicion(pedido.estado, 'ASIGNADO');
@@ -179,7 +217,10 @@ export class AsignacionServicio {
     const anteriorEntregaId = pedido.repartidorEntregaId;
 
     const actualizado = await this.prisma.$transaction(async (tx) => {
-      const p = await tx.pedido.update({ where: { id: pedidoId }, data: datos });
+      const p = await tx.pedido.update({
+        where: { id: pedidoId },
+        data: datos,
+      });
       if (transicionar) {
         await tx.eventoPedido.create({
           data: {

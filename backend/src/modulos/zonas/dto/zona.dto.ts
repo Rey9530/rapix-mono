@@ -14,7 +14,10 @@ export class ZonaDto {
   @ApiProperty({ nullable: true })
   descripcion!: string | null;
 
-  @ApiProperty({ type: [PuntoGeoDto], description: 'Vértices del polígono en orden.' })
+  @ApiProperty({
+    type: [PuntoGeoDto],
+    description: 'Vértices del polígono en orden.',
+  })
   poligono!: PuntoGeoDto[];
 
   @ApiProperty()

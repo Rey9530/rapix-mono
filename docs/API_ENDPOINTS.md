@@ -328,6 +328,37 @@ Actualiza ubicación (se llama cada N segundos).
 { "latitud": 14.62, "longitud": -90.51 }
 ```
 
+### `POST /repartidores/yo/aviso-llegada-tienda` 🔒 `REPARTIDOR`
+Notifica al vendedor (canal PUSH/FCM) que el rider ya está en el local. **No cambia el estado del pedido**: es un "aviso lateral" previo a la transición `ASIGNADO → RECOGIDO`. El pedido debe estar en estado `ASIGNADO` y asignado al repartidor autenticado. Throttle: 30 req/min por usuario.
+
+Mensaje genérico enviado al vendedor (no incluye el código del pedido):
+- **Título**: `Tu rider está en el local`
+- **Cuerpo**: `El rider {nombreCompleto} ya está en el local por los paquetes.`
+
+```json
+{
+  "pedidoId": "f4b7e3a1-2c4d-4e6f-8a9b-1c2d3e4f5a6b",
+  "latitud": 13.6929,
+  "longitud": -89.2182,
+  "notas": "Estoy en la entrada"
+}
+```
+**Errores**:
+- `404 PEDIDO_NO_ENCONTRADO` — pedidoId inexistente.
+- `403 PEDIDO_NO_ASIGNADO_A_ESTE_RIDER` — el pedido está asignado a otro rider.
+- `409 PEDIDO_ESTADO_INVALIDO` — el pedido no está en `ASIGNADO`.
+- `429` — throttle excedido (anti-spam).
+
+**Response** `200`:
+```json
+{
+  "pedidoId": "f4b7e3a1-2c4d-4e6f-8a9b-1c2d3e4f5a6b",
+  "vendedorId": "uuid",
+  "notificacionId": "uuid",
+  "estadoNotificacion": "ENVIADO"
+}
+```
+
 ### `PATCH /repartidores/yo/disponibilidad` 🔒 `REPARTIDOR`
 ```json
 { "disponible": false }

@@ -31,7 +31,8 @@ export class IaClasificadorServicio implements OnModuleInit {
 
   onModuleInit(): void {
     const apiKey = process.env.OPENAI_API_KEY?.trim();
-    this.modelo = process.env.OPENAI_MODEL_CONFIRMACION_ENTREGA ?? 'gpt-4o-mini';
+    this.modelo =
+      process.env.OPENAI_MODEL_CONFIRMACION_ENTREGA ?? 'gpt-4o-mini';
     if (!apiKey) {
       this.logger.warn(
         'OPENAI_API_KEY no configurada — clasificador degradara a AMBIGUO en cada respuesta.',

@@ -17,9 +17,12 @@ export class MapasControlador {
   @Post('optimizar-ruta')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Optimiza la ruta de un conjunto de waypoints (proxy a Mapbox Optimization)',
+    summary:
+      'Optimiza la ruta de un conjunto de waypoints (proxy a Mapbox Optimization)',
   })
-  optimizarRuta(@Body() dto: OptimizarRutaDto): Promise<RespuestaRutaOptimizadaDto> {
+  optimizarRuta(
+    @Body() dto: OptimizarRutaDto,
+  ): Promise<RespuestaRutaOptimizadaDto> {
     return this.servicio.optimizarRuta(dto);
   }
 }

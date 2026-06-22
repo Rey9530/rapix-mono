@@ -12,15 +12,23 @@ import {
 /** Mixin: lat/lng/notas opcionales que comparten todas las transiciones del rider. */
 export class TransicionBaseDto {
   @ApiProperty({ required: false })
-  @IsOptional() @Type(() => Number) @IsNumber() @IsLatitude()
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @IsLatitude()
   latitud?: number;
 
   @ApiProperty({ required: false })
-  @IsOptional() @Type(() => Number) @IsNumber() @IsLongitude()
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @IsLongitude()
   longitud?: number;
 
   @ApiProperty({ required: false })
-  @IsOptional() @IsString() @MaxLength(240)
+  @IsOptional()
+  @IsString()
+  @MaxLength(240)
   notas?: string;
 }
 
@@ -33,12 +41,15 @@ export class DevolverPedidoDto extends TransicionBaseDto {}
 
 export class EntregarPedidoDto extends TransicionBaseDto {
   @ApiProperty({ required: false })
-  @IsOptional() @IsString() @MaxLength(120)
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
   recibidoPor?: string;
 }
 
 export class FallarPedidoDto extends TransicionBaseDto {
   @ApiProperty()
-  @IsString() @MaxLength(240)
+  @IsString()
+  @MaxLength(240)
   motivo!: string;
 }

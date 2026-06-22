@@ -24,7 +24,9 @@ export class ConfirmacionEntregaListener {
   ) {}
 
   @OnEvent(EventosDominio.PedidoEstadoCambiado, { async: true })
-  async alCambiarEstadoPedido(evento: PedidoEstadoCambiadoEvento): Promise<void> {
+  async alCambiarEstadoPedido(
+    evento: PedidoEstadoCambiadoEvento,
+  ): Promise<void> {
     if (evento.hacia !== 'RECOGIDO') return;
     try {
       await this.servicio.iniciarConversacion(evento.pedidoId);

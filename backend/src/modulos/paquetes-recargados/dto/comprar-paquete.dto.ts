@@ -4,7 +4,9 @@ import { IsEnum, IsInt, IsOptional, IsUUID, Max, Min } from 'class-validator';
 import { MetodoPago } from '../../../generated/prisma/client.js';
 
 export class ComprarPaqueteDto {
-  @ApiProperty({ description: 'ID de la regla de tarifa con modoFacturacion=PAQUETE' })
+  @ApiProperty({
+    description: 'ID de la regla de tarifa con modoFacturacion=PAQUETE',
+  })
   @IsUUID()
   reglaTarifaId!: string;
 

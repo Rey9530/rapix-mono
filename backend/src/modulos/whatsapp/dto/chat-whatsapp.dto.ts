@@ -1,7 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type {
-  TipoChatWhatsapp,
-} from '../../../generated/prisma/client.js';
+import type { TipoChatWhatsapp } from '../../../generated/prisma/client.js';
 
 export class ChatWhatsappDto {
   @ApiProperty()

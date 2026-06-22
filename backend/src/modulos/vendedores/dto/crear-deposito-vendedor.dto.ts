@@ -29,7 +29,10 @@ export class CrearDepositoVendedorDto {
     // único string separado por comas. Toleramos ambos.
     if (Array.isArray(value)) return value;
     if (typeof value === 'string')
-      return value.split(',').map((s) => s.trim()).filter(Boolean);
+      return value
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
     return value;
   })
   pedidoIds!: string[];

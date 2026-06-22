@@ -105,7 +105,12 @@ export class CierresFinancierosServicio {
     const { inicio, fin, fechaIso, fechaSoloDia } = rangoDelDia();
 
     const yaExiste = await this.prisma.cierreFinanciero.findUnique({
-      where: { repartidorId_fechaCierre: { repartidorId: perfil.id, fechaCierre: fechaSoloDia } },
+      where: {
+        repartidorId_fechaCierre: {
+          repartidorId: perfil.id,
+          fechaCierre: fechaSoloDia,
+        },
+      },
     });
     if (yaExiste) {
       throw new ConflictException({
@@ -177,14 +182,22 @@ export class CierresFinancierosServicio {
   // 5.5 — Listado, detalle, aprobar, rechazar
   // ──────────────────────────────────────────────────
 
-  async listar(filtros: FiltrosCierreDto): Promise<RespuestaPaginada<CierreFinanciero>> {
+  async listar(
+    filtros: FiltrosCierreDto,
+  ): Promise<RespuestaPaginada<CierreFinanciero>> {
     const where: Prisma.CierreFinancieroWhereInput = {};
     if (filtros.estado) where.estado = filtros.estado;
     if (filtros.repartidorId) where.repartidorId = filtros.repartidorId;
     if (filtros.desde || filtros.hasta) {
       where.fechaCierre = {};
-      if (filtros.desde) (where.fechaCierre as Prisma.DateTimeFilter).gte = new Date(filtros.desde);
-      if (filtros.hasta) (where.fechaCierre as Prisma.DateTimeFilter).lte = new Date(filtros.hasta);
+      if (filtros.desde)
+        (where.fechaCierre as Prisma.DateTimeFilter).gte = new Date(
+          filtros.desde,
+        );
+      if (filtros.hasta)
+        (where.fechaCierre as Prisma.DateTimeFilter).lte = new Date(
+          filtros.hasta,
+        );
     }
 
     const skip = (filtros.pagina - 1) * filtros.limite;
@@ -206,13 +219,16 @@ export class CierresFinancierosServicio {
       include: {
         movimientos: {
           include: {
-            pedido: { select: { codigoSeguimiento: true, nombreCliente: true } },
+            pedido: {
+              select: { codigoSeguimiento: true, nombreCliente: true },
+            },
           },
           orderBy: { creadoEn: 'asc' },
         },
       },
     });
-    if (!cierre) throw new NotFoundException({ codigo: 'CIERRE_NO_ENCONTRADO' });
+    if (!cierre)
+      throw new NotFoundException({ codigo: 'CIERRE_NO_ENCONTRADO' });
     if (usuario.rol !== 'ADMIN') {
       const perfil = await this.requerirPerfilRepartidor(usuario);
       if (perfil.id !== cierre.repartidorId) {
@@ -227,7 +243,11 @@ export class CierresFinancierosServicio {
 
     const actualizado = await this.prisma.cierreFinanciero.update({
       where: { id },
-      data: { estado: 'APROBADO', revisadoPor: admin.id, revisadoEn: new Date() },
+      data: {
+        estado: 'APROBADO',
+        revisadoPor: admin.id,
+        revisadoEn: new Date(),
+      },
     });
 
     await this.auditoria.registrar({
@@ -287,10 +307,18 @@ export class CierresFinancierosServicio {
   // Helpers
   // ──────────────────────────────────────────────────
 
-  private async requerirCierreParaResolver(id: string): Promise<CierreFinanciero> {
-    const cierre = await this.prisma.cierreFinanciero.findUnique({ where: { id } });
-    if (!cierre) throw new NotFoundException({ codigo: 'CIERRE_NO_ENCONTRADO' });
-    if (cierre.estado !== 'PENDIENTE_REVISION' && cierre.estado !== 'CON_DISCREPANCIA') {
+  private async requerirCierreParaResolver(
+    id: string,
+  ): Promise<CierreFinanciero> {
+    const cierre = await this.prisma.cierreFinanciero.findUnique({
+      where: { id },
+    });
+    if (!cierre)
+      throw new NotFoundException({ codigo: 'CIERRE_NO_ENCONTRADO' });
+    if (
+      cierre.estado !== 'PENDIENTE_REVISION' &&
+      cierre.estado !== 'CON_DISCREPANCIA'
+    ) {
       throw new ConflictException({
         codigo: 'CIERRE_NO_RESOLVABLE',
         mensaje: `El cierre está en estado ${cierre.estado} y no puede modificarse`,
@@ -317,7 +345,12 @@ export class CierresFinancierosServicio {
 // Utilidades de fecha / mime
 // ──────────────────────────────────────────────────
 
-function rangoDelDia(): { inicio: Date; fin: Date; fechaIso: string; fechaSoloDia: Date } {
+function rangoDelDia(): {
+  inicio: Date;
+  fin: Date;
+  fechaIso: string;
+  fechaSoloDia: Date;
+} {
   const ahora = new Date();
   const inicio = new Date(ahora);
   inicio.setHours(0, 0, 0, 0);
