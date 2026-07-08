@@ -1,5 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit, computed, inject, signal } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import {
   FormBuilder,
   FormsModule,
@@ -58,6 +59,19 @@ export class Depositos implements OnInit {
     cuentaBancariaId: [""],
     referencia: ["", [Validators.maxLength(100)]],
     notas: ["", [Validators.maxLength(500)]],
+  });
+
+  // ID de la cuenta actualmente seleccionada en el formulario.
+  readonly idCuentaSeleccionada = toSignal(
+    this.form.controls.cuentaBancariaId.valueChanges,
+    { initialValue: "" },
+  );
+
+  // Cuenta resuelta a partir del ID seleccionado + lista cargada.
+  readonly cuentaSeleccionada = computed(() => {
+    const id = this.idCuentaSeleccionada();
+    if (!id) return null;
+    return this.cuentasBancarias().find((c) => c.id === id) ?? null;
   });
 
   readonly sumaSeleccionada = computed(() => {
@@ -189,11 +203,11 @@ export class Depositos implements OnInit {
   }
 
   formatearCuenta(c: CuentaBancariaOpcion): string {
-    const ultimos4 = c.numeroCuenta.slice(-4);
+    const ultimos4 = c.numeroCuenta;
     const tipo = c.tipoCuenta === "AHORRO" ? "Ahorro" : "Corriente";
     const aliasParte = c.alias ? ` — ${c.alias}` : "";
     const principalParte = c.esPrincipal ? " (Principal)" : "";
-    return `${c.banco.nombre} · ${tipo} ****${ultimos4}${aliasParte}${principalParte}`;
+    return `${c.banco.nombre} · ${tipo} ${ultimos4}${aliasParte}${principalParte}`;
   }
 
   // ──────────────────────────────────────────────────
@@ -289,6 +303,20 @@ export class Depositos implements OnInit {
 
   trackDeposito(_indice: number, d: DepositoVendedor): string {
     return d.id;
+  }
+
+  copiarNumeroCuenta(): void {
+    const cuenta = this.cuentaSeleccionada();
+    if (!cuenta) return;
+    const texto = cuenta.numeroCuenta;
+    if (!navigator.clipboard?.writeText) {
+      this.toast.error("El navegador no soporta copiado al portapapeles.");
+      return;
+    }
+    navigator.clipboard.writeText(texto).then(
+      () => this.toast.success("Número de cuenta copiado."),
+      () => this.toast.error("No se pudo copiar el número de cuenta."),
+    );
   }
 
   private aNumero(v: string | number | null | undefined): number {

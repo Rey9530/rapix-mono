@@ -167,6 +167,46 @@
                 maxlength="100"
               />
             </div>
+            @if (cuentaSeleccionada(); as cuenta) {
+              <div class="col-12">
+                <div
+                  class="alert alert-info border-info mb-0 d-flex flex-column flex-md-row align-items-md-center gap-3"
+                >
+                  <div class="flex-grow-1">
+                    <div
+                      class="d-flex align-items-center gap-2 mb-2 flex-wrap"
+                    >
+                      <strong class="me-1">{{ cuenta.banco.nombre }}</strong>
+                      <span class="badge bg-secondary">
+                        {{
+                          cuenta.tipoCuenta === "AHORRO" ? "Ahorro" : "Corriente"
+                        }}
+                      </span>
+                      @if (cuenta.esPrincipal) {
+                        <span class="badge bg-primary">Principal</span>
+                      }
+                      @if (cuenta.alias) {
+                        <span class="text-muted small"
+                          >— {{ cuenta.alias }}</span
+                        >
+                      }
+                    </div>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                      <code class="fs-6 user-select-all">{{
+                        cuenta.numeroCuenta
+                      }}</code>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-primary"
+                        (click)="copiarNumeroCuenta()"
+                      >
+                        Copiar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
             <div class="col-12">
               <label class="form-label">Notas (opcional)</label>
               <textarea
