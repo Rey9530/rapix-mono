@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/network/excepciones_api.dart';
 import '../../core/proveedores_globales.dart';
 import '../../data/modelos/pedido.dart';
+import '../../widgets/boton_con_carga.dart';
 import '../../widgets/secciones_detalle_pedido.dart';
 import '../en_curso/proveedor_en_curso.dart';
 import '../entregas/proveedor_entregas.dart';
@@ -99,58 +100,66 @@ class _Cuerpo extends ConsumerWidget {
     switch (pedido.estado) {
       case EstadoPedido.ASIGNADO:
         return [
-          FilledButton.icon(
+          BotonConCarga(
             onPressed: () => _confirmar(
               context,
               ref,
               titulo: '¿Recoger paquete?',
               accion: 'recoger',
             ),
-            style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
-            icon: const Icon(Icons.archive),
-            label: const Text('Recoger paquete'),
+            estilo: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(48),
+            ),
+            icono: const Icon(Icons.archive),
+            etiqueta: const Text('Recoger paquete'),
           ),
         ];
       case EstadoPedido.RECOGIDO:
         return [
-          FilledButton.icon(
+          BotonConCarga(
             onPressed: () => _confirmar(
               context,
               ref,
               titulo: '¿Marcar en tránsito?',
               accion: 'enTransito',
             ),
-            style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
-            icon: const Icon(Icons.local_shipping),
-            label: const Text('Iniciar tránsito'),
+            estilo: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(48),
+            ),
+            icono: const Icon(Icons.local_shipping),
+            etiqueta: const Text('Iniciar tránsito'),
           ),
         ];
       case EstadoPedido.EN_TRANSITO:
         return [
-          FilledButton.icon(
+          BotonConCarga(
             onPressed: () => _confirmar(
               context,
               ref,
               titulo: '¿Llegaste al punto de intercambio?',
               accion: 'llegarIntercambio',
             ),
-            style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
-            icon: const Icon(Icons.flag),
-            label: const Text('Llegué al punto'),
+            estilo: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(48),
+            ),
+            icono: const Icon(Icons.flag),
+            etiqueta: const Text('Llegué al punto'),
           ),
         ];
       case EstadoPedido.EN_PUNTO_INTERCAMBIO:
         return [
-          FilledButton.icon(
+          BotonConCarga(
             onPressed: () => _confirmar(
               context,
               ref,
               titulo: '¿Tomar este pedido para entregar?',
               accion: 'tomarEntrega',
             ),
-            style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
-            icon: const Icon(Icons.assignment_turned_in),
-            label: const Text('Tomar para entregar'),
+            estilo: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(48),
+            ),
+            icono: const Icon(Icons.assignment_turned_in),
+            etiqueta: const Text('Tomar para entregar'),
           ),
         ];
       default:

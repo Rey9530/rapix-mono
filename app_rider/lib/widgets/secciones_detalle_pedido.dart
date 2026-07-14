@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../data/modelos/pedido.dart';
+import 'boton_con_carga.dart';
 import 'utiles_estado_pedido.dart';
 
 class FotoPaquete extends StatelessWidget {
@@ -226,13 +227,15 @@ class TarjetaCliente extends StatelessWidget {
                   valor: pedido.telefonoCliente!,
                 ),
               ),
-              IconButton(
-                icon: const Icon(Icons.call, color: Colors.green),
+              BotonConCarga(
+                variante: VarianteBoton.icon,
+                icono: const Icon(Icons.call, color: Colors.green),
                 tooltip: 'Llamar',
                 onPressed: () => _llamar(context, pedido.telefonoCliente!),
               ),
-              IconButton(
-                icon: const Icon(Icons.chat, color: Color(0xFF25D366)),
+              BotonConCarga(
+                variante: VarianteBoton.icon,
+                icono: const Icon(Icons.chat, color: Color(0xFF25D366)),
                 tooltip: 'WhatsApp',
                 onPressed: () => _whatsApp(context, pedido.telefonoCliente!),
               ),

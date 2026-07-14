@@ -11,6 +11,7 @@ import 'package:signature/signature.dart';
 
 import '../../core/network/excepciones_api.dart';
 import '../../core/proveedores_globales.dart';
+import '../../widgets/boton_con_carga.dart';
 import '../recogidas/proveedor_recogidas.dart';
 import 'proveedor_entregas.dart';
 
@@ -184,10 +185,12 @@ class _PantallaComprobanteEntregaEstado
                 child: const Center(child: Icon(Icons.photo, size: 48, color: Colors.grey)),
               ),
             const SizedBox(height: 12),
-            FilledButton.tonalIcon(
+            BotonConCarga(
+              variante: VarianteBoton.tonal,
               onPressed: _capturarFoto,
-              icon: const Icon(Icons.camera_alt),
-              label: Text(_foto == null ? 'Capturar foto' : 'Reemplazar foto'),
+              icono: const Icon(Icons.camera_alt),
+              etiqueta:
+                  Text(_foto == null ? 'Capturar foto' : 'Reemplazar foto'),
             ),
           ],
         ),

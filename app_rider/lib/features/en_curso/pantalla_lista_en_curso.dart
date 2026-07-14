@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/proveedores_globales.dart';
 import '../../data/modelos/pedido.dart';
 import '../../data/repositorios/pedidos_repositorio.dart';
+import '../../widgets/boton_con_carga.dart';
 import '../../widgets/tarjeta_pedido.dart';
 import 'proveedor_en_curso.dart';
 
@@ -217,8 +218,9 @@ class _PantallaListaEnCursoState extends ConsumerState<PantallaListaEnCurso> {
                       const Center(child: CircularProgressIndicator()),
                   error: (e, _) => _Error(
                     mensaje: '$e',
-                    onReintentar: () =>
-                        ref.invalidate(pedidosEnCursoProveedor),
+                    onReintentar: () async {
+                      ref.invalidate(pedidosEnCursoProveedor);
+                    },
                   ),
                   data: (lista) {
                     if (lista.isEmpty) return const _EstadoVacio();
@@ -391,7 +393,7 @@ class _EstadoVacio extends StatelessWidget {
 
 class _Error extends StatelessWidget {
   final String mensaje;
-  final VoidCallback onReintentar;
+  final Future<void> Function() onReintentar;
 
   const _Error({required this.mensaje, required this.onReintentar});
 
@@ -410,9 +412,10 @@ class _Error extends StatelessWidget {
                 const SizedBox(height: 16),
                 Text('Error: $mensaje', textAlign: TextAlign.center),
                 const SizedBox(height: 12),
-                FilledButton.tonal(
+                BotonConCarga(
+                  variante: VarianteBoton.tonal,
                   onPressed: onReintentar,
-                  child: const Text('Reintentar'),
+                  etiqueta: const Text('Reintentar'),
                 ),
               ],
             ),

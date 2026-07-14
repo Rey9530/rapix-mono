@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../core/network/excepciones_api.dart';
 import '../../core/proveedores_globales.dart';
+import '../../widgets/boton_con_carga.dart';
 import '../billetera/proveedor_billetera.dart';
 import 'proveedor_cierre.dart';
 
@@ -259,10 +260,11 @@ class _PantallaCierreDiarioEstado extends ConsumerState<PantallaCierreDiario> {
             ),
           ),
         const SizedBox(height: 8),
-        FilledButton.tonalIcon(
+        BotonConCarga(
+          variante: VarianteBoton.tonal,
           onPressed: _capturarFoto,
-          icon: const Icon(Icons.camera_alt),
-          label: Text(_foto == null ? 'Capturar foto' : 'Reemplazar foto'),
+          icono: const Icon(Icons.camera_alt),
+          etiqueta: Text(_foto == null ? 'Capturar foto' : 'Reemplazar foto'),
         ),
       ],
     );

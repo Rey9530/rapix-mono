@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/config/entorno.dart';
 import '../../data/modelos/pedido.dart';
+import '../../widgets/boton_con_carga.dart';
 import '../recogidas/proveedor_recogidas.dart';
 
 /// Pantalla full-screen con un mapa centrado en el origen o el destino del
@@ -159,18 +160,19 @@ class _PanelInferior extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: FilledButton.icon(
+                  child: BotonConCarga(
                     onPressed: () => _abrirGoogleMaps(context, lat, lng),
-                    icon: const Icon(Icons.navigation),
-                    label: const Text('Google Maps'),
+                    icono: const Icon(Icons.navigation),
+                    etiqueta: const Text('Google Maps'),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: OutlinedButton.icon(
+                  child: BotonConCarga(
+                    variante: VarianteBoton.outlined,
                     onPressed: () => _abrirWaze(context, lat, lng),
-                    icon: const Icon(Icons.directions_car),
-                    label: const Text('Waze'),
+                    icono: const Icon(Icons.directions_car),
+                    etiqueta: const Text('Waze'),
                   ),
                 ),
               ],
@@ -214,19 +216,20 @@ class _SinToken extends StatelessWidget {
           const SizedBox(height: 8),
           Text('Coordenadas: $lat, $lng'),
           const SizedBox(height: 24),
-          FilledButton.icon(
+          BotonConCarga(
             onPressed: () => _abrirGoogleMaps(context, lat, lng),
-            style: FilledButton.styleFrom(
+            estilo: FilledButton.styleFrom(
               minimumSize: const Size.fromHeight(48),
             ),
-            icon: const Icon(Icons.navigation),
-            label: const Text('Abrir en Google Maps'),
+            icono: const Icon(Icons.navigation),
+            etiqueta: const Text('Abrir en Google Maps'),
           ),
           const SizedBox(height: 8),
-          OutlinedButton.icon(
+          BotonConCarga(
+            variante: VarianteBoton.outlined,
             onPressed: () => _abrirWaze(context, lat, lng),
-            icon: const Icon(Icons.directions_car),
-            label: const Text('Abrir en Waze'),
+            icono: const Icon(Icons.directions_car),
+            etiqueta: const Text('Abrir en Waze'),
           ),
         ],
       ),

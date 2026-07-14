@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/network/excepciones_api.dart';
 import '../../core/proveedores_globales.dart';
 import '../../data/modelos/pedido.dart';
+import '../../widgets/boton_con_carga.dart';
 import '../../widgets/secciones_detalle_pedido.dart';
 import '../recogidas/proveedor_recogidas.dart';
 import 'proveedor_entregas.dart';
@@ -103,14 +104,15 @@ class _Cuerpo extends ConsumerWidget {
           label: const Text('Confirmar entrega'),
         ),
         const SizedBox(height: 12),
-        OutlinedButton.icon(
+        BotonConCarga(
+          variante: VarianteBoton.outlined,
           onPressed: () => _fallar(context, ref),
-          style: OutlinedButton.styleFrom(
+          estilo: OutlinedButton.styleFrom(
             foregroundColor: Colors.red,
             minimumSize: const Size.fromHeight(48),
           ),
-          icon: const Icon(Icons.cancel_outlined),
-          label: const Text('Marcar como fallida'),
+          icono: const Icon(Icons.cancel_outlined),
+          etiqueta: const Text('Marcar como fallida'),
         ),
       ];
     }

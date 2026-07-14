@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../widgets/boton_con_carga.dart';
 import '../autenticacion/controlador_autenticacion.dart';
 
 class PantallaInicio extends ConsumerWidget {
@@ -39,8 +40,9 @@ class PantallaInicio extends ConsumerWidget {
             tooltip: 'Mi billetera',
             onPressed: () => context.go('/inicio/billetera'),
           ),
-          IconButton(
-            icon: const Icon(Icons.logout),
+          BotonConCarga(
+            variante: VarianteBoton.icon,
+            icono: const Icon(Icons.logout),
             tooltip: 'Cerrar sesión',
             onPressed: () async {
               await ref

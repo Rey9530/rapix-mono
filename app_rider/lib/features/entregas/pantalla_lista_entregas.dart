@@ -1,85 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../widgets/tarjeta_pedido.dart';
-import 'proveedor_entregas.dart';
+import 'widgets/vista_lista_entregas.dart';
+import 'widgets/vista_mapa_entregas.dart';
 
-class PantallaListaEntregas extends ConsumerWidget {
+/// Pantalla de entregas. Hospeda un `TabBar` con dos pestañas:
+/// 1. "Listado": lista plana de `TarjetaPedido` para los pedidos pendientes
+///    del rider, con navegación al detalle (`/inicio/entregas/:id`).
+/// 2. "Ruta": mapa Mapbox con los clientes (destino) ordenados por vecino
+///    más cercano, conectados con polilínea. Al iniciar la ruta, el rider
+///    es geofenceado pasivamente: al entrar al radio de un cliente la parada
+///    se marca como visitada y se avanza a la siguiente.
+class PantallaListaEntregas extends ConsumerStatefulWidget {
   const PantallaListaEntregas({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final asincrono = ref.watch(entregasPendientesProveedor);
+  ConsumerState<PantallaListaEntregas> createState() =>
+      _PantallaListaEntregasEstado();
+}
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        try {
-          final future = ref.refresh(entregasPendientesProveedor.future);
-          await future;
-        } catch (_) {
-          // Si el refresh falla, el bloque `error:` del `.when` muestra feedback.
-        }
-      },
-      child: asincrono.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => ListView(
-          children: [
-            const SizedBox(height: 200),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  children: [
-                    Icon(Icons.error_outline,
-                        size: 56, color: Theme.of(context).colorScheme.error),
-                    const SizedBox(height: 16),
-                    Text('Error: $e', textAlign: TextAlign.center),
-                    const SizedBox(height: 12),
-                    FilledButton.tonal(
-                      onPressed: () => ref.invalidate(entregasPendientesProveedor),
-                      child: const Text('Reintentar'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+class _PantallaListaEntregasEstado
+    extends ConsumerState<PantallaListaEntregas>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Material(
+          color: Theme.of(context).colorScheme.surface,
+          child: TabBar(
+            controller: _tabController,
+            tabs: const [
+              Tab(icon: Icon(Icons.list_alt), text: 'Listado'),
+              Tab(icon: Icon(Icons.alt_route), text: 'Ruta'),
+            ],
+          ),
         ),
-        data: (lista) {
-          if (lista.isEmpty) {
-            return ListView(
-              children: const [
-                SizedBox(height: 200),
-                Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(24),
-                    child: Column(
-                      children: [
-                        Icon(Icons.local_shipping_outlined,
-                            size: 56, color: Colors.grey),
-                        SizedBox(height: 16),
-                        Text(
-                          'No hay entregas pendientes',
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            );
-          }
-          return ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            itemCount: lista.length,
-            itemBuilder: (context, index) => TarjetaPedido(
-              pedido: lista[index],
-              onTap: () => context.go('/inicio/entregas/${lista[index].id}'),
-            ),
-          );
-        },
-      ),
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            // Solo cambia de tab con tap explícito; desactiva el swipe
+            // horizontal del `TabBarView` para que el gesto del rider sobre
+            // el mapa no se confunda con un cambio de pestaña.
+            physics: const NeverScrollableScrollPhysics(),
+            children: const [
+              VistaListaEntregas(),
+              VistaMapaEntregas(),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

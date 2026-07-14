@@ -7,6 +7,7 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
 import '../../core/config/entorno.dart';
 import '../../core/proveedores_globales.dart';
+import '../../widgets/boton_con_carga.dart';
 import '../entregas/proveedor_entregas.dart';
 import '../recogidas/proveedor_recogidas.dart';
 
@@ -62,14 +63,16 @@ class _PantallaMapaRutaEstado extends ConsumerState<PantallaMapaRuta> {
         Positioned(
           top: 16,
           right: 16,
-          child: FloatingActionButton(
+          child: BotonConCarga(
+            variante: VarianteBoton.flotante,
             heroTag: 'recargar',
+            tooltip: 'Recargar',
             onPressed: () async {
               ref.invalidate(recogidasPendientesProveedor);
               ref.invalidate(entregasPendientesProveedor);
               await _dibujarRutaSiHayDatos();
             },
-            child: const Icon(Icons.refresh),
+            icono: const Icon(Icons.refresh),
           ),
         ),
         if (recogidas.isLoading || entregas.isLoading)

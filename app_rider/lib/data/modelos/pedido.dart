@@ -68,3 +68,16 @@ class Pedido with _$Pedido {
     }..remove('vendedor'));
   }
 }
+
+/// Helpers de ubicación sobre [Pedido]. Separados del modelo Freezed para
+/// no regenerar el `.freezed.dart`.
+extension PedidoUbicacion on Pedido {
+  /// Indica si el pedido tiene coordenadas del origen (la tienda) válidas
+  /// para dibujarlo en el mapa o calcular distancias.
+  bool get tieneCoordenadasOrigen =>
+      latitudOrigen != null && longitudOrigen != null;
+
+  /// Indica si el pedido tiene coordenadas del destino (el cliente) válidas.
+  bool get tieneCoordenadasDestino =>
+      latitudDestino != null && longitudDestino != null;
+}
